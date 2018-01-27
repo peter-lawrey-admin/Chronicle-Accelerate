@@ -28,6 +28,10 @@ public abstract class AbstractTCPConnection implements TCPConnection {
         return ret;
     }
 
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + " " + channel;
+    }
 
     @Override
     public void write(Bytes<ByteBuffer> bytes) throws IOException {
@@ -44,7 +48,7 @@ public abstract class AbstractTCPConnection implements TCPConnection {
         buffer.position(Math.toIntExact(bytes.readPosition()));
         ByteBuffer[] headerBytes = headerBytesTL.get();
         headerBytes[0].clear();
-        headerBytes[0].putInt(buffer.remaining());
+        headerBytes[0].putInt(0, HEADER_LENGTH + buffer.remaining());
         headerBytes[1] = buffer;
 
         while (buffer.remaining() > 0 && running) {
@@ -72,6 +76,12 @@ public abstract class AbstractTCPConnection implements TCPConnection {
             bytes.clear(); // reset the position
         else if (bytes.readPosition() > 32 << 10)
             bytes.compact(); // shift the data down.
+        ByteBuffer buffer = bytes.underlyingObject();
+        buffer.position(Math.toIntExact(bytes.writePosition()));
+        buffer.limit(Math.toIntExact(bytes.realCapacity()));
+        if (channel.read(buffer) < 0)
+            throw new EOFException();
+        bytes.readLimit(buffer.position());
     }
 
     private void processOneMessage(int length, Bytes<ByteBuffer> bytes) throws IOException {

@@ -2,6 +2,7 @@ package cash.xcl.net;
 
 import net.openhft.chronicle.bytes.Bytes;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.net.SocketException;
 import java.nio.ByteBuffer;
@@ -31,6 +32,8 @@ public class VanillaTCPServerConnection extends AbstractTCPConnection {
             while (running) {
                 readChannel(readBytes);
             }
+        } catch (EOFException eof) {
+            // connection closed
         } catch (Throwable t) {
             t.printStackTrace();
 

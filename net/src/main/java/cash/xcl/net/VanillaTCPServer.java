@@ -1,6 +1,7 @@
 package cash.xcl.net;
 
 import net.openhft.chronicle.core.io.Closeable;
+import net.openhft.chronicle.threads.NamedThreadFactory;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -11,7 +12,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicLong;
 
 public class VanillaTCPServer implements TCPServer {
     final ServerSocketChannel serverChannel;
@@ -24,12 +24,7 @@ public class VanillaTCPServer implements TCPServer {
         this.connectionListener = connectionListener;
         this.serverChannel = ServerSocketChannel.open();
         serverChannel.bind(new InetSocketAddress(port));
-        AtomicLong counter = new AtomicLong();
-        pool = Executors.newCachedThreadPool(r -> {
-            Thread t = new Thread(r, name + "-" + counter.getAndIncrement());
-            t.start();
-            return t;
-        });
+        pool = Executors.newCachedThreadPool(new NamedThreadFactory(name, false));
         pool.submit(this::run);
     }
 
