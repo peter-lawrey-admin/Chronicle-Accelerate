@@ -24,7 +24,7 @@ public class TreeBlockEvent extends SignedMessage {
     }
 
     @NotNull
-    private BlockRecord nextBlockRecord() {
+    public BlockRecord nextBlockRecord() {
         if (blockRecords.size() == blockRecordsBuffer.size())
             blockRecordsBuffer.add(new BlockRecord());
         BlockRecord br = blockRecordsBuffer.get(blockRecords.size());
@@ -43,6 +43,34 @@ public class TreeBlockEvent extends SignedMessage {
     @Override
     protected int messageType() {
         return MethodIds.TREE_BLOCK_EVENT;
+    }
+
+    public int weekNumber() {
+        return weekNumber;
+    }
+
+    public TreeBlockEvent weekNumber(int weekNumber) {
+        this.weekNumber = weekNumber;
+        return this;
+    }
+
+    public long blockNumber() {
+        return blockNumber;
+    }
+
+    public TreeBlockEvent blockNumber(long blockNumber) {
+        this.blockNumber = blockNumber;
+        return this;
+    }
+
+    public TreeBlockEvent clearBlockRecords() {
+        this.blockRecords.clear();
+        return this;
+    }
+
+    public TreeBlockEvent addBlockRecord(BlockRecord br) {
+        this.blockRecords.add(br);
+        return this;
     }
 }
 

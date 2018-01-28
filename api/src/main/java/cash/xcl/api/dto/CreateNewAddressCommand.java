@@ -31,4 +31,31 @@ public class CreateNewAddressCommand extends SignedMessage {
     protected int messageType() {
         return MethodIds.CREATE_NEW_ADDRESS_COMMAND;
     }
+
+    public Bytes publicKey() {
+        return publicKey;
+    }
+
+    public CreateNewAddressCommand publicKey(Bytes publicKey) {
+        this.publicKey = publicKey;
+        return this;
+    }
+
+    public String sourceIP() {
+        return sourceIP;
+    }
+
+    public CreateNewAddressCommand sourceIP(String sourceIP) {
+        this.sourceIP = sourceIP;
+        return this;
+    }
+
+    public String region() {
+        return region;
+    }
+
+    public CreateNewAddressCommand region(String region) {
+        this.region = region;
+        return this;
+    }
 }

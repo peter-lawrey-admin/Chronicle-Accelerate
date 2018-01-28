@@ -8,15 +8,13 @@ import net.openhft.chronicle.core.io.IORuntimeException;
 import net.openhft.chronicle.salt.Ed25519;
 import net.openhft.chronicle.wire.AbstractBytesMarshallable;
 
+import java.nio.ByteBuffer;
+
 public abstract class SignedMessage extends AbstractBytesMarshallable {
-    private transient Bytes sigAndMsg;
+    private transient Bytes<ByteBuffer> sigAndMsg;
     private long sourceAddress;
     private long eventTime;
     private int protocol;
-
-    protected Bytes sigAndMsg() {
-        return sigAndMsg == null ? sigAndMsg = Bytes.allocateElasticDirect() : sigAndMsg;
-    }
 
     @Override
     public final void readMarshallable(BytesIn bytes) throws IORuntimeException {
@@ -60,10 +58,6 @@ public abstract class SignedMessage extends AbstractBytesMarshallable {
 
     protected abstract void writeMarshallable2(Bytes bytes);
 
-    public boolean hasSignature() {
-        return sigAndMsg != null && sigAndMsg.readRemaining() > Ed25519.SIGANTURE_LENGTH;
-    }
-
     @Override
     public void reset() {
         sigAndMsg().clear();
@@ -72,5 +66,43 @@ public abstract class SignedMessage extends AbstractBytesMarshallable {
         protocol = 0;
     }
 
+    public boolean hasSignature() {
+        return sigAndMsg != null && sigAndMsg.readRemaining() > Ed25519.SIGANTURE_LENGTH;
+    }
 
+    public Bytes<ByteBuffer> sigAndMsg() {
+        return sigAndMsg == null ? sigAndMsg = Bytes.elasticByteBuffer() : sigAndMsg;
+    }
+
+    public SignedMessage sigAndMsg(Bytes<ByteBuffer> sigAndMsg) {
+        this.sigAndMsg = sigAndMsg;
+        return this;
+    }
+
+    public long sourceAddress() {
+        return sourceAddress;
+    }
+
+    public SignedMessage sourceAddress(long sourceAddress) {
+        this.sourceAddress = sourceAddress;
+        return this;
+    }
+
+    public long eventTime() {
+        return eventTime;
+    }
+
+    public SignedMessage eventTime(long eventTime) {
+        this.eventTime = eventTime;
+        return this;
+    }
+
+    public int protocol() {
+        return protocol;
+    }
+
+    public SignedMessage protocol(int protocol) {
+        this.protocol = protocol;
+        return this;
+    }
 }

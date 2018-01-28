@@ -28,4 +28,27 @@ public class TransactionBlockEvent extends SignedMessage {
     protected int messageType() {
         return MethodIds.TRANSACTION_BLOCK_EVENT;
     }
+
+    // to add helper methods.
+    public Bytes transactions() {
+        return transactions;
+    }
+
+    public int weekNumber() {
+        return weekNumber;
+    }
+
+    public TransactionBlockEvent weekNumber(int weekNumber) {
+        this.weekNumber = weekNumber;
+        return this;
+    }
+
+    public long blockNumber() {
+        return blockNumber;
+    }
+
+    public TransactionBlockEvent blockNumber(long blockNumber) {
+        this.blockNumber = blockNumber;
+        return this;
+    }
 }

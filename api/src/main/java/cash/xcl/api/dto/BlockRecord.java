@@ -24,4 +24,30 @@ public class BlockRecord extends AbstractBytesMarshallable {
         bytes.writeInt(status);
     }
 
+    public long address() {
+        return address;
+    }
+
+    public BlockRecord address(long address) {
+        this.address = address;
+        return this;
+    }
+
+    public long blockNumber() {
+        return blockNumber;
+    }
+
+    public BlockRecord blockNumber(long blockNumber) {
+        this.blockNumber = blockNumber;
+        return this;
+    }
+
+    public int status() {
+        return status;
+    }
+
+    public BlockRecord status(int status) {
+        this.status = status;
+        return this;
+    }
 }

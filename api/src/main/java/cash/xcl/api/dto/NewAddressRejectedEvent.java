@@ -26,6 +26,33 @@ public class NewAddressRejectedEvent extends SignedMessage {
 
     @Override
     protected int messageType() {
-        return MethodIds.NEW_ADDRESS_REJECTED;
+        return MethodIds.NEW_ADDRESS_REJECTED_EVENT;
+    }
+
+    public CreateNewAddressCommand command() {
+        return command;
+    }
+
+    public NewAddressRejectedEvent command(CreateNewAddressCommand command) {
+        this.command = command;
+        return this;
+    }
+
+    public int reasonCode() {
+        return reasonCode;
+    }
+
+    public NewAddressRejectedEvent reasonCode(int reasonCode) {
+        this.reasonCode = reasonCode;
+        return this;
+    }
+
+    public String reason() {
+        return reason;
+    }
+
+    public NewAddressRejectedEvent reason(String reason) {
+        this.reason = reason;
+        return this;
     }
 }

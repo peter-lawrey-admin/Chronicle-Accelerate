@@ -33,4 +33,22 @@ public class OpeningBalanceEvent extends SignedMessage {
     protected int messageType() {
         return MethodIds.OPENING_BALANCE_EVENT;
     }
+
+    public long address() {
+        return address;
+    }
+
+    public OpeningBalanceEvent address(long address) {
+        this.address = address;
+        return this;
+    }
+
+    public Map<String, Double> balances() {
+        return balances;
+    }
+
+    public OpeningBalanceEvent balances(Map<String, Double> balances) {
+        this.balances = balances;
+        return this;
+    }
 }

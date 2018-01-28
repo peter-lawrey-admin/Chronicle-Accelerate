@@ -27,4 +27,22 @@ public class AddressInformationEvent extends SignedMessage {
     protected int messageType() {
         return MethodIds.ADDRESS_INFORMATION_EVENT;
     }
+
+    public Bytes publicKey() {
+        return publicKey;
+    }
+
+    public AddressInformationEvent publicKey(Bytes publicKey) {
+        this.publicKey = publicKey;
+        return this;
+    }
+
+    public long address() {
+        return address;
+    }
+
+    public AddressInformationEvent address(long address) {
+        this.address = address;
+        return this;
+    }
 }

@@ -27,4 +27,40 @@ public class ExchangeRateEvent extends SignedMessage {
     protected int messageType() {
         return MethodIds.EXCHANGE_RATE_EVENT;
     }
+
+    public String symbol1() {
+        return symbol1;
+    }
+
+    public ExchangeRateEvent symbol1(String symbol1) {
+        this.symbol1 = symbol1;
+        return this;
+    }
+
+    public String symbol2() {
+        return symbol2;
+    }
+
+    public ExchangeRateEvent symbol2(String symbol2) {
+        this.symbol2 = symbol2;
+        return this;
+    }
+
+    public double buyPrice() {
+        return buyPrice;
+    }
+
+    public ExchangeRateEvent buyPrice(double buyPrice) {
+        this.buyPrice = buyPrice;
+        return this;
+    }
+
+    public double sellPrice() {
+        return sellPrice;
+    }
+
+    public ExchangeRateEvent sellPrice(double sellPrice) {
+        this.sellPrice = sellPrice;
+        return this;
+    }
 }

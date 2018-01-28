@@ -144,3 +144,11 @@ Range 0x60 - 0x6f
 Range 0x70 - 0x7f
 
 === Execution Report to Buy/Sell XCL (0x70)
+
+== Session Messages
+
+Range 0xF0 - 0xFF
+
+=== Subscription Command (0xF0)
+
+This notified the gateway that this connection should like to listen to an address. It must be signed.
