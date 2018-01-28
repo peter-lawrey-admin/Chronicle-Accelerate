@@ -27,7 +27,6 @@ The message format looks like
 | 72 - 79 | event timestamp
 | 80 - 80 | protocol version == 1 (1)
 | 81 - 81 | message type (for version)
-| 82+ | the rest of the message depending on the message type
 | 82 - 83 | week number
 | 84 - 87 | block in week for source
 | 84+ | the rest of the message depending on the message type
@@ -71,7 +70,7 @@ The transaction block is a signed message which contains zero or more messages
 
 Range 0x20 - 0x2f
 
-=== Create New Account (0x20)
+=== Create New Address Command (0x20)
 
 This message requests that a new account be created. This includes the public key and the region in which to create the address
 
@@ -104,7 +103,7 @@ This message includes
 
 - the bid/ask spread for a fixed volume e.g. 1M
 
-=== New Account Rejected (0x32)
+=== New Address Rejected (0x32)
 
 This message indicates that an attempt to create a new address was rejected.
 
