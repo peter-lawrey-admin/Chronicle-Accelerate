@@ -8,13 +8,14 @@ import cash.xcl.net.TCPServer;
 import cash.xcl.net.TCPServerConnectionListener;
 import cash.xcl.net.VanillaTCPServer;
 import net.openhft.chronicle.bytes.Bytes;
+import net.openhft.chronicle.core.io.Closeable;
 import net.openhft.chronicle.core.io.IORuntimeException;
 
 import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class XCLServer {
+public class XCLServer implements Closeable {
     final TCPServer tcpServer;
     private final long address;
     private final Bytes secretKey;
@@ -67,5 +68,10 @@ public class XCLServer {
                 throw iore;
             }
         }
+    }
+
+    @Override
+    public void close() {
+        tcpServer.close();
     }
 }

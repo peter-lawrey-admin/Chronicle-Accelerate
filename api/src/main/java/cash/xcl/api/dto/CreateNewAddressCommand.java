@@ -23,7 +23,7 @@ public class CreateNewAddressCommand extends SignedMessage {
     protected void writeMarshallable2(Bytes bytes) {
         bytes.write(publicKey);
 
-        bytes.writeUtf8(sourceIP);
+        bytes.writeUtf8(sourceIP == null ? "" : sourceIP);
         bytes.writeUtf8(region);
     }
 

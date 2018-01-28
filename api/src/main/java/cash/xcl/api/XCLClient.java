@@ -5,13 +5,14 @@ import cash.xcl.net.TCPClientListener;
 import cash.xcl.net.TCPConnection;
 import cash.xcl.net.VanillaTCPClient;
 import net.openhft.chronicle.bytes.Bytes;
+import net.openhft.chronicle.core.io.Closeable;
 import net.openhft.chronicle.core.io.IORuntimeException;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.List;
 
-public class XCLClient implements AllMessages {
+public class XCLClient implements AllMessages, Closeable {
     final ThreadLocal<Bytes> bytesTL = ThreadLocal.withInitial(Bytes::allocateElasticDirect);
     private final VanillaTCPClient tcpClient;
     private final long address;
@@ -103,5 +104,10 @@ public class XCLClient implements AllMessages {
                 throw iore;
             }
         }
+    }
+
+    @Override
+    public void close() {
+        tcpClient.close();
     }
 }

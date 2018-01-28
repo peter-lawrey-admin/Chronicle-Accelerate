@@ -14,7 +14,6 @@ public abstract class SignedMessage extends AbstractBytesMarshallable {
     private transient Bytes<ByteBuffer> sigAndMsg;
     private long sourceAddress;
     private long eventTime;
-    private int protocol;
 
     @Override
     public final void readMarshallable(BytesIn bytes) throws IORuntimeException {
@@ -22,9 +21,11 @@ public abstract class SignedMessage extends AbstractBytesMarshallable {
         bytes.readSkip(Ed25519.SIGANTURE_LENGTH);
         sourceAddress = bytes.readLong();
         eventTime = bytes.readLong();
-        protocol = bytes.readUnsignedByte();
+        int protocol = bytes.readUnsignedByte();
+        assert protocol == 1;
         int messageType = bytes.readUnsignedByte();
         assert messageType == messageType();
+        int padding = bytes.readUnsignedShort();
         readMarshallable2(bytes);
     }
 
@@ -47,10 +48,14 @@ public abstract class SignedMessage extends AbstractBytesMarshallable {
         tempBytes.clear();
         tempBytes.writeLong(sourceAddress);
         tempBytes.writeLong(eventTime);
-        tempBytes.writeUnsignedByte(protocol);
+        tempBytes.writeUnsignedByte(1);
         tempBytes.writeUnsignedByte(messageType());
         tempBytes.writeUnsignedShort(0); // padding.
         writeMarshallable2(tempBytes);
+        if (sigAndMsg == null)
+            sigAndMsg = Bytes.elasticByteBuffer();
+        else
+            sigAndMsg.clear();
         Ed25519.sign(sigAndMsg, tempBytes, secretKey);
     }
 
@@ -63,7 +68,6 @@ public abstract class SignedMessage extends AbstractBytesMarshallable {
         sigAndMsg().clear();
         sourceAddress = 0;
         eventTime = 0;
-        protocol = 0;
     }
 
     public boolean hasSignature() {
@@ -94,15 +98,6 @@ public abstract class SignedMessage extends AbstractBytesMarshallable {
 
     public SignedMessage eventTime(long eventTime) {
         this.eventTime = eventTime;
-        return this;
-    }
-
-    public int protocol() {
-        return protocol;
-    }
-
-    public SignedMessage protocol(int protocol) {
-        this.protocol = protocol;
         return this;
     }
 }

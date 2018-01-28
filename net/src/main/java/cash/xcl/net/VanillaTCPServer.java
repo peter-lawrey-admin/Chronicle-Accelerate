@@ -35,7 +35,8 @@ public class VanillaTCPServer implements TCPServer {
                 pool.submit(new VanillaTCPServerConnection(this, accept)::run);
             }
         } catch (Throwable t) {
-            t.printStackTrace();
+            if (running)
+                t.printStackTrace();
             close();
         }
     }
