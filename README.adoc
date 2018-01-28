@@ -2,3 +2,7 @@
 Peter Lawrey, Sabrina Rai
 
 High performance block chain platform
+
+== Message Types
+
+https://github.com/OpenHFT/Chronicle-Accelerate/blob/master/rfc/XCLBlockChain.adoc[Details on how the messages used]
