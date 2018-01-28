@@ -1,0 +1,147 @@
+= XCL Block Chain
+Peter Lawrey
+
+The XCL Block Chain is an ordered collection of messages as commands and events. It's structure contains
+
+- Signed Messages.
+- A Transaction Block which is a list of messages.
+- A Tree Block which describes the order of these blocks.
+
+All data is in little endian. All strings uses UTF-8 encoding.
+
+NOTE: Events must come from a trusted source.
+i.e. a recognised node in the current cluster, or a recognised node in the previous week's cluster.
+
+== Message types
+
+=== Signed Messages
+
+Messages are written are either commands (an instruction to take an action which might be rejected), or events (something which has happened, might not need an action but cannot be rejected)
+
+The message format looks like
+
+|===
+| byte offset | field
+| 0 - 63 | Signature
+| 64 - 71 | source address
+| 72 - 79 | event timestamp
+| 80 - 80 | protocol version == 1 (1)
+| 81 - 81 | message type (for version)
+| 82+ | the rest of the message depending on the message type
+| 82 - 83 | week number
+| 84 - 87 | block in week for source
+| 84+ | the rest of the message depending on the message type
+|===
+<1> In future, two protocol versions might be supported while an old one is deprecated
+
+=== Transaction Block (message type = 0x01)
+
+The transaction block is a signed message which contains zero or more messages
+
+|===
+| byte offset | field
+| 0 - 81 | Message header
+| 82 - 83 | week number
+| 84 - 87 | block in week for source (1.)
+| 88 - 89 | the first message length
+| 90+ | the first message
+| later | additional messages
+|===
+<1> Allows for 4 billion blocks per week per source.
+
+Within the transaction block, each message is preceded by a message length which is 2 byte unsigned length.
+
+=== Tree Block (message type = 0x02)
+
+The transaction block is a signed message which contains zero or more messages
+
+|===
+| byte offset | field
+| 0 - 81 | Message header
+| 82 - 83 | week number
+| 84 - 87 | block in week for source
+| 88 - 95 | the first source address
+| 96 - 99 | the first block number
+| 100 - 103 | the first block status (1)
+| 104+ | any additional block entries
+|===
+<1> The block status records how many times it has been replicated and whether it was timed out or not.
+
+== Main Chain Commands
+
+Range 0x20 - 0x2f
+
+=== Create New Account (0x20)
+
+This message requests that a new account be created. This includes the public key and the region in which to create the address
+
+The response to this command is either Address Information Event (0x30) or New Account Rejected (0x32)
+
+=== Transfer Cluster Value Command (0x21)
+
+This message is a command to transfer value from one cluster to another via the main chain.
+
+== Main Chain Events
+
+Range 0x30 - 0x3f
+
+=== Address Information Event (0x30)
+
+This message is an event from the main chain to set the reference information of an address.
+This message is dumped as part of the snap shot at the end of each week and loaded at the start of the next week.
+This is message must come from the main chain or it will be rejected.
+
+This message includes
+
+- the public key of the address
+- the list of verifiable facts about the account.
+
+=== Exchange Rate Event (0x31)
+
+This message is an event from the main chain to set the reference information for exchanging XCL with other currencies.
+
+This message includes
+
+- the bid/ask spread for a fixed volume e.g. 1M
+
+=== New Account Rejected (0x32)
+
+This message indicates that an attempt to create a new address was rejected.
+
+== Regional Chain Commands
+
+Range 0x40 - 0x4f
+
+== Regional Chain Events
+
+Range 0x50 - 0x5f
+
+=== Opening Balance Event (0x50)
+
+This message is an event to set the initial state of an address.
+This message is dumped as part of the snap shot at the end of each week and loaded at the start of the next week.
+This is message must come from a trusted source or it will be rejected.
+
+The message contains
+
+- the list of currencies and balances
+
+=== Transfer Value Command (0x51)
+
+This message is a command to transfer value from one address to another.
+
+== Service Chain Commands
+
+Range 0x60 - 0x6f
+
+=== Market Order to Buy/Sell XCL (0x60)
+
+=== Limit Order to Buy/Sell XCL (0x61)
+
+=== Cancel Order to Buy/Sell XCL (0x62)
+
+== Service Chain Events
+
+Range 0x70 - 0x7f
+
+=== Execution Report to Buy/Sell XCL (0x70)
