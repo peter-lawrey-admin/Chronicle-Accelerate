@@ -1,0 +1,4 @@
+= Chronicle-Accelerate
+Peter Lawrey, Sabrina Rai
+
+High performance block chain platform
