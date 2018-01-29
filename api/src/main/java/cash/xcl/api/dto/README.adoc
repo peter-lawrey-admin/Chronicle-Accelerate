@@ -5,8 +5,9 @@ This package contains the DTO (Data Transfer Objects) for messages between clien
 
 == Commands and Events
 
-Commands are messages with an instruction to do something. It is usually intended to be processed once by one systems.  
-It can be rejected is it fails validation or is not approriate.
+Commands are messages with an instruction to do something. It is usually intended to be processed once by one system.  
+It can be rejected is it fails validation or is not approriate. They can be thought of as like actions under the Actor pattern.
+Each command should document which events it can create. TBD.
 
 Events are messages about something which has happened.  There might be zero, one or manay systems which process this message.  
 It can't be rejected as it has already happened. It could trigger a command to attempt to reverse the action at best.
