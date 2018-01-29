@@ -1,4 +1,4 @@
-= XCL DTos
+= XCL DTOs
 Peter Lawrey
 
 This package contains the DTO (Data Transfer Objects) for messages between clients and server as well as inter server communications.
