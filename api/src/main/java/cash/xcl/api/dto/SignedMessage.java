@@ -18,7 +18,7 @@ public abstract class SignedMessage extends AbstractBytesMarshallable {
     @Override
     public final void readMarshallable(BytesIn bytes) throws IORuntimeException {
         sigAndMsg().clear().write((BytesStore) bytes);
-        bytes.readSkip(Ed25519.SIGANTURE_LENGTH);
+        bytes.readSkip(Ed25519.SIGNATURE_LENGTH);
         sourceAddress = bytes.readLong();
         eventTime = bytes.readLong();
         int protocol = bytes.readUnsignedByte();
@@ -71,7 +71,7 @@ public abstract class SignedMessage extends AbstractBytesMarshallable {
     }
 
     public boolean hasSignature() {
-        return sigAndMsg != null && sigAndMsg.readRemaining() > Ed25519.SIGANTURE_LENGTH;
+        return sigAndMsg != null && sigAndMsg.readRemaining() > Ed25519.SIGNATURE_LENGTH;
     }
 
     public Bytes<ByteBuffer> sigAndMsg() {
