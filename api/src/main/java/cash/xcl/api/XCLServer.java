@@ -8,6 +8,7 @@ import cash.xcl.net.TCPServer;
 import cash.xcl.net.TCPServerConnectionListener;
 import cash.xcl.net.VanillaTCPServer;
 import net.openhft.chronicle.bytes.Bytes;
+import net.openhft.chronicle.core.Jvm;
 import net.openhft.chronicle.core.io.Closeable;
 import net.openhft.chronicle.core.io.IORuntimeException;
 
@@ -37,8 +38,10 @@ public class XCLServer implements Closeable {
 
     public void write(long address, SignedMessage message) {
         TCPConnection tcpConnection = connections.get(address);
-
+        if (tcpConnection == null)
+            return;
         try {
+
             if (!message.hasSignature()) {
                 Bytes bytes = bytesTL.get();
                 bytes.clear();
@@ -46,9 +49,17 @@ public class XCLServer implements Closeable {
             }
             tcpConnection.write(message.sigAndMsg());
 
-        } catch (IOException e) {
-            throw new IORuntimeException(e);
+        } catch (Exception e) {
+            // assume it's dead.
+            Closeable.closeQuietly(tcpConnection);
+            connections.remove(address);
+            Jvm.warn().on(getClass(), "Unable to write to " + address + " " + message, e);
         }
+    }
+
+    @Override
+    public void close() {
+        tcpServer.close();
     }
 
     class XCLConnectionListener implements TCPServerConnectionListener {
@@ -84,10 +95,5 @@ public class XCLServer implements Closeable {
                 throw iore;
             }
         }
-    }
-
-    @Override
-    public void close() {
-        tcpServer.close();
     }
 }
