@@ -107,7 +107,6 @@ public class XCLClient implements AllMessages, Closeable {
         } catch (IOException e) {
             throw new IORuntimeException(e);
         }
-
     }
 
     class ClientListener implements TCPClientListener {

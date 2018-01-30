@@ -16,27 +16,43 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class XCLServer implements Closeable {
+    final ThreadLocal<Bytes> bytesTL = ThreadLocal.withInitial(Bytes::allocateElasticDirect);
+
     final TCPServer tcpServer;
     private final long address;
     private final Bytes secretKey;
-    private final AllMessages allMessageListener;
+    private final ServerComponent serverComponent;
     private final Map<Long, TCPConnection> connections = new ConcurrentHashMap<>();
 
 
-    public XCLServer(String name, int port, long address, Bytes secretKey, AllMessages allMessageListener) throws IOException {
+    public XCLServer(String name, int port, long address, Bytes secretKey, ServerComponent serverComponent) throws IOException {
         this.address = address;
         this.secretKey = secretKey;
-        this.allMessageListener = allMessageListener;
+        this.serverComponent = serverComponent;
         tcpServer = new VanillaTCPServer(name, port, new XCLConnectionListener());
+
+        // do this last after initialisation.
+        serverComponent.xclServer(this);
     }
 
     public void write(long address, SignedMessage message) {
-        connections.get(address);
+        TCPConnection tcpConnection = connections.get(address);
+
+        try {
+            if (!message.hasSignature()) {
+                Bytes bytes = bytesTL.get();
+                bytes.clear();
+                message.sign(bytes, address, secretKey);
+            }
+            tcpConnection.write(message.sigAndMsg());
+
+        } catch (IOException e) {
+            throw new IORuntimeException(e);
+        }
     }
 
     class XCLConnectionListener implements TCPServerConnectionListener {
         final DtoParser parser = new DtoParser();
-        Bytes bytes = Bytes.allocateElasticDirect();
 
         @Override
         public void onMessage(TCPServer server, TCPConnection channel, Bytes bytes) throws IOException {
@@ -47,7 +63,7 @@ public class XCLServer implements Closeable {
                     connections.put(address, channel);
                 }
 
-                parser.parseOne(bytes, allMessageListener);
+                parser.parseOne(bytes, serverComponent);
 
             } catch (ClientException ce) {
                 SignedMessage message = ce.message();
