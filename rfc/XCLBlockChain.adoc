@@ -76,7 +76,7 @@ This message requests that a new account be created. This includes the public ke
 
 The response to this command is either Address Information Event (0x30) or New Account Rejected (0x32)
 
-=== Transfer Cluster Value Command (0x21)
+=== Cluster Transfer Value Command (0x21)
 
 This message is a command to transfer value from one cluster to another via the main chain.
 
@@ -133,11 +133,19 @@ This message is a command to transfer value from one address to another.
 
 Range 0x60 - 0x6f
 
-=== Market Order to Buy/Sell XCL (0x60)
+=== Deposit Value Command (0x60)
 
-=== Limit Order to Buy/Sell XCL (0x61)
+This message is a command to transfer value from one address to another.
 
-=== Cancel Order to Buy/Sell XCL (0x62)
+=== Withdraw Value Command (0x61)
+
+This message is a command to transfer value from one address to another.
+
+=== Market Order to Buy/Sell XCL (0x62)
+
+=== Limit Order to Buy/Sell XCL (0x63)
+
+=== Cancel Order to Buy/Sell XCL (0x64)
 
 == Service Chain Events
 

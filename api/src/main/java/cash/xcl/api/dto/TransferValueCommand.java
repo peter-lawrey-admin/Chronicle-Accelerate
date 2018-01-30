@@ -7,12 +7,14 @@ public class TransferValueCommand extends SignedMessage {
     long toAddress;
     double amount;
     String currency;
+    String reference;
 
     @Override
     protected void readMarshallable2(BytesIn bytes) {
         toAddress = bytes.readLong();
         amount = bytes.readDouble();
         currency = bytes.readUtf8();
+        reference = bytes.readUtf8();
     }
 
     @Override
@@ -20,6 +22,7 @@ public class TransferValueCommand extends SignedMessage {
         bytes.writeLong(toAddress);
         bytes.writeDouble(amount);
         bytes.writeUtf8(currency);
+        bytes.writeUtf8(reference);
     }
 
     @Override
@@ -51,6 +54,15 @@ public class TransferValueCommand extends SignedMessage {
 
     public TransferValueCommand currency(String currency) {
         this.currency = currency;
+        return this;
+    }
+
+    public String reference() {
+        return reference;
+    }
+
+    public TransferValueCommand reference(String reference) {
+        this.reference = reference;
         return this;
     }
 }
