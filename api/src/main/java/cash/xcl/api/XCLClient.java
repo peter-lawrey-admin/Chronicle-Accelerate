@@ -31,8 +31,18 @@ public class XCLClient implements AllMessages, Closeable {
     }
 
     @Override
+    public void applicationMessageEvent(ApplicationMessageEvent applicationMessageEvent) {
+        write(applicationMessageEvent);
+    }
+
+    @Override
     public void createNewAddressCommand(CreateNewAddressCommand createNewAddressCommand) {
         write(createNewAddressCommand);
+    }
+
+    @Override
+    public void clusterTransferValueCommand(ClusterTransferValueCommand clusterTransferValueCommand) {
+        write(clusterTransferValueCommand);
     }
 
     @Override
@@ -68,6 +78,16 @@ public class XCLClient implements AllMessages, Closeable {
     @Override
     public void openingBalanceEvent(OpeningBalanceEvent openingBalanceEvent) {
         write(openingBalanceEvent);
+    }
+
+    @Override
+    public void depositValueCommand(DepositValueCommand depositValueCommand) {
+        write(depositValueCommand);
+    }
+
+    @Override
+    public void withdrawValueCommand(WithdrawValueCommand withdrawValueCommand) {
+        write(withdrawValueCommand);
     }
 
     @Override

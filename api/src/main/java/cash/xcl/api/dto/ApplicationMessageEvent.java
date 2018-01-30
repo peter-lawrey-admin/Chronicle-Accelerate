@@ -22,6 +22,10 @@ public class ApplicationMessageEvent extends SignedMessage {
         setReason(reason);
     }
 
+    public ApplicationMessageEvent() {
+
+    }
+
     public String getLevel() {
         return level;
     }

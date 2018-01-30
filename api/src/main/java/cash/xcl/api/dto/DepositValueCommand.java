@@ -22,4 +22,13 @@ public class DepositValueCommand extends TransferValueCommand {
     protected int messageType() {
         return MethodIds.DEPOSIT_VALUE_COMMAND;
     }
+
+    public String description() {
+        return description;
+    }
+
+    public DepositValueCommand description(String description) {
+        this.description = description;
+        return this;
+    }
 }

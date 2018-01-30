@@ -25,4 +25,22 @@ public class WithdrawValueCommand extends TransferValueCommand {
     protected int messageType() {
         return MethodIds.WITHDRAW_VALUE_COMMAND;
     }
+
+    public String description() {
+        return description;
+    }
+
+    public WithdrawValueCommand description(String description) {
+        this.description = description;
+        return this;
+    }
+
+    public String destination() {
+        return destination;
+    }
+
+    public WithdrawValueCommand destination(String destination) {
+        this.destination = destination;
+        return this;
+    }
 }
