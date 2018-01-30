@@ -8,6 +8,17 @@ public class NewAddressRejectedEvent extends SignedMessage {
     int reasonCode;
     String reason;
 
+    public NewAddressRejectedEvent(long sourceAddress, long eventTime, CreateNewAddressCommand command, int reasonCode, String reason) {
+        super(sourceAddress, eventTime);
+        this.command = command;
+        this.reasonCode = reasonCode;
+        this.reason = reason;
+    }
+
+    public NewAddressRejectedEvent() {
+
+    }
+
     @Override
     protected void readMarshallable2(BytesIn bytes) {
         BytesIn<?> in = bytes;

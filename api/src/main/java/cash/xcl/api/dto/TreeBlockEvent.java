@@ -13,6 +13,18 @@ public class TreeBlockEvent extends SignedMessage {
     private List<BlockRecord> blockRecordsBuffer = new ArrayList<>();
     private List<BlockRecord> blockRecords = new ArrayList<>();
 
+    public TreeBlockEvent(long sourceAddress, long eventTime, int weekNumber, long blockNumber, List<BlockRecord> blockRecordsBuffer, List<BlockRecord> blockRecords) {
+        super(sourceAddress, eventTime);
+        this.weekNumber = weekNumber;
+        this.blockNumber = blockNumber;
+        this.blockRecordsBuffer = blockRecordsBuffer;
+        this.blockRecords = blockRecords;
+    }
+
+    public TreeBlockEvent() {
+
+    }
+
     @Override
     protected void readMarshallable2(BytesIn bytes) {
         weekNumber = bytes.readUnsignedShort();

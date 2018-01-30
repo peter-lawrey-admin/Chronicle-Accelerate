@@ -7,6 +7,18 @@ public class ExchangeRateEvent extends SignedMessage {
     private String symbol1, symbol2;
     private double buyPrice, sellPrice;
 
+    public ExchangeRateEvent(long sourceAddress, long eventTime, String symbol1, String symbol2, double buyPrice, double sellPrice) {
+        super(sourceAddress, eventTime);
+        this.symbol1 = symbol1;
+        this.symbol2 = symbol2;
+        this.buyPrice = buyPrice;
+        this.sellPrice = sellPrice;
+    }
+
+    public ExchangeRateEvent() {
+
+    }
+
     @Override
     protected void readMarshallable2(BytesIn bytes) {
         symbol1 = bytes.readUtf8();

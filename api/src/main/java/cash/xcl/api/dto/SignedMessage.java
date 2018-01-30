@@ -15,6 +15,14 @@ public abstract class SignedMessage extends AbstractBytesMarshallable {
     private long sourceAddress;
     private long eventTime;
 
+    protected SignedMessage() {
+    }
+
+    protected SignedMessage(long sourceAddress, long eventTime) {
+        this.sourceAddress = sourceAddress;
+        this.eventTime = eventTime;
+    }
+
     @Override
     public final void readMarshallable(BytesIn bytes) throws IORuntimeException {
         sigAndMsg().clear().write((BytesStore) bytes);

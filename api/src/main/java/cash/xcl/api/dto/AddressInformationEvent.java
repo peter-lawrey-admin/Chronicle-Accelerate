@@ -5,9 +5,20 @@ import net.openhft.chronicle.bytes.BytesIn;
 import net.openhft.chronicle.salt.Ed25519;
 
 public class AddressInformationEvent extends SignedMessage {
-    private Bytes publicKey;
     private long address;
+    private Bytes publicKey;
     // add verifiable facts such as verified address
+
+    public AddressInformationEvent(long sourceAddress, long eventTime, long address, Bytes publicKey) {
+        super(sourceAddress, eventTime);
+        this.address = address;
+        this.publicKey = publicKey;
+    }
+
+
+    public AddressInformationEvent() {
+        super();
+    }
 
     @Override
     protected void readMarshallable2(BytesIn bytes) {

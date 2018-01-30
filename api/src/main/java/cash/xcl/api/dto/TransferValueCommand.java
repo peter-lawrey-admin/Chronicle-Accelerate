@@ -9,6 +9,18 @@ public class TransferValueCommand extends SignedMessage {
     String currency;
     String reference;
 
+    public TransferValueCommand(long sourceAddress, long eventTime, long toAddress, double amount, String currency, String reference) {
+        super(sourceAddress, eventTime);
+        this.toAddress = toAddress;
+        this.amount = amount;
+        this.currency = currency;
+        this.reference = reference;
+    }
+
+    public TransferValueCommand() {
+
+    }
+
     @Override
     protected void readMarshallable2(BytesIn bytes) {
         toAddress = bytes.readLong();

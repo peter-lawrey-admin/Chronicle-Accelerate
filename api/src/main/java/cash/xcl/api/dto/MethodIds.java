@@ -3,6 +3,7 @@ package cash.xcl.api.dto;
 public interface MethodIds {
     int TRANSACTION_BLOCK_EVENT = 0x01;
     int TREE_BLOCK_EVENT = 0x02;
+    int APPLICATION_MESSAGE_EVENT = 0x03;
     int CREATE_NEW_ADDRESS_COMMAND = 0x20;
     int CLUSTER_TRANSFER_VALUE_COMMAND = 0x21;
     int ADDRESS_INFORMATION_EVENT = 0x30;

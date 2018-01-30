@@ -10,6 +10,16 @@ public class OpeningBalanceEvent extends SignedMessage {
     long address;
     Map<String, Double> balances = new LinkedHashMap<>();
 
+    public OpeningBalanceEvent(long sourceAddress, long eventTime, long address, Map<String, Double> balances) {
+        super(sourceAddress, eventTime);
+        this.address = address;
+        this.balances = balances;
+    }
+
+    public OpeningBalanceEvent() {
+
+    }
+
     @Override
     protected void readMarshallable2(BytesIn bytes) {
         address = bytes.readLong();
