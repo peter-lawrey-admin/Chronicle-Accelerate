@@ -1,4 +1,5 @@
 import cash.xcl.api.AllMessages;
+import cash.xcl.api.ClientOut;
 import cash.xcl.api.XCLClient;
 import cash.xcl.api.XCLServer;
 import cash.xcl.api.dto.CreateNewAddressCommand;
@@ -34,7 +35,7 @@ public class XCLClientServerTest {
 
         List<InetSocketAddress> addresses = Arrays.asList(new InetSocketAddress("localhost", 9900));
         AllMessages logging2 = Mocker.logging(AllMessages.class, "", out);
-        XCLClient client = new XCLClient("test-client", addresses, 2, secretKey, logging2);
+        ClientOut client = new XCLClient("test-client", addresses, 2, secretKey, logging2);
 
         client.createNewAddressCommand(new CreateNewAddressCommand().region("usny").publicKey(publicKey));
         for (int i = 0; i <= 20; i++) {
