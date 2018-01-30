@@ -33,6 +33,8 @@ The message format looks like
 |===
 <1> In future, two protocol versions might be supported while an old one is deprecated
 
+Message types are defined in the https://github.com/OpenHFT/Chronicle-Accelerate/blob/master/api/src/main/java/cash/xcl/api/dto/MethodIds.java[MethodIds] class.
+
 === Transaction Block (message type = 0x01)
 
 The transaction block is a signed message which contains zero or more messages
