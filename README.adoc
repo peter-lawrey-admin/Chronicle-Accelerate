@@ -9,7 +9,6 @@ The XCL platform combines low latencies (sub millisecond), IoT transaction rates
 
 The platform makes use of https://github.com/OpenHFT/Chronicle-Salt/blob/master/README.adoc[Chronicle-Salt] for encryption and https://github.com/OpenHFT/Chronicle-Bytes[Chronicle-Bytes] add description -what is chronicle-bytes for?
 
-High performance block chain platform
 
 == Message Types
 
