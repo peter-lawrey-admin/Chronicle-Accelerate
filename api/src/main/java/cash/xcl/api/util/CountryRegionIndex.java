@@ -49,7 +49,7 @@ public class CountryRegionIndex {
                     search = search.substring(0, search.length() - 1);
                     CountryRegion cr2 = indexByBase32.get(search);
                     if (cr2 != null) {
-                        System.out.println(cr2);
+//                        System.out.println(cr2);
                         cr2.addOverlappingSuffix(codes.substring(search.length()));
                     }
                 }

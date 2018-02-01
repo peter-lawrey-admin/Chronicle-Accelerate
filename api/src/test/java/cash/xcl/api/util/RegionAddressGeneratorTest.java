@@ -106,7 +106,7 @@ public class RegionAddressGeneratorTest {
     public void overlappingAddreses() {
         checkOverlapping("RO-B");
         checkOverlapping("IE-D");
-        checkOverlapping("MH-L");
+        checkOverlapping("ES-A");
     }
 
     private void checkOverlapping(String regionCode) {
