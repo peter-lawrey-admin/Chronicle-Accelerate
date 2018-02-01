@@ -14,13 +14,13 @@ public class CountryRegionTest {
         String countryCode2 = "RO";
         String countryName = "Romania";
         CountryRegion countryRegion = new CountryRegion(countryName, countryCode2, countryCode3, regionCode, regionName);
-        assertEquals(countryRegion.getCountryName(), countryName);
-        assertEquals(countryRegion.getCountryCode2(), countryCode2);
-        assertEquals(countryRegion.getCountryCode3(), countryCode3);
-        assertEquals(countryRegion.getRegionName(), regionName);
-        assertEquals(countryRegion.getRegionCode(), regionCode);
+        assertEquals(countryName, countryRegion.getCountryName());
+        assertEquals(countryCode2, countryRegion.getCountryCode2());
+        assertEquals(countryCode3, countryRegion.getCountryCode3());
+        assertEquals(regionName, countryRegion.getRegionName());
+        assertEquals(regionCode, countryRegion.getRegionCode());
         assertEquals(countryRegion.getRegionCode(), countryRegion.toString());
-        assertEquals(countryRegion.getRegionCodeBase32(), "r0ab");
+        assertEquals("r0ab", countryRegion.getRegionCodeBase32());
     }
 
     @Test
@@ -48,11 +48,11 @@ public class CountryRegionTest {
         String countryCode2 = "RO";
         String countryName = "Romania";
         CountryRegion countryRegion = new CountryRegion(countryName, countryCode2, countryCode3, regionCode, regionName);
-        assertEquals(countryRegion.getCountryName(), countryName);
-        assertEquals(countryRegion.getCountryCode2(), countryCode2);
-        assertEquals(countryRegion.getCountryCode3(), countryCode3);
-        assertEquals(countryRegion.getRegionName(), regionName);
-        assertEquals(countryRegion.getRegionCode(), regionCode);
+        assertEquals(countryName, countryRegion.getCountryName());
+        assertEquals(countryCode2, countryRegion.getCountryCode2());
+        assertEquals(countryCode3, countryRegion.getCountryCode3());
+        assertEquals(regionName, countryRegion.getRegionName());
+        assertEquals(regionCode, countryRegion.getRegionCode());
         assertEquals(countryRegion.getRegionCode(), countryRegion.toString());
     }
 
@@ -64,11 +64,11 @@ public class CountryRegionTest {
         String countryCode2 = "ROM";
         String countryName = "Romania";
         CountryRegion countryRegion = new CountryRegion(countryName, countryCode2, countryCode3, regionCode, regionName);
-        assertEquals(countryRegion.getCountryName(), countryName);
-        assertEquals(countryRegion.getCountryCode2(), countryCode2);
-        assertEquals(countryRegion.getCountryCode3(), countryCode3);
-        assertEquals(countryRegion.getRegionName(), regionName);
-        assertEquals(countryRegion.getRegionCode(), regionCode);
+        assertEquals(countryName, countryRegion.getCountryName());
+        assertEquals(countryCode2, countryRegion.getCountryCode2());
+        assertEquals(countryCode3, countryRegion.getCountryCode3());
+        assertEquals(regionName, countryRegion.getRegionName());
+        assertEquals(regionCode, countryRegion.getRegionCode());
         assertEquals(countryRegion.getRegionCode(), countryRegion.toString());
     }
 
@@ -80,11 +80,11 @@ public class CountryRegionTest {
         String countryCode2 = "RO";
         String countryName = "Romania";
         CountryRegion countryRegion = new CountryRegion(countryName, countryCode2, countryCode3, regionCode, regionName);
-        assertEquals(countryRegion.getCountryName(), countryName);
-        assertEquals(countryRegion.getCountryCode2(), countryCode2);
-        assertEquals(countryRegion.getCountryCode3(), countryCode3);
-        assertEquals(countryRegion.getRegionName(), regionName);
-        assertEquals(countryRegion.getRegionCode(), regionCode);
+        assertEquals(countryName, countryRegion.getCountryName());
+        assertEquals(countryCode2, countryRegion.getCountryCode2());
+        assertEquals(countryCode3, countryRegion.getCountryCode3());
+        assertEquals(regionName, countryRegion.getRegionName());
+        assertEquals(regionCode, countryRegion.getRegionCode());
         assertEquals(countryRegion.getRegionCode(), countryRegion.toString());
     }
 

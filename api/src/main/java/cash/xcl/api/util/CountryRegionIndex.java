@@ -3,7 +3,6 @@ package cash.xcl.api.util;
 import net.openhft.chronicle.bytes.BytesUtil;
 import net.openhft.chronicle.core.io.IORuntimeException;
 import net.openhft.chronicle.core.util.ObjectUtils;
-import net.openhft.chronicle.salt.XCLBase32;
 import net.openhft.chronicle.wire.CSVWire;
 
 import java.io.IOException;
