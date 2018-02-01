@@ -49,7 +49,9 @@ public class XCLClientServerTest {
                 "  sourceIP: \"\",\n" +
                 "  region: usny\n" +
                 "}\n" +
-                "]\n", out.toString().replaceAll("XCLServer@\\w+", "XCLServer@xxxxxxxx"));
+                "]\n", out.toString()
+                .replaceAll("\r", "")
+                .replaceAll("XCLServer@\\w+", "XCLServer@xxxxxxxx"));
 
         client.close();
         server.close();
