@@ -3,19 +3,19 @@ package cash.xcl.api.dto;
 import net.openhft.chronicle.bytes.Bytes;
 import net.openhft.chronicle.bytes.BytesIn;
 
-public class TransferInformationEvent extends SignedMessage {
 
+public class WithdrawValueInformationEvent extends SignedMessage {
     // TODO
-    //private TransferValueCommand tvc;
+    //private WithdrawValueCommand wvc;
     private Transfer transfer;
 
-    public TransferInformationEvent(long sourceAddress, long eventTime, Transfer transfer) {
+    public WithdrawValueInformationEvent(long sourceAddress, long eventTime, Transfer transfer) {
         super(sourceAddress, eventTime);
         this.transfer = transfer;
     }
 
 
-    public TransferInformationEvent() {
+    public WithdrawValueInformationEvent() {
         super();
     }
 
@@ -31,7 +31,7 @@ public class TransferInformationEvent extends SignedMessage {
 
     @Override
     protected int messageType() {
-        return MethodIds.TRANSFER_VALUE_INFORMATION_EVENT;
+        return MethodIds.WITHDRAW_VALUE_INFORMATION_EVENT;
     }
 
 
@@ -39,7 +39,7 @@ public class TransferInformationEvent extends SignedMessage {
         return transfer;
     }
 
-    public TransferInformationEvent transfer(Transfer transfer) {
+    public WithdrawValueInformationEvent transfer(Transfer transfer) {
         this.transfer = transfer;
         return this;
     }
