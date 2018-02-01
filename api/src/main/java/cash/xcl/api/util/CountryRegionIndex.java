@@ -25,11 +25,9 @@ public class CountryRegionIndex {
 
     public CountryRegionIndex(String resourceName, String excludedName) {
         try {
-            Set<String> excluded;
-            if (excludedName == null)
-                excluded = Collections.emptySet();
-            else
-                excluded = new HashSet<>(Arrays.asList(Marshallable.fromFile(String[].class, excludedName)));
+            Set<String> excluded = excludedName == null
+                    ? Collections.emptySet()
+                    : new HashSet<>(Arrays.asList(Marshallable.fromFile(String[].class, excludedName)));
             CSVWire wire = new CSVWire(BytesUtil.readFile(resourceName));
             while (true) {
                 wire.consumeWhiteSpace();
