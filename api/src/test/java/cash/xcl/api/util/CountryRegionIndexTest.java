@@ -36,7 +36,7 @@ public class CountryRegionIndexTest {
         assertEquals(index.getFromBase32("r0ab"), index.getRegion("RO-AB"));
         assertEquals(index.getFromBase32("r0b"), index.getRegion("RO-B"));
         assertEquals(index.getFromBase32("r0bc"), index.getRegion("RO-BC"));
-        assertEquals(index.getFromBase32("iec"), index.getRegion("IE-C"));
+        assertEquals(index.getFromBase32("ied"), index.getRegion("IE-C"));
     }
 
     @Test
@@ -48,7 +48,7 @@ public class CountryRegionIndexTest {
         assertEquals(index.matchCountryRegion("r0bc"), index.getRegion("RO-BC"));
         assertEquals(index.matchCountryRegion("r0bc323"), index.getRegion("RO-BC"));
         assertEquals(index.matchCountryRegion("r0b1323"), index.getRegion("RO-B"));
-        assertEquals(index.matchCountryRegion("iec"), index.getRegion("IE-C"));
+        assertEquals(index.matchCountryRegion("ied"), index.getRegion("IE-C"));
         assertEquals(index.matchCountryRegion("iec0"), index.getRegion("IE-CO"));
         assertEquals(index.matchCountryRegion("iec01"), index.getRegion("IE-CO"));
         assertNull(index.matchCountryRegion("r0ad"));

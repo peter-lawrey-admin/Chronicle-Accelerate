@@ -1,0 +1,109 @@
+[
+# Provinces overlap the Counties
+IE-C,
+IE-L,
+IE-M,
+IE-U,
+# Municipalities which are divided into rayons
+AZ-BA,
+AZ-GA,
+AZ-LA,
+AZ-MI,
+AZ-NA,
+AZ-NV,
+AZ-SA,
+AZ-SR,
+AZ-SM,
+AZ-XA,
+AZ-YE,
+# Municipalities
+BM-HA,
+BM-SG
+# Regions
+BF-01,
+BF-02,
+BF-03,
+BF-04,
+BF-05,
+BF-06,
+BF-07,
+BF-08,
+BF-09,
+BF-10,
+BF-11,
+BF-12,
+BF-13,
+# Codes in KH are 0 padded to be two digits
+# Geograhpical Regions
+CV-B,
+CV-S,
+# EC has overlapping codes not easily resolved
+# Regions
+GQ-C,
+GQ-I,
+# Former regions before 2016
+FR-A,
+FR-B,
+FR-C,
+FR-P,
+FR-D,
+FR-E,
+FR-F,
+FR-G,
+FR-H,
+FR-I,
+FR-Q,
+FR-J,
+FR-K,
+FR-L,
+FR-M,
+FR-N,
+FR-O,
+FR-R,
+FR-S,
+FR-T,
+FR-U,
+FR-V,
+# Departments deleted in 2016-11-15
+GR-01, GR-11, GR-12, GR-31, GR-A1, GR-64, GR-94, GR-85, GR-81, GR-52,GR-71, GR-05, GR-04, GR-63, GR-07, GR-06, GR-51, GR-14, GR-53, GR-33, GR-91, GR-41, GR-56, GR-55, GR-23, GR-22, GR-57, GR-15, GR-58, GR-82, GR-16, GR-42, GR-92, GR-24, GR-83, GR-43, R-7, GR-59, GR-61, GR-34, GR-93, GR-73, GR-84, GR-62, GR-32, GR-54, GR-44, GR-03, GR-72, GR-21,
+# Governorates and special zone[edit]
+GN-B,
+GN-F,
+GN-K,
+GN-D,
+GN-L,
+GN-M,
+GN-N,
+GN-C,
+# IE-D conflicts
+# Regions
+MW-C,
+MW-N,
+MW-S,
+# Chains
+MH-L,
+MH-T,
+# Development regions
+NP-1,
+NP-2,
+NP-3,
+NP-4,
+NP-5,
+# Islands
+NZ-N,
+NZ-S,
+# PY codes 0 padded for 2 digits
+# RO-B conflicts
+# RU has many conflicts
+# ES has many conflicts
+# Provinces
+LK-1,
+LK-2,
+LK-3,
+LK-4,
+LK-5,
+LK-6,
+LK-7,
+LK-8,
+LK-9,
+]

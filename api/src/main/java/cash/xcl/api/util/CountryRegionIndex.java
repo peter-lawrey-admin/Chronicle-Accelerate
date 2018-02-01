@@ -4,6 +4,7 @@ import net.openhft.chronicle.bytes.BytesUtil;
 import net.openhft.chronicle.core.io.IORuntimeException;
 import net.openhft.chronicle.core.util.ObjectUtils;
 import net.openhft.chronicle.wire.CSVWire;
+import net.openhft.chronicle.wire.Marshallable;
 
 import java.io.IOException;
 import java.util.*;
@@ -13,11 +14,21 @@ public class CountryRegionIndex {
     private final Collection<CountryRegion> countryRegions = Collections.unmodifiableCollection(indexByBase32.values());
 
     public CountryRegionIndex() {
-        this("cash/xcl/api/util/country_state_codes.csv");
+        this("cash/xcl/api/util/country_state_codes.csv",
+                "cash/xcl/api/util/excluded.yaml");
     }
 
     public CountryRegionIndex(String resourceName) {
+        this(resourceName, null);
+    }
+
+    public CountryRegionIndex(String resourceName, String excludedName) {
         try {
+            Set<String> excluded;
+            if (excludedName == null)
+                excluded = Collections.emptySet();
+            else
+                excluded = new HashSet<>(Arrays.asList(Marshallable.fromFile(String[].class, excludedName)));
             CSVWire wire = new CSVWire(BytesUtil.readFile(resourceName));
             while (true) {
                 wire.consumeWhiteSpace();
@@ -26,6 +37,8 @@ public class CountryRegionIndex {
 
                 CountryRegion cr = ObjectUtils.newInstance(CountryRegion.class);
                 cr.readMarshallable(wire);
+                if (excluded.contains(cr.getRegionCode()))
+                    continue;
 //                System.out.println(cr);
                 String key = cr.regionCodeBase32();
                 indexByBase32.put(key, cr);
@@ -35,8 +48,10 @@ public class CountryRegionIndex {
                 while (search.length() > 3) {
                     search = search.substring(0, search.length() - 1);
                     CountryRegion cr2 = indexByBase32.get(search);
-                    if (cr2 != null)
+                    if (cr2 != null) {
+                        System.out.println(cr2);
                         cr2.addOverlappingSuffix(codes.substring(search.length()));
+                    }
                 }
             }
             // sort the results

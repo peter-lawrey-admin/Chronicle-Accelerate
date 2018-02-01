@@ -11,16 +11,16 @@ public class RegionAddressGeneratorTest {
 
     static CountryRegionIndex regionIndex = new CountryRegionIndex();
 
-    static RegionAddressGenerator iec = new RegionAddressGenerator(regionIndex.getRegion("IE-C"));
+    static RegionAddressGenerator ied = new RegionAddressGenerator(regionIndex.getRegion("IE-D"));
     static RegionAddressGenerator rohd = new RegionAddressGenerator(regionIndex.getRegion("RO-HD"));
     static RegionAddressGenerator gblnd = new RegionAddressGenerator(regionIndex.getRegion("GB-LND"));
-    static RegionAddressGenerator[] generators = new RegionAddressGenerator[]{iec, rohd, gblnd};
+    static RegionAddressGenerator[] generators = new RegionAddressGenerator[]{ied, rohd, gblnd};
 
     @Test
     public void testRegionPrefix() {
         assertEquals("r0hd", rohd.getRegionPrefix());
         assertEquals("gb1nd", gblnd.getRegionPrefix());
-        assertEquals("iec", iec.getRegionPrefix());
+        assertEquals("ied", ied.getRegionPrefix());
     }
 
     @Test
@@ -52,13 +52,13 @@ public class RegionAddressGeneratorTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testTooLargeValueValue() {
-        iec.newAddressFrom(iec.getMaxAddress() + 1);
+        ied.newAddressFrom(ied.getMaxAddress() + 1);
     }
 
     @Test
     public void testMaxAddressValue() {
-        long addressIe = iec.newAddressFrom(iec.getMaxAddress());
-        assertEquals("iecg00000001k", encode(addressIe));
+        long addressIe = ied.newAddressFrom(ied.getMaxAddress());
+        assertEquals("iedg00000000n", encode(addressIe));
 
         long addressRo = rohd.newAddressFrom(rohd.getMaxAddress());
         assertEquals("r0hdg0000001t", encode(addressRo));
@@ -69,7 +69,7 @@ public class RegionAddressGeneratorTest {
 
     @Test
     public void testMinAddressValue() {
-        long addressIe = iec.newAddressFrom(0);
+        long addressIe = ied.newAddressFrom(0);
         assertTrue(addressIe == AddressUtil.INVALID_ADDRESS); // Overlaps IE-CO region
 
         long addressRo = rohd.newAddressFrom(0);
@@ -105,7 +105,7 @@ public class RegionAddressGeneratorTest {
     @Test
     public void overlappingAddreses() {
         checkOverlapping("RO-B");
-        checkOverlapping("IE-C");
+        checkOverlapping("IE-D");
         checkOverlapping("MH-L");
     }
 
