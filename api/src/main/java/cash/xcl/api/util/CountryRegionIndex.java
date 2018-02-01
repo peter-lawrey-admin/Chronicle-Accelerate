@@ -1,6 +1,7 @@
 package cash.xcl.api.util;
 
 import net.openhft.chronicle.bytes.BytesUtil;
+import net.openhft.chronicle.core.Jvm;
 import net.openhft.chronicle.core.io.IORuntimeException;
 import net.openhft.chronicle.core.util.ObjectUtils;
 import net.openhft.chronicle.wire.CSVWire;
@@ -41,6 +42,8 @@ public class CountryRegionIndex {
                     continue;
 //                System.out.println(cr);
                 String key = cr.regionCodeBase32();
+                if (indexByBase32.containsKey(key))
+                    Jvm.warn().on(getClass(), "duplicate key: " + key + " for " + indexByBase32.get(key) + " and " + cr);
                 indexByBase32.put(key, cr);
             }
             for (String codes : indexByBase32.keySet()) {
