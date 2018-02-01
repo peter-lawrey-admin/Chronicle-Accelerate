@@ -719,13 +719,13 @@ Cape Verde, CV-SS, São Salvador do Mundo, CPV, CV
 Cape Verde, CV-SV, São Vicente, CPV, CV
 Cape Verde, CV-TA, Tarrafal, CPV, CV
 Cape Verde, CV-TS, Tarrafal de São Nicolau, CPV, CV
-Cayman Islands, KY-01~, Bodden Town, CYM, KY
-Cayman Islands, KY-02~, Cayman Brac, CYM, KY
-Cayman Islands, KY-03~, East End, CYM, KY
-Cayman Islands, KY-04~, George Town, CYM, KY
-Cayman Islands, Ky-05~, Little Cayman, CYM, KY
-Cayman Islands, KY-06~, North Side, CYM, KY
-Cayman Islands, KY-07~, West Bay, CYM, KY
+Cayman Islands, KY-01, Bodden Town, CYM, KY
+Cayman Islands, KY-02, Cayman Brac, CYM, KY
+Cayman Islands, KY-03, East End, CYM, KY
+Cayman Islands, KY-04, George Town, CYM, KY
+Cayman Islands, Ky-05, Little Cayman, CYM, KY
+Cayman Islands, KY-06, North Side, CYM, KY
+Cayman Islands, KY-07, West Bay, CYM, KY
 Central African Republic, CF-BB, Bamingui-Bangoran, CAF, CF
 Central African Republic, CF-BGF, Bangui, CAF, CF
 Central African Republic, CF-BK, Basse-Kotto, CAF, CF
@@ -1361,10 +1361,10 @@ France, FR-WF, Wallis et Futuna (see also separate entry under WF), FRA, FR
 France, FR-89, Yonne, FRA, FR
 France, FR-78, Yvelines, FRA, FR
 France, FR-J , Île-de-France, FRA, FR
-French Southern Territories, TF-X2~, Crozet Islands, ATF, TF
-French Southern Territories, TF-X1~, Ile Saint-Paul et Ile Amsterdam, ATF, TF
-French Southern Territories, TF-X4~, Iles Eparses, ATF, TF
-French Southern Territories, TF-X3~, Kerguelen, ATF, TF
+French Southern Territories, TF-X2, Crozet Islands, ATF, TF
+French Southern Territories, TF-X1, Ile Saint-Paul et Ile Amsterdam, ATF, TF
+French Southern Territories, TF-X4, Iles Eparses, ATF, TF
+French Southern Territories, TF-X3, Kerguelen, ATF, TF
 Gabon, GA-1, Estuaire, GAB, GA
 Gabon, GA-2, Haut-Ogooué, GAB, GA
 Gabon, GA-3, Moyen-Ogooué, GAB, GA
@@ -2248,7 +2248,7 @@ Lesotho, LS-G, Quthing, LSO, LS
 Lesotho, LS-K, Thaba-Tseka, LSO, LS
 Liberia, LR-BM, Bomi, LBR, LR
 Liberia, LR-BG, Bong, LBR, LR
-Liberia, LR-X1~, Gbarpolu, LBR, LR
+Liberia, LR-X1, Gbarpolu, LBR, LR
 Liberia, LR-GB, Grand Bassa, LBR, LR
 Liberia, LR-CM, Grand Cape Mount, LBR, LR
 Liberia, LR-GG, Grand Gedeh, LBR, LR
@@ -2258,7 +2258,7 @@ Liberia, LR-MG, Margibi, LBR, LR
 Liberia, LR-MY, Maryland, LBR, LR
 Liberia, LR-MO, Montserrado, LBR, LR
 Liberia, LR-NI, Nimba, LBR, LR
-Liberia, LR-X2~, River Gee, LBR, LR
+Liberia, LR-X2, River Gee, LBR, LR
 Liberia, LR-RI, Rivercess, LBR, LR
 Liberia, LR-SI, Sinoe, LBR, LR
 Libya, LY-BU, Al Butnan, LBY, LY
@@ -3213,7 +3213,7 @@ Philippines, PH-QUI, Quirino, PHL, PH
 Philippines, PH-RIZ, Rizal, PHL, PH
 Philippines, PH-ROM, Romblon, PHL, PH
 Philippines, PH-SAR, Sarangani, PHL, PH
-Philippines, PH-X2~, Shariff Kabunsuan, PHL, PH
+Philippines, PH-X2, Shariff Kabunsuan, PHL, PH
 Philippines, PH-SIG, Siquijor, PHL, PH
 Philippines, PH-12, Soccsksargen (Region XII), PHL, PH
 Philippines, PH-SOR, Sorsogon, PHL, PH
@@ -3274,7 +3274,7 @@ Qatar, QA-WA, Al Wakrah, QAT, QA
 Qatar, QA-RA, Ar Rayyan, QAT, QA
 Qatar, QA-ZA, Az̧ Z̧a‘āyin, QAT, QA
 Qatar, QA-MS, Madinat ash Shamal, QAT, QA
-Qatar, QA-X1~, Umm Sa'id, QAT, QA
+Qatar, QA-X1, Umm Sa'id, QAT, QA
 Qatar, QA-US, Umm Salal, QAT, QA
 Romania, RO-AB, Alba, ROU, RO
 Romania, RO-AR, Arad, ROU, RO
@@ -3349,7 +3349,7 @@ Russian Federation, RU-KK, Khakasiya Respublika, RUS, RU
 Russian Federation, RU-KHM, Khanty-Mansiyskiy avtonomnyy okrug [Yugra], RUS, RU
 Russian Federation, RU-KIR, Kirovskaya oblast', RUS, RU
 Russian Federation, RU-KO, Komi Respublika, RUS, RU
-Russian Federation, RU-X1~, Komi-Permyak, RUS, RU
+Russian Federation, RU-X1, Komi-Permyak, RUS, RU
 Russian Federation, RU-KOS, Kostromskaya oblast', RUS, RU
 Russian Federation, RU-KDA, Krasnodarskiy kray, RUS, RU
 Russian Federation, RU-KYA, Krasnoyarskiy kray, RUS, RU
@@ -3555,7 +3555,7 @@ Sierra Leone, SL-W, Western Area (Freetown), SLE, SL
 Singapore, SG-01, Central Singapore, SGP, SG
 Singapore, SG-02, North East, SGP, SG
 Singapore, SG-03, North West, SGP, SG
-Singapore, SG-X1~, Singapore - No State, SGP, SG
+Singapore, SG-X1, Singapore - No State, SGP, SG
 Singapore, SG-04, South East, SGP, SG
 Singapore, SG-05, South West, SGP, SG
 Slovakia, SK-BC, Banskobystrický kraj, SVK, SK
