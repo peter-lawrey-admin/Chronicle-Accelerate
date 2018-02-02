@@ -1,6 +1,12 @@
 = Chronicle-Accelerate
 Peter Lawrey, Sabrina Rai
 
+
+<a href="https://maven-badges.herokuapp.com/maven-central/net.openhft/chronicle-accelerate">
+<img src="https://maven-badges.herokuapp.com/maven-central/net.openhft/chronicle-accelerate/badge.svg"/>
+</a>
+
+
 == Chronicle-Accelerate (XCL)
 
 XCL is a new cryptocurrency project that, learning from the previous Blockchain implementations, aims to solve the issues limiting adoption by building an entirely new protocol that can scale to millions of transactions per second, delivering consistent  sub-second latency. Our platform will leverage AI to control volatility and liquidity, require low energy and simplify compliance with integrated KYC and AML support.
