@@ -46,6 +46,11 @@ public class XCLClient implements AllMessages, Closeable {
     }
 
     @Override
+    public void feesEvent(FeesEvent feesEvent) {
+        write(feesEvent);
+    }
+
+    @Override
     public void transferValueCommand(TransferValueCommand transferValueCommand) {
         write(transferValueCommand);
     }
@@ -63,6 +68,57 @@ public class XCLClient implements AllMessages, Closeable {
     @Override
     public void newAddressRejectedEvent(NewAddressRejectedEvent newAddressRejectedEvent) {
         write(newAddressRejectedEvent);
+    }
+
+    @Override
+    public void transferValueInformationEvent(TransferInformationEvent transferInformationEvent) {
+        write(transferInformationEvent);
+    }
+
+    @Override
+    public void transferValueRejectedEvent(TransferValueRejectedEvent transferValueRejectedEvent) {
+        write(transferValueRejectedEvent);
+    }
+
+    @Override
+    public void clusterTransferInformationEvent(ClusterTransferInformationEvent clusterTransferInformationEvent) {
+        write(clusterTransferInformationEvent);
+    }
+
+
+    @Override
+    public void clusterTransferValueRejectedEvent(ClusterTransferValueRejectedEvent clusterTransferValueRejectedEvent) {
+        write(clusterTransferValueRejectedEvent);
+    }
+
+    @Override
+    public void depositValueInformationEvent(DepositValueInformationEvent depositValueInformationEvent) {
+        write(depositValueInformationEvent);
+    }
+
+    @Override
+    public void depositValueRejectedEvent(DepositValueRejectedEvent depositValueRejectedEvent) {
+        write(depositValueRejectedEvent);
+    }
+
+    @Override
+    public void withdrawValueInformationEvent(WithdrawValueInformationEvent withdrawValueInformationEvent) {
+        write(withdrawValueInformationEvent);
+    }
+
+    @Override
+    public void withdrawValueRejectedEvent(WithdrawValueRejectedEvent withdrawValueRejectedEvent) {
+        write(withdrawValueRejectedEvent);
+    }
+
+    @Override
+    public void subscriptionSuccess(SubscriptionSuccess subscriptionSuccess) {
+        write(subscriptionSuccess);
+    }
+
+    @Override
+    public void subscriptionFailed(SubscriptionFailed subscriptionFailed) {
+        write(subscriptionFailed);
     }
 
     @Override
@@ -89,6 +145,11 @@ public class XCLClient implements AllMessages, Closeable {
     public void withdrawValueCommand(WithdrawValueCommand withdrawValueCommand) {
         write(withdrawValueCommand);
     }
+
+
+
+
+
 
     @Override
     public void subscriptionCommand(SubscriptionCommand subscriptionCommand) {

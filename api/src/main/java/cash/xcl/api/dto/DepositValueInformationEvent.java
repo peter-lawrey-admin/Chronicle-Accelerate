@@ -7,7 +7,7 @@ public class DepositValueInformationEvent extends SignedMessage {
 
     // TODO
     //private DepositValueCommand tvc;
-    private Transfer transfer;
+    private Transfer transfer = new Transfer();
 
     public DepositValueInformationEvent(long sourceAddress, long eventTime, Transfer transfer) {
         super(sourceAddress, eventTime);

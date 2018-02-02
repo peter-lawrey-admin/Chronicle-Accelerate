@@ -7,7 +7,7 @@ public class ClusterTransferInformationEvent extends SignedMessage {
 
     // TODO
     //private ClusterTransferValueCommand tvc;
-    private Transfer transfer;
+    private Transfer transfer = new Transfer();
 
     public ClusterTransferInformationEvent(long sourceAddress, long eventTime, Transfer transfer) {
         super(sourceAddress, eventTime);

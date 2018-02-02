@@ -7,7 +7,7 @@ public class TransferInformationEvent extends SignedMessage {
 
     // TODO
     //private TransferValueCommand tvc;
-    private Transfer transfer;
+    private Transfer transfer = new Transfer();
 
     public TransferInformationEvent(long sourceAddress, long eventTime, Transfer transfer) {
         super(sourceAddress, eventTime);

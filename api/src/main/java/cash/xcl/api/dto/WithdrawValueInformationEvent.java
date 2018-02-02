@@ -7,7 +7,7 @@ import net.openhft.chronicle.bytes.BytesIn;
 public class WithdrawValueInformationEvent extends SignedMessage {
     // TODO
     //private WithdrawValueCommand wvc;
-    private Transfer transfer;
+    private Transfer transfer = new Transfer();
 
     public WithdrawValueInformationEvent(long sourceAddress, long eventTime, Transfer transfer) {
         super(sourceAddress, eventTime);
