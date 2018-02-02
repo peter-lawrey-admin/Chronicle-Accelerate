@@ -8,6 +8,9 @@ import java.util.function.BiConsumer;
 import static cash.xcl.api.dto.MethodIds.*;
 
 public class DtoParser {
+    public static final int PROTOCOL_OFFSET = 80;
+    public static final int MESSAGE_OFFSET = 81;
+
     final TransactionBlockEvent tbe = new TransactionBlockEvent();
     final TreeBlockEvent treebe = new TreeBlockEvent();
     final ApplicationMessageEvent ame = new ApplicationMessageEvent();
@@ -25,37 +28,18 @@ public class DtoParser {
 
     static <T extends SignedMessage, AM> void parse(Bytes bytes, T t, AM am, BiConsumer<AM, T> tConsumer) {
         t.reset();
+        bytes.lenient(true);
         t.readMarshallable(bytes);
         tConsumer.accept(am, t);
     }
 
     public void parseOne(Bytes bytes, AllMessages messages) {
-        int protocol = bytes.readUnsignedByte(bytes.readPosition() + 80);
-        int messageType = bytes.readUnsignedByte(bytes.readPosition() + 81);
+        int protocol = bytes.readUnsignedByte(bytes.readPosition() + PROTOCOL_OFFSET);
+        int messageType = bytes.readUnsignedByte(bytes.readPosition() + MESSAGE_OFFSET);
 
         if (protocol != 1)
             throw new IllegalArgumentException("protocol: " + protocol);
 
-        /*
-            int TRANSACTION_BLOCK_EVENT = 0x01;
-    int TREE_BLOCK_EVENT = 0x02;
-    int APPLICATION_MESSAGE_EVENT = 0x03;
-    int CREATE_NEW_ADDRESS_COMMAND = 0x20;
-    int CLUSTER_TRANSFER_VALUE_COMMAND = 0x21;
-    int ADDRESS_INFORMATION_EVENT = 0x30;
-    int EXCHANGE_RATE_EVENT = 0x31;
-    int NEW_ADDRESS_REJECTED_EVENT = 0x32;
-    int OPENING_BALANCE_EVENT = 0x50;
-    int TRANSFER_VALUE_COMMAND = 0x51;
-    int DEPOSIT_VALUE_COMMAND = 0x60;
-    int WITHDRAW_VALUE_COMMAND = 0x61;
-    int NEW_MARKET_ORDER = 0x62;
-    int NEW_LIMIT_ORDER = 0x63;
-    int CANCEL_ORDER = 0x64;
-    int EXECUTION_REPORT = 0x70;
-
-    int SUBSCRIPTION_COMMAND = 0xF0;
-         */
         switch (messageType) {
             case TRANSACTION_BLOCK_EVENT:
                 parse(bytes, tbe, messages, AllMessages::transactionBlockEvent);
@@ -108,13 +92,13 @@ public class DtoParser {
             case NEW_MARKET_ORDER:
             case NEW_LIMIT_ORDER:
             case CANCEL_ORDER:
-                throw new IllegalArgumentException("Not implemented messageType: " + messageType);
+                throw new IllegalArgumentException("Not implemented messageType: " + Integer.toHexString(messageType));
 
             case SUBSCRIPTION_COMMAND:
                 parse(bytes, sc, messages, AllMessages::subscriptionCommand);
 
             default:
-                throw new IllegalArgumentException("Unknown messageType: " + messageType);
+                throw new IllegalArgumentException("Unknown messageType: " + Integer.toHexString(messageType));
 //            case NEW_MARKET_ORDER:
 //            case NEW_LIMIT_ORDER:
 //            case CANCEL_ORDER:

@@ -30,9 +30,9 @@ public abstract class SignedMessage extends AbstractBytesMarshallable {
         sourceAddress = bytes.readLong();
         eventTime = bytes.readLong();
         int protocol = bytes.readUnsignedByte();
-        assert protocol == 1;
+        assert bytes.lenient() || protocol == 1;
         int messageType = bytes.readUnsignedByte();
-        assert messageType == messageType();
+        assert bytes.lenient() || messageType == messageType();
         int padding = bytes.readUnsignedShort();
         readMarshallable2(bytes);
     }
