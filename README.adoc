@@ -1,5 +1,9 @@
 = Chronicle-Accelerate
 Peter Lawrey, Sabrina Rai
+ 
+[#image-maven]
+[caption="", link=https://maven-badges.herokuapp.com/maven-central/net.openhft/chronicle-accelerate]
+image::https://maven-badges.herokuapp.com/maven-central/net.openhft/chronicle-accelerate/badge.svg[]
 
 == Chronicle-Accelerate (XCL)
 
