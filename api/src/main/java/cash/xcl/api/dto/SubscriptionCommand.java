@@ -18,7 +18,7 @@ public class SubscriptionCommand extends SignedMessage {
     }
 
     @Override
-    protected int messageType() {
+    public int messageType() {
         return MethodIds.SUBSCRIPTION_COMMAND;
     }
 

@@ -36,7 +36,7 @@ public class ClusterTransferValueRejectedEvent extends SignedMessage {
     }
 
     @Override
-    protected int messageType() {
+    public int messageType() {
         return MethodIds.CLUSTER_TRANSFER_VALUE_REJECTED_EVENT;
     }
 

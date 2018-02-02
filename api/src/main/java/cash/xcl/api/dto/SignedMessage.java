@@ -67,7 +67,7 @@ public abstract class SignedMessage extends AbstractBytesMarshallable {
         Ed25519.sign(sigAndMsg, tempBytes, secretKey);
     }
 
-    protected abstract int messageType();
+    public abstract int messageType();
 
     protected abstract void writeMarshallable2(Bytes bytes);
 

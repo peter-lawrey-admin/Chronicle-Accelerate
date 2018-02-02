@@ -2,7 +2,6 @@ package cash.xcl.api.dto;
 
 import net.openhft.chronicle.bytes.Bytes;
 import net.openhft.chronicle.bytes.BytesIn;
-import net.openhft.chronicle.salt.Ed25519;
 
 public class FeesEvent extends SignedMessage {
 
@@ -36,7 +35,7 @@ public class FeesEvent extends SignedMessage {
     }
 
     @Override
-    protected int messageType() {
+    public int messageType() {
         return MethodIds.FEES_EVENT;
     }
 

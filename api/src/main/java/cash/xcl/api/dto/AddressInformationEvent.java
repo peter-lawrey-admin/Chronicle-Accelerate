@@ -35,7 +35,7 @@ public class AddressInformationEvent extends SignedMessage {
     }
 
     @Override
-    protected int messageType() {
+    public int messageType() {
         return MethodIds.ADDRESS_INFORMATION_EVENT;
     }
 

@@ -40,7 +40,7 @@ public class OpeningBalanceEvent extends SignedMessage {
     }
 
     @Override
-    protected int messageType() {
+    public int messageType() {
         return MethodIds.OPENING_BALANCE_EVENT;
     }
 

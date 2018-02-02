@@ -36,7 +36,7 @@ public class NewAddressRejectedEvent extends SignedMessage {
     }
 
     @Override
-    protected int messageType() {
+    public int messageType() {
         return MethodIds.NEW_ADDRESS_REJECTED_EVENT;
     }
 

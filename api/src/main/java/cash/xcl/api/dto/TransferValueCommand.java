@@ -38,7 +38,7 @@ public class TransferValueCommand extends SignedMessage {
     }
 
     @Override
-    protected int messageType() {
+    public int messageType() {
         return MethodIds.TRANSFER_VALUE_COMMAND;
     }
 

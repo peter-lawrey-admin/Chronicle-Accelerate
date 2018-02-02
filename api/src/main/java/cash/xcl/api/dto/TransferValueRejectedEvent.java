@@ -36,7 +36,7 @@ public class TransferValueRejectedEvent extends SignedMessage {
     }
 
     @Override
-    protected int messageType() {
+    public int messageType() {
         return MethodIds.TRANSFER_VALUE_REJECTED_EVENT;
     }
 

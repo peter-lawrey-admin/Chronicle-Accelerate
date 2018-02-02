@@ -49,7 +49,7 @@ public class ApplicationMessageEvent extends SignedMessage {
     }
 
     @Override
-    protected int messageType() {
+    public int messageType() {
         return MethodIds.APPLICATION_MESSAGE_EVENT;
     }
 

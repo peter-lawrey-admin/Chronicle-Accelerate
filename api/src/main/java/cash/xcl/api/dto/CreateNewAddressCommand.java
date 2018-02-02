@@ -39,7 +39,7 @@ public class CreateNewAddressCommand extends SignedMessage {
     }
 
     @Override
-    protected int messageType() {
+    public int messageType() {
         return MethodIds.CREATE_NEW_ADDRESS_COMMAND;
     }
 

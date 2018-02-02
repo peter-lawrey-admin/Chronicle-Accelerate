@@ -30,7 +30,7 @@ public class TransferInformationEvent extends SignedMessage {
     }
 
     @Override
-    protected int messageType() {
+    public int messageType() {
         return MethodIds.TRANSFER_VALUE_INFORMATION_EVENT;
     }
 

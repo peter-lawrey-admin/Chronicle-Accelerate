@@ -25,7 +25,7 @@ public class SubscriptionSuccess extends SignedMessage {
     }
 
     @Override
-    protected int messageType() {
+    public int messageType() {
         return MethodIds.SUBSCRIPTION_SUCCESS_EVENT;
     }
 }

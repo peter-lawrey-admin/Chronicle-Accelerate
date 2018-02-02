@@ -36,7 +36,7 @@ public class WithdrawValueRejectedEvent extends SignedMessage {
     }
 
     @Override
-    protected int messageType() {
+    public int messageType() {
         return MethodIds.WITHDRAW_VALUE_REJECTED_EVENT;
     }
 

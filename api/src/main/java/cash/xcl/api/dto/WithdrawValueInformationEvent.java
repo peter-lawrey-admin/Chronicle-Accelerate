@@ -30,7 +30,7 @@ public class WithdrawValueInformationEvent extends SignedMessage {
     }
 
     @Override
-    protected int messageType() {
+    public int messageType() {
         return MethodIds.WITHDRAW_VALUE_INFORMATION_EVENT;
     }
 

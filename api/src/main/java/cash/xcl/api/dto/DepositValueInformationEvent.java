@@ -30,7 +30,7 @@ public class DepositValueInformationEvent extends SignedMessage {
     }
 
     @Override
-    protected int messageType() {
+    public int messageType() {
         return MethodIds.DEPOSIT_INFORMATION_EVENT;
     }
 

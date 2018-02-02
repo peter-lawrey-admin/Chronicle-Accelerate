@@ -53,7 +53,7 @@ public class TreeBlockEvent extends SignedMessage {
     }
 
     @Override
-    protected int messageType() {
+    public int messageType() {
         return MethodIds.TREE_BLOCK_EVENT;
     }
 

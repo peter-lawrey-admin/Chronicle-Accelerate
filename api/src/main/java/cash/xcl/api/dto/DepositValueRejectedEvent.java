@@ -36,7 +36,7 @@ public class DepositValueRejectedEvent extends SignedMessage {
     }
 
     @Override
-    protected int messageType() {
+    public int messageType() {
         return MethodIds.DEPOSIT_VALUE_REJECTED_EVENT;
     }
 
