@@ -2,7 +2,6 @@ package cash.xcl.api.util;
 
 import cash.xcl.api.dto.Validators;
 import net.openhft.chronicle.core.io.IORuntimeException;
-import net.openhft.chronicle.salt.XCLBase32;
 import net.openhft.chronicle.wire.AbstractMarshallable;
 import net.openhft.chronicle.wire.WireIn;
 
