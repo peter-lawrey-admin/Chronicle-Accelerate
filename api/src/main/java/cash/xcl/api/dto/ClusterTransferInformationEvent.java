@@ -31,7 +31,7 @@ public class ClusterTransferInformationEvent extends SignedMessage {
 
     @Override
     public int messageType() {
-        return MethodIds.TRANSFER_VALUE_INFORMATION_EVENT;
+        return MethodIds.CLUSTER_TRANSFER_INFORMATION_EVENT;
     }
 
 
