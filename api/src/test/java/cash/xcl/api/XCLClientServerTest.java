@@ -1,4 +1,5 @@
-import cash.xcl.api.*;
+package cash.xcl.api;
+
 import cash.xcl.api.dto.CreateNewAddressCommand;
 import net.openhft.chronicle.bytes.Bytes;
 import net.openhft.chronicle.core.Jvm;
