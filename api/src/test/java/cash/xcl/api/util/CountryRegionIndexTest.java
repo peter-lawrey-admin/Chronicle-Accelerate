@@ -22,31 +22,25 @@ public class CountryRegionIndexTest {
 
     @Test
     public void bannedSuffixes() {
-        /*
+/*
         Set<String> conflicts = new TreeSet<>(Arrays.asList((
                 "EC-S, EG-MN, EG-SU, ES-A, ES-B, ES-C, ES-H, ES-L, ES-M, ES-O, ES-P, ES-S, ES-T, ES-V, ES-Z, GR-L, IE-D, RO-B, RU-AL, RU-KL, RU-KO, RU-KR, RU-MO, RU-SA, RU-TA, RU-TY").split(", ")));
         for (String conflict : conflicts) {
-            System.out.println("assertEquals(\""+Arrays.toString(index.getRegion(conflict).getOverlappedSuffixes())+"\", Arrays.toString(index.getRegion(\""+conflict+"\").getOverlappedSuffixes()));");
+            CountryRegion region = index.getRegion(conflict);
+            if (region == null) continue;
+            String[] overlappedSuffixes = region.getOverlappedSuffixes();
+            if (overlappedSuffixes == null)
+                continue;
+            System.out.println("assertEquals(\""+Arrays.toString(overlappedSuffixes)+"\", Arrays.toString(index.getRegion(\""+conflict+"\").getOverlappedSuffixes()));");
         }
         System.out.println(conflicts);
-        */
+*/
+
         assertTrue(index.getRegion("GB-LND").getOverlappedSuffixes().length == 0);
         assertTrue(index.getRegion("RO-AB").getOverlappedSuffixes().length == 0);
         assertEquals("[d, e]", Arrays.toString(index.getRegion("EC-S").getOverlappedSuffixes()));
         assertEquals("[f]", Arrays.toString(index.getRegion("EG-MN").getOverlappedSuffixes()));
         assertEquals("[z]", Arrays.toString(index.getRegion("EG-SU").getOverlappedSuffixes()));
-        assertEquals("[1, b, n, r, s, v]", Arrays.toString(index.getRegion("ES-A").getOverlappedSuffixes()));
-        assertEquals("[a, i, u]", Arrays.toString(index.getRegion("ES-B").getOverlappedSuffixes()));
-        assertEquals("[0, 1, a, b, c, e, m, n, r, s, t, u]", Arrays.toString(index.getRegion("ES-C").getOverlappedSuffixes()));
-        assertEquals("[u]", Arrays.toString(index.getRegion("ES-H").getOverlappedSuffixes()));
-        assertEquals("[0, e, u]", Arrays.toString(index.getRegion("ES-L").getOverlappedSuffixes()));
-        assertEquals("[1, a, c, d, u]", Arrays.toString(index.getRegion("ES-M").getOverlappedSuffixes()));
-        assertEquals("[r]", Arrays.toString(index.getRegion("ES-O").getOverlappedSuffixes()));
-        assertEquals("[0, m, v]", Arrays.toString(index.getRegion("ES-P").getOverlappedSuffixes()));
-        assertEquals("[0, a, e, g, s]", Arrays.toString(index.getRegion("ES-S").getOverlappedSuffixes()));
-        assertEquals("[0, e, f]", Arrays.toString(index.getRegion("ES-T").getOverlappedSuffixes()));
-        assertEquals("[a, c, i]", Arrays.toString(index.getRegion("ES-V").getOverlappedSuffixes()));
-        assertEquals("[a]", Arrays.toString(index.getRegion("ES-Z").getOverlappedSuffixes()));
         assertEquals("[3, 7]", Arrays.toString(index.getRegion("GR-L").getOverlappedSuffixes()));
         assertEquals("[1]", Arrays.toString(index.getRegion("IE-D").getOverlappedSuffixes()));
         assertEquals("[c, h, n, r, t, v, z]", Arrays.toString(index.getRegion("RO-B").getOverlappedSuffixes()));
