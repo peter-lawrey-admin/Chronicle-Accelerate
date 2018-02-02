@@ -36,4 +36,6 @@ public interface MethodIds {
     int SUBSCRIPTION_COMMAND = 0xF0;
     int SUBSCRIPTION_SUCCESS_EVENT = 0xF1;
     int SUBSCRIPTION_FAILED_EVENT = 0xF2;
+
+    int FEES_EVENT = 0xF3;
 }
