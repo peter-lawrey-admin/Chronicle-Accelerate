@@ -36,6 +36,21 @@ public class MockGateway implements ClientOut, ServerOut {
     }
 
     @Override
+    public void newLimitOrderCommand(NewLimitOrderCommand newLimitOrderCommand) {
+        mockServer.newLimitOrderCommand(newLimitOrderCommand);
+    }
+
+    @Override
+    public void newMarketOrderCommand(NewMarketOrderCommand newMarketOrderCommand) {
+        mockServer.newMarketOrderCommand(newMarketOrderCommand);
+    }
+
+    @Override
+    public void cancelOrderCommand(CancelOrderCommand cancelOrderCommand) {
+        mockServer.cancelOrderCommand(cancelOrderCommand);
+    }
+
+    @Override
     public void createNewAddressEvent(CreateNewAddressEvent createNewAddressEvent) {
         clientIn.createNewAddressEvent(createNewAddressEvent);
     }

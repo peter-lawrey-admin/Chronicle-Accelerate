@@ -79,6 +79,21 @@ public class MockServer implements ServerIn {
     }
 
     @Override
+    public void newLimitOrderCommand(NewLimitOrderCommand newLimitOrderCommand) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void newMarketOrderCommand(NewMarketOrderCommand newMarketOrderCommand) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void cancelOrderCommand(CancelOrderCommand cancelOrderCommand) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public void close() {
         throw new UnsupportedOperationException();
     }

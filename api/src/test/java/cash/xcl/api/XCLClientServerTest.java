@@ -47,7 +47,6 @@ public class XCLClientServerTest {
                 "  sourceAddress: 2,\n" +
                 "  eventTime: 0,\n" +
                 "  publicKey: !!binary O2onvM62pC1io6jQKm8Nc2UyFXcd4kOmOsBIoYtZ2ik=,\n" +
-                "  sourceIP: \"\",\n" +
                 "  region: usny\n" +
                 "}\n" +
                 "]\n", out.toString()

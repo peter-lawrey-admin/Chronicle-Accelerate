@@ -62,6 +62,7 @@ public class MockGatewayTest {
                 "  address: -7810898871858203435,\n" +
                 "  publicKey: !!binary AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=\n" +
                 "}\n" +
-                "]\n", out.toString());
+                "]\n", out.toString()
+                .replaceAll("\r", ""));
     }
 }
