@@ -17,4 +17,25 @@ public interface WeeklyEvents extends Closeable {
 
     void openingBalanceEvent(OpeningBalanceEvent openingBalanceEvent);
 
+
+    // FIXME work in progress - move me to the correct interface
+    void clusterStatusQuery(ClusterStatusQuery clusterStatusQuery);
+//    void clusterStatusResponse(ClusterStatusResponse clusterStatusResponse);
+
+    void clustersStatusQuery(ClustersStatusQuery clustersStatusQuery);
+    //    void clustersStatusResponse(ClustersStatusResponse clustersStatusResponse);
+
+    void currentBalanceEvent(CurrentBalanceEvent currentBalanceEvent);
+    void currentBalanceQuery(CurrentBalanceQuery currentBalanceQuery);
+//    void currentBalanceResponse(CurrentBalanceResponse currentBalanceResponse);
+
+    void exchangeRateQuery(ExchangeRateQuery exchangeRateQuery);
+//    void exchangeRateResponse(ExchangeRateResponse exchangeRateResponse);
+
+    void executionReportEvent(ExecutionReportEvent executionReportEvent);
+
+    void newLimitOrderCommand(NewLimitOrderCommand newLimitOrderCommand);
+    void newMarketOrderCommand(NewMarketOrderCommand newMarketOrderCommand);
+
+
 }

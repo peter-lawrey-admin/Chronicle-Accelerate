@@ -15,7 +15,7 @@ public class DtoParser {
     final TreeBlockEvent treebe = new TreeBlockEvent();
     final OpeningBalanceEvent obe = new OpeningBalanceEvent();
     final FeesEvent fe = new FeesEvent();
-    final ExchangeRateEvent ere = new ExchangeRateEvent();
+
 
     final ApplicationMessageEvent ame = new ApplicationMessageEvent();
     final CommandFailedEvent cfe = new CommandFailedEvent();
@@ -40,6 +40,38 @@ public class DtoParser {
 
     final SubscriptionQuery sq = new SubscriptionQuery();
     final SubscriptionSuccessResponse ss = new SubscriptionSuccessResponse();
+
+
+    // Cluster
+    final ClusterStatusQuery csq = new ClusterStatusQuery();
+
+    //ClusterS
+    final ClustersStatusQuery cSq = new ClustersStatusQuery();
+
+    // CurrentBalance
+    final CurrentBalanceQuery cbq = new CurrentBalanceQuery();
+    final CurrentBalanceEvent cbe = new CurrentBalanceEvent();
+
+    // ExchangeRate
+    final ExchangeRateQuery erq = new ExchangeRateQuery();
+    final ExchangeRateEvent ere = new ExchangeRateEvent();
+
+    // Orders
+    final NewLimitOrderCommand nloc = new NewLimitOrderCommand();
+    final NewMarketOrderCommand nmoc = new NewMarketOrderCommand();
+
+    // ExecutionReport
+    final ExecutionReportEvent execre = new ExecutionReportEvent();
+
+    // FIXME
+//    ClusterStatusResponse
+//    ClustersStatusResponse
+//    CurrentBalanceResponse
+//    ExchangeRateResponse
+
+
+
+
 
     static <T extends SignedMessage, AM> void parse(Bytes bytes, T t, AM am, BiConsumer<AM, T> tConsumer) {
         t.reset();
@@ -135,6 +167,18 @@ public class DtoParser {
                 parse(bytes, ss, messages, AllMessages::subscriptionSuccessResponse);
                 break;
 
+            case CURRENT_BALANCE_RESPONSE:
+                parse(bytes, ss, messages, AllMessages::subscriptionSuccessResponse);
+                break;
+
+            case EXCHANGE_RATE_RESPONSE:
+                parse(bytes, ss, messages, AllMessages::subscriptionSuccessResponse);
+                break;
+
+            case CLUSTER_STATUS_RESPONSE:
+                parse(bytes, ss, messages, AllMessages::subscriptionSuccessResponse);
+                break;
+
             // deposit value
             case DEPOSIT_VALUE_COMMAND:
                 parse(bytes, dvc, messages, AllMessages::depositValueCommand);
@@ -153,18 +197,60 @@ public class DtoParser {
                 parse(bytes, wve, messages, AllMessages::withdrawValueEvent);
                 break;
 
+
+            // Cluster
+            case CLUSTER_STATUS_QUERY:
+                parse(bytes, csq, messages, AllMessages::clusterStatusQuery);
+                break;
+
+            //ClusterS
+            case CLUSTERS_STATUS_QUERY:
+                parse(bytes, cSq, messages, AllMessages::clustersStatusQuery);
+                break;
+
+            case CLUSTERS_STATUS_RESPONSE:
+                parse(bytes, ss, messages, AllMessages::subscriptionSuccessResponse);
+                break;
+
+
+            // CurrentBalance
+            case CURRENT_BALANCE_EVENT:
+                parse(bytes, cbe, messages, AllMessages::currentBalanceEvent);
+                break;
+
+            case CURRENT_BALANCE_QUERY:
+                parse(bytes, cbq, messages, AllMessages::currentBalanceQuery);
+                break;
+
+            // ExchangeRate
+            case EXCHANGE_RATE_QUERY:
+                parse(bytes, erq, messages, AllMessages::exchangeRateQuery);
+                break;
+
+            // Orders
             case NEW_MARKET_ORDER_COMMAND:
+                parse(bytes, nmoc, messages, AllMessages::newMarketOrderCommand);
+                break;
+
             case NEW_LIMIT_ORDER_COMMAND:
+                parse(bytes, nloc, messages, AllMessages::newLimitOrderCommand);
+                break;
+
+            //ExecutionReport
+            case EXECUTION_REPORT:
+                parse(bytes, execre, messages, AllMessages::executionReportEvent);
+                break;
+
+
             case CANCEL_ORDER_COMMAND:
                 throw new IllegalArgumentException("Not implemented messageType: " + Integer.toHexString(messageType));
 
 
+
             default:
                 throw new IllegalArgumentException("Unknown messageType: " + Integer.toHexString(messageType));
-//            case NEW_MARKET_ORDER:
-//            case NEW_LIMIT_ORDER:
 //            case CANCEL_ORDER:
-//            case EXECUTION_REPORT:
+
         }
     }
 }

@@ -19,4 +19,7 @@ public interface ServerOut extends Closeable {
     void clusterTransferStep3Command(ClusterTransferStep3Command clusterTransferStep3Command);
 
     void clusterTransferStep3Event(ClusterTransferStep3Event clusterTransferStep3Event);
+
+
+
 }

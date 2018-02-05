@@ -140,6 +140,33 @@ public class XCLClient implements AllMessages, Closeable {
         write(subscriptionQuery);
     }
 
+    @Override
+    public void clusterStatusQuery(ClusterStatusQuery clusterStatusQuery) {
+        write(clusterStatusQuery);
+    }
+
+    @Override
+    public void clustersStatusQuery(ClustersStatusQuery clustersStatusQuery) {write(clustersStatusQuery); }
+
+    @Override
+    public void currentBalanceEvent(CurrentBalanceEvent currentBalanceEvent) {write(currentBalanceEvent); }
+
+    @Override
+    public void currentBalanceQuery(CurrentBalanceQuery currentBalanceQuery) {write(currentBalanceQuery); }
+
+    @Override
+    public void exchangeRateQuery(ExchangeRateQuery exchangeRateQuery) {write(exchangeRateQuery); }
+
+    @Override
+    public void executionReportEvent(ExecutionReportEvent executionReportEvent) {write(executionReportEvent); }
+
+    @Override
+    public void newLimitOrderCommand(NewLimitOrderCommand newLimitOrderCommand) {write(newLimitOrderCommand); }
+
+    @Override
+    public void newMarketOrderCommand(NewMarketOrderCommand newMarketOrderCommand) {write(newMarketOrderCommand); }
+
+
     private void write(SignedMessage message) {
         try {
             if (!message.hasSignature()) {

@@ -1,7 +1,6 @@
 package cash.xcl.api;
 
 import cash.xcl.api.dto.DtoParser;
-import cash.xcl.api.dto.MethodIds;
 import cash.xcl.api.dto.SignedMessage;
 import cash.xcl.net.TCPConnection;
 import cash.xcl.net.TCPServer;
@@ -15,6 +14,9 @@ import net.openhft.chronicle.core.io.IORuntimeException;
 import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
+import static cash.xcl.api.dto.DtoParser.MESSAGE_OFFSET;
+import static cash.xcl.api.dto.MethodIds.*;
 
 public class XCLServer implements Closeable {
     final ThreadLocal<Bytes> bytesTL = ThreadLocal.withInitial(Bytes::allocateElasticDirect);
@@ -69,8 +71,12 @@ public class XCLServer implements Closeable {
         public void onMessage(TCPServer server, TCPConnection channel, Bytes bytes) throws IOException {
             try {
                 long address = bytes.readLong(bytes.readPosition() + 64);
-                long messageType = bytes.readUnsignedByte(bytes.readPosition() + 81);
-                if (messageType == MethodIds.SUBSCRIPTION_QUERY) {
+                long messageType = bytes.readUnsignedByte(bytes.readPosition() + MESSAGE_OFFSET);
+                if (    messageType == SUBSCRIPTION_QUERY ||
+                        messageType == CURRENT_BALANCE_QUERY ||
+                        messageType == EXCHANGE_RATE_QUERY ||
+                        messageType == CLUSTER_STATUS_QUERY ||
+                        messageType == CLUSTERS_STATUS_QUERY) {
                     connections.put(address, channel);
                 }
 

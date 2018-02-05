@@ -41,7 +41,7 @@ public class CurrentBalanceEvent extends SignedMessage {
 
     @Override
     public int messageType() {
-        return MethodIds.OPENING_BALANCE_EVENT;
+        return MethodIds.CURRENT_BALANCE_EVENT;
     }
 
     public long address() {

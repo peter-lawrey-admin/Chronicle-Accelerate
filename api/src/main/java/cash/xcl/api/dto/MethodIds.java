@@ -21,6 +21,7 @@ public interface MethodIds {
     int OPENING_BALANCE_EVENT = 0x03;
     int FEES_EVENT = 0x04;
     int EXCHANGE_RATE_EVENT = 0x05;
+    int CURRENT_BALANCE_EVENT = 0x06;
 
     // runtime events
     int APPLICATION_MESSAGE_EVENT = 0x10;
