@@ -1,13 +1,13 @@
 = XCL Block Chain
 Peter Lawrey
 
-The XCL Block Chain is an ordered collection of messages as commands and events. It's structure contains
+The XCL Block Chain is an ordered collection of messages as commands and events. It's structure contains:
 
 - Signed Messages.
 - A Transaction Block which is a list of messages.
 - A Tree Block which describes the order of these blocks.
 
-All data is in little endian. All strings uses UTF-8 encoding.
+All data is in little endian. All strings use UTF-8 encoding.
 
 NOTE: Events must come from a trusted source.
 i.e. a recognised node in the current cluster, or a recognised node in the previous week's cluster.
@@ -18,77 +18,79 @@ Message types are defined in the https://github.com/OpenHFT/Chronicle-Accelerate
 
 === Signed Messages
 
-Messages are written are either commands (an instruction to take an action which might be rejected), or events (something which has happened, might not need an action but cannot be rejected)
+Messages written are either commands (an instruction to take an action which might be rejected), or events (something which has happened, might not need an action but cannot be rejected).
 
-The message format looks like
+The message format looks like:
 
 |===
-| byte offset | field
+| Byte offset | Field
 | 0 - 63 | Signature
-| 64 - 71 | source address
-| 72 - 79 | event timestamp
-| 80 - 80 | protocol version == 1 (1)
-| 81 - 81 | message type (for version)
-| 82 - 83 | week number
-| 84 - 87 | block in week for source
-| 84+ | the rest of the message depending on the message type
+| 64 - 71 | Source address
+| 72 - 79 | Event timestamp
+| 80 - 80 | Protocol version == 1 (1.)
+| 81 - 81 | Message type (for version)
+| 82 - 83 | Week number
+| 84 - 87 | Block in week for source
+| 84+ | The rest of the message depending on the message type
 |===
-<1> In future, two protocol versions might be supported while an old one is deprecated
+<1> In the future, two protocol versions might be supported while an old one is deprecated.
 
 
 === Transaction Block (message type = 0x01)
 
-The transaction block is a signed message which contains zero or more messages
+The transaction block is a signed message which contains zero or more messages.
 
 |===
-| byte offset | field
+| Byte offset | Field
 | 0 - 81 | Message header
-| 82 - 83 | week number
-| 84 - 87 | block in week for source (1.)
-| 88 - 89 | the first message length
-| 90+ | the first message
-| later | additional messages
+| 82 - 83 | Week number
+| 84 - 87 | Block in week for source (1.)
+| 88 - 89 | The first message length
+| 90+ | The first message
+| Later | Additional messages
 |===
-<1> Allows for 4 billion blocks per week per source.
+<1> Allows for 4 billion blocks per week, per source.
 
 Within the transaction block, each message is preceded by a message length which is 2 byte unsigned length.
 
 === Tree Block (message type = 0x02)
 
-The transaction block is a signed message which contains zero or more messages
+The transaction block is a signed message which contains zero or more messages.
 
 |===
-| byte offset | field
+| Byte offset | Field
 | 0 - 81 | Message header
-| 82 - 83 | week number
-| 84 - 87 | block in week for source
-| 88 - 95 | the first source address
-| 96 - 99 | the first block number
-| 100 - 103 | the first block status (1)
-| 104+ | any additional block entries
+| 82 - 83 | Week number
+| 84 - 87 | Block in week for source
+| 88 - 95 | The first source address
+| 96 - 99 | The first block number
+| 100 - 103 | The first block status (1.)
+| 104+ | Any additional block entries
 |===
 <1> The block status records how many times it has been replicated and whether it was timed out or not.
 
 === Opening Balance Event (0x03)
 
-This event holds to opening balance for an address at the start of the week.
+This event holds the opening balance for an address at the start of the week.
 It is also the event produced at the end of the week to record the balance.
 
-This message is an event to set the initial state of an address.
-This message is dumped as part of the snap shot at the end of each week and loaded at the start of the next week.
-This is message must come from a trusted source or it will be rejected.
+This message: 
 
-The message contains
+ - is an event to set the initial state of an address.
+ - is dumped as part of the snap shot at the end of each week and loaded at the start of the next week.
+ - must come from a trusted source or it will be rejected.
+
+The message contains:
 
 - the list of currencies and balances
 
 === Fees Event (0x04)
 
-This event records the free structure determined by the AI at the start of the week.
+This event records the fee structure determined by the AI at the start of the week.
 
 === Exchange Rates Event (0x05)
 
-This event lists all the weekly exchange rates with mid price. This is used to calculate fees when the balance is in other currencies.
+This event lists all the weekly exchange rates with mid price. It is used to calculate fees when the balance is in other currencies.
 
 == Runtime events
 
@@ -98,11 +100,11 @@ These events can occur at any time and on any chain.
 
 This event records that something went wrong, most likely unable to be handled automatically.
 
-When an event fails to be processed it could trigger one of these events.
+When an event fails to be processed, it could trigger one of these events.
 
 === Command Failed Message Event (0x11)
 
-This event records that an error occurs processing a command in a way which might be processed automatically.
+This event records that an error occured processing a command in a way which might be processed automatically.
 
 When a command fails to be processed it could trigger one of these events.
 
@@ -114,11 +116,13 @@ When a query fails to be processed it could trigger one of these events.
 
 == Main Chain Commands
 
+// todo add description of what this message means
+
 Range 0x20 - 0x2f
 
 === Create New Address Command (0x20)
 
-This message requests that a new account be created. This includes the public key and the region in which to create the address
+This message requests that a new account be created. This includes the public key and the region in which to create the address:
 
 |===
 | Success | Error
@@ -127,17 +131,18 @@ This message requests that a new account be created. This includes the public ke
 
 === Cluster Transfer Value Step1 Command (0x21)
 
-This message is a command to withdrawValueCommand value from one cluster to another via the main chain.
+This message is a command to withdrawValueCommand value from one cluster to another, via the main chain.
 
-The first step is to approve money be taken out of an account in one region/cluster
+The first step is to approve money be taken out of an account in one region/cluster.
 
 |===
 | Success | Error
 | Cluster Transfer Value Step2 Command (0x22) | Command Failed Event (0x11)
 |===
+
 === Cluster Transfer Value Step2 Command (0x22)
 
-This message is a command to withdrawValueCommand value from one cluster to another via the main chain.
+This message is a command to withdrawValueCommand value from one cluster to another, via the main chain.
 
 The second step is to pass the withdrawValueCommand between clusters via the main chain.
 
@@ -170,28 +175,42 @@ This message is a query for all the known clusters and the services they provide
 
 == Main Chain Events
 
+// todo add description of what this message means
+
 Range 0x30 - 0x3f
 
 === Create New Address Event (0x30)
 
-This message is an event from the main chain to set the reference information of an address.
-This message is dumped as part of the snap shot at the end of each week and loaded at the start of the next week.
-This is message must come from the main chain or it will be rejected.
+This message:
 
-This message includes
+ - is an event from the main chain to set the reference information of an address.
+ - is dumped as part of the snap shot at the end of each week and loaded at the start of the next week.
+ - must come from the main chain or it will be rejected.
 
-- the public key of the address
+The message includes:
+
+- the public key of the address.
 - the list of verifiable facts about the account.
+
+// todo add table showing example of success and error if needed
 
 === Cluster Transfer Step3 Event (0x33)
 
-Value was successful added to an address after transferring it from another cluster.
+Value was successfully added to an address after transferring it from another cluster.
+
+// todo add table showing example of success and error if needed
 
 === Clusters Status Response (0x3f)
 
 A message detailing all the known clusters, their services and their host connection details.
 
+// todo add table showing example of success and error if needed
+
 == Regional Chain Commands
+
+// todo add description of what this message means
+
+// todo add table showing example of success and error if needed
 
 Range 0x40 - 0x4f
 
@@ -199,7 +218,7 @@ Range 0x40 - 0x4f
 
 This message is a command to withdrawValueCommand value from one address to another in the same chain.
 
-The first step is to approve money be taken out of an account in one region/cluster
+The first step is to approve money be taken out of an account in one region/cluster.
 
 |===
 | Success | Error
@@ -208,12 +227,16 @@ The first step is to approve money be taken out of an account in one region/clus
 
 === Subscription Query (0x4c)
 
+// todo add descripton of what this messages means
+
 |===
 | Success | Error
 | Subscription Success Response (0x5c) | Query Failed Response (0x12)
 |===
 
 === Current Balance Query (0x4d)
+
+// todo add descripton of what this messages means
 
 |===
 | Success | Error
@@ -222,6 +245,8 @@ The first step is to approve money be taken out of an account in one region/clus
 
 === Exchange Rate Query (0x4e)
 
+// todo add descripton of what this messages means
+
 |===
 | Success | Error
 | Exchange Rate Response (0x5e) | Query Failed Response (0x12)
@@ -229,8 +254,7 @@ The first step is to approve money be taken out of an account in one region/clus
 
 === Cluster Status Query (0x4f)
 
-The status of the nodes in the current cluster
-
+The status of the nodes in the current cluster.
 
 |===
 | Success | Error
@@ -239,21 +263,47 @@ The status of the nodes in the current cluster
 
 == Regional Chain Events
 
+// todo add description of what this message means
+
+// todo add table showing example of success and error
+
 Range 0x50 - 0x5f
 
 === Transfer Value Event (0x50)
 
 This message is a command to withdrawValueCommand value from one address to another.
 
+// todo add table showing example of success and error
+
 === Subscription Success Response (0x5c)
+
+// todo add descripton of what this messages means
+
+// todo add table showing example of success and error
 
 === Current Balance Response (0x5d)
 
+// todo add descripton of what this messages means
+
+// todo add table showing example of success and error
+
 === Exchange Rate Response (0x5e)
+
+// todo add descripton of what this messages means
+
+// todo add table showing example of success and error
 
 === Cluster Status Response (0x5f)
 
+// todo add descripton of what this messages means
+
+// todo add table showing example of success and error
+
 == Service Chain Commands
+
+// todo add descripton of what this messages means
+
+// todo add table showing example of success and error
 
 Range 0x60 - 0x6f
 
@@ -277,16 +327,42 @@ This message is a command to withdrawValueCommand value from one address to anot
 
 === Market Order to Buy/Sell XCL (0x62)
 
+// todo add descripton of what this messages means
+
+// todo add table showing example of success and error
+
 === Limit Order to Buy/Sell XCL (0x63)
+
+// todo add descripton of what this messages means
+
+// todo add table showing example of success and error
 
 === Cancel Order to Buy/Sell XCL (0x64)
 
+// todo add descripton of what this messages means
+
+// todo add table showing example of success and error
+
 == Service Chain Events
+
+// todo add descripton of what this messages means
+
+// todo add table showing example of success and error
 
 Range 0x70 - 0x7f
 
 === Deposit Value Event (0x70)
 
+// todo add descripton of what this messages means
+
+// todo add table showing example of success and error
+
 === Withdraw Value Event (0x71)
 
+// todo add descripton of what this messages means
+
 === Execution Report to Buy/Sell XCL (0x72)
+
+// todo add descripton of what this messages means
+
+// todo add table showing example of success and error
