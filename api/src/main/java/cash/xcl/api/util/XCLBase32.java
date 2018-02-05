@@ -31,6 +31,16 @@ public enum XCLBase32 {
         PARSING[Character.toUpperCase(ch)] = i;
     }
 
+    public static String encode(long value) {
+        StringBuilder sb = new StringBuilder(14);
+        do {
+            int digit = (int) (value >>> 59);
+            sb.append(ENCODING[digit]);
+            value <<= 5;
+        } while (value != 0);
+        return sb.toString();
+    }
+
     public static void encode(Bytes<?> bytes, long value) {
         do {
             int digit = (int) (value >>> 59);
