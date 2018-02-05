@@ -14,4 +14,11 @@
     <description>Chronicle-Accelerate Server</description>
 
 
+    <dependencies>
+        <dependency>
+            <groupId>cash.xcl</groupId>
+            <artifactId>api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
 </project>

@@ -29,7 +29,7 @@
         <module>net</module>
         <module>api</module>
         <!--<module>client</module>-->
-        <!--<module>server</module>-->
+        <module>server</module>
     </modules>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>parent-pom</artifactId>

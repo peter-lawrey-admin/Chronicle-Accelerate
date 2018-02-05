@@ -6,7 +6,7 @@ public enum AddressUtil {
     ;
     public static final int CHECK_NUMBER = 37;
     private static final ThreadLocal<Bytes<?>> bytesCache = ThreadLocal.withInitial(() -> Bytes.elasticByteBuffer(14));
-    public static final long INVALID_ADDRESS = decode("23456"); // no country will ever have a 2 char code 23 and 456 region
+    public static final long INVALID_ADDRESS = decode("0"); // multiples of 16 are reserved
 
     public static String encode(long address) {
         Bytes<?> addressAsBytes = bytesCache.get().clear();
@@ -19,7 +19,9 @@ public enum AddressUtil {
     }
 
     public static boolean isValid(long address) {
-        return address % CHECK_NUMBER == 0;
+        return address >= 0
+                ? address % CHECK_NUMBER == 0
+                : address % CHECK_NUMBER == -12; // number has overflown so need to check as if unsigned.
     }
 
     public static boolean isReserved(long address) {

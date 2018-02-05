@@ -6,13 +6,11 @@ import net.openhft.chronicle.salt.Ed25519;
 
 public class CreateNewAddressCommand extends SignedMessage {
     private Bytes publicKey;
-    private String sourceIP;
     private String region;
 
-    public CreateNewAddressCommand(long sourceAddress, long eventTime, Bytes publicKey, String sourceIP, String region) {
+    public CreateNewAddressCommand(long sourceAddress, long eventTime, Bytes publicKey, String region) {
         super(sourceAddress, eventTime);
         this.publicKey = publicKey;
-        this.sourceIP = sourceIP;
         this.region = region;
     }
 
@@ -26,7 +24,6 @@ public class CreateNewAddressCommand extends SignedMessage {
         publicKey.clear();
         bytes.read(publicKey, Ed25519.PUBLIC_KEY_LENGTH);
 
-        sourceIP = bytes.readUtf8();
         region = bytes.readUtf8();
     }
 
@@ -34,7 +31,6 @@ public class CreateNewAddressCommand extends SignedMessage {
     protected void writeMarshallable2(Bytes bytes) {
         bytes.write(publicKey);
 
-        bytes.writeUtf8(sourceIP == null ? "" : sourceIP);
         bytes.writeUtf8(region);
     }
 
@@ -49,15 +45,6 @@ public class CreateNewAddressCommand extends SignedMessage {
 
     public CreateNewAddressCommand publicKey(Bytes publicKey) {
         this.publicKey = publicKey;
-        return this;
-    }
-
-    public String sourceIP() {
-        return sourceIP;
-    }
-
-    public CreateNewAddressCommand sourceIP(String sourceIP) {
-        this.sourceIP = sourceIP;
         return this;
     }
 

@@ -10,6 +10,8 @@ import cash.xcl.api.dto.*;
  */
 public interface ClientIn {
 
+    void commandFailedEvent(CommandFailedEvent commandFailedEvent);
+
     void queryFailedResponse(QueryFailedResponse queryFailedResponse);
 
     void createNewAddressEvent(CreateNewAddressEvent createNewAddressEvent);
