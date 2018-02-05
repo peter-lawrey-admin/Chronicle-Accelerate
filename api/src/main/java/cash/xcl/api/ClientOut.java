@@ -16,5 +16,6 @@ public interface ClientOut extends Closeable {
 
     void clusterTransferStep1Command(ClusterTransferStep1Command clusterTransferStep1Command);
 
+    // client only.
     void subscriptionQuery(SubscriptionQuery subscriptionQuery);
 }

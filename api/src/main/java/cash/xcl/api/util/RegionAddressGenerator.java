@@ -7,8 +7,6 @@ import static cash.xcl.api.util.AddressUtil.*;
 
 public class RegionAddressGenerator {
 
-    private static final ThreadLocalRandom random = ThreadLocalRandom.current();
-
     private final String regionCode;
     private final long maxAddress;
     private final long regionPrefix;
@@ -17,10 +15,10 @@ public class RegionAddressGenerator {
     private final long shiftedRegionPrefix;
 
     private final byte[] shiftCountsForBanned;
-    private final long[] bannedSuffixes;
+    final long[] bannedSuffixes;
 
-    RegionAddressGenerator(CountryRegion region) {
-        this.regionCode = region.getRegionCode().replace("-", "");
+    public RegionAddressGenerator(CountryRegion region) {
+        this.regionCode = XCLBase32.normalize(region.getRegionCode());
         this.regionPrefix = decode(regionCode);
         this.shiftCount = shiftCountFor(regionCode.length());
         this.shiftedRegionPrefix = regionPrefix >>> shiftCount;
@@ -34,20 +32,16 @@ public class RegionAddressGenerator {
             shiftCountsForBanned[i] = shiftCountFor(bannedAddressSufix.length());
             bannedSuffixes[i] = decode(bannedAddressSufix) >>> shiftCountsForBanned[i];
         }
-        int bitsForRegion = regionCode.length() * 5;
-        int maxAddressBits = Long.SIZE - 1 - bitsForRegion;
-        this.maxAddress = 1L << maxAddressBits;
+        this.maxAddress = 1L << shiftCount;
     }
 
-    long newAddressFrom(long value) {
-        if (value > maxAddress) {
-            throw new IllegalArgumentException();
-        }
-        if (value < 0) {
-            throw new IllegalArgumentException();
-        }
-        long newAddress = regionPrefix | value;
-        newAddress -= newAddress % CHECK_NUMBER;
+    long newAddressFrom(long seed) {
+        long address = seed & (maxAddress - 1);
+        long newAddress = regionPrefix + address;
+        newAddress -= UnsignedLong.mod(newAddress, CHECK_NUMBER);
+        if (newAddress < regionPrefix)
+            newAddress += CHECK_NUMBER;
+
         if (isValid(newAddress) && !isReserved(newAddress) && doesNotOverlap(newAddress)) {
             return newAddress;
         } else {
@@ -65,14 +59,15 @@ public class RegionAddressGenerator {
     }
 
     public long newAddress() {
-        long address = newAddressFrom(random.nextLong(maxAddress));
-        while (address == INVALID_ADDRESS) {
+        ThreadLocalRandom random = ThreadLocalRandom.current();
+        long address;
+        do {
             address = newAddressFrom(random.nextLong(maxAddress));
-        }
+        } while (address == INVALID_ADDRESS);
         return address;
     }
 
-    public boolean isAddresFromRegion(long address) {
+    public boolean isAddressFromRegion(long address) {
         return ((address >>> shiftCount) == shiftedRegionPrefix) && doesNotOverlap(address);
     }
 

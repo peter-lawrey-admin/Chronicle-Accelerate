@@ -11,15 +11,15 @@ import static cash.xcl.api.dto.Validators.notNullOrEmpty;
 public class SignedErrorMessage extends SignedMessage {
 
     private long origSourceAddress;
-    private long origSourceEventTime;
+    private long origEventTime;
     private int origMessageType;
     private String reason;
 
-    public SignedErrorMessage(long sourceAddress, long eventTime, int origMessageType, long origSourceAddress, long origSourceEventTime, String reason) {
+    public SignedErrorMessage(long sourceAddress, long eventTime, int origMessageType, long origSourceAddress, long origEventTime, String reason) {
         super(sourceAddress, eventTime);
         this.origMessageType = origMessageType;
         this.origSourceAddress = origSourceAddress;
-        this.origSourceEventTime = origSourceEventTime;
+        this.origEventTime = origEventTime;
         this.reason = reason;
     }
 
@@ -41,12 +41,12 @@ public class SignedErrorMessage extends SignedMessage {
         return this;
     }
 
-    public long origSourceEventTime() {
-        return origSourceEventTime;
+    public long origEventTime() {
+        return origEventTime;
     }
 
-    public SignedErrorMessage origSourceEventTime(long origSourceEventTime) {
-        this.origSourceEventTime = origSourceEventTime;
+    public SignedErrorMessage origEventTime(long origSourceEventTime) {
+        this.origEventTime = origSourceEventTime;
         return this;
     }
 
@@ -71,7 +71,7 @@ public class SignedErrorMessage extends SignedMessage {
     protected void readMarshallable2(BytesIn bytes) {
         origMessageType = bytes.readUnsignedByte();
         origSourceAddress = bytes.readLong();
-        origSourceEventTime = bytes.readLong();
+        origEventTime = bytes.readLong();
         reason = bytes.readUtf8();
     }
 
@@ -84,7 +84,7 @@ public class SignedErrorMessage extends SignedMessage {
     protected void writeMarshallable2(Bytes bytes) {
         bytes.writeUnsignedByte(origMessageType);
         bytes.writeLong(origSourceAddress);
-        bytes.writeLong(origSourceEventTime);
+        bytes.writeLong(origEventTime);
         bytes.writeUtf8(reason);
     }
 }

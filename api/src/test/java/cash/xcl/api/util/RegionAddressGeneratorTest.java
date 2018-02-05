@@ -2,6 +2,7 @@ package cash.xcl.api.util;
 
 import org.junit.Test;
 
+import java.math.BigInteger;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static cash.xcl.api.util.AddressUtil.*;
@@ -12,6 +13,7 @@ public class RegionAddressGeneratorTest {
     static CountryRegionIndex regionIndex = new CountryRegionIndex();
 
     static RegionAddressGenerator ied = new RegionAddressGenerator(regionIndex.getRegion("IE-D"));
+    static RegionAddressGenerator rob = new RegionAddressGenerator(regionIndex.getRegion("RO-B"));
     static RegionAddressGenerator rohd = new RegionAddressGenerator(regionIndex.getRegion("RO-HD"));
     static RegionAddressGenerator gblnd = new RegionAddressGenerator(regionIndex.getRegion("GB-LND"));
     static RegionAddressGenerator[] generators = new RegionAddressGenerator[]{ied, rohd, gblnd};
@@ -34,60 +36,60 @@ public class RegionAddressGeneratorTest {
                 assertEquals(decode(encode(address)), address);
                 for (RegionAddressGenerator generator2 : generators) {
                     if (generator == generator2) {
-                        assertTrue(generator2.isAddresFromRegion(address));
+                        assertTrue(generator2.isAddressFromRegion(address));
                     } else {
-                        assertFalse(generator2.isAddresFromRegion(address));
+                        assertFalse(generator2.isAddressFromRegion(address));
                     }
                 }
             }
         }
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testNegativeValue() {
-        for (RegionAddressGenerator generator : generators) {
-            generator.newAddressFrom(-10000L);
-        }
-    }
+    @Test
+    public void testMaxAddressValue() {
+        long addressIe = ied.newAddressFrom(ied.getMaxAddress() - 1);
+        assertEquals("iedzzzzzzzzya", encode(addressIe));
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testTooLargeValueValue() {
-        ied.newAddressFrom(ied.getMaxAddress() + 1);
+        long addressRo = rohd.newAddressFrom(rohd.getMaxAddress() - 1);
+        assertEquals("r0hdzzzzzzzwn", encode(addressRo));
+
+        long addressGb = gblnd.newAddressFrom(gblnd.getMaxAddress() - 1);
+        assertEquals("gb1ndzzzzzzyt", encode(addressGb));
     }
 
     @Test
-    public void testMaxAddressValue() {
-        long addressIe = ied.newAddressFrom(ied.getMaxAddress());
-        assertEquals("iedg00000000n", encode(addressIe));
+    public void testOverlapping() {
+        long addressIe = ied.newAddressFrom(decode("100000001i"));
+        assertEquals(0, addressIe);
 
-        long addressRo = rohd.newAddressFrom(rohd.getMaxAddress());
-        assertEquals("r0hdg0000001t", encode(addressRo));
+        for (long bannedSuffix : rob.bannedSuffixes) {
+            long addressRob = rob.newAddressFrom((bannedSuffix << -20) + 100);
+            assertEquals("0", encode(addressRob));
 
-        long addressGb = gblnd.newAddressFrom(gblnd.getMaxAddress());
-        assertEquals("gb1ndg0000024", encode(addressGb));
+        }
     }
 
     @Test
     public void testMinAddressValue() {
         long addressIe = ied.newAddressFrom(0);
-        assertTrue(addressIe == AddressUtil.INVALID_ADDRESS); // Overlaps IE-CO region
+        assertEquals("ied000000001i", encode(addressIe));
 
         long addressRo = rohd.newAddressFrom(0);
-        assertEquals("r0hd00000000i", encode(addressRo));
+        assertEquals("r0hd000000024", encode(addressRo));
 
         long addressGb = gblnd.newAddressFrom(0);
-        assertEquals("gb1nd00000002", encode(addressGb));
+        assertEquals("gb1nd0000001k", encode(addressGb));
 
     }
 
     @Test
     public void testIsValid() {
-        for (int i = 0; i < 10; i++) {
+        long maxValue = BigInteger.valueOf(1).shiftLeft(64).divide(BigInteger.valueOf(37)).longValue();
+        for (int i = 0; i < 35; i++) {
             ThreadLocalRandom random = ThreadLocalRandom.current();
-            long randAddress = random.nextLong();
-            randAddress -= randAddress % CHECK_NUMBER;
+            long randAddress = Math.abs(random.nextLong() % maxValue) * 37;
             assertTrue(isValid(randAddress));
-            assertFalse(isValid(randAddress + 23));
+            assertFalse(isValid(randAddress + i + 1));
         }
     }
 
@@ -121,10 +123,10 @@ public class RegionAddressGeneratorTest {
             for (int i = 0; i < 100; i++) {
                 long bAddress = roB.newAddress();
                 long boAddress = roReg.newAddress();
-                assertTrue(roReg.isAddresFromRegion(boAddress));
-                assertFalse(roB.isAddresFromRegion(boAddress));
-                assertTrue(roB.isAddresFromRegion(bAddress));
-                assertFalse(roReg.isAddresFromRegion(bAddress));
+                assertTrue(roReg.isAddressFromRegion(boAddress));
+                assertFalse(roB.isAddressFromRegion(boAddress));
+                assertTrue(roB.isAddressFromRegion(bAddress));
+                assertFalse(roReg.isAddressFromRegion(bAddress));
             }
         }
     }

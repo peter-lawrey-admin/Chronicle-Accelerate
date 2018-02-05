@@ -1,15 +1,19 @@
 package cash.xcl.api;
 
-import cash.xcl.api.dto.ClusterTransferStep2Command;
-import cash.xcl.api.dto.ClusterTransferStep3Command;
-import cash.xcl.api.dto.DepositValueCommand;
-import cash.xcl.api.dto.WithdrawValueCommand;
+import cash.xcl.api.dto.*;
 import net.openhft.chronicle.core.io.Closeable;
 
 /**
  * This should be only Commands (no Query/Response) and weekly Events or Events from other clusters.
  */
 public interface ServerIn extends Closeable {
+    // from client
+    void createNewAddressCommand(CreateNewAddressCommand createNewAddressCommand);
+
+    void transferValueCommand(TransferValueCommand transferValueCommand);
+
+    void clusterTransferStep1Command(ClusterTransferStep1Command clusterTransferStep1Command);
+
     // inter cluster commands
     void clusterTransferStep2Command(ClusterTransferStep2Command clusterTransferStep2Command);
 

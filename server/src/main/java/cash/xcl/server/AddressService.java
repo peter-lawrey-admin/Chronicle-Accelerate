@@ -1,14 +1,19 @@
-package cash.xcl.api.util;
+package cash.xcl.server;
 
+import cash.xcl.api.util.AddressUtil;
+import cash.xcl.api.util.CountryRegion;
+import cash.xcl.api.util.CountryRegionIndex;
+import cash.xcl.api.util.RegionAddressGenerator;
 import net.openhft.chronicle.bytes.BytesStore;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class AddressService {
     private final CountryRegionIndex countryRegionIndex;
 
-    private final HashMap<Long, BytesStore<?, ?>> addresses = new HashMap<>();
-    private final HashMap<String, RegionAddressGenerator> generator = new HashMap<>();
+    private final Map<Long, BytesStore<?, ?>> addresses = new LinkedHashMap<>();
+    private final Map<CountryRegion, RegionAddressGenerator> generator = new LinkedHashMap<>();
 
     public AddressService() {
         this(new CountryRegionIndex());
@@ -18,14 +23,15 @@ public class AddressService {
         this.countryRegionIndex = countryRegionIndex;
     }
 
-    public long createAddress(String regionCode, BytesStore<?, ?> publicKey) {
+    public long createAddress(String regionCode, BytesStore<?, ?> publicKey) throws IllegalArgumentException {
         CountryRegion countryRegion = countryRegionIndex.getRegion(regionCode);
         if (countryRegion != null) {
-            RegionAddressGenerator regionGenerator = generator.computeIfAbsent(regionCode, (k) -> new RegionAddressGenerator(countryRegion));
+            RegionAddressGenerator regionGenerator = generator.computeIfAbsent(countryRegion, RegionAddressGenerator::new);
             long newAddress = regionGenerator.newAddress();
             while (addresses.containsKey(newAddress)) {
                 newAddress = regionGenerator.newAddress();
             }
+            addresses.put(newAddress, publicKey.copy());
             return newAddress;
         } else {
             // return an error
@@ -34,7 +40,7 @@ public class AddressService {
     }
 
     public void save(long newAddress, BytesStore<?, ?> publicKey) {
-        addresses.put(newAddress, publicKey);
+        addresses.put(newAddress, publicKey.copy());
     }
 
     public boolean hasAddress(long address) {
