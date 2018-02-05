@@ -8,7 +8,7 @@ import net.openhft.chronicle.wire.AbstractBytesMarshallable;
 // FIXME needs reviewing/completing
 public abstract class Order extends AbstractBytesMarshallable {
 
-    private final int id;
+    private final String id;
 
     private final String accountAddress;
 
@@ -23,7 +23,7 @@ public abstract class Order extends AbstractBytesMarshallable {
     private double filledQuantity;
 
 
-    public Order(int id, String accountAddress, Side side, double initialQuantity, String symbol1symbol2, long createdTime, double filledQuantity) {
+    public Order(String id, String accountAddress, Side side, double initialQuantity, String symbol1symbol2, long createdTime, double filledQuantity) {
         this.id = id;
         this.accountAddress = accountAddress;
         this.side = side;
@@ -62,7 +62,7 @@ public abstract class Order extends AbstractBytesMarshallable {
     }
 
 
-    public int id() {
+    public String id() {
         return id;
     }
 

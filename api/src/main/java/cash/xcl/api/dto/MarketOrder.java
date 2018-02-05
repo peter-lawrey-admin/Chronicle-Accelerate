@@ -7,7 +7,7 @@ public class MarketOrder extends Order {
 
 
 
-    public MarketOrder(int id, String accountAddress, Side side, double initialQuantity, String symbol1symbol2, long createdTime, double filledQuantity) {
+    public MarketOrder(String id, String accountAddress, Side side, double initialQuantity, String symbol1symbol2, long createdTime, double filledQuantity) {
         super(id, accountAddress, side, initialQuantity, symbol1symbol2, createdTime, filledQuantity);
     }
 

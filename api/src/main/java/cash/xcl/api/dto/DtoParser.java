@@ -59,6 +59,7 @@ public class DtoParser {
     // Orders
     final NewLimitOrderCommand nloc = new NewLimitOrderCommand();
     final NewMarketOrderCommand nmoc = new NewMarketOrderCommand();
+    final CancelOrderCommand coc = new CancelOrderCommand();
 
     // ExecutionReport
     final ExecutionReportEvent execre = new ExecutionReportEvent();
@@ -236,20 +237,17 @@ public class DtoParser {
                 parse(bytes, nloc, messages, AllMessages::newLimitOrderCommand);
                 break;
 
-            //ExecutionReport
+            case CANCEL_ORDER_COMMAND:
+                parse(bytes, coc, messages, AllMessages::cancelOrderCommand);
+                break;
+
+            // ExecutionReport
             case EXECUTION_REPORT:
                 parse(bytes, execre, messages, AllMessages::executionReportEvent);
                 break;
 
-
-            case CANCEL_ORDER_COMMAND:
-                throw new IllegalArgumentException("Not implemented messageType: " + Integer.toHexString(messageType));
-
-
-
             default:
                 throw new IllegalArgumentException("Unknown messageType: " + Integer.toHexString(messageType));
-//            case CANCEL_ORDER:
 
         }
     }

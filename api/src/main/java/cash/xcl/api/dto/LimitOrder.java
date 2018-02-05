@@ -7,7 +7,7 @@ public class LimitOrder extends Order {
 
     private double limitPrice;
 
-    public LimitOrder(int id,
+    public LimitOrder(String id,
                       String address,
                       Side side,
                       double initialQuantity,

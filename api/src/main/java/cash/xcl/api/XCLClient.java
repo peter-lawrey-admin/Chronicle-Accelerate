@@ -166,6 +166,10 @@ public class XCLClient implements AllMessages, Closeable {
     @Override
     public void newMarketOrderCommand(NewMarketOrderCommand newMarketOrderCommand) {write(newMarketOrderCommand); }
 
+    @Override
+    public void cancelOrderCommand(CancelOrderCommand cancelOrderCommand)  {write(cancelOrderCommand); }
+
+
 
     private void write(SignedMessage message) {
         try {
