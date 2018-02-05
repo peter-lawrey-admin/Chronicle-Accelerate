@@ -132,7 +132,7 @@ public class DtoParser {
                 break;
 
             case SUBSCRIPTION_SUCCESS_RESPONSE:
-                parse(bytes, ss, messages, AllMessages::subscriptionSuccess);
+                parse(bytes, ss, messages, AllMessages::subscriptionSuccessResponse);
                 break;
 
             // deposit value

@@ -42,11 +42,6 @@ public class XCLClient implements AllMessages, Closeable {
 
     @Override
     public void clusterTransferStep1Command(ClusterTransferStep1Command clusterTransferStep1Command) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void clusterTransferStep1Command(ClusterTransferStep2Command clusterTransferStep1Command) {
         write(clusterTransferStep1Command);
     }
 
@@ -91,12 +86,6 @@ public class XCLClient implements AllMessages, Closeable {
     }
 
     @Override
-    public void clusterTransferInformationEvent(ClusterTransferStep3Event clusterTransferStep3Event) {
-        write(clusterTransferStep3Event);
-    }
-
-
-    @Override
     public void depositValueEvent(DepositValueEvent depositValueEvent) {
         write(depositValueEvent);
     }
@@ -107,12 +96,12 @@ public class XCLClient implements AllMessages, Closeable {
     }
 
     @Override
-    public void subscriptionSuccess(SubscriptionSuccessResponse subscriptionSuccessResponse) {
+    public void subscriptionSuccessResponse(SubscriptionSuccessResponse subscriptionSuccessResponse) {
         write(subscriptionSuccessResponse);
     }
 
     @Override
-    public void addressInformationEvent(CreateNewAddressEvent createNewAddressEvent) {
+    public void createNewAddressEvent(CreateNewAddressEvent createNewAddressEvent) {
         write(createNewAddressEvent);
     }
 
@@ -139,11 +128,6 @@ public class XCLClient implements AllMessages, Closeable {
     @Override
     public void queryFailedResponse(QueryFailedResponse queryFailedResponse) {
         write(queryFailedResponse);
-    }
-
-    @Override
-    public void createNewAddressEvent(CreateNewAddressEvent createNewAddressEvent) {
-        write(createNewAddressEvent);
     }
 
     @Override
