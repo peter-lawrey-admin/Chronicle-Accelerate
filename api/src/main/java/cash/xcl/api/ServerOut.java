@@ -1,17 +1,21 @@
 package cash.xcl.api;
 
-import cash.xcl.api.dto.ApplicationMessageEvent;
-import cash.xcl.api.dto.ClusterTransferValueCommand;
-import cash.xcl.api.dto.FeesEvent;
-import cash.xcl.api.dto.NewAddressRejectedEvent;
+import cash.xcl.api.dto.*;
 import net.openhft.chronicle.core.io.Closeable;
 
 public interface ServerOut extends Closeable {
-    void newAddressRejectedEvent(NewAddressRejectedEvent newAddressRejectedEvent);
+
+    void createNewAddressEvent(CreateNewAddressEvent createNewAddressEvent);
 
     void applicationMessageEvent(ApplicationMessageEvent applicationMessageEvent);
 
-    void clusterTransferValueCommand(ClusterTransferValueCommand clusterTransferValueCommand);
+    void commandFailedEvent(CommandFailedEvent commandFailedEvent);
+
+    void clusterTransferStep2Command(ClusterTransferStep2Command clusterTransferStep2Command);
+
+    void clusterTransferStep3Command(ClusterTransferStep3Command clusterTransferStep3Command);
+
+    void clusterTransferStep3Event(ClusterTransferStep3Event clusterTransferStep3Event);
 
     void feesEvent(FeesEvent feesEvent);
 }

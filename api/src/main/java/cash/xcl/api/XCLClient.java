@@ -41,8 +41,28 @@ public class XCLClient implements AllMessages, Closeable {
     }
 
     @Override
-    public void clusterTransferValueCommand(ClusterTransferValueCommand clusterTransferValueCommand) {
-        write(clusterTransferValueCommand);
+    public void clusterTransferStep1Command(ClusterTransferStep1Command clusterTransferStep1Command) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void clusterTransferStep1Command(ClusterTransferStep2Command clusterTransferStep1Command) {
+        write(clusterTransferStep1Command);
+    }
+
+    @Override
+    public void clusterTransferStep2Command(ClusterTransferStep2Command clusterTransferStep2Command) {
+        write(clusterTransferStep2Command);
+    }
+
+    @Override
+    public void clusterTransferStep3Command(ClusterTransferStep3Command clusterTransferStep3Command) {
+        write(clusterTransferStep3Command);
+    }
+
+    @Override
+    public void clusterTransferStep3Event(ClusterTransferStep3Event clusterTransferStep3Event) {
+        write(clusterTransferStep3Event);
     }
 
     @Override
@@ -66,49 +86,24 @@ public class XCLClient implements AllMessages, Closeable {
     }
 
     @Override
-    public void newAddressRejectedEvent(NewAddressRejectedEvent newAddressRejectedEvent) {
-        write(newAddressRejectedEvent);
+    public void transferValueEvent(TransferValueEvent transferValueEvent) {
+        write(transferValueEvent);
     }
 
     @Override
-    public void transferValueInformationEvent(TransferInformationEvent transferInformationEvent) {
-        write(transferInformationEvent);
-    }
-
-    @Override
-    public void transferValueRejectedEvent(TransferValueRejectedEvent transferValueRejectedEvent) {
-        write(transferValueRejectedEvent);
-    }
-
-    @Override
-    public void clusterTransferInformationEvent(ClusterTransferInformationEvent clusterTransferInformationEvent) {
-        write(clusterTransferInformationEvent);
+    public void clusterTransferInformationEvent(ClusterTransferStep3Event clusterTransferStep3Event) {
+        write(clusterTransferStep3Event);
     }
 
 
     @Override
-    public void clusterTransferValueRejectedEvent(ClusterTransferValueRejectedEvent clusterTransferValueRejectedEvent) {
-        write(clusterTransferValueRejectedEvent);
+    public void depositValueEvent(DepositValueEvent depositValueEvent) {
+        write(depositValueEvent);
     }
 
     @Override
-    public void depositValueInformationEvent(DepositValueInformationEvent depositValueInformationEvent) {
-        write(depositValueInformationEvent);
-    }
-
-    @Override
-    public void depositValueRejectedEvent(DepositValueRejectedEvent depositValueRejectedEvent) {
-        write(depositValueRejectedEvent);
-    }
-
-    @Override
-    public void withdrawValueInformationEvent(WithdrawValueInformationEvent withdrawValueInformationEvent) {
-        write(withdrawValueInformationEvent);
-    }
-
-    @Override
-    public void withdrawValueRejectedEvent(WithdrawValueRejectedEvent withdrawValueRejectedEvent) {
-        write(withdrawValueRejectedEvent);
+    public void withdrawValueEvent(WithdrawValueEvent withdrawValueEvent) {
+        write(withdrawValueEvent);
     }
 
     @Override
@@ -117,13 +112,8 @@ public class XCLClient implements AllMessages, Closeable {
     }
 
     @Override
-    public void subscriptionFailed(SubscriptionFailed subscriptionFailed) {
-        write(subscriptionFailed);
-    }
-
-    @Override
-    public void addressInformationEvent(AddressInformationEvent addressInformationEvent) {
-        write(addressInformationEvent);
+    public void addressInformationEvent(CreateNewAddressEvent createNewAddressEvent) {
+        write(createNewAddressEvent);
     }
 
     @Override
@@ -146,14 +136,24 @@ public class XCLClient implements AllMessages, Closeable {
         write(withdrawValueCommand);
     }
 
-
-
-
-
+    @Override
+    public void queryFailedResponse(QueryFailedResponse queryFailedResponse) {
+        write(queryFailedResponse);
+    }
 
     @Override
-    public void subscriptionCommand(SubscriptionCommand subscriptionCommand) {
-        write(subscriptionCommand);
+    public void createNewAddressEvent(CreateNewAddressEvent createNewAddressEvent) {
+        write(createNewAddressEvent);
+    }
+
+    @Override
+    public void commandFailedEvent(CommandFailedEvent commandFailedEvent) {
+        write(commandFailedEvent);
+    }
+
+    @Override
+    public void subscriptionQuery(SubscriptionQuery subscriptionQuery) {
+        write(subscriptionQuery);
     }
 
     private void write(SignedMessage message) {

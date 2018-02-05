@@ -12,5 +12,14 @@ public interface ServerIn extends Closeable {
 
     void treeBlockEvent(TreeBlockEvent treeBlockEvent);
 
-    void subscriptionCommand(SubscriptionCommand subscriptionCommand);
+    void subscriptionQuery(SubscriptionQuery subscriptionQuery);
+
+
+    void clusterTransferStep1Command(ClusterTransferStep2Command clusterTransferStep1Command);
+
+    void clusterTransferStep2Command(ClusterTransferStep2Command clusterTransferStep2Command);
+
+    void clusterTransferStep3Command(ClusterTransferStep3Command clusterTransferStep3Command);
+
+
 }

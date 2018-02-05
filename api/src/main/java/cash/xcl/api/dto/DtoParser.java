@@ -13,36 +13,33 @@ public class DtoParser {
 
     final TransactionBlockEvent tbe = new TransactionBlockEvent();
     final TreeBlockEvent treebe = new TreeBlockEvent();
+    final OpeningBalanceEvent obe = new OpeningBalanceEvent();
+    final FeesEvent fe = new FeesEvent();
+    final ExchangeRateEvent ere = new ExchangeRateEvent();
+
     final ApplicationMessageEvent ame = new ApplicationMessageEvent();
+    final CommandFailedEvent cfe = new CommandFailedEvent();
+    final QueryFailedResponse qfr = new QueryFailedResponse();
 
     final CreateNewAddressCommand cnac = new CreateNewAddressCommand();
-    final AddressInformationEvent aie = new AddressInformationEvent();
-    final NewAddressRejectedEvent nare = new NewAddressRejectedEvent();
+    final CreateNewAddressEvent cnae = new CreateNewAddressEvent();
 
     final TransferValueCommand tvc = new TransferValueCommand();
-    final TransferInformationEvent tvie = new TransferInformationEvent();
-    final TransferValueRejectedEvent tvre = new TransferValueRejectedEvent();
+    final TransferValueEvent tve = new TransferValueEvent();
 
-    final ClusterTransferValueCommand ctvc = new ClusterTransferValueCommand();
-    final ClusterTransferInformationEvent ctie = new ClusterTransferInformationEvent();
-    final ClusterTransferValueRejectedEvent ctvre = new ClusterTransferValueRejectedEvent();
+    final ClusterTransferStep1Command cts1c = new ClusterTransferStep1Command();
+    final ClusterTransferStep2Command cts2c = new ClusterTransferStep2Command();
+    final ClusterTransferStep3Command cts3c = new ClusterTransferStep3Command();
+    final ClusterTransferStep3Event cts3e = new ClusterTransferStep3Event();
 
     final DepositValueCommand dvc = new DepositValueCommand();
-    final DepositValueInformationEvent dvie = new DepositValueInformationEvent();
-    final DepositValueRejectedEvent dvre = new DepositValueRejectedEvent();
+    final DepositValueEvent dve = new DepositValueEvent();
 
     final WithdrawValueCommand wvc = new WithdrawValueCommand();
-    final WithdrawValueInformationEvent wvie = new WithdrawValueInformationEvent();
-    final WithdrawValueRejectedEvent wvre = new WithdrawValueRejectedEvent();
+    final WithdrawValueEvent wve = new WithdrawValueEvent();
 
-    final SubscriptionCommand sc = new SubscriptionCommand();
+    final SubscriptionQuery sq = new SubscriptionQuery();
     final SubscriptionSuccess ss = new SubscriptionSuccess();
-    final SubscriptionFailed sf = new SubscriptionFailed();
-
-    final ExchangeRateEvent ere = new ExchangeRateEvent();
-    final OpeningBalanceEvent obe = new OpeningBalanceEvent();
-
-
 
     static <T extends SignedMessage, AM> void parse(Bytes bytes, T t, AM am, BiConsumer<AM, T> tConsumer) {
         t.reset();
@@ -59,6 +56,7 @@ public class DtoParser {
             throw new IllegalArgumentException("protocol: " + protocol);
 
         switch (messageType) {
+            // weekly events
             case TRANSACTION_BLOCK_EVENT:
                 parse(bytes, tbe, messages, AllMessages::transactionBlockEvent);
                 break;
@@ -67,8 +65,29 @@ public class DtoParser {
                 parse(bytes, treebe, messages, AllMessages::treeBlockEvent);
                 break;
 
+            case OPENING_BALANCE_EVENT:
+                parse(bytes, obe, messages, AllMessages::openingBalanceEvent);
+                break;
+
+            case FEES_EVENT:
+                parse(bytes, fe, messages, AllMessages::feesEvent);
+                break;
+
+            case EXCHANGE_RATE_EVENT:
+                parse(bytes, ere, messages, AllMessages::exchangeRateEvent);
+                break;
+
+            // runtime events
             case APPLICATION_MESSAGE_EVENT:
                 parse(bytes, ame, messages, AllMessages::applicationMessageEvent);
+                break;
+
+            case COMMAND_FAILED_EVENT:
+                parse(bytes, cfe, messages, AllMessages::commandFailedEvent);
+                break;
+
+            case QUERY_FAILED_RESPONSE:
+                parse(bytes, qfr, messages, AllMessages::queryFailedResponse);
                 break;
 
             // address
@@ -76,12 +95,25 @@ public class DtoParser {
                 parse(bytes, cnac, messages, AllMessages::createNewAddressCommand);
                 break;
 
-            case ADDRESS_INFORMATION_EVENT:
-                parse(bytes, aie, messages, AllMessages::addressInformationEvent);
+            case CLUSTER_TRANSFER_STEP1_COMMAND:
+                parse(bytes, cts1c, messages, AllMessages::clusterTransferStep1Command);
                 break;
 
-            case NEW_ADDRESS_REJECTED_EVENT:
-                parse(bytes, nare, messages, AllMessages::newAddressRejectedEvent);
+            case CLUSTER_TRANSFER_STEP2_COMMAND:
+                parse(bytes, cts2c, messages, AllMessages::clusterTransferStep2Command);
+                break;
+
+            case CLUSTER_TRANSFER_STEP3_COMMAND:
+                parse(bytes, cts3c, messages, AllMessages::clusterTransferStep3Command);
+                break;
+
+            // Main chain events
+            case CREATE_NEW_ADDRESS_EVENT:
+                parse(bytes, cnae, messages, AllMessages::createNewAddressEvent);
+                break;
+
+            case CLUSTER_TRANSFER_STEP3_EVENT:
+                parse(bytes, cts3e, messages, AllMessages::clusterTransferStep3Event);
                 break;
 
             // transfer value
@@ -89,25 +121,18 @@ public class DtoParser {
                 parse(bytes, tvc, messages, AllMessages::transferValueCommand);
                 break;
 
-            case TRANSFER_VALUE_INFORMATION_EVENT:
-                parse(bytes, tvie, messages, AllMessages::transferValueInformationEvent);
+            case SUBSCRIPTION_QUERY:
+                parse(bytes, sq, messages, AllMessages::subscriptionQuery);
                 break;
 
-            case TRANSFER_VALUE_REJECTED_EVENT:
-                parse(bytes, tvre, messages, AllMessages::transferValueRejectedEvent);
+
+            // Regional commands and queries
+            case TRANSFER_VALUE_EVENT:
+                parse(bytes, tve, messages, AllMessages::transferValueEvent);
                 break;
 
-            // cluster transfer value
-            case CLUSTER_TRANSFER_VALUE_COMMAND:
-                parse(bytes, ctvc, messages, AllMessages::clusterTransferValueCommand);
-                break;
-
-            case CLUSTER_TRANSFER_INFORMATION_EVENT:
-                parse(bytes, ctie, messages, AllMessages::clusterTransferInformationEvent);
-                break;
-
-            case CLUSTER_TRANSFER_VALUE_REJECTED_EVENT:
-                parse(bytes, ctvre, messages, AllMessages::clusterTransferValueRejectedEvent);
+            case SUBSCRIPTION_SUCCESS_EVENT:
+                parse(bytes, ss, messages, AllMessages::subscriptionSuccess);
                 break;
 
             // deposit value
@@ -115,12 +140,8 @@ public class DtoParser {
                 parse(bytes, dvc, messages, AllMessages::depositValueCommand);
                 break;
 
-            case DEPOSIT_INFORMATION_EVENT:
-                parse(bytes, dvie, messages, AllMessages::depositValueInformationEvent);
-                break;
-
-            case DEPOSIT_VALUE_REJECTED_EVENT:
-                parse(bytes, dvre, messages, AllMessages::depositValueRejectedEvent);
+            case DEPOSIT_VALUE_EVENT:
+                parse(bytes, dve, messages, AllMessages::depositValueEvent);
                 break;
 
             // Withdraw Value
@@ -128,38 +149,13 @@ public class DtoParser {
                 parse(bytes, wvc, messages, AllMessages::withdrawValueCommand);
                 break;
 
-            case WITHDRAW_VALUE_INFORMATION_EVENT:
-                parse(bytes, wvie, messages, AllMessages::withdrawValueInformationEvent);
+            case WITHDRAW_VALUE_EVENT:
+                parse(bytes, wve, messages, AllMessages::withdrawValueEvent);
                 break;
 
-            case WITHDRAW_VALUE_REJECTED_EVENT:
-                parse(bytes, wvre, messages, AllMessages::withdrawValueRejectedEvent);
-                break;
-
-            case SUBSCRIPTION_COMMAND:
-                parse(bytes, sc, messages, AllMessages::subscriptionCommand);
-                break;
-
-            case SUBSCRIPTION_SUCCESS_EVENT:
-                parse(bytes, ss, messages, AllMessages::subscriptionSuccess);
-                break;
-
-            case SUBSCRIPTION_FAILED_EVENT:
-                parse(bytes, sf, messages, AllMessages::subscriptionFailed);
-                break;
-
-
-            case EXCHANGE_RATE_EVENT:
-                parse(bytes, ere, messages, AllMessages::exchangeRateEvent);
-                break;
-
-            case OPENING_BALANCE_EVENT:
-                parse(bytes, obe, messages, AllMessages::openingBalanceEvent);
-                break;
-
-            case NEW_MARKET_ORDER:
-            case NEW_LIMIT_ORDER:
-            case CANCEL_ORDER:
+            case NEW_MARKET_ORDER_COMMAND:
+            case NEW_LIMIT_ORDER_COMMAND:
+            case CANCEL_ORDER_COMMAND:
                 throw new IllegalArgumentException("Not implemented messageType: " + Integer.toHexString(messageType));
 
 

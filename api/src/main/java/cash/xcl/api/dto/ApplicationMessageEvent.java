@@ -8,44 +8,36 @@ import static cash.xcl.api.dto.Validators.notNullOrEmpty;
 /**
  * A generic application message has been reported.  These should be used as little as possible as they cannot be easily processed downstream.
  */
-public class ApplicationMessageEvent extends SignedMessage {
+public class ApplicationMessageEvent extends SignedErrorMessage {
     public static final String ERROR = "ERROR";
     public static final String WARN = "WARN";
     public static final String INFO = "INFO";
 
     private String level;
-    private String reason;
 
-    public ApplicationMessageEvent(long serviceAddress, long eventTime, String level, String reason) {
-        super(serviceAddress, eventTime);
-        setLevel(level);
-        setReason(reason);
+    public ApplicationMessageEvent(long sourceAddress, long eventTime, int origMessageType, long origSourceAddress, long origSourceEventTime, String reason, String level) {
+        super(sourceAddress, eventTime, origMessageType, origSourceAddress, origSourceEventTime, reason);
+        level(level);
     }
 
     public ApplicationMessageEvent() {
 
     }
 
-    public String getLevel() {
+    public String level() {
         return level;
     }
 
-    private void setLevel(String level) {
+    public ApplicationMessageEvent level(String level) {
         this.level = notNullOrEmpty(level);
-    }
-
-    public String getReason() {
-        return reason;
-    }
-
-    private void setReason(String reason) {
-        this.reason = notNullOrEmpty(reason);
+        ;
+        return this;
     }
 
     @Override
     protected void readMarshallable2(BytesIn bytes) {
+        super.readMarshallable2(bytes);
         level = bytes.readUtf8();
-        reason = bytes.readUtf8();
     }
 
     @Override
@@ -55,7 +47,7 @@ public class ApplicationMessageEvent extends SignedMessage {
 
     @Override
     protected void writeMarshallable2(Bytes bytes) {
+        super.writeMarshallable2(bytes);
         bytes.writeUtf8(level);
-        bytes.writeUtf8(reason);
     }
 }

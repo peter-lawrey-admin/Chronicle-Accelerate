@@ -68,6 +68,49 @@ The transaction block is a signed message which contains zero or more messages
 |===
 <1> The block status records how many times it has been replicated and whether it was timed out or not.
 
+=== Opening Balance Event (0x03)
+
+This event holds to opening balance for an address at the start of the week.
+It is also the event produced at the end of the week to record the balance.
+
+This message is an event to set the initial state of an address.
+This message is dumped as part of the snap shot at the end of each week and loaded at the start of the next week.
+This is message must come from a trusted source or it will be rejected.
+
+The message contains
+
+- the list of currencies and balances
+
+=== Fees Event (0x04)
+
+This event records the free structure determined by the AI at the start of the week.
+
+=== Exchange Rates Event (0x05)
+
+This event lists all the weekly exchange rates with mid price. This is used to calculate fees when the balance is in other currencies.
+
+== Runtime events
+
+These events can occur at any time and on any chain.
+
+=== Application Message Event (0x10)
+
+This event records that something went wrong, most likely unable to be handled automatically.
+
+When an event fails to be processed it could trigger one of these events.
+
+=== Command Failed Message Event (0x11)
+
+This event records that an error occurs processing a command in a way which might be processed automatically.
+
+When a command fails to be processed it could trigger one of these events.
+
+=== Query Failed Message Event (0x11)
+
+This event records that an error occurs processing a query in a way which might be processed automatically.
+
+When a query fails to be processed it could trigger one of these events.
+
 == Main Chain Commands
 
 Range 0x20 - 0x2f
@@ -76,17 +119,59 @@ Range 0x20 - 0x2f
 
 This message requests that a new account be created. This includes the public key and the region in which to create the address
 
-The response to this command is either Address Information Event (0x30) or New Account Rejected (0x32)
+|===
+| Success | Error
+| Address Information Event (0x30) | Command Failed Event (0x11)
+|===
 
-=== Cluster Transfer Value Command (0x21)
+=== Cluster Transfer Value Step1 Command (0x21)
 
-This message is a command to transfer value from one cluster to another via the main chain.
+This message is a command to withdrawValueCommand value from one cluster to another via the main chain.
+
+The first step is to approve money be taken out of an account in one region/cluster
+
+|===
+| Success | Error
+| Cluster Transfer Value Step2 Command (0x22) | Command Failed Event (0x11)
+|===
+=== Cluster Transfer Value Step2 Command (0x22)
+
+This message is a command to withdrawValueCommand value from one cluster to another via the main chain.
+
+The second step is to pass the withdrawValueCommand between clusters via the main chain.
+
+The main chain can reject it if a node or cluster fails risk checks e.g. transfers too much money, too quicky.
+
+|===
+| Success | Error
+| Cluster Transfer Value Step3 Command (0x23) | Command Failed Event (0x11)
+|===
+
+=== Cluster Transfer Value Step3 Command (0x23)
+
+This message is a command to withdrawValueCommand value from one cluster to another via the main chain.
+
+The last step is to notify the target cluster to add to the balance of an address.
+
+|===
+| Success | Error
+| Cluster Transfer Value Step3 Event (0x33) | Application Message Event (0x10)
+|===
+
+=== Clusters Status Query (0x2f)
+
+This message is a query for all the known clusters and the services they provide.
+
+|===
+| Success | Error
+| Cluster Transfer Value Event (0x31) | Query Failed Response (0x12)
+|===
 
 == Main Chain Events
 
 Range 0x30 - 0x3f
 
-=== Address Information Event (0x30)
+=== Create New Address Event (0x30)
 
 This message is an event from the main chain to set the reference information of an address.
 This message is dumped as part of the snap shot at the end of each week and loaded at the start of the next week.
@@ -97,39 +182,54 @@ This message includes
 - the public key of the address
 - the list of verifiable facts about the account.
 
-=== Exchange Rate Event (0x31)
+=== Cluster Transfer Step3 Event (0x33)
 
-This message is an event from the main chain to set the reference information for exchanging XCL with other currencies.
+Value was successful added to an address after transferring it from another cluster.
 
-This message includes
+=== Clusters Status Response (0x3f)
 
-- the bid/ask spread for a fixed volume e.g. 1M
-
-=== New Address Rejected (0x32)
-
-This message indicates that an attempt to create a new address was rejected.
+A message detailing all the known clusters, their services and their host connection details.
 
 == Regional Chain Commands
 
 Range 0x40 - 0x4f
 
+=== Transfer Value Command (0x40)
+
+This message is a command to withdrawValueCommand value from one address to another in the same chain.
+
+The first step is to approve money be taken out of an account in one region/cluster
+
+|===
+| Success | Error
+| Transfer Value Event (0x50) | Command Failed Event (0x11)
+|===
+
+=== Subscription Query (0x4c)
+
+=== Current Balance Query (0x4d)
+
+=== Exchange Rate Query (0x4e)
+
+=== Cluster Status Query (0x4f)
+
+The status of the nodes in the current cluster
+
 == Regional Chain Events
 
 Range 0x50 - 0x5f
 
-=== Opening Balance Event (0x50)
+=== Transfer Value Event (0x50)
 
-This message is an event to set the initial state of an address.
-This message is dumped as part of the snap shot at the end of each week and loaded at the start of the next week.
-This is message must come from a trusted source or it will be rejected.
+This message is a command to withdrawValueCommand value from one address to another.
 
-The message contains
+=== Subscription Query (0x5c)
 
-- the list of currencies and balances
+=== Current Balance Query (0x5d)
 
-=== Transfer Value Command (0x51)
+=== Exchange Rate Query (0x5e)
 
-This message is a command to transfer value from one address to another.
+=== Cluster Status Query (0x5f)
 
 == Service Chain Commands
 
@@ -137,11 +237,11 @@ Range 0x60 - 0x6f
 
 === Deposit Value Command (0x60)
 
-This message is a command to transfer value from one address to another.
+This message is a command to withdrawValueCommand value from one address to another.
 
 === Withdraw Value Command (0x61)
 
-This message is a command to transfer value from one address to another.
+This message is a command to withdrawValueCommand value from one address to another.
 
 === Market Order to Buy/Sell XCL (0x62)
 
@@ -153,12 +253,8 @@ This message is a command to transfer value from one address to another.
 
 Range 0x70 - 0x7f
 
-=== Execution Report to Buy/Sell XCL (0x70)
+=== Deposit Value Event (0x70)
 
-== Session Messages
+=== Withdraw Value Event (0x71)
 
-Range 0xF0 - 0xFF
-
-=== Subscription Command (0xF0)
-
-This notified the gateway that this connection should like to listen to an address. It must be signed.
+=== Execution Report to Buy/Sell XCL (0x72)

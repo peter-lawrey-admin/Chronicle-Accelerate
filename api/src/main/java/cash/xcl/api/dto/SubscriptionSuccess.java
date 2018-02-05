@@ -5,7 +5,7 @@ import net.openhft.chronicle.bytes.BytesIn;
 
 // TODO
 public class SubscriptionSuccess extends SignedMessage {
-    private SubscriptionCommand subscriptionCommand;
+    private SubscriptionQuery subscriptionQuery;
 
     public SubscriptionSuccess(long sourceAddress, long eventTime) {
         super(sourceAddress, eventTime);

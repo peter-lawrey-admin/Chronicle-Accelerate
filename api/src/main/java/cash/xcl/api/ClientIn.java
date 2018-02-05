@@ -7,22 +7,18 @@ import cash.xcl.api.dto.*;
  */
 public interface ClientIn {
 
-    void addressInformationEvent(AddressInformationEvent addressInformationEvent);
-    void newAddressRejectedEvent(NewAddressRejectedEvent newAddressRejectedEvent);
+    void queryFailedResponse(QueryFailedResponse queryFailedResponse);
 
-    void transferValueInformationEvent(TransferInformationEvent transferInformationEvent);
-    void transferValueRejectedEvent(TransferValueRejectedEvent transferValueRejectedEvent);
+    void addressInformationEvent(CreateNewAddressEvent createNewAddressEvent);
 
-    void clusterTransferInformationEvent(ClusterTransferInformationEvent clusterTransferInformationEvent);
-    void clusterTransferValueRejectedEvent(ClusterTransferValueRejectedEvent clusterTransferValueRejectedEvent);
+    void transferValueEvent(TransferValueEvent transferValueEvent);
 
-    void depositValueInformationEvent(DepositValueInformationEvent depositValueInformationEvent);
-    void depositValueRejectedEvent(DepositValueRejectedEvent depositValueRejectedEvent);
+    void clusterTransferInformationEvent(ClusterTransferStep3Event clusterTransferStep3Event);
 
-    void withdrawValueInformationEvent(WithdrawValueInformationEvent withdrawValueInformationEvent);
-    void withdrawValueRejectedEvent(WithdrawValueRejectedEvent withdrawValueRejectedEvent);
+    void depositValueEvent(DepositValueEvent depositValueEvent);
+
+    void withdrawValueEvent(WithdrawValueEvent withdrawValueEvent);
 
     void subscriptionSuccess(SubscriptionSuccess subscriptionSuccess);
-    void subscriptionFailed(SubscriptionFailed subscriptionFailed);
 
 }

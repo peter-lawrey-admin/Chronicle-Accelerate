@@ -3,7 +3,7 @@ Peter Lawrey
 
 This package contains the DTO (Data Transfer Objects) for messages between clients and server as well as inter server communications.
 
-== Commands and Events
+== Commands, Events and Queries
 
 Commands are messages with an instruction to do something. It is usually intended to be processed once by one system.  
 It can be rejected is it fails validation or is not approriate. They can be thought of as like actions under the Actor pattern.
@@ -11,3 +11,5 @@ Each command should document which events it can create. TBD.
 
 Events are messages about something which has happened.  There might be zero, one or manay systems which process this message.  
 It can't be rejected as it has already happened. It could trigger a command to attempt to reverse the action at best.
+
+A Query is a request for information such as an account balance, or the list of available servers.

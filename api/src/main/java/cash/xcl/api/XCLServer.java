@@ -70,7 +70,7 @@ public class XCLServer implements Closeable {
             try {
                 long address = bytes.readLong(bytes.readPosition() + 64);
                 long messageType = bytes.readUnsignedByte(bytes.readPosition() + 81);
-                if (messageType == MethodIds.SUBSCRIPTION_COMMAND) {
+                if (messageType == MethodIds.SUBSCRIPTION_QUERY) {
                     connections.put(address, channel);
                 }
 

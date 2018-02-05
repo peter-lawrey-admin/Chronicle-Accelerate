@@ -4,19 +4,19 @@ import net.openhft.chronicle.bytes.Bytes;
 import net.openhft.chronicle.bytes.BytesIn;
 import net.openhft.chronicle.salt.Ed25519;
 
-public class AddressInformationEvent extends SignedMessage {
+public class CreateNewAddressEvent extends SignedMessage {
     private long address;
     private Bytes publicKey;
     // add verifiable facts such as verified address
 
-    public AddressInformationEvent(long sourceAddress, long eventTime, long address, Bytes publicKey) {
+    public CreateNewAddressEvent(long sourceAddress, long eventTime, long address, Bytes publicKey) {
         super(sourceAddress, eventTime);
         this.address = address;
         this.publicKey = publicKey;
     }
 
 
-    public AddressInformationEvent() {
+    public CreateNewAddressEvent() {
         super();
     }
 
@@ -36,14 +36,14 @@ public class AddressInformationEvent extends SignedMessage {
 
     @Override
     public int messageType() {
-        return MethodIds.ADDRESS_INFORMATION_EVENT;
+        return MethodIds.CREATE_NEW_ADDRESS_EVENT;
     }
 
     public Bytes publicKey() {
         return publicKey;
     }
 
-    public AddressInformationEvent publicKey(Bytes publicKey) {
+    public CreateNewAddressEvent publicKey(Bytes publicKey) {
         this.publicKey = publicKey;
         return this;
     }
@@ -52,7 +52,7 @@ public class AddressInformationEvent extends SignedMessage {
         return address;
     }
 
-    public AddressInformationEvent address(long address) {
+    public CreateNewAddressEvent address(long address) {
         this.address = address;
         return this;
     }
