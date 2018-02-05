@@ -4,15 +4,15 @@ import net.openhft.chronicle.bytes.Bytes;
 import net.openhft.chronicle.bytes.BytesIn;
 
 // TODO
-public class SubscriptionSuccess extends SignedMessage {
+public class SubscriptionSuccessResponse extends SignedMessage {
     private SubscriptionQuery subscriptionQuery;
 
-    public SubscriptionSuccess(long sourceAddress, long eventTime) {
+    public SubscriptionSuccessResponse(long sourceAddress, long eventTime) {
         super(sourceAddress, eventTime);
     }
 
 
-    public SubscriptionSuccess() {
+    public SubscriptionSuccessResponse() {
         super();
     }
 
@@ -26,6 +26,6 @@ public class SubscriptionSuccess extends SignedMessage {
 
     @Override
     public int messageType() {
-        return MethodIds.SUBSCRIPTION_SUCCESS_EVENT;
+        return MethodIds.SUBSCRIPTION_SUCCESS_RESPONSE;
     }
 }

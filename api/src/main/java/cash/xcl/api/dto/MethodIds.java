@@ -52,7 +52,7 @@ public interface MethodIds {
     // Regional events and responses
     int TRANSFER_VALUE_EVENT = 0x50;
 
-    int SUBSCRIPTION_SUCCESS_EVENT = 0x5c;
+    int SUBSCRIPTION_SUCCESS_RESPONSE = 0x5c;
     int CURRENT_BALANCE_RESPONSE = 0x5d;
     int EXCHANGE_RATE_RESPONSE = 0x5e;
     int CLUSTER_STATUS_RESPONSE = 0x5f;

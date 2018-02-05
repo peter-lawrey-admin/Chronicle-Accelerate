@@ -19,6 +19,6 @@ public interface ClientIn {
 
     void withdrawValueEvent(WithdrawValueEvent withdrawValueEvent);
 
-    void subscriptionSuccess(SubscriptionSuccess subscriptionSuccess);
+    void subscriptionSuccess(SubscriptionSuccessResponse subscriptionSuccessResponse);
 
 }

@@ -39,7 +39,7 @@ public class DtoParser {
     final WithdrawValueEvent wve = new WithdrawValueEvent();
 
     final SubscriptionQuery sq = new SubscriptionQuery();
-    final SubscriptionSuccess ss = new SubscriptionSuccess();
+    final SubscriptionSuccessResponse ss = new SubscriptionSuccessResponse();
 
     static <T extends SignedMessage, AM> void parse(Bytes bytes, T t, AM am, BiConsumer<AM, T> tConsumer) {
         t.reset();
@@ -131,7 +131,7 @@ public class DtoParser {
                 parse(bytes, tve, messages, AllMessages::transferValueEvent);
                 break;
 
-            case SUBSCRIPTION_SUCCESS_EVENT:
+            case SUBSCRIPTION_SUCCESS_RESPONSE:
                 parse(bytes, ss, messages, AllMessages::subscriptionSuccess);
                 break;
 

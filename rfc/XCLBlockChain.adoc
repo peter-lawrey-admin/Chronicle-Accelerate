@@ -14,6 +14,8 @@ i.e. a recognised node in the current cluster, or a recognised node in the previ
 
 == Message types
 
+Message types are defined in the https://github.com/OpenHFT/Chronicle-Accelerate/blob/master/api/src/main/java/cash/xcl/api/dto/MethodIds.java[MethodIds] class.
+
 === Signed Messages
 
 Messages are written are either commands (an instruction to take an action which might be rejected), or events (something which has happened, might not need an action but cannot be rejected)
@@ -33,7 +35,6 @@ The message format looks like
 |===
 <1> In future, two protocol versions might be supported while an old one is deprecated
 
-Message types are defined in the https://github.com/OpenHFT/Chronicle-Accelerate/blob/master/api/src/main/java/cash/xcl/api/dto/MethodIds.java[MethodIds] class.
 
 === Transaction Block (message type = 0x01)
 
@@ -207,13 +208,34 @@ The first step is to approve money be taken out of an account in one region/clus
 
 === Subscription Query (0x4c)
 
+|===
+| Success | Error
+| Subscription Success Response (0x5c) | Query Failed Response (0x12)
+|===
+
 === Current Balance Query (0x4d)
 
+|===
+| Success | Error
+| Current Balance Response (0x5d) | Query Failed Response (0x12)
+|===
+
 === Exchange Rate Query (0x4e)
+
+|===
+| Success | Error
+| Exchange Rate Response (0x5e) | Query Failed Response (0x12)
+|===
 
 === Cluster Status Query (0x4f)
 
 The status of the nodes in the current cluster
+
+
+|===
+| Success | Error
+| Cluster Status Response (0x5f) | Query Failed Response (0x12)
+|===
 
 == Regional Chain Events
 
@@ -223,13 +245,13 @@ Range 0x50 - 0x5f
 
 This message is a command to withdrawValueCommand value from one address to another.
 
-=== Subscription Query (0x5c)
+=== Subscription Success Response (0x5c)
 
-=== Current Balance Query (0x5d)
+=== Current Balance Response (0x5d)
 
-=== Exchange Rate Query (0x5e)
+=== Exchange Rate Response (0x5e)
 
-=== Cluster Status Query (0x5f)
+=== Cluster Status Response (0x5f)
 
 == Service Chain Commands
 
@@ -239,9 +261,19 @@ Range 0x60 - 0x6f
 
 This message is a command to withdrawValueCommand value from one address to another.
 
+|===
+| Success | Error
+| Deposit Value Event (0x70) | Command Failed Event (0x11)
+|===
+
 === Withdraw Value Command (0x61)
 
 This message is a command to withdrawValueCommand value from one address to another.
+
+|===
+| Success | Error
+| Withdraw Value Event (0x71) | Command Failed Event (0x11)
+|===
 
 === Market Order to Buy/Sell XCL (0x62)
 

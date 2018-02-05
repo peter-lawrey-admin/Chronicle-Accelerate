@@ -107,8 +107,8 @@ public class XCLClient implements AllMessages, Closeable {
     }
 
     @Override
-    public void subscriptionSuccess(SubscriptionSuccess subscriptionSuccess) {
-        write(subscriptionSuccess);
+    public void subscriptionSuccess(SubscriptionSuccessResponse subscriptionSuccessResponse) {
+        write(subscriptionSuccessResponse);
     }
 
     @Override
