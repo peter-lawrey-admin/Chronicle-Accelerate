@@ -190,7 +190,7 @@ Range 0x30 - 0x3f
 This message:
 
  - is an event from the main chain to set the reference information of an address.
- - is dumped as part of the snap shot at the end of each week and loaded at the start of the next week.ffa
+ - is dumped as part of the snap shot at the end of each week and loaded at the start of the next week.
  - must come from the main chain or it will be rejected.
 
 The message includes:
@@ -303,11 +303,11 @@ message.
 
 This event message contains the details of the transfer:
 
-sender's account address
-receiver's account address
-amount transferred
-currency
-timestamp
+* sender's account address
+* receiver's account address
+* amount transferred
+* currency
+* timestamp
 
 // todo add table showing example of success and error
 
@@ -346,13 +346,15 @@ message.
 
 This message will contain, for a given account address, the list of currencies/assets and the current balance for each of them. For example:  
 
-Accelerate Account Address:   394a3bfw93
+*Accelerate Account Address:   394a3bfw93*
 
-XCL       2,390
-
-GBP     243,300
-
-USD      39,000
+[width="100%",options="header"]
+|====================
+|Currency  | Amount 
+|XCL  |     2,434 
+|GBP  | 3,493,343
+|USD  |    34,893 
+|====================
 
 
 // todo add table showing example of success and error
@@ -366,9 +368,11 @@ The Exchange Rate Response message which is sent in response to the
 This message will contain the latest exchange Mid rates between 2 assets -eg. currencies, crypto currencies, etc-. 
 For example, a standard response will look something like:
 
-                Currencies  ExchangeRate
-
-                XCL/USD     2.3493
+[width="100%"]
+|====================
+|Currencies  |  ExchangeRate
+|XCL/USD  |  2.3493
+|====================
 
 The Mid rates are calculated by the appropriate Exchange service for that currency/asset pair. For example, the XCL/USD exchange rate will be calculated by the XCL/USD Exchange service. This service will return the Mid rate for 1 million USD 
 // todo USD?
@@ -472,10 +476,11 @@ A user would typically place his Limit Order on the Accelerate Website page.
 
 After placing a Limit Order, a trade might be executed immediately or at some point in the future or not at all, depending on how aggressive the specified Limit Price is and the currently available live prices in the market.
 
-If a trade does get executed, the result of placing a Limit Order is a:
+The result of placing a Limit Order is a:
 
 * Execution Report Event (0x72)
 
+but only, if and when, a trade takes place at the requested Limit Price.
 
 
 // todo add table showing example of success and error
