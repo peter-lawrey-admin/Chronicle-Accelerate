@@ -3,7 +3,6 @@ package cash.xcl.api.dto;
 import net.openhft.chronicle.bytes.Bytes;
 import net.openhft.chronicle.bytes.BytesIn;
 
-
 // FIXME needs reviewing/completing
 // This message is a query for all the known clusters and
 // the services they provide.

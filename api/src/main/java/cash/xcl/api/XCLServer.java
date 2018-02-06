@@ -27,7 +27,6 @@ public class XCLServer implements Closeable {
     private final ServerComponent serverComponent;
     private final Map<Long, TCPConnection> connections = new ConcurrentHashMap<>();
 
-
     public XCLServer(String name, int port, long address, Bytes secretKey, ServerComponent serverComponent) throws IOException {
         this.address = address;
         this.secretKey = secretKey;
@@ -72,7 +71,7 @@ public class XCLServer implements Closeable {
             try {
                 long address = bytes.readLong(bytes.readPosition() + 64);
                 long messageType = bytes.readUnsignedByte(bytes.readPosition() + MESSAGE_OFFSET);
-                if (    messageType == SUBSCRIPTION_QUERY ||
+                if (messageType == SUBSCRIPTION_QUERY ||
                         messageType == CURRENT_BALANCE_QUERY ||
                         messageType == EXCHANGE_RATE_QUERY ||
                         messageType == CLUSTER_STATUS_QUERY ||

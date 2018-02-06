@@ -1,6 +1,5 @@
 package cash.xcl.api.dto;
 
-
 import net.openhft.chronicle.bytes.Bytes;
 import net.openhft.chronicle.bytes.BytesIn;
 
@@ -8,7 +7,6 @@ import net.openhft.chronicle.bytes.BytesIn;
 public class NewMarketOrderCommand extends SignedMessage {
 
     private MarketOrder marketOrder;
-
 
     public NewMarketOrderCommand(long sourceAddress, long eventTime,
                                  MarketOrder marketOrder) {
@@ -27,7 +25,6 @@ public class NewMarketOrderCommand extends SignedMessage {
 
     @Override
     protected void writeMarshallable2(Bytes bytes) {
-
 
     }
 

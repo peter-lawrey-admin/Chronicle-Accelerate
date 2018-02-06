@@ -5,7 +5,6 @@ import net.openhft.chronicle.bytes.BytesOut;
 import net.openhft.chronicle.core.io.IORuntimeException;
 import net.openhft.chronicle.wire.AbstractBytesMarshallable;
 
-
 import java.util.List;
 
 // FIXME needs reviewing/completing
@@ -14,14 +13,13 @@ public class Clusters extends AbstractBytesMarshallable {
     private static int MAX_NUMBER_OF_NODES = 100;
     private List<Cluster> clusterList;
 
-
     public Clusters(List<Cluster> clusterList) {
         this.clusterList = clusterList;
     }
 
     /**
      * when a new node first joins our network we have to register the node in a cluster
-     * 
+     *
      * @param newNodeEvent
      */
     public void onNewNodeEvent(Node newNodeEvent) {
@@ -73,6 +71,5 @@ public class Clusters extends AbstractBytesMarshallable {
     public void writeMarshallable(BytesOut bytes) {
 
     }
-
 
 }

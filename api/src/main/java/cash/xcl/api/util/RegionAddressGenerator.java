@@ -4,18 +4,15 @@ import java.util.concurrent.ThreadLocalRandom;
 
 import static cash.xcl.api.util.AddressUtil.*;
 
-
 public class RegionAddressGenerator {
 
+    final long[] bannedSuffixes;
     private final String regionCode;
     private final long maxAddress;
     private final long regionPrefix;
-
     private final byte shiftCount;
     private final long shiftedRegionPrefix;
-
     private final byte[] shiftCountsForBanned;
-    final long[] bannedSuffixes;
 
     public RegionAddressGenerator(CountryRegion region) {
         this.regionCode = XCLBase32.normalize(region.getRegionCode());

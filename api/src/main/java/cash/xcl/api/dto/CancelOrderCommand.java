@@ -3,13 +3,10 @@ package cash.xcl.api.dto;
 import net.openhft.chronicle.bytes.Bytes;
 import net.openhft.chronicle.bytes.BytesIn;
 
-
 public class CancelOrderCommand extends SignedMessage {
-
 
     private String orderId;
     //private Order order;
-
 
     public CancelOrderCommand(long sourceAddress, long eventTime, String orderId) {
         super(sourceAddress, eventTime);

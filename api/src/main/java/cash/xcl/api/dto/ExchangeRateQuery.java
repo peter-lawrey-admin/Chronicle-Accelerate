@@ -11,7 +11,6 @@ public class ExchangeRateQuery extends SignedMessage {
 
     private String symbol2;
 
-
     public ExchangeRateQuery(long sourceAddress, long eventTime,
                              @NotNull String symbol1, @NotNull String symbol2) {
         super(sourceAddress, eventTime);
@@ -21,8 +20,6 @@ public class ExchangeRateQuery extends SignedMessage {
 
     public ExchangeRateQuery() {
     }
-
-
 
     public String symbol1() {
         return symbol1;

@@ -16,7 +16,6 @@ public class DtoParser {
     final OpeningBalanceEvent obe = new OpeningBalanceEvent();
     final FeesEvent fe = new FeesEvent();
 
-
     final ApplicationMessageEvent ame = new ApplicationMessageEvent();
     final CommandFailedEvent cfe = new CommandFailedEvent();
     final QueryFailedResponse qfr = new QueryFailedResponse();
@@ -68,11 +67,6 @@ public class DtoParser {
     final ClustersStatusResponse cSr = new ClustersStatusResponse();
     final CurrentBalanceResponse cbr = new CurrentBalanceResponse();
     final ExchangeRateResponse err = new ExchangeRateResponse();
-
-
-
-
-
 
     static <T extends SignedMessage, AM> void parse(Bytes bytes, T t, AM am, BiConsumer<AM, T> tConsumer) {
         t.reset();
@@ -158,7 +152,6 @@ public class DtoParser {
                 parse(bytes, sq, messages, AllMessages::subscriptionQuery);
                 break;
 
-
             // Regional commands and queries
             case TRANSFER_VALUE_EVENT:
                 parse(bytes, tve, messages, AllMessages::transferValueEvent);
@@ -185,7 +178,6 @@ public class DtoParser {
                 parse(bytes, cSr, messages, AllMessages::clustersStatusResponse);
                 break;
 
-
             // deposit value
             case DEPOSIT_VALUE_COMMAND:
                 parse(bytes, dvc, messages, AllMessages::depositValueCommand);
@@ -203,7 +195,6 @@ public class DtoParser {
             case WITHDRAW_VALUE_EVENT:
                 parse(bytes, wve, messages, AllMessages::withdrawValueEvent);
                 break;
-
 
             // Cluster
             case CLUSTER_STATUS_QUERY:

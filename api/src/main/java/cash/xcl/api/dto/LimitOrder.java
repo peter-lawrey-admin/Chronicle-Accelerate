@@ -1,7 +1,5 @@
 package cash.xcl.api.dto;
 
-
-
 // FIXME needs reviewing/completing
 public class LimitOrder extends Order {
 
@@ -28,7 +26,6 @@ public class LimitOrder extends Order {
     public boolean isMarketOrder() {
         return false;
     }
-
 
     public double limitPrice() {
         return limitPrice;
