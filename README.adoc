@@ -9,7 +9,7 @@ image::https://maven-badges.herokuapp.com/maven-central/net.openhft/chronicle-ac
 
 XCL is a new cryptocurrency project that, learning from the previous Blockchain implementations, aims to solve the issues limiting adoption by building an entirely new protocol that can scale to millions of transactions per second, delivering consistent  sub-second latency. Our platform will leverage AI to control volatility and liquidity, require low energy and simplify compliance with integrated KYC and AML support.
 
-The XCL platform combines low latencies (sub millisecond), IoT transaction rates (millions/s), open source AI volatility controls and blockchain for withdrawValueCommand of value and exchange of value for virtual fiat and crypto currencies. This system could be extended to other asset classes such as securities and fixed income. It uses a federated services model and regionalized payment systems making it more scalable than a blockchain which requires global consensus.
+The XCL platform combines low latencies (sub millisecond), IoT transaction rates (millions/s), open source AI volatility controls and blockchain for transfer of value and exchange of value for virtual fiat and crypto currencies. This system could be extended to other asset classes such as securities and fixed income. It uses a federated services model and regionalized payment systems making it more scalable than a blockchain which requires global consensus.
 
 The platform makes use of https://github.com/OpenHFT/Chronicle-Salt/blob/master/README.adoc[Chronicle-Salt] for encryption and https://github.com/OpenHFT/Chronicle-Bytes[Chronicle-Bytes]. Chronicle Bytes contains all the low level memory access wrappers. It is built on Chronicle Core’s direct memory and OS system call access.
 

@@ -131,7 +131,7 @@ This message requests that a new account be created. This includes the public ke
 
 === Cluster Transfer Value Step1 Command (0x21)
 
-This message is a command to withdrawValueCommand value from one cluster to another, via the main chain.
+This message is a command to transfer value from one cluster to another, via the main chain.
 
 The first step is to approve money be taken out of an account in one region/cluster.
 
@@ -142,11 +142,9 @@ The first step is to approve money be taken out of an account in one region/clus
 
 === Cluster Transfer Value Step2 Command (0x22)
 
-This message is a command to withdrawValueCommand value from one cluster to another, via the main chain.
+This message is a command to transfer value from one cluster to another, via the main chain.
 
-The second step is to pass the withdrawValueCommand between clusters via the main chain.
-
-The main chain can reject it if a node or cluster fails risk checks e.g. transfers too much money, too quicky.
+The second step is to pass the transfer main chain can reject it if a node or cluster fails risk checks e.g. transfers too much money, too quicky.
 
 |===
 | Success | Error
@@ -155,7 +153,7 @@ The main chain can reject it if a node or cluster fails risk checks e.g. transfe
 
 === Cluster Transfer Value Step3 Command (0x23)
 
-This message is a command to withdrawValueCommand value from one cluster to another via the main chain.
+This message is a command to transfer value from one cluster to another via the main chain.
 
 The last step is to notify the target cluster to add to the balance of an address.
 
@@ -216,7 +214,7 @@ Range 0x40 - 0x4f
 
 === Transfer Value Command (0x40)
 
-This message is a command to withdrawValueCommand value from one address to another in the same chain.
+This message is a command to transfer value from one address to another in the same chain.
 
 The first step is to approve money be taken out of an account in one region/cluster.
 
@@ -271,7 +269,7 @@ Range 0x50 - 0x5f
 
 === Transfer Value Event (0x50)
 
-This message is a command to withdrawValueCommand value from one address to another.
+This message is a command to transfer value from one address to another.
 
 // todo add table showing example of success and error
 
@@ -309,7 +307,7 @@ Range 0x60 - 0x6f
 
 === Deposit Value Command (0x60)
 
-This message is a command to withdrawValueCommand value from one address to another.
+This message is a command to transfer value from one address to another.
 
 |===
 | Success | Error
@@ -318,7 +316,7 @@ This message is a command to withdrawValueCommand value from one address to anot
 
 === Withdraw Value Command (0x61)
 
-This message is a command to withdrawValueCommand value from one address to another.
+This message is a command to transfer value from one address to another.
 
 |===
 | Success | Error
