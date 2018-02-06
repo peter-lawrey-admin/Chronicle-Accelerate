@@ -53,6 +53,26 @@ public class MockGateway implements ClientOut {
     }
 
     @Override
+    public void clusterStatusQuery(ClusterStatusQuery clusterStatusQuery) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void clustersStatusQuery(ClustersStatusQuery clustersStatusQuery) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void currentBalanceQuery(CurrentBalanceQuery currentBalanceQuery) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void exchangeRateQuery(ExchangeRateQuery exchangeRateQuery) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public void close() {
         mockServer.close();
     }
@@ -87,6 +107,11 @@ public class MockGateway implements ClientOut {
         @Override
         public void clusterTransferStep3Event(ClusterTransferStep3Event clusterTransferStep3Event) {
             clientIn.clusterTransferStep3Event(clusterTransferStep3Event);
+        }
+
+        @Override
+        public void executionReportEvent(ExecutionReportEvent executionReportEvent) {
+            clientIn.executionReportEvent(executionReportEvent);
         }
 
         @Override

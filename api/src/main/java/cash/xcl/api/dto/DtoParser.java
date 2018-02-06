@@ -15,6 +15,7 @@ public class DtoParser {
     final TreeBlockEvent treebe = new TreeBlockEvent();
     final OpeningBalanceEvent obe = new OpeningBalanceEvent();
     final FeesEvent fe = new FeesEvent();
+    final ServiceNodesEvent sne = new ServiceNodesEvent();
 
     final ApplicationMessageEvent ame = new ApplicationMessageEvent();
     final CommandFailedEvent cfe = new CommandFailedEvent();
@@ -102,6 +103,10 @@ public class DtoParser {
 
             case EXCHANGE_RATE_EVENT:
                 parse(bytes, ere, messages, AllMessages::exchangeRateEvent);
+                break;
+
+            case SERVICE_NODES:
+                parse(bytes, sne, messages, AllMessages::serviceNodesEvent);
                 break;
 
             // runtime events
