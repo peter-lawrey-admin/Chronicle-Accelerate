@@ -24,6 +24,11 @@ public interface ClientIn {
 
     void withdrawValueEvent(WithdrawValueEvent withdrawValueEvent);
 
+    // Responses
     void subscriptionSuccessResponse(SubscriptionSuccessResponse subscriptionSuccessResponse);
+    void clusterStatusResponse(ClusterStatusResponse clusterStatusResponse);
+    void clustersStatusResponse(ClustersStatusResponse clustersStatusResponse);
+    void currentBalanceResponse(CurrentBalanceResponse currentBalanceResponse);
+    void exchangeRateResponse(ExchangeRateResponse exchangeRateResponse);
 
 }

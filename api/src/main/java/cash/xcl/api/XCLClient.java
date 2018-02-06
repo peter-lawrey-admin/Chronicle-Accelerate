@@ -101,6 +101,26 @@ public class XCLClient implements AllMessages, Closeable {
     }
 
     @Override
+    public void clusterStatusResponse(ClusterStatusResponse clusterStatusResponse) {
+        write(clusterStatusResponse);
+    }
+
+    @Override
+    public void clustersStatusResponse(ClustersStatusResponse clustersStatusResponse) {
+        write(clustersStatusResponse);
+    }
+
+    @Override
+    public void currentBalanceResponse(CurrentBalanceResponse currentBalanceResponse) {
+        write(currentBalanceResponse);
+    }
+
+    @Override
+    public void exchangeRateResponse(ExchangeRateResponse exchangeRateResponse) {
+        write(exchangeRateResponse);
+    }
+
+    @Override
     public void createNewAddressEvent(CreateNewAddressEvent createNewAddressEvent) {
         write(createNewAddressEvent);
     }

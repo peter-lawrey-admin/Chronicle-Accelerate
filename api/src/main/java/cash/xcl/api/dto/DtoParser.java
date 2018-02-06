@@ -39,8 +39,6 @@ public class DtoParser {
     final WithdrawValueEvent wve = new WithdrawValueEvent();
 
     final SubscriptionQuery sq = new SubscriptionQuery();
-    final SubscriptionSuccessResponse ss = new SubscriptionSuccessResponse();
-
 
     // Cluster
     final ClusterStatusQuery csq = new ClusterStatusQuery();
@@ -64,11 +62,13 @@ public class DtoParser {
     // ExecutionReport
     final ExecutionReportEvent execre = new ExecutionReportEvent();
 
-    // FIXME
-//    ClusterStatusResponse
-//    ClustersStatusResponse
-//    CurrentBalanceResponse
-//    ExchangeRateResponse
+    // Responses
+    final SubscriptionSuccessResponse ss = new SubscriptionSuccessResponse();
+    final ClusterStatusResponse csr = new ClusterStatusResponse();
+    final ClustersStatusResponse cSr = new ClustersStatusResponse();
+    final CurrentBalanceResponse cbr = new CurrentBalanceResponse();
+    final ExchangeRateResponse err = new ExchangeRateResponse();
+
 
 
 
@@ -164,21 +164,27 @@ public class DtoParser {
                 parse(bytes, tve, messages, AllMessages::transferValueEvent);
                 break;
 
+            // Responses
             case SUBSCRIPTION_SUCCESS_RESPONSE:
                 parse(bytes, ss, messages, AllMessages::subscriptionSuccessResponse);
                 break;
 
             case CURRENT_BALANCE_RESPONSE:
-                parse(bytes, ss, messages, AllMessages::subscriptionSuccessResponse);
+                parse(bytes, cbr, messages, AllMessages::currentBalanceResponse);
                 break;
 
             case EXCHANGE_RATE_RESPONSE:
-                parse(bytes, ss, messages, AllMessages::subscriptionSuccessResponse);
+                parse(bytes, err, messages, AllMessages::exchangeRateResponse);
                 break;
 
             case CLUSTER_STATUS_RESPONSE:
-                parse(bytes, ss, messages, AllMessages::subscriptionSuccessResponse);
+                parse(bytes, csr, messages, AllMessages::clusterStatusResponse);
                 break;
+
+            case CLUSTERS_STATUS_RESPONSE:
+                parse(bytes, cSr, messages, AllMessages::clustersStatusResponse);
+                break;
+
 
             // deposit value
             case DEPOSIT_VALUE_COMMAND:
@@ -208,11 +214,6 @@ public class DtoParser {
             case CLUSTERS_STATUS_QUERY:
                 parse(bytes, cSq, messages, AllMessages::clustersStatusQuery);
                 break;
-
-            case CLUSTERS_STATUS_RESPONSE:
-                parse(bytes, ss, messages, AllMessages::subscriptionSuccessResponse);
-                break;
-
 
             // CurrentBalance
             case CURRENT_BALANCE_EVENT:
