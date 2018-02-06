@@ -20,7 +20,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.runners.Parameterized.Parameter;
 import static org.junit.runners.Parameterized.Parameters;
 
-@Ignore
+
 @RunWith(Parameterized.class)
 public class DtoParserTest {
     @Parameter(0)
