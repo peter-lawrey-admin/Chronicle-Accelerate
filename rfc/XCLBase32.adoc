@@ -1,0 +1,1441 @@
+= XCLBase32 specification
+Peter Lawrey
+
+XCLBase32 is an extension of hexa-decimal for encoding a string of bytes..
+
+There are Base32 specifications such as https://tools.ietf.org/html/rfc4648[IETF - RFC4648] for encoding a string of bytes
+which starts at the highest bits and includes the length of bytes
+and the byte length of any training zeros are not important. As such encoding is aligned to the highest bits.
+
+One of the aims is to produce numbers which can also be used to form words.
+
+== Extended Hexadecimal
+
+The encoding is the same as base16, with the rest of the alphabet except
+
+- l and O as they can be confused with 1 and 0
+- q and x as these are rare letters
+
+|===
+| 0, o, O =  0 | 1, l, L =  1 | 2 =  2 | 3 =  3
+| 4 =  4 | 5 =  5 | 6 =  6 | 7 =  7
+| 8, x, X =  8 | 9, q, Q =  9 | a, A =  a | b, B =  b
+| c, C =  c | d, D =  d | e, E =  e | f, F =  f
+| g, G =  g | h, H =  h | i, I =  i | j, J =  j
+| k, K =  k | m, M =  m | n, N =  n | p, P =  p
+| r, R =  r | s, S =  s | t, T =  t | u, U =  u
+| v, V =  v | w, W =  w | y, Y =  y | z, Z =  z
+|===
+
+NOTE: When decoding an encoded string, multiple characters map to the same value. +
+e.g. A and a are 10, 9, q and Q are 9
+
+== Non ASCII extensions
+
+For unicode characters above 128, the character is romanized as either 1 or two encoded tokens as above.
+If the romanized character would be more than 2 letters, the first and last letters is taken.
+
+.ALPHABETIC_PRESENTATION_FORMS
+|===
+| יִ = yodh | ﬠ = alta | ﬡ = wida | ﬢ = widd
+| ﬣ = widh | ﬤ = widk | ﬥ = widl | ﬦ = widf
+| ﬧ = widr | ﬨ = widt | ﬩ = altp | שׁ, שׂ = shis
+| שּׁ, שּׂ, שּ = shid | אַ = alep | אָ = aleq | אּ = alem
+| בּ = betd | גּ = gimd | דּ = dald | הּ = hem
+| וּ = vavd | זּ = zayd | טּ = tetd | יּ = yodd
+| ךּ = fink | כּ = kafd | לּ = lamd | מּ = memd
+| נּ = nund | סּ = samd | ףּ = finp | פּ = ped
+| צּ = tsad | קּ = qofd | רּ = resd | תּ = tavd
+| וֹ = vavh | בֿ = betr | כֿ = kafr | פֿ = per
+|===
+
+.ARABIC
+|===
+| ء, ﺀ = hama | آ, ى, ﺁ, ﺂ, ﻯ, ﻰ = alem | أ, إ, ﺃ, ﺄ, ﺇ, ﺈ = aleh | ؤ, ﺅ, ﺆ = wawh
+| ئ, ﺉ, ﺊ, ﺋ, ﺌ = yehh | ا, ﺍ, ﺎ = alef | ب, ﺏ, ﺐ, ﺑ, ﺒ = beh | ة, ۃ, ﺓ, ﺔ = tehm
+| ت, ﺕ, ﺖ, ﺗ, ﺘ = teh | ث, ﺙ, ﺚ, ﺛ, ﺜ = theh | ج, ﺝ, ﺞ, ﺟ, ﺠ = jeem | ح, ﺡ, ﺢ, ﺣ, ﺤ = hah
+| خ, ﺥ, ﺦ, ﺧ, ﺨ = khah | د, ﺩ, ﺪ = dal | ذ, ﺫ, ﺬ = thal | ر, ﺭ, ﺮ = reh
+| ز, ﺯ, ﺰ = zain | س, ﺱ, ﺲ, ﺳ, ﺴ = seen | ش, ﺵ, ﺶ, ﺷ, ﺸ = shen | ص, ﺹ, ﺺ, ﺻ, ﺼ = sad
+| ض, ﺽ, ﺾ, ﺿ, ﻀ = dad | ط, ﻁ, ﻂ, ﻃ, ﻄ = tah | ظ, ﻅ, ﻆ, ﻇ, ﻈ = zah | ع, ﻉ, ﻊ, ﻋ, ﻌ = ain
+| غ, ﻍ, ﻎ, ﻏ, ﻐ = ghan | ف, ڡ, ﻑ, ﻒ, ﻓ, ﻔ = feh | ق, ﻕ, ﻖ, ﻗ, ﻘ = qaf | ك, ﻙ, ﻚ, ﻛ, ﻜ = kaf
+| ل, ﻝ, ﻞ, ﻟ, ﻠ = lam | م, ﻡ, ﻢ, ﻣ, ﻤ = meem | ن, ﻥ, ﻦ, ﻧ, ﻨ = noon | ه, ﻩ, ﻪ, ﻫ, ﻬ = heh
+| و, ﻭ, ﻮ = waw | ي, ﻱ, ﻲ, ﻳ, ﻴ = yeh | ٠, ۰ =  0 | ١, ۱ =  1
+| ٢, ۲ =  2 | ٣, ۳ =  3 | ٤, ۴ =  4 | ٥, ۵ =  5
+| ٦, ۶ =  6 | ٧, ۷ =  7 | ٨, ۸ =  8 | ٩, ۹ =  9
+| ٱ, ٲ, ٳ, ﭐ, ﭑ = alew | ٴ, ٵ, ٶ, ٸ = high | ٷ, ﯝ = uh | ٹ, ٺ, ﭞ, ﭟ, ﭠ, ﭡ, ﭦ, ﭧ, ﭨ, ﭩ = tteh
+| ٻ, ﭒ, ﭓ, ﭔ, ﭕ = beeh | ټ = tehr | ٽ = teht | پ, ﭖ, ﭗ, ﭘ, ﭙ = peh
+| ٿ, ﭢ, ﭣ, ﭤ, ﭥ = tehh | ڀ, ﭚ, ﭛ, ﭜ, ﭝ = behh | ځ = hahh | ڂ, څ = haht
+| ڃ, ﭶ, ﭷ, ﭸ, ﭹ = nyeh | ڄ, ﭲ, ﭳ, ﭴ, ﭵ = dyeh | چ, ڇ, ﭺ, ﭻ, ﭼ, ﭽ, ﭾ, ﭿ, ﮀ, ﮁ = tchh | ڈ, ڍ, ﮂ, ﮃ, ﮈ, ﮉ = ddal
+| ډ = dalr | ڊ, ڋ = dald | ڌ, ﮄ, ﮅ = dahl | ڎ, ﮆ, ﮇ = dul
+| ڏ = dalt | ڐ = dalf | ڑ, ﮌ, ﮍ = rreh | ڒ, ڕ = rehv
+| ړ = rehr | ڔ, ږ = rehd | ڗ = reht | ژ, ﮊ, ﮋ = jeh
+| ڙ = rehf | ښ = seed | ڛ, ڜ = seet | ڝ, ڞ = sadt
+| ڟ = taht | ڠ = aint | ڢ, ڣ = fehd | ڤ, ﭪ, ﭫ, ﭬ, ﭭ = veh
+| ڥ = feht | ڦ, ﭮ, ﭯ, ﭰ, ﭱ = pehh | ڧ = qafd | ڨ = qaft
+| ک, ﮎ, ﮏ, ﮐ, ﮑ = kehh | ڪ = swak | ګ = kafr | ڬ = kafd
+| ڭ, ﯓ, ﯔ, ﯕ, ﯖ = ng | ڮ = kaft | گ, ﮒ, ﮓ, ﮔ, ﮕ = gaf | ڰ = gafr
+| ڱ, ﮚ, ﮛ, ﮜ, ﮝ = ngoh | ڲ, ڴ = gaft | ڳ, ﮖ, ﮗ, ﮘ, ﮙ = gueh | ڵ = lamv
+| ڶ = lamd | ڷ, ڸ = lamt | ڹ = nood | ں, ﮞ, ﮟ = noog
+| ڻ, ﮠ, ﮡ, ﮢ, ﮣ = rnon | ڼ = noor | ڽ = noot | ھ, ﮪ, ﮫ, ﮬ, ﮭ = hehd
+| ڿ = tchd | ۀ, ﮤ, ﮥ = hehy | ہ, ۂ, ﮦ, ﮧ, ﮨ, ﮩ = hehg | ۄ = wawr
+| ۅ, ﯠ, ﯡ = kiro | ۆ, ﯙ, ﯚ = oe | ۇ, ﯗ, ﯘ =  u | ۈ, ﯛ, ﯜ = yu
+| ۉ, ﯢ, ﯣ = kiry | ۊ = wawt | ۋ, ﯞ, ﯟ = ve | ی, ﯼ, ﯽ, ﯾ, ﯿ = fary
+| ۍ, ۑ = yeht | ێ = yehv | ۏ = wawd | ې, ﯤ, ﯥ, ﯦ, ﯧ =  e
+| ے, ۓ, ﮮ, ﮯ, ﮰ, ﮱ = yehb | ە = ae | ۺ = shed | ۻ = dadd
+| ۼ = ghad | ۽ = sina | ۾ = sinp | ﯨ, ﯩ = uigk
+|===
+
+.ARMENIAN
+|===
+| ՙ = lefh | ա, Ա = ayb | բ, Բ = ben | գ, Գ = gim
+| դ, Դ = da | ե, Ե = ech | զ, Զ = za | է, Է = eh
+| ը, Ը = et | թ, Թ = to | ժ, Ժ = zhe | ի, Ի = ini
+| լ, Լ = liwn | խ, Խ = xeh | ծ, Ծ = ca | կ, Կ = ken
+| հ, Հ = ho | ձ, Ձ = ja | ղ, Ղ = ghad | ճ, Ճ = cheh
+| մ, Մ = men | յ, Յ = yi | ն, Ն = now | շ, Շ = sha
+| ո, Ո = vo | չ, Չ = cha | պ, Պ = peh | ջ, Ջ = jheh
+| ռ, Ռ = ra | ս, Ս = seh | վ, Վ = vew | տ, Տ = tiwn
+| ր, Ր = reh | ց, Ց = co | ւ, Ւ = yiwn | փ, Փ = piwr
+| ք, Ք = keh | օ, Օ = oh | ֆ, Ֆ = feh
+|===
+
+.BENGALI
+|===
+| ঁ = canu | ং = anua | ঃ = visa | অ =  a
+| আ, া = aa | ই, ি =  i | ঈ, ী = ii | উ, ু =  u
+| ঊ, ূ = uu | ঋ, ৃ =  r | ঌ, ৢ =  l | এ, ে =  e
+| ঐ, ৈ = ai | ও, ো =  o | ঔ, ৌ = au | ক = ka
+| খ = kha | গ = ga | ঘ = gha | ঙ = nga
+| চ = ca | ছ = cha | জ = ja | ঝ = jha
+| ঞ = nya | ট = tta | ঠ = ttha | ড = dda
+| ঢ = ddha | ণ = nna | ত = ta | থ = tha
+| দ = da | ধ = dha | ন = na | প = pa
+| ফ = pha | ব = ba | ভ = bha | ম = ma
+| য = ya | র = ra | ল = la | শ = sha
+| ষ = ssa | স = sa | হ = ha | ় = nuka
+| ৄ, ৠ = rr | ্ = vira | ড় = rra | ঢ় = rha
+| য় = yya | ৡ, ৣ = ll | ০ =  0 | ১ =  1
+| ২ =  2 | ৩ =  3 | ৪ =  4 | ৫ =  5
+| ৬ =  6 | ৭ =  7 | ৮ =  8 | ৯ =  9
+| ৰ = ram | ৱ = ral
+|===
+
+.BOPOMOFO
+|===
+| ㄅ =  b | ㄆ, ㆴ =  p | ㄇ =  m | ㄈ =  f
+| ㄉ =  d | ㄊ, ㆵ =  t | ㄋ =  n | ㄌ =  l
+| ㄍ =  g | ㄎ, ㆶ =  k | ㄏ, ㆷ =  h | ㄐ =  j
+| ㄑ =  q | ㄒ =  x | ㄓ = zh | ㄔ = ch
+| ㄕ = sh | ㄖ =  r | ㄗ =  z | ㄘ =  c
+| ㄙ =  s | ㄚ =  a | ㄛ =  o | ㄜ =  e
+| ㄝ = eh | ㄞ = ai | ㄟ = ei | ㄠ = au
+| ㄡ = ou | ㄢ = an | ㄣ = en | ㄤ = ang
+| ㄥ = eng | ㄦ = er | ㄧ =  i | ㄨ =  u
+| ㄩ = iu | ㄪ =  v | ㄫ = ng | ㄬ = gn
+| ㆠ = bu | ㆡ = zi | ㆢ = ji | ㆣ = gu
+| ㆤ = ee | ㆥ = enn | ㆦ = oo | ㆧ = onn
+| ㆨ = ir | ㆩ = ann | ㆪ = inn | ㆫ = unn
+| ㆬ = im | ㆭ = ngg | ㆮ = ainn | ㆯ = aunn
+| ㆰ = am | ㆱ = om | ㆲ = ong | ㆳ = innn
+|===
+
+.CHEROKEE
+|===
+| Ꭰ =  a | Ꭱ =  e | Ꭲ =  i | Ꭳ =  o
+| Ꭴ =  u | Ꭵ =  v | Ꭶ = ga | Ꭷ = ka
+| Ꭸ = ge | Ꭹ = gi | Ꭺ = go | Ꭻ = gu
+| Ꭼ = gv | Ꭽ = ha | Ꭾ = he | Ꭿ = hi
+| Ꮀ = ho | Ꮁ = hu | Ꮂ = hv | Ꮃ = la
+| Ꮄ = le | Ꮅ = li | Ꮆ = lo | Ꮇ = lu
+| Ꮈ = lv | Ꮉ = ma | Ꮊ = me | Ꮋ = mi
+| Ꮌ = mo | Ꮍ = mu | Ꮎ = na | Ꮏ = hna
+| Ꮐ = nah | Ꮑ = ne | Ꮒ = ni | Ꮓ = no
+| Ꮔ = nu | Ꮕ = nv | Ꮖ = qua | Ꮗ = que
+| Ꮘ = qui | Ꮙ = quo | Ꮚ = quu | Ꮛ = quv
+| Ꮜ = sa | Ꮝ =  s | Ꮞ = se | Ꮟ = si
+| Ꮠ = so | Ꮡ = su | Ꮢ = sv | Ꮣ = da
+| Ꮤ = ta | Ꮥ = de | Ꮦ = te | Ꮧ = di
+| Ꮨ = ti | Ꮩ = do | Ꮪ = du | Ꮫ = dv
+| Ꮬ = dla | Ꮭ = tla | Ꮮ = tle | Ꮯ = tli
+| Ꮰ = tlo | Ꮱ = tlu | Ꮲ = tlv | Ꮳ = tsa
+| Ꮴ = tse | Ꮵ = tsi | Ꮶ = tso | Ꮷ = tsu
+| Ꮸ = tsv | Ꮹ = wa | Ꮺ = we | Ꮻ = wi
+| Ꮼ = wo | Ꮽ = wu | Ꮾ = wv | Ꮿ = ya
+| Ᏸ = ye | Ᏹ = yi | Ᏺ = yo | Ᏻ = yu
+| Ᏼ = yv
+|===
+
+.CJK_COMPATIBILITY
+|===
+| ㍘ =  0 | ㍙ =  1 | ㍚ =  2 | ㍛ =  3
+| ㍜ =  4 | ㍝ =  5 | ㍞ =  6 | ㍟ =  7
+| ㍠ =  8 | ㍡ =  9 | ㍢ = 10 | ㍣ = 11
+| ㍤ = 12 | ㍥ = 13 | ㍦ = 14 | ㍧ = 15
+| ㍨ = 16 | ㍩ = 17 | ㍪ = 18 | ㍫ = 19
+| ㍬ = 20 | ㍭ = 21 | ㍮ = 22 | ㍯ = 23
+| ㍰ = 24
+|===
+
+.CJK_COMPATIBILITY_IDEOGRAPHS
+|===
+| 參 =  3 | 拾, 什 = 10 | 兩 =  2 | 零 =  0
+| 六, 陸 =  6
+|===
+
+.CJK_RADICALS_SUPPLEMENT
+|===
+| ⺀ = rept | ⺁ = clif | ⺂ = seco | ⺃, ⺄ = sect
+| ⺅ = pern | ⺆ = box | ⺇ = tabe | ⺈ = knio
+| ⺉ = knit | ⺊ = divn | ⺋ = seal | ⺌, ⻑ = one
+| ⺍, ⻒ = two | ⺎ = lamo | ⺏, ⺐ = lamt | ⺑ = lamf
+| ⺒ = snae | ⺓ = thrd | ⺔ = snoo | ⺕ = snot
+| ⺖ = heao | ⺗ = heat | ⺘ = hand | ⺙ = rap
+| ⺛ = choe | ⺜ = sun | ⺝ = moon | ⺞ = deah
+| ⺟ = motr | ⺠ = civn | ⺡ = wato | ⺢ = watt
+| ⺣ = fire | ⺤ = pawo | ⺥ = pawt | ⺦ = halt
+| ⺧ = cow | ⺨ = dog | ⺩ = jade | ⺪ = bolo
+| ⺫ = eye | ⺬ = spio | ⺭ = spit | ⺮ = bamo
+| ⺯, ⺰ = silk | ⺱ = neto | ⺲, ⺳ = nett | ⺴ = netf
+| ⺵ = mesh | ⺶ = shep | ⺷ = ram | ⺸ = ewe
+| ⺹ = old | ⺺ = bruo | ⺻ = brut | ⺼ = meat
+| ⺽ = morr | ⺾ = grao | ⺿, ⻀ = grat | ⻁ = tigr
+| ⻂ = clos | ⻃ = weso | ⻄ = west | ⻅ = see
+| ⻆, ⻇ = horn | ⻈ = speh | ⻉ = shel | ⻊ = foot
+| ⻋ = cart | ⻌ = walk | ⻍ = walo | ⻎ = walt
+| ⻏ = city | ⻐ = gold | ⻓ = long | ⻔ = gate
+| ⻕ = mouo | ⻖ = mout | ⻗ = rain | ⻘ = blue
+| ⻙ = tanl | ⻚ = leaf | ⻛ = wind | ⻜ = fly
+| ⻝ = eato | ⻞, ⻟ = eatt | ⻠ = eat | ⻡ = head
+| ⻢ = hore | ⻣ = bone | ⻤ = ghot | ⻥ = fish
+| ⻦ = bird | ⻧ = salt | ⻨ = whet | ⻩ = yelw
+| ⻪ = frog | ⻫, ⻬ = even | ⻭, ⻮ = tooh | ⻯, ⻰ = dran
+| ⻱, ⻲, ⻳ = ture
+|===
+
+.CJK_SYMBOLS_AND_PUNCTUATION
+|===
+| 〇 =  0 | 〡 =  1 | 〢 =  2 | 〣 =  3
+| 〤 =  4 | 〥 =  5 | 〦 =  6 | 〧 =  7
+| 〨 =  8 | 〩 =  9 | 〸 = 10 | 〹 = 20
+| 〺 = 30
+|===
+
+.CYRILLIC
+|===
+| а, А =  a | б, Б = be | в, В = ve | г, Г = ghe
+| д, Д = de | е, Е = ie | ж, Ж = zhe | з, З = ze
+| и, И =  i | й, Й = shoi | к, К = ka | л, Л = el
+| м, М = em | н, Н = en | о, О =  o | п, П = pe
+| р, Р = er | с, С = es | т, Т = te | у, У =  u
+| ф, Ф = ef | х, Х = ha | ц, Ц = tse | ч, Ч = che
+| ш, Ш = sha | щ, Щ = shca | ъ, Ъ = hars | ы, Ы = yeru
+| ь, Ь = sofs | э, Э =  e | ю, Ю = yu | я, Я = ya
+| ѐ, Ѐ = ieg | ё, Ё = io | ђ, Ђ = dje | ѓ, Ѓ = gje
+| є, Є = ukri | ѕ, Ѕ = dze | і, І = byeu | ї, Ї = yi
+| ј, Ј = je | љ, Љ = lje | њ, Њ = nje | ћ, Ћ = tshe
+| ќ, Ќ = kje | ѝ, Ѝ = ig | ў, Ў = shou | џ, Џ = dzhe
+| ѡ, Ѡ = omea | ѣ, Ѣ = yat | ѥ, Ѥ = iote | ѧ, Ѧ = lity
+| ѩ, Ѩ = iotl | ѫ, Ѫ = bigy | ѭ, Ѭ = iotb | ѯ, Ѯ = ksi
+| ѱ, Ѱ = psi | ѳ, Ѳ = fita | ѵ, Ѵ = izha | ѷ, Ѷ = izhg
+| ѹ, Ѹ = uk | ѻ, Ѻ = rouo | ѽ, Ѽ = omet | ѿ, Ѿ = ot
+| ҁ, Ҁ = kopa | ҍ, Ҍ = sems | ҏ, Ҏ = ert | ґ, Ґ = gheu
+| ғ, Ғ = ghes | ҕ, Ҕ = ghem | җ, Җ, ӝ, Ӝ = zhed | ҙ, Ҙ, ӟ, Ӟ = zed
+| қ, Қ = kad | ҝ, Ҝ = kav | ҟ, Ҟ = kas | ҡ, Ҡ = bask
+| ң, Ң = end | ҧ, Ҧ = pem | ҩ, Ҩ = abkh | ҫ, Ҫ = esd
+| ҭ, Ҭ = ted | ү, Ү, ұ, Ұ = stru | ҳ, Ҳ = had | ҷ, Ҷ, ӵ, Ӵ = ched
+| ҹ, Ҹ = chev | һ, Һ = shha | ҽ, Ҽ, ҿ, Ҿ = abkc | ӂ, Ӂ = zheb
+| ӄ, Ӄ = kah | ӈ, Ӈ = enh | ӌ, Ӌ = khac | ӑ, Ӑ = ab
+| ӓ, Ӓ = ad | ӗ, Ӗ = ieb | ә, Ә = scha | ӛ, Ӛ = schd
+| ӡ, Ӡ = abkd | ӣ, Ӣ = im | ӥ, Ӥ = id | ӧ, Ӧ = od
+| ө, Ө, ӫ, Ӫ = baro | ӭ, Ӭ = ed | ӯ, Ӯ = um | ӱ, Ӱ = ud
+| ӳ, Ӳ = ua | ӹ, Ӹ = yerd
+|===
+
+.DEVANAGARI
+|===
+| ँ = canu | ं, ॒ = anua | ः = visa | अ =  a
+| आ, ा = aa | इ, ि =  i | ई, ी = ii | उ, ु =  u
+| ऊ, ू = uu | ऋ, ृ =  r | ऌ, ॢ =  l | ऍ, ए, ॅ, े =  e
+| ऎ, ॆ = shoe | ऐ, ै = ai | ऑ, ओ, ॉ, ो =  o | ऒ, ॊ = shoo
+| औ, ौ = au | क = ka | ख = kha | ग = ga
+| घ = gha | ङ = nga | च = ca | छ = cha
+| ज = ja | झ = jha | ञ = nya | ट = tta
+| ठ = ttha | ड = dda | ढ = ddha | ण = nna
+| त = ta | थ = tha | द = da | ध = dha
+| न = na | ऩ = nnna | प = pa | फ = pha
+| ब = ba | भ = bha | म = ma | य = ya
+| र = ra | ऱ = rra | ल = la | ळ = lla
+| ऴ = llla | व = va | श = sha | ष = ssa
+| स = sa | ह = ha | ़ = nuka | ऽ = avaa
+| ॄ, ॠ = rr | ् = vira | ॑ = udaa | क़ = qa
+| ख़ = khha | ग़ = ghha | ज़ = za | ड़ = ddda
+| ढ़ = rha | फ़ = fa | य़ = yya | ॡ, ॣ = ll
+| ० =  0 | १ =  1 | २ =  2 | ३ =  3
+| ४ =  4 | ५ =  5 | ६ =  6 | ७ =  7
+| ८ =  8 | ९ =  9
+|===
+
+.DINGBATS
+|===
+| ❡ = ornt | ❶, ➀, ➊ =  1 | ❷, ➁, ➋ =  2 | ❸, ➂, ➌ =  3
+| ❹, ➃, ➍ =  4 | ❺, ➄, ➎ =  5 | ❻, ➅, ➏ =  6 | ❼, ➆, ➐ =  7
+| ❽, ➇, ➑ =  8 | ❾, ➈, ➒ =  9 | ❿, ➉, ➓ = 10
+|===
+
+.ENCLOSED_ALPHANUMERICS
+|===
+| ①, ⑴, ⒈ =  1 | ②, ⑵, ⒉ =  2 | ③, ⑶, ⒊ =  3 | ④, ⑷, ⒋ =  4
+| ⑤, ⑸, ⒌ =  5 | ⑥, ⑹, ⒍ =  6 | ⑦, ⑺, ⒎ =  7 | ⑧, ⑻, ⒏ =  8
+| ⑨, ⑼, ⒐ =  9 | ⑩, ⑽ = 10 | ⑪, ⑾ = 11 | ⑫, ⑿ = 12
+| ⑬, ⒀ = 13 | ⑭, ⒁ = 14 | ⑮, ⒂ = 15 | ⑯, ⒃ = 16
+| ⑰, ⒄ = 17 | ⑱, ⒅ = 18 | ⑲, ⒆ = 19 | ⑳, ⒇ = 20
+| ⒜, ⓐ, Ⓐ =  a | ⒝, ⓑ, Ⓑ =  b | ⒞, ⓒ, Ⓒ =  c | ⒟, ⓓ, Ⓓ =  d
+| ⒠, ⓔ, Ⓔ =  e | ⒡, ⓕ, Ⓕ =  f | ⒢, ⓖ, Ⓖ =  g | ⒣, ⓗ, Ⓗ =  h
+| ⒤, ⓘ, Ⓘ =  i | ⒥, ⓙ, Ⓙ =  j | ⒦, ⓚ, Ⓚ =  k | ⒧, ⓛ, Ⓛ =  l
+| ⒨, ⓜ, Ⓜ =  m | ⒩, ⓝ, Ⓝ =  n | ⒪, ⓞ, Ⓞ =  o | ⒫, ⓟ, Ⓟ =  p
+| ⒬, ⓠ, Ⓠ =  q | ⒭, ⓡ, Ⓡ =  r | ⒮, ⓢ, Ⓢ =  s | ⒯, ⓣ, Ⓣ =  t
+| ⒰, ⓤ, Ⓤ =  u | ⒱, ⓥ, Ⓥ =  v | ⒲, ⓦ, Ⓦ =  w | ⒳, ⓧ, Ⓧ =  x
+| ⒴, ⓨ, Ⓨ =  y | ⒵, ⓩ, Ⓩ =  z | ⓪ =  0
+|===
+
+.ENCLOSED_CJK_LETTERS_AND_MONTHS
+|===
+| ㈠, ㊀ =  1 | ㈡, ㊁ =  2 | ㈢, ㊂ =  3 | ㈣, ㊃ =  4
+| ㈤, ㊄ =  5 | ㈥, ㊅ =  6 | ㈦, ㊆ =  7 | ㈧, ㊇ =  8
+| ㈨, ㊈ =  9 | ㈩, ㊉ = 10 | ㋐ =  a | ㋑ =  i
+| ㋒ =  u | ㋓ =  e | ㋔ =  o | ㋕ = ka
+| ㋖ = ki | ㋗ = ku | ㋘ = ke | ㋙ = ko
+| ㋚ = sa | ㋛ = si | ㋜ = su | ㋝ = se
+| ㋞ = so | ㋟ = ta | ㋠ = ti | ㋡ = tu
+| ㋢ = te | ㋣ = to | ㋤ = na | ㋥ = ni
+| ㋦ = nu | ㋧ = ne | ㋨ = no | ㋩ = ha
+| ㋪ = hi | ㋫ = hu | ㋬ = he | ㋭ = ho
+| ㋮ = ma | ㋯ = mi | ㋰ = mu | ㋱ = me
+| ㋲ = mo | ㋳ = ya | ㋴ = yu | ㋵ = yo
+| ㋶ = ra | ㋷ = ri | ㋸ = ru | ㋹ = re
+| ㋺ = ro | ㋻ = wa | ㋼ = wi | ㋽ = we
+| ㋾ = wo
+|===
+
+.ETHIOPIC
+|===
+| ሀ = ha | ሁ = hu | ሂ = hi | ሃ = haa
+| ሄ = hee | ህ = he | ሆ = ho | ለ = la
+| ሉ = lu | ሊ = li | ላ = laa | ሌ = lee
+| ል = le | ሎ = lo | ሏ = lwa | ሐ = hha
+| ሑ = hhu | ሒ = hhi | ሓ = hhaa | ሔ = hhee
+| ሕ = hhe | ሖ = hho | ሗ = hhwa | መ = ma
+| ሙ = mu | ሚ = mi | ማ = maa | ሜ = mee
+| ም = me | ሞ = mo | ሟ = mwa | ሠ = sza
+| ሡ = szu | ሢ = szi | ሣ = szaa | ሤ = szee
+| ሥ = sze | ሦ = szo | ሧ = szwa | ረ = ra
+| ሩ = ru | ሪ = ri | ራ = raa | ሬ = ree
+| ር = re | ሮ = ro | ሯ = rwa | ሰ = sa
+| ሱ = su | ሲ = si | ሳ = saa | ሴ = see
+| ስ = se | ሶ = so | ሷ = swa | ሸ = sha
+| ሹ = shu | ሺ = shi | ሻ = shaa | ሼ = shee
+| ሽ = she | ሾ = sho | ሿ = shwa | ቀ = qa
+| ቁ = qu | ቂ = qi | ቃ = qaa | ቄ = qee
+| ቅ = qe | ቆ = qo | ቈ = qwa | ቊ = qwi
+| ቋ = qwaa | ቌ = qwee | ቍ = qwe | ቐ = qha
+| ቑ = qhu | ቒ = qhi | ቓ = qhaa | ቔ = qhee
+| ቕ = qhe | ቖ = qho | ቘ, ቛ = qhwa | ቚ = qhwi
+| ቜ, ቝ = qhwe | በ = ba | ቡ = bu | ቢ = bi
+| ባ = baa | ቤ = bee | ብ = be | ቦ = bo
+| ቧ = bwa | ቨ = va | ቩ = vu | ቪ = vi
+| ቫ = vaa | ቬ = vee | ቭ = ve | ቮ = vo
+| ቯ = vwa | ተ = ta | ቱ = tu | ቲ = ti
+| ታ = taa | ቴ = tee | ት = te | ቶ = to
+| ቷ = twa | ቸ = ca | ቹ = cu | ቺ = ci
+| ቻ = caa | ቼ = cee | ች = ce | ቾ = co
+| ቿ = cwa | ኀ = xa | ኁ = xu | ኂ = xi
+| ኃ = xaa | ኄ = xee | ኅ = xe | ኆ = xo
+| ኈ = xwa | ኊ = xwi | ኋ = xwaa | ኌ = xwee
+| ኍ = xwe | ነ = na | ኑ = nu | ኒ = ni
+| ና = naa | ኔ = nee | ን = ne | ኖ = no
+| ኗ = nwa | ኘ = nya | ኙ = nyu | ኚ = nyi
+| ኛ = nyaa | ኜ = nyee | ኝ = nye | ኞ = nyo
+| ኟ = nywa | አ, ኣ = gloa | ኡ = glou | ኢ = gloi
+| ኤ, እ = gloe | ኦ = gloo | ኧ = glow | ከ = ka
+| ኩ = ku | ኪ = ki | ካ = kaa | ኬ = kee
+| ክ = ke | ኮ = ko | ኰ = kwa | ኲ = kwi
+| ኳ = kwaa | ኴ = kwee | ኵ = kwe | ኸ = kxa
+| ኹ = kxu | ኺ = kxi | ኻ = kxaa | ኼ = kxee
+| ኽ = kxe | ኾ = kxo | ዀ, ዃ = kxwa | ዂ = kxwi
+| ዄ, ዅ = kxwe | ወ = wa | ዉ = wu | ዊ = wi
+| ዋ = waa | ዌ = wee | ው = we | ዎ = wo
+| ዐ, ዓ, ጳ = phaa | ዑ = phau | ዒ = phai | ዔ, ዕ = phae
+| ዖ = phao | ዘ = za | ዙ = zu | ዚ = zi
+| ዛ = zaa | ዜ = zee | ዝ = ze | ዞ = zo
+| ዟ = zwa | ዠ = zha | ዡ = zhu | ዢ = zhi
+| ዣ = zhaa | ዤ = zhee | ዥ = zhe | ዦ = zho
+| ዧ = zhwa | የ = ya | ዩ = yu | ዪ = yi
+| ያ = yaa | ዬ = yee | ይ = ye | ዮ = yo
+| ደ = da | ዱ = du | ዲ = di | ዳ = daa
+| ዴ = dee | ድ = de | ዶ = do | ዷ = dwa
+| ዸ = dda | ዹ = ddu | ዺ = ddi | ዻ = ddaa
+| ዼ = ddee | ዽ = dde | ዾ = ddo | ዿ = ddwa
+| ጀ = ja | ጁ = ju | ጂ = ji | ጃ = jaa
+| ጄ = jee | ጅ = je | ጆ = jo | ጇ = jwa
+| ገ = ga | ጉ = gu | ጊ = gi | ጋ = gaa
+| ጌ = gee | ግ = ge | ጎ = go | ጐ = gwa
+| ጒ = gwi | ጓ = gwaa | ጔ = gwee | ጕ = gwe
+| ጘ = gga | ጙ = ggu | ጚ = ggi | ጛ = ggaa
+| ጜ = ggee | ጝ = gge | ጞ = ggo | ጠ = tha
+| ጡ = thu | ጢ = thi | ጣ = thaa | ጤ = thee
+| ጥ = the | ጦ = tho | ጧ = thwa | ጨ = cha
+| ጩ = chu | ጪ = chi | ጫ = chaa | ጬ = chee
+| ጭ = che | ጮ = cho | ጯ = chwa | ጰ = pha
+| ጱ = phu | ጲ = phi | ጴ = phee | ጵ = phe
+| ጶ = pho | ጷ = phwa | ጸ = tsa | ጹ = tsu
+| ጺ = tsi | ጻ = tsaa | ጼ = tsee | ጽ = tse
+| ጾ = tso | ጿ = tswa | ፀ = tza | ፁ = tzu
+| ፂ = tzi | ፃ = tzaa | ፄ = tzee | ፅ = tze
+| ፆ = tzo | ፈ = fa | ፉ = fu | ፊ = fi
+| ፋ = faa | ፌ = fee | ፍ = fe | ፎ = fo
+| ፏ = fwa | ፐ = pa | ፑ = pu | ፒ = pi
+| ፓ = paa | ፔ = pee | ፕ = pe | ፖ = po
+| ፗ = pwa | ፘ = rya | ፙ = mya | ፚ = fya
+| ፩ =  1 | ፪ =  2 | ፫ =  3 | ፬ =  4
+| ፭ =  5 | ፮ =  6 | ፯ =  7 | ፰ =  8
+| ፱ =  9 | ፲ = 10 | ፳ = 20 | ፴ = 30
+| ፶ = 50
+|===
+
+.GEORGIAN
+|===
+| ა = an | ბ = ban | გ = gan | დ = don
+| ე = en | ვ = vin | ზ = zen | თ = tan
+| ი = in | კ = kan | ლ = las | მ = man
+| ნ = nar | ო = on | პ = par | ჟ = zhar
+| რ = rae | ს = san | ტ = tar | უ = un
+| ფ = phar | ქ = khar | ღ = ghan | ყ = qar
+| შ = shin | ჩ = chin | ც = can | ძ = jil
+| წ = cil | ჭ = char | ხ = xan | ჯ = jhan
+| ჰ = hae | ჱ = he | ჲ = hie | ჳ = we
+| ჴ = har | ჵ = hoe | ჶ = fi
+|===
+
+.GREEK
+|===
+| ΐ, ϊ, Ϊ, ἱ, Ἱ, ἳ, Ἳ, ἵ, Ἵ, ἷ, Ἷ, ῒ, ΐ, ῗ = iotd | ά, Ά = alpt | έ, Έ = epst | ή, Ή = etat
+| ί, Ί = iott | ΰ, ϋ, Ϋ, ὑ, Ὑ, ὓ, Ὓ, ὕ, Ὕ, ὗ, Ὗ, ῢ, ΰ, ῧ = upsd | α, Α = alpa | β, Β = beta
+| γ, Γ = gama | δ, Δ = dela | ε, Ε = epsn | ζ, Ζ = zeta
+| η, Η = eta | θ, Θ = thea | ι, Ι = iota | κ, Κ = kapa
+| λ, Λ = lama | μ, Μ = mu | ν, Ν = nu | ξ, Ξ = xi
+| ο, Ο = omin | π, Π = pi | ρ, Ρ = rho | ς, Σ = fins
+| σ, Σ = siga | τ, Τ = tau | υ, Υ = upsn | φ, Φ = phi
+| χ, Χ = chi | ψ, Ψ = psi | ω, Ω = omea | ό, Ό = omit
+| ύ, Ύ = upst | ώ, Ώ = omet | ϛ, Ϛ = stia | ϝ, Ϝ = diga
+| ϟ, Ϟ = kopa | ϡ, Ϡ = sami | ϣ, Ϣ = shei | ϥ, Ϥ = fei
+| ϧ, Ϧ = khei | ϩ, Ϩ = hori | ϫ, Ϫ = gana | ϭ, Ϭ = shia
+| ϯ, Ϯ = dei | ϳ = yot | ἀ, Ἀ, ἂ, Ἂ, ἄ, Ἄ, ἆ, Ἆ, ᾀ, ᾈ, ᾂ, ᾊ, ᾄ, ᾌ, ᾆ, ᾎ, ᾶ, ᾷ, ᾼ = alpp | ἁ, Ἁ, ἃ, Ἃ, ἅ, Ἅ, ἇ, Ἇ, ᾁ, ᾉ, ᾃ, ᾋ, ᾅ, ᾍ, ᾇ, ᾏ = alpd
+| ἐ, Ἐ, ἒ, Ἒ, ἔ, Ἔ = epsp | ἑ, Ἑ, ἓ, Ἓ, ἕ, Ἕ = epsd | ἠ, Ἠ, ἢ, Ἢ, ἤ, Ἤ, ἦ, Ἦ, ᾐ, ᾘ, ᾒ, ᾚ, ᾔ, ᾜ, ᾖ, ᾞ, ῆ, ῇ, ῌ = etap | ἡ, Ἡ, ἣ, Ἣ, ἥ, Ἥ, ἧ, Ἧ, ᾑ, ᾙ, ᾓ, ᾛ, ᾕ, ᾝ, ᾗ, ᾟ = etad
+| ἰ, Ἰ, ἲ, Ἲ, ἴ, Ἴ, ἶ, Ἶ, ῖ = iotp | ὀ, Ὀ, ὂ, Ὂ, ὄ, Ὄ = omip | ὁ, Ὁ, ὃ, Ὃ, ὅ, Ὅ = omid | ὐ, ὒ, ὔ, ὖ, ῦ = upsp
+| ὠ, Ὠ, ὢ, Ὢ, ὤ, Ὤ, ὦ, Ὦ, ᾠ, ᾨ, ᾢ, ᾪ, ᾤ, ᾬ, ᾦ, ᾮ, ῶ, ῷ, ῼ = omep | ὡ, Ὡ, ὣ, Ὣ, ὥ, Ὥ, ὧ, Ὧ, ᾡ, ᾩ, ᾣ, ᾫ, ᾥ, ᾭ, ᾧ, ᾯ = omed | ὰ, Ὰ, ᾰ, Ᾰ, ᾲ = alpv | ά, Ά, ᾴ = alpo
+| ὲ, Ὲ = epsv | έ, Έ = epso | ὴ, Ὴ, ῂ = etav | ή, Ή, ῄ = etao
+| ὶ, Ὶ, ῐ, Ῐ = iotv | ί, Ί = ioto | ὸ, Ὸ = omiv | ό, Ό = omio
+| ὺ, Ὺ, ῠ, Ῠ = upsv | ύ, Ύ = upso | ὼ, Ὼ, ῲ = omev | ώ, Ώ, ῴ = omeo
+| ᾱ, Ᾱ = alpm | ᾳ, ᾼ = alpy | ῃ, ῌ = etay | ῑ, Ῑ = iotm
+| ῡ, Ῡ = upsm | ῤ = rhop | ῥ, Ῥ = rhod | ῳ, ῼ = omey
+|===
+
+.GUJARATI
+|===
+| ઁ = canu | ં = anua | ઃ = visa | અ =  a
+| આ, ા = aa | ઇ, િ =  i | ઈ, ી = ii | ઉ, ુ =  u
+| ઊ, ૂ = uu | ઋ, ૃ =  r | ઍ, એ, ૅ, ે =  e | ઐ, ૈ = ai
+| ઑ, ઓ, ૉ, ો =  o | ઔ, ૌ = au | ક = ka | ખ = kha
+| ગ = ga | ઘ = gha | ઙ = nga | ચ = ca
+| છ = cha | જ = ja | ઝ = jha | ઞ = nya
+| ટ = tta | ઠ = ttha | ડ = dda | ઢ = ddha
+| ણ = nna | ત = ta | થ = tha | દ = da
+| ધ = dha | ન = na | પ = pa | ફ = pha
+| બ = ba | ભ = bha | મ = ma | ય = ya
+| ર = ra | લ = la | ળ = lla | વ = va
+| શ = sha | ષ = ssa | સ = sa | હ = ha
+| ઼ = nuka | ઽ = avaa | ૄ, ૠ = rr | ્ = vira
+| ૦ =  0 | ૧ =  1 | ૨ =  2 | ૩ =  3
+| ૪ =  4 | ૫ =  5 | ૬ =  6 | ૭ =  7
+| ૮ =  8 | ૯ =  9
+|===
+
+.GURMUKHI
+|===
+| ਂ = bini | ਅ =  a | ਆ, ਾ = aa | ਇ, ਿ =  i
+| ਈ, ੀ = ii | ਉ, ੁ =  u | ਊ, ੂ = uu | ਏ, ੇ = ee
+| ਐ, ੈ = ai | ਓ, ੋ = oo | ਔ, ੌ = au | ਕ = ka
+| ਖ = kha | ਗ = ga | ਘ = gha | ਙ = nga
+| ਚ = ca | ਛ = cha | ਜ = ja | ਝ = jha
+| ਞ = nya | ਟ = tta | ਠ = ttha | ਡ = dda
+| ਢ = ddha | ਣ = nna | ਤ = ta | ਥ = tha
+| ਦ = da | ਧ = dha | ਨ = na | ਪ = pa
+| ਫ = pha | ਬ = ba | ਭ = bha | ਮ = ma
+| ਯ = ya | ਰ = ra | ਲ = la | ਲ਼ = lla
+| ਵ = va | ਸ਼ = sha | ਸ = sa | ਹ = ha
+| ਼ = nuka | ੍ = vira | ਖ਼ = khha | ਗ਼ = ghha
+| ਜ਼ = za | ੜ = rra | ਫ਼ = fa | ੦ =  0
+| ੧ =  1 | ੨ =  2 | ੩ =  3 | ੪ =  4
+| ੫ =  5 | ੬ =  6 | ੭ =  7 | ੮ =  8
+| ੯ =  9
+|===
+
+.HALFWIDTH_AND_FULLWIDTH_FORMS
+|===
+| ０ =  0 | １ =  1 | ２ =  2 | ３ =  3
+| ４ =  4 | ５ =  5 | ６ =  6 | ７ =  7
+| ８ =  8 | ９ =  9 | ａ, Ａ, ｧ, ｱ =  a | ｂ, Ｂ =  b
+| ｃ, Ｃ =  c | ｄ, Ｄ =  d | ｅ, Ｅ, ｪ, ｴ =  e | ｆ, Ｆ =  f
+| ｇ, Ｇ =  g | ｈ, Ｈ =  h | ｉ, Ｉ, ｨ, ｲ =  i | ｊ, Ｊ =  j
+| ｋ, Ｋ =  k | ｌ, Ｌ =  l | ｍ, Ｍ =  m | ｎ, Ｎ, ﾝ =  n
+| ｏ, Ｏ, ｫ, ｵ =  o | ｐ, Ｐ =  p | ｑ, Ｑ =  q | ｒ, Ｒ =  r
+| ｓ, Ｓ =  s | ｔ, Ｔ =  t | ｕ, Ｕ, ｩ, ｳ =  u | ｖ, Ｖ =  v
+| ｗ, Ｗ =  w | ｘ, Ｘ =  x | ｙ, Ｙ =  y | ｚ, Ｚ =  z
+| ｦ = wo | ｬ, ﾔ = ya | ｭ, ﾕ = yu | ｮ, ﾖ = yo
+| ｯ, ﾂ = tu | ｶ = ka | ｷ = ki | ｸ = ku
+| ｹ = ke | ｺ = ko | ｻ = sa | ｼ = si
+| ｽ = su | ｾ = se | ｿ = so | ﾀ = ta
+| ﾁ = ti | ﾃ = te | ﾄ = to | ﾅ = na
+| ﾆ = ni | ﾇ = nu | ﾈ = ne | ﾉ = no
+| ﾊ = ha | ﾋ = hi | ﾌ = hu | ﾍ = he
+| ﾎ = ho | ﾏ = ma | ﾐ = mi | ﾑ = mu
+| ﾒ = me | ﾓ = mo | ﾗ = ra | ﾘ = ri
+| ﾙ = ru | ﾚ = re | ﾛ = ro | ﾜ = wa
+|===
+
+.HANGUL_COMPATIBILITY_JAMO
+|===
+| ㄱ = kiyk | ㄲ = ssak | ㄳ = kiys | ㄴ = nien
+| ㄵ = niec | ㄶ = nieh | ㄷ = tikt | ㄸ = ssat
+| ㄹ = riel | ㄺ, ㅩ = riek | ㄻ = riem | ㄼ, ㄿ, ㅫ, ㅬ = riep
+| ㄽ = ries | ㄾ, ㅪ = riet | ㅀ = rieh | ㅁ = miem
+| ㅂ = piep | ㅃ = ssap | ㅄ, ㅴ, ㅵ = pies | ㅅ = sios
+| ㅆ = ssas | ㅇ = ieug | ㅈ = ciec | ㅉ = ssac
+| ㅊ = chih | ㅋ = khih | ㅌ = thih | ㅍ = phih
+| ㅎ = hieh | ㅏ =  a | ㅐ = ae | ㅑ = ya
+| ㅒ = yae | ㅓ = eo | ㅔ =  e | ㅕ = yeo
+| ㅖ = ye | ㅗ =  o | ㅘ = wa | ㅙ = wae
+| ㅚ = oe | ㅛ = yo | ㅜ =  u | ㅝ = weo
+| ㅞ = we | ㅟ = wi | ㅠ = yu | ㅡ = eu
+| ㅢ = yi | ㅣ =  i | ㅥ = ssan | ㅦ = niet
+| ㅧ = nies | ㅨ = niep | ㅭ = riey | ㅮ, ㅰ = miep
+| ㅯ = mies | ㅱ = kapm | ㅲ = piek | ㅳ, ㅷ = piet
+| ㅶ = piec | ㅸ, ㅹ = kapp | ㅺ = siok | ㅻ = sion
+| ㅼ = siot | ㅽ = siop | ㅾ = sioc | ㅿ = pans
+| ㆀ = ssag | ㆁ = yesg | ㆂ = yess | ㆃ = yesp
+| ㆄ = kaph | ㆅ = ssah | ㆆ = yeoh | ㆇ, ㆈ = yoy
+| ㆉ = yoi | ㆊ, ㆋ = yuy | ㆌ = yui | ㆍ = araa
+| ㆎ = arae
+|===
+
+.HEBREW
+|===
+| א = alef | ב = bet | ג = giml | ד = dalt
+| ה = he | ו = vav | ז = zayn | ח = het
+| ט = tet | י = yod | ך = fink | כ = kaf
+| ל = lamd | ם = finm | מ = mem | ן = finn
+| נ = nun | ס = samh | ע = ayin | ף = finp
+| פ = pe | ץ = fint | צ = tsai | ק = qof
+| ר = resh | ש = shin | ת = tav
+|===
+
+.HIRAGANA
+|===
+| ぁ, あ =  a | ぃ, い =  i | ぅ, う =  u | ぇ, え =  e
+| ぉ, お =  o | か = ka | が = ga | き = ki
+| ぎ = gi | く = ku | ぐ = gu | け = ke
+| げ = ge | こ = ko | ご = go | さ = sa
+| ざ = za | し = si | じ = zi | す = su
+| ず = zu | せ = se | ぜ = ze | そ = so
+| ぞ = zo | た = ta | だ = da | ち = ti
+| ぢ = di | っ, つ = tu | づ = du | て = te
+| で = de | と = to | ど = do | な = na
+| に = ni | ぬ = nu | ね = ne | の = no
+| は = ha | ば = ba | ぱ = pa | ひ = hi
+| び = bi | ぴ = pi | ふ = hu | ぶ = bu
+| ぷ = pu | へ = he | べ = be | ぺ = pe
+| ほ = ho | ぼ = bo | ぽ = po | ま = ma
+| み = mi | む = mu | め = me | も = mo
+| ゃ, や = ya | ゅ, ゆ = yu | ょ, よ = yo | ら = ra
+| り = ri | る = ru | れ = re | ろ = ro
+| ゎ, わ = wa | ゐ = wi | ゑ = we | を = wo
+| ん =  n | ゔ = vu
+|===
+
+.IPA_EXTENSIONS
+|===
+| ɐ, Ɐ, ɒ, Ɒ = tura | ɑ, Ɑ = alpa | ɓ, Ɓ = bh | ɔ, Ɔ = opeo
+| ɕ = cc | ɖ, Ɖ = dt | ɗ, Ɗ = dh | ɘ = reve
+| ə, Ə = scha | ɚ = schh | ɛ, Ɛ = opee | ɜ, ɝ = revo
+| ɞ = clor | ɟ, ʄ = js | ɠ, Ɠ, ʛ = gh | ɡ = scrg
+| ɢ =  g | ɣ, Ɣ = gama | ɤ = ramh | ɥ, Ɥ = turh
+| ɦ, Ɦ = hh | ɧ = henh | ɨ, Ɨ = is | ɩ, Ɩ = iota
+| ɪ =  i | ɫ, Ɫ = lm | ɬ = lb | ɭ = lr
+| ɮ = lezh | ɯ, Ɯ, ɰ = turm | ɱ, Ɱ = mh | ɲ, Ɲ = nl
+| ɳ = nr | ɴ =  n | ɵ, Ɵ = baro | ɶ = oe
+| ɷ, ʚ = cloo | ɸ = phi | ɹ, ɺ, ɻ = turr | ɼ = rl
+| ɽ, Ɽ = rt | ɾ = rf | ɿ = revr | ʀ, Ʀ =  r
+| ʁ = invr | ʂ = sh | ʃ, Ʃ = esh | ʅ = squr
+| ʆ = eshc | ʇ = turt | ʈ, Ʈ = tr | ʉ, Ʉ = ub
+| ʊ, Ʊ = upsn | ʋ, Ʋ = vh | ʌ, Ʌ = turv | ʍ = turw
+| ʎ = tury | ʏ =  y | ʐ = zr | ʑ = zc
+| ʒ, Ʒ = ezh | ʓ = ezhc | ʔ, ʡ = glos | ʕ = phav
+| ʖ = invg | ʗ = strc | ʘ = bilc | ʙ =  b
+| ʜ =  h | ʝ = jc | ʞ = turk | ʟ =  l
+| ʠ = qh | ʢ = revg | ʣ, ʥ = dzd | ʤ = dezd
+| ʦ = tsd | ʧ = tesd | ʨ = tcd | ʩ = fend
+| ʪ = lsd | ʫ = lzd | ʬ = bilp | ʭ = bidp
+|===
+
+.KANGXI_RADICALS
+|===
+| ⼀ = one | ⼁ = line | ⼂ = dot | ⼃ = slah
+| ⼄ = secd | ⼅ = hook | ⼆ = two | ⼇ = lid
+| ⼈ = man | ⼉ = legs | ⼊ = entr | ⼋ = eigt
+| ⼌ = dowb | ⼍ = covr | ⼎ = ice | ⼏ = tabe
+| ⼐ = opeb | ⼑ = knie | ⼒ = powr | ⼓ = wrap
+| ⼔ = spon | ⼕ = rigo | ⼖ = hide | ⼗ = ten
+| ⼘ = divn | ⼙ = seal | ⼚ = clif | ⼛ = prie
+| ⼜ = agan | ⼝ = mouh | ⼞ = ence | ⼟ = earh
+| ⼠ = schr | ⼡ = go | ⼢ = gos | ⼣ = eveg
+| ⼤ = big | ⼥ = womn | ⼦ = chid | ⼧ = roof
+| ⼨ = inch | ⼩ = smal | ⼪ = lame | ⼫ = core
+| ⼬ = sprt | ⼭ = moun | ⼮ = rivr | ⼯ = work
+| ⼰ = onef | ⼱ = turn | ⼲ = dry | ⼳, ⼷, ⾫ = shot
+| ⼴ = dotc | ⼵ = stre | ⼶ = twoh | ⼸ = bow
+| ⼹ = snot | ⼺ = brie | ⼻ = step | ⼼ = heat
+| ⼽ = hald | ⼾ = door | ⼿ = hand | ⽀ = brah
+| ⽁ = rap | ⽂ = scrt | ⽃ = dipr | ⽄ = axe
+| ⽅ = sque | ⽆ = not | ⽇ = sun | ⽈ = say
+| ⽉ = moon | ⽊ = tree | ⽋ = lack | ⽌ = stop
+| ⽍ = deah | ⽎ = wean | ⽏ = don | ⽐ = come
+| ⽑ = fur | ⽒ = clan | ⽓ = stem | ⽔ = watr
+| ⽕ = fire | ⽖ = claw | ⽗ = fatr | ⽘ = doux
+| ⽙ = halt | ⽚ = slie | ⽛ = fang | ⽜ = cow
+| ⽝ = dog | ⽞ = prod | ⽟ = jade | ⽠ = meln
+| ⽡ = tile | ⽢ = swet | ⽣ = life | ⽤ = use
+| ⽥ = fied | ⽦ = bolo | ⽧ = sics | ⽨ = dott
+| ⽩ = whie | ⽪ = skin | ⽫, ⾤ = dish | ⽬ = eye
+| ⽭ = sper | ⽮ = arrw | ⽯ = stoe | ⽰ = spit
+| ⽱ = trak | ⽲ = gran | ⽳ = cave | ⽴ = stad
+| ⽵ = bamo | ⽶ = rice | ⽷ = silk | ⽸ = jar
+| ⽹ = net | ⽺ = shep | ⽻ = fear | ⽼ = old
+| ⽽ = and | ⽾ = plow | ⽿ = ear | ⾀ = bruh
+| ⾁ = meat | ⾂ = minr | ⾃ = self | ⾄ = arre
+| ⾅ = morr | ⾆ = tone | ⾇ = oppe | ⾈ = boat
+| ⾉ = stog | ⾊ = colr | ⾋ = gras | ⾌ = tigr
+| ⾍ = inst | ⾎ = blod | ⾏ = wale | ⾐ = clos
+| ⾑ = west | ⾒ = see | ⾓ = horn | ⾔ = speh
+| ⾕ = valy | ⾖ = bean | ⾗ = pig | ⾘ = badr
+| ⾙ = shel | ⾚ = red | ⾛ = run | ⾜ = foot
+| ⾝ = body | ⾞ = cart | ⾟ = bitr | ⾠ = morg
+| ⾡ = walk | ⾢ = city | ⾣ = wine | ⾥ = vile
+| ⾦ = gold | ⾧ = long | ⾨ = gate | ⾩ = moud
+| ⾪ = slae | ⾬ = rain | ⾭ = blue | ⾮ = wrog
+| ⾯ = face | ⾰ = lear | ⾱ = tanl | ⾲ = leek
+| ⾳ = soud | ⾴ = leaf | ⾵ = wind | ⾶ = fly
+| ⾷ = eat | ⾸ = head | ⾹ = frat | ⾺ = hore
+| ⾻ = bone | ⾼ = tall | ⾽ = hair | ⾾ = figt
+| ⾿ = sacw | ⿀ = caun | ⿁ = ghot | ⿂ = fish
+| ⿃ = bird | ⿄ = salt | ⿅ = deer | ⿆ = whet
+| ⿇ = hemp | ⿈ = yelw | ⿉ = milt | ⿊ = blak
+| ⿋ = emby | ⿌ = frog | ⿍ = trid | ⿎ = drum
+| ⿏ = rat | ⿐ = nose | ⿑ = even | ⿒ = tooh
+| ⿓ = dran | ⿔ = ture | ⿕ = flue
+|===
+
+.KANNADA
+|===
+| ಂ = anua | ಃ = visa | ಅ =  a | ಆ, ಾ = aa
+| ಇ, ಿ =  i | ಈ, ೀ = ii | ಉ, ು =  u | ಊ, ೂ = uu
+| ಋ, ೃ =  r | ಌ =  l | ಎ, ೆ =  e | ಏ, ೇ = ee
+| ಐ, ೈ = ai | ಒ, ೊ =  o | ಓ, ೋ = oo | ಔ, ೌ = au
+| ಕ = ka | ಖ = kha | ಗ = ga | ಘ = gha
+| ಙ = nga | ಚ = ca | ಛ = cha | ಜ = ja
+| ಝ = jha | ಞ = nya | ಟ = tta | ಠ = ttha
+| ಡ = dda | ಢ = ddha | ಣ = nna | ತ = ta
+| ಥ = tha | ದ = da | ಧ = dha | ನ = na
+| ಪ = pa | ಫ = pha | ಬ = ba | ಭ = bha
+| ಮ = ma | ಯ = ya | ರ = ra | ಱ = rra
+| ಲ = la | ಳ = lla | ವ = va | ಶ = sha
+| ಷ = ssa | ಸ = sa | ಹ = ha | ೄ, ೠ = rr
+| ್ = vira | ೞ = fa | ೡ = ll | ೦ =  0
+| ೧ =  1 | ೨ =  2 | ೩ =  3 | ೪ =  4
+| ೫ =  5 | ೬ =  6 | ೭ =  7 | ೮ =  8
+| ೯ =  9
+|===
+
+.KATAKANA
+|===
+| ァ, ア =  a | ィ, イ =  i | ゥ, ウ =  u | ェ, エ =  e
+| ォ, オ =  o | カ, ヵ = ka | ガ = ga | キ = ki
+| ギ = gi | ク = ku | グ = gu | ケ, ヶ = ke
+| ゲ = ge | コ = ko | ゴ = go | サ = sa
+| ザ = za | シ = si | ジ = zi | ス = su
+| ズ = zu | セ = se | ゼ = ze | ソ = so
+| ゾ = zo | タ = ta | ダ = da | チ = ti
+| ヂ = di | ッ, ツ = tu | ヅ = du | テ = te
+| デ = de | ト = to | ド = do | ナ = na
+| ニ = ni | ヌ = nu | ネ = ne | ノ = no
+| ハ = ha | バ = ba | パ = pa | ヒ = hi
+| ビ = bi | ピ = pi | フ = hu | ブ = bu
+| プ = pu | ヘ = he | ベ = be | ペ = pe
+| ホ = ho | ボ = bo | ポ = po | マ = ma
+| ミ = mi | ム = mu | メ = me | モ = mo
+| ャ, ヤ = ya | ュ, ユ = yu | ョ, ヨ = yo | ラ = ra
+| リ = ri | ル = ru | レ = re | ロ = ro
+| ヮ, ワ = wa | ヰ = wi | ヱ = we | ヲ = wo
+| ン =  n | ヴ = vu | ヷ = va | ヸ = vi
+| ヹ = ve | ヺ = vo
+|===
+
+.KAYAH_LI
+|===
+| ꤀ =  0 | ꤁ =  1 | ꤂ =  2 | ꤃ =  3
+| ꤄ =  4 | ꤅ =  5 | ꤆ =  6 | ꤇ =  7
+| ꤈ =  8 | ꤉ =  9
+|===
+
+.KHMER
+|===
+| ក = ka | ខ = kha | គ = ko | ឃ = kho
+| ង = ngo | ច = ca | ឆ = cha | ជ = co
+| ឈ = cho | ញ = nyo | ដ = da | ឋ = ttha
+| ឌ = do | ឍ = ttho | ណ = nno | ត = ta
+| ថ = tha | ទ = to | ធ = tho | ន = no
+| ប = ba | ផ = pha | ព = po | ភ = pho
+| ម = mo | យ = yo | រ = ro | ល = lo
+| វ = vo | ឝ = sha | ឞ = sso | ស = sa
+| ហ = ha | ឡ = la | អ = qa | ា = aa
+| ិ =  i | ី = ii | ឹ =  y | ឺ = yy
+| ុ =  u | ូ = uu | ួ = ua | ើ = oe
+| ឿ = ya | ៀ = ie | េ =  e | ែ = ae
+| ៃ = ai | ោ = oo | ៅ = au | ំ = nikt
+| ះ = reak | ៈ = yuuu | ៉ = muun | ៊ = trip
+| ់ = banc | ៌ = robt | ៍ = toat | ៎ = kakt
+| ៏ = ahsa | ័ = sams | ៑ = virm | ្ = coeg
+| ៓ = batt | ។ = khan | ៕ = barn | ៖ = camp
+| ៗ = lekt | ៘ = beyl | ៙ = phnm | ៚ = koot
+| ៜ = avaa | ០ =  0 | ១ =  1 | ២ =  2
+| ៣ =  3 | ៤ =  4 | ៥ =  5 | ៦ =  6
+| ៧ =  7 | ៨ =  8 | ៩ =  9
+|===
+
+.LAO
+|===
+| ກ = ko | ຂ = khos | ຄ = khot | ງ = ngo
+| ຈ = co | ຊ = sot | ຍ, ຽ = nyo | ດ = do
+| ຕ = to | ຖ = thos | ທ = thot | ນ = no
+| ບ = bo | ປ = po | ຜ = phos | ຝ = fot
+| ພ = phot | ຟ = fos | ມ = mo | ຢ = yo
+| ຣ, ລ = lol | ວ = wo | ສ = sos | ຫ = hos
+| ອ, ໂ =  o | ຮ = hot | ະ =  a | ັ, ົ = maik
+| າ = aa | ຳ = am | ິ =  i | ີ = ii
+| ຶ =  y | ື = yy | ຸ =  u | ູ = uu
+| ຼ = lo | ເ =  e | ແ = ei | ໃ = ay
+| ໄ = ai | ໐ =  0 | ໑ =  1 | ໒ =  2
+| ໓ =  3 | ໔ =  4 | ໕ =  5 | ໖ =  6
+| ໗ =  7 | ໘ =  8 | ໙ =  9
+|===
+
+.LATIN
+|===
+| ² =  2 | ³ =  3 | ¹ =  1 | ß = shas
+| à, À, ȁ, Ȁ = ag | á, Á = aa | â, Â, ǎ, Ǎ, ấ, Ấ, ầ, Ầ, ẩ, Ẩ, ẫ, Ẫ, ậ, Ậ = ac | ã, Ã = at
+| ä, Ä, ǟ, Ǟ, ǡ, Ǡ, ȧ, Ȧ, ạ, Ạ = ad | å, Å, ǻ, Ǻ, ḁ, Ḁ, ẚ = ar | æ, Æ = ae | ç, Ç, ĉ, Ĉ, č, Č, ḉ, Ḉ = cc
+| è, È, ȅ, Ȅ = eg | é, É = ea | ê, Ê, ě, Ě, ȩ, Ȩ, ḙ, Ḙ, ḝ, Ḝ, ế, Ế, ề, Ề, ể, Ể, ễ, Ễ, ệ, Ệ = ec | ë, Ë, ė, Ė, ẹ, Ẹ = ed
+| ì, Ì, ȉ, Ȉ = ig | í, Í = ia | î, Î, ǐ, Ǐ = ic | ï, Ï, ḯ, Ḯ, ị, Ị = id
+| ð, Ð = eth | ñ, Ñ = nt | ò, Ò, ȍ, Ȍ = og | ó, Ó, ő, Ő = oa
+| ô, Ô, ǒ, Ǒ, ố, Ố, ồ, Ồ, ổ, Ổ, ỗ, Ỗ, ộ, Ộ = oc | õ, Õ, ȭ, Ȭ, ṍ, Ṍ, ṏ, Ṏ = ot | ö, Ö, ȫ, Ȫ, ȯ, Ȯ, ȱ, Ȱ, ọ, Ọ = od | ø, Ø, ǿ, Ǿ = os
+| ù, Ù, ȕ, Ȕ = ug | ú, Ú, ű, Ű = ua | û, Û, ǔ, Ǔ, ṷ, Ṷ = uc | ü, Ü, ǖ, Ǖ, ǘ, Ǘ, ǚ, Ǚ, ǜ, Ǜ, ṳ, Ṳ, ụ, Ụ = ud
+| ý, Ý = ya | þ, Þ = thon | ÿ, Ÿ, ẏ, Ẏ, ỵ, Ỵ = yd | ā, Ā = am
+| ă, Ă, ắ, Ắ, ằ, Ằ, ẳ, Ẳ, ẵ, Ẵ, ặ, Ặ = ab | ą, Ą = ao | ć, Ć = ca | ċ, Ċ = cd
+| ď, Ď, ḑ, Ḑ, ḓ, Ḓ = dc | đ, Đ = ds | ē, Ē, ḕ, Ḕ, ḗ, Ḗ = em | ĕ, Ĕ = eb
+| ę, Ę = eo | ĝ, Ĝ, ģ, Ģ, ǧ, Ǧ = gc | ğ, Ğ = gb | ġ, Ġ = gd
+| ĥ, Ĥ, ȟ, Ȟ, ḩ, Ḩ = hc | ħ, Ħ = hs | ĩ, Ĩ, ḭ, Ḭ = it | ī, Ī = im
+| ĭ, Ĭ = ib | į, Į = io | ı, I =  i | ĵ, Ĵ, ǰ = jc
+| ķ, Ķ, ǩ, Ǩ = kc | ĸ = kra | ĺ, Ĺ = la | ļ, Ļ, ľ, Ľ, ḽ, Ḽ = lc
+| ŀ, Ŀ = lm | ł, Ł = ls | ń, Ń = na | ņ, Ņ, ň, Ň, ṋ, Ṋ = nc
+| ŉ = np | ŋ, Ŋ = eng | ō, Ō, ṑ, Ṑ, ṓ, Ṓ = om | ŏ, Ŏ = ob
+| ŕ, Ŕ = ra | ŗ, Ŗ, ř, Ř = rc | ś, Ś, ṥ, Ṥ = sa | ŝ, Ŝ, ş, Ş, š, Š, ș, Ș, ṧ, Ṧ = sc
+| ţ, Ţ, ť, Ť, ț, Ț, ṱ, Ṱ = tc | ŧ, Ŧ = ts | ũ, Ũ, ṵ, Ṵ, ṹ, Ṹ = ut | ū, Ū, ṻ, Ṻ = um
+| ŭ, Ŭ = ub | ů, Ů = ur | ų, Ų = uo | ŵ, Ŵ = wc
+| ŷ, Ŷ = yc | ź, Ź = za | ż, Ż, ẓ, Ẓ = zd | ž, Ž, ǅ, Ǆ, ẑ, Ẑ = zc
+| ſ, S =  s | ƀ, Ƀ = bs | ƃ, Ƃ = bt | ƅ, Ƅ = tons
+| ƈ, Ƈ = ch | ƌ, Ƌ = dt | ƍ = turd | ƒ, Ƒ = fh
+| ƕ, Ƕ = hv | ƙ, Ƙ = kh | ƚ, Ƚ = lb | ƛ = lams
+| ƞ, Ƞ = nr | ơ, Ơ, ỏ, Ỏ, ớ, Ớ, ờ, Ờ, ở, Ở, ỡ, Ỡ, ợ, Ợ = oh | ƣ, Ƣ, ȏ, Ȏ = oi | ƥ, Ƥ = ph
+| ƨ, Ƨ = tont | ƪ = reve | ƫ = tp | ƭ, Ƭ = th
+| ư, Ư, ủ, Ủ, ứ, Ứ, ừ, Ừ, ử, Ử, ữ, Ữ, ự, Ự = uh | ƴ, Ƴ, ỷ, Ỷ = yh | ƶ, Ƶ = zs | ƹ, Ƹ = ezhr
+| ƺ = ezht | ƻ = twos | ƽ, Ƽ = tonf | ƾ = invg
+| ƿ, Ƿ = wynn | ǀ = denc | ǁ = latc | ǂ = alvc
+| ǃ = retc | ǆ, Ǆ = dzc | ǈ, Ǉ, ǋ, Ǌ =  j | ǉ, Ǉ = lj
+| ǌ, Ǌ = nj | ǝ, Ǝ = ture | ǣ, Ǣ = aem | ǥ, Ǥ = gs
+| ǫ, Ǫ, ǭ, Ǭ = oo | ǯ, Ǯ = ezhc | ǲ, Ǳ =  z | ǳ, Ǳ = dz
+| ǵ, Ǵ = ga | ǹ, Ǹ = ng | ǽ, Ǽ = aea | ȃ, Ȃ = ai
+| ȇ, Ȇ = ei | ȋ, Ȋ = ii | ȑ, Ȑ = rg | ȓ, Ȓ = ri
+| ȗ, Ȗ = ui | ȝ, Ȝ = yogh | ȣ, Ȣ = ou | ȥ, Ȥ = zh
+| ȳ, Ȳ = ym | ḃ, Ḃ, ḅ, Ḅ = bd | ḇ, Ḇ = bl | ḋ, Ḋ, ḍ, Ḍ = dd
+| ḏ, Ḏ = dl | ḛ, Ḛ, ẽ, Ẽ = et | ḟ, Ḟ = fd | ḡ, Ḡ = gm
+| ḣ, Ḣ, ḥ, Ḥ, ḧ, Ḧ = hd | ḫ, Ḫ = hb | ḱ, Ḱ = ka | ḳ, Ḳ = kd
+| ḵ, Ḵ = kl | ḷ, Ḷ, ḹ, Ḹ = ld | ḻ, Ḻ = ll | ḿ, Ḿ = ma
+| ṁ, Ṁ, ṃ, Ṃ = md | ṅ, Ṅ, ṇ, Ṇ = nd | ṉ, Ṉ = nl | ṕ, Ṕ = pa
+| ṗ, Ṗ = pd | ṙ, Ṙ, ṛ, Ṛ, ṝ, Ṝ = rd | ṟ, Ṟ = rl | ṡ, Ṡ, ṣ, Ṣ, ṩ, Ṩ, ẛ = sd
+| ṫ, Ṫ, ṭ, Ṭ, ẗ = td | ṯ, Ṯ = tl | ṽ, Ṽ = vt | ṿ, Ṿ = vd
+| ẁ, Ẁ = wg | ẃ, Ẃ = wa | ẅ, Ẅ, ẇ, Ẇ, ẉ, Ẉ = wd | ẋ, Ẋ, ẍ, Ẍ = xd
+| ẕ, Ẕ = zl | ẖ = hl | ẘ = wr | ẙ = yr
+| ả, Ả = ah | ẻ, Ẻ = eh | ỉ, Ỉ = ih | ỳ, Ỳ = yg
+| ỹ, Ỹ = yt
+|===
+
+.LETTERLIKE_SYMBOLS
+|===
+| ℘ =  p | ℩ = iota | ℺ =  q
+|===
+
+.MALAYALAM
+|===
+| ം = anua | ഃ = visa | അ =  a | ആ, ാ = aa
+| ഇ, ി =  i | ഈ, ീ = ii | ഉ, ു =  u | ഊ, ൂ = uu
+| ഋ, ൃ =  r | ഌ =  l | എ, െ =  e | ഏ, േ = ee
+| ഐ, ൈ = ai | ഒ, ൊ =  o | ഓ, ോ = oo | ഔ, ൌ = au
+| ക = ka | ഖ = kha | ഗ = ga | ഘ = gha
+| ങ = nga | ച = ca | ഛ = cha | ജ = ja
+| ഝ = jha | ഞ = nya | ട = tta | ഠ = ttha
+| ഡ = dda | ഢ = ddha | ണ = nna | ത = ta
+| ഥ = tha | ദ = da | ധ = dha | ന = na
+| പ = pa | ഫ = pha | ബ = ba | ഭ = bha
+| മ = ma | യ = ya | ര = ra | റ = rra
+| ല = la | ള = lla | ഴ = llla | വ = va
+| ശ = sha | ഷ = ssa | സ = sa | ഹ = ha
+| ് = vira | ൠ = rr | ൡ = ll | ൦ =  0
+| ൧ =  1 | ൨ =  2 | ൩ =  3 | ൪ =  4
+| ൫ =  5 | ൬ =  6 | ൭ =  7 | ൮ =  8
+| ൯ =  9
+|===
+
+.MYANMAR
+|===
+| က = ka | ခ = kha | ဂ = ga | ဃ = gha
+| င = nga | စ = ca | ဆ = cha | ဇ = ja
+| ဈ = jha | ဉ = nya | ည = nnya | ဋ = tta
+| ဌ = ttha | ဍ = dda | ဎ = ddha | ဏ = nna
+| တ = ta | ထ = tha | ဒ = da | ဓ = dha
+| န = na | ပ = pa | ဖ = pha | ဗ = ba
+| ဘ = bha | မ = ma | ယ = ya | ရ = ra
+| လ = la | ဝ = wa | သ = sa | ဟ = ha
+| ဠ = lla | အ =  a | ဣ, ိ =  i | ဤ, ီ = ii
+| ဥ, ု =  u | ဦ, ူ = uu | ဧ, ေ =  e | ဩ =  o
+| ဪ = au | ာ = aa | ဲ = ai | ံ = anua
+| ့ = dot | း = visa | ္ = vira | ၀, ႐ =  0
+| ၁, ႑ =  1 | ၂, ႒ =  2 | ၃, ႓ =  3 | ၄, ႔ =  4
+| ၅, ႕ =  5 | ၆, ႖ =  6 | ၇, ႗ =  7 | ၈, ႘ =  8
+| ၉, ႙ =  9 | ၊ = lits | ။ = secn | ၐ = sha
+| ၑ = ssa | ၒ, ၖ =  r | ၓ, ၗ = rr | ၔ, ၘ =  l
+| ၕ, ၙ = ll
+|===
+
+.NKO
+|===
+| ߀ =  0 | ߁ =  1 | ߂ =  2 | ߃ =  3
+| ߄ =  4 | ߅ =  5 | ߆ =  6 | ߇ =  7
+| ߈ =  8 | ߉ =  9
+|===
+
+.NUMBER_FORMS
+|===
+| ⅰ, Ⅰ =  1 | ⅱ, Ⅱ =  2 | ⅲ, Ⅲ =  3 | ⅳ, Ⅳ =  4
+| ⅴ, Ⅴ =  5 | ⅵ, Ⅵ =  6 | ⅶ, Ⅶ =  7 | ⅷ, Ⅷ =  8
+| ⅸ, Ⅸ =  9 | ⅹ, Ⅹ = 10 | ⅺ, Ⅺ = 11 | ⅻ, Ⅻ = 12
+| ⅼ, Ⅼ = 50 | ⅽ, Ⅽ = 100 | ⅾ, Ⅾ = 500 | ⅿ, Ⅿ = 1000
+| ↁ = 5000
+|===
+
+.OGHAM
+|===
+| ᚁ = beih | ᚂ = luis | ᚃ = fean | ᚄ = sail
+| ᚅ = nion | ᚆ = uath | ᚇ = dair | ᚈ = tine
+| ᚉ = coll | ᚊ = ceit | ᚋ = muin | ᚌ = gort
+| ᚍ = ngel | ᚎ = strf | ᚏ = ruis | ᚐ = ailm
+| ᚑ = onn | ᚒ = ur | ᚓ = eadh | ᚔ = iodh
+| ᚕ = eabh | ᚖ = or | ᚗ = uiln | ᚘ = ifin
+| ᚙ = eaml | ᚚ = peih
+|===
+
+.ORIYA
+|===
+| ଁ = canu | ଂ = anua | ଃ = visa | ଅ =  a
+| ଆ, ା = aa | ଇ, ି =  i | ଈ, ୀ = ii | ଉ, ୁ =  u
+| ଊ, ୂ = uu | ଋ, ୃ =  r | ଌ =  l | ଏ, େ =  e
+| ଐ, ୈ = ai | ଓ, ୋ =  o | ଔ, ୌ = au | କ = ka
+| ଖ = kha | ଗ = ga | ଘ = gha | ଙ = nga
+| ଚ = ca | ଛ = cha | ଜ = ja | ଝ = jha
+| ଞ = nya | ଟ = tta | ଠ = ttha | ଡ = dda
+| ଢ = ddha | ଣ = nna | ତ = ta | ଥ = tha
+| ଦ = da | ଧ = dha | ନ = na | ପ = pa
+| ଫ = pha | ବ = ba | ଭ = bha | ମ = ma
+| ଯ = ya | ର = ra | ଲ = la | ଳ = lla
+| ଶ = sha | ଷ = ssa | ସ = sa | ହ = ha
+| ଼ = nuka | ଽ = avaa | ୍ = vira | ଡ଼ = rra
+| ଢ଼ = rha | ୟ = yya | ୠ = rr | ୡ = ll
+| ୦ =  0 | ୧ =  1 | ୨ =  2 | ୩ =  3
+| ୪ =  4 | ୫ =  5 | ୬ =  6 | ୭ =  7
+| ୮ =  8 | ୯ =  9
+|===
+
+.RUNIC
+|===
+| ᚠ = fehf | ᚡ =  v | ᚢ = uruu | ᚣ = yr
+| ᚤ =  y | ᚥ =  w | ᚦ = thut | ᚧ = eth
+| ᚨ = ansa | ᚩ = oso | ᚪ = aca | ᚫ = aesc
+| ᚬ, ᚼ, ᛅ, ᛘ, ᛦ = lonb | ᚭ, ᚽ, ᚿ, ᛆ, ᛌ, ᛐ, ᛓ, ᛙ, ᛧ = shot | ᚮ =  o | ᚯ = oe
+| ᚰ = on | ᚱ = rair | ᚲ = kaua | ᚳ = cen
+| ᚴ = kauk | ᚵ =  g | ᚶ = eng | ᚷ = gebg
+| ᚸ = gar | ᚹ = wunw | ᚺ = hagh | ᚻ = haeh
+| ᚾ = naun | ᛀ = dotn | ᛁ = isai | ᛂ =  e
+| ᛃ = jerj | ᛄ = ger | ᛇ = iwae | ᛈ = perp
+| ᛉ = alge | ᛊ = sows | ᛋ = sigl | ᛍ =  c
+| ᛎ =  z | ᛏ = tiwt | ᛑ =  d | ᛒ = berb
+| ᛔ = dotp | ᛕ = opep | ᛖ = ehwe | ᛗ = manm
+| ᛚ = laul | ᛛ = dotl | ᛜ = ingz | ᛝ = ing
+| ᛞ = dagd | ᛟ = othe | ᛠ = ear | ᛡ = ior
+| ᛢ = cweh | ᛣ = calc | ᛤ = ceac | ᛥ = stan
+| ᛨ = icey | ᛩ =  q | ᛪ =  x
+|===
+
+.SINHALA
+|===
+| ං = anua | ඃ = visa | අ = ayaa | ආ = aaya
+| ඇ = aeya | ඈ = aeea | ඉ = iyaa | ඊ = iiya
+| උ = uyaa | ඌ = uuya | ඍ, ඎ = irua | ඏ, ඐ = ilua
+| එ = eyaa | ඒ = eeya | ඓ = aiya | ඔ = oyaa
+| ඕ = ooya | ඖ = auya | ක = alpk | ඛ = mahk
+| ග = alpg | ඝ = mahg | ඞ = kann | ඟ = sang
+| ච = alpc | ඡ = mahc | ජ = alpj | ඣ = mahj
+| ඤ = taan | ඥ, ශ = taas | ඦ = sanj | ට, ත = alpt
+| ඨ, ථ = maht | ඩ, ද = alpd | ඪ, ධ = mahd | ණ = muun
+| ඬ, ඳ = sand | න = dann | ප = alpp | ඵ = mahp
+| බ = alpb | භ = mahb | ම = maya | ඹ = ambb
+| ය = yaya | ර = raya | ල = danl | ව = vaya
+| ෂ = muus | ස = dans | හ = haya | ළ = muul
+| ෆ = faya | ් = all | ා = aelp | ැ = keta
+| ෑ = diga | ි = keti | ී = digi | ු = ketp
+| ූ = digp | ෘ = gaep | ෙ = koma | ේ = digk
+| ෛ = komd | ො, ෝ, ෞ = komh | ෟ = gaya | ෲ, ෳ = digg
+|===
+
+.SUPERSCRIPTS_AND_SUBSCRIPTS
+|===
+| ⁰, ₀ =  0 | ⁴, ₄ =  4 | ⁵, ₅ =  5 | ⁶, ₆ =  6
+| ⁷, ₇ =  7 | ⁸, ₈ =  8 | ⁹, ₉ =  9 | ⁿ =  n
+| ₁ =  1 | ₂ =  2 | ₃ =  3
+|===
+
+.SYRIAC
+|===
+| ܐ = alah | ܒ = beth | ܓ = gaml | ܔ = gamg
+| ܕ = dalh | ܖ = dalr | ܗ = he | ܘ = waw
+| ܙ = zain | ܚ = heth | ܛ = teth | ܜ = tetg
+| ܝ, ܞ = yudh | ܟ = kaph | ܠ = lamh | ܡ = mim
+| ܢ = nun | ܣ = semh | ܤ = fins | ܥ =  e
+| ܦ = pe | ܧ = revp | ܨ = sade | ܩ = qaph
+| ܪ = rish | ܫ = shin | ܬ = taw
+|===
+
+.TAMIL
+|===
+| ஂ = anua | ஃ = visa | அ =  a | ஆ, ா = aa
+| இ, ி =  i | ஈ, ீ = ii | உ, ு =  u | ஊ, ூ = uu
+| எ, ெ =  e | ஏ, ே = ee | ஐ, ை = ai | ஒ, ொ =  o
+| ஓ, ோ = oo | ஔ, ௌ = au | க = ka | ங = nga
+| ச = ca | ஜ = ja | ஞ = nya | ட = tta
+| ண = nna | த = ta | ந = na | ன = nnna
+| ப = pa | ம = ma | ய = ya | ர = ra
+| ற = rra | ல = la | ள = lla | ழ = llla
+| வ = va | ஷ = ssa | ஸ = sa | ஹ = ha
+| ் = vira | ௦ =  0 | ௧ =  1 | ௨ =  2
+| ௩ =  3 | ௪ =  4 | ௫ =  5 | ௬ =  6
+| ௭ =  7 | ௮ =  8 | ௯ =  9 | ௰ = 10
+| ௱ = 100 | ௲ = 1000
+|===
+
+.TELUGU
+|===
+| ఁ = canu | ం = anua | ః = visa | అ =  a
+| ఆ, ా = aa | ఇ, ి =  i | ఈ, ీ = ii | ఉ, ు =  u
+| ఊ, ూ = uu | ఋ, ృ =  r | ఌ =  l | ఎ, ె =  e
+| ఏ, ే = ee | ఐ, ై = ai | ఒ, ొ =  o | ఓ, ో = oo
+| ఔ, ౌ = au | క = ka | ఖ = kha | గ = ga
+| ఘ = gha | ఙ = nga | చ = ca | ఛ = cha
+| జ = ja | ఝ = jha | ఞ = nya | ట = tta
+| ఠ = ttha | డ = dda | ఢ = ddha | ణ = nna
+| త = ta | థ = tha | ద = da | ధ = dha
+| న = na | ప = pa | ఫ = pha | బ = ba
+| భ = bha | మ = ma | య = ya | ర = ra
+| ఱ = rra | ల = la | ళ = lla | వ = va
+| శ = sha | ష = ssa | స = sa | హ = ha
+| ౄ, ౠ = rr | ్ = vira | ౡ = ll | ౦ =  0
+| ౧ =  1 | ౨ =  2 | ౩ =  3 | ౪ =  4
+| ౫ =  5 | ౬ =  6 | ౭ =  7 | ౮ =  8
+| ౯ =  9
+|===
+
+.THAANA
+|===
+| ހ = haa | ށ = shai | ނ = noou | ރ = raa
+| ބ = baa | ޅ = lhai | ކ = kaau | އ = aliu
+| ވ = vaau | މ = meeu | ފ = faau | ދ = dhau
+| ތ = thaa | ލ = laau | ގ = gaau | ޏ = gnai
+| ސ = seeu | ޑ = davi | ޒ = zavi | ޓ = tavi
+| ޔ = yaa | ޕ = pavi | ޖ = javi | ޗ = chai
+| ޘ = ttaa | ޙ = hhaa | ޚ = khaa | ޛ = thau
+| ޜ = zaa | ޝ = sheu | ޞ = saau | ޟ = daau
+| ޠ = to | ޡ = zo | ޢ = ainu | ޣ = ghau
+| ޤ = qaau | ޥ = waau
+|===
+
+.THAI
+|===
+| ก = kok | ข, ฃ, ค, ฅ = khok | ฆ = khor | ง = ngon
+| จ, ฉ, ช, ฌ = choc | ซ, ศ, ส = sos | ญ, ย = yoy | ฎ = doc
+| ฏ = top | ฐ, ถ, ท, ธ = thot | ฑ = thon | ฒ = thop
+| ณ, น = non | ด = dod | ต = tot | บ = bob
+| ป = pop | ผ, พ = phop | ฝ, ฟ = fof | ภ = phos
+| ม = mom | ร = ror | ฤ = ru | ล = lol
+| ฦ = lu | ว = wow | ษ = sor | ห = hoh
+| ฬ = loc | อ = oa | ฮ = hon | ฯ = paii
+| ะ, า, ำ, แ, ใ, ไ = sara | ั = maih | ิ, ี = sari | ึ, ื, ุ, ู = saru
+| ฺ = phiu | เ = sare | โ = saro | ๅ = lako
+| ๆ = maik | ็ = maiu | ่ = maie | ้, ๊ = mait
+| ๋ = maic | ์ = that | ํ = nikt | ๎ = yamn
+| ๏ = fonn | ๐ =  0 | ๑ =  1 | ๒ =  2
+| ๓ =  3 | ๔ =  4 | ๕ =  5 | ๖ =  6
+| ๗ =  7 | ๘ =  8 | ๙ =  9 | ๚ = angu
+| ๛ = khot
+|===
+
+.TIBETAN
+|===
+| ༀ = om | ༕ = char | ༖ = lhar | ༗ = sgrg
+| ༘, པ, ྤ = pa | ༙ = sdot | ༚, ༛, ༜, ༟ = rded | ༝, ༞, ࿏ = rden
+| ༠ =  0 | ༡ =  1 | ༢ =  2 | ༣ =  3
+| ༤ =  4 | ༥ =  5 | ༦ =  6 | ༧ =  7
+| ༨ =  8 | ༩ =  9 | ༾ = yart | ༿ = mart
+| ཀ, ྐ = ka | ཁ, ྑ = kha | ག, ྒ = ga | གྷ, ྒྷ = gha
+| ང, ྔ = nga | ཅ, ྕ = ca | ཆ, ྖ = cha | ཇ, ྗ = ja
+| ཉ, ྙ = nya | ཊ, ྚ = tta | ཋ, ྛ = ttha | ཌ, ྜ = dda
+| ཌྷ, ྜྷ = ddha | ཎ, ྞ = nna | ཏ, ྟ = ta | ཐ, ྠ = tha
+| ད, ྡ = da | དྷ, ྡྷ = dha | ན, ྣ = na | ཕ, ྥ = pha
+| བ, ྦ = ba | བྷ, ྦྷ = bha | མ, ྨ = ma | ཙ, ྩ = tsa
+| ཚ, ྪ = tsha | ཛ, ྫ = dza | ཛྷ, ྫྷ = dzha | ཝ, ྭ = wa
+| ཞ, ྮ = zha | ཟ, ྯ = za | འ, ཨ, ྰ, ྸ =  a | ཡ, ྱ = ya
+| ར, ྲ = ra | ལ, ླ = la | ཤ, ྴ = sha | ཥ, ྵ = ssa
+| ས, ྶ = sa | ཧ, ྷ = ha | ཀྵ, ྐྵ = kssa | ཪ, ྺ, ྻ, ྼ = fixf
+| ཱ = aa | ི =  i | ཱི = ii | ུ =  u
+| ཱུ = uu | ྲྀ =  r | ཷ = rr | ླྀ =  l
+| ཹ = ll | ེ =  e | ཻ = ee | ོ =  o
+| ཽ = oo | ཾ = rjes | ཿ = rnab | ྀ, ཱྀ = revi
+| ྂ = nyiz | ྃ = snal | ྆ = lcir | ྇ = yanr
+| ྈ = lcet | ྉ = mchc | ྊ = gruc | ྋ = grum
+| ࿀ = heab | ࿁ = ligb | ࿂ = cant | ࿃ = sbuc
+|===
+
+.UNIFIED_CANADIAN_ABORIGINAL_SYLLABICS
+|===
+| ᐁ, ᖰ =  e | ᐂ = aai | ᐃ, ᐉ, ᖱ =  i | ᐄ = ii
+| ᐅ, ᖲ =  o | ᐆ, ᐇ = oo | ᐈ = ee | ᐊ, ᖳ =  a
+| ᐋ = aa | ᐌ, ᐍ, ᖴ, ᗒ = we | ᐎ, ᐏ, ᖵ, ᗔ = wi | ᐐ, ᐑ = wii
+| ᐒ, ᐓ, ᖶ, ᗑ = wo | ᐔ, ᐕ, ᐖ = woo | ᐗ, ᐘ, ᖷ, ᗕ = wa | ᐙ, ᐚ, ᐛ = waa
+| ᐜ = ai | ᐝ =  w | ᐞ, ᙮ = stop | ᐟ, ᐥ = acue
+| ᐠ = grae | ᐡ, ᐢ, ᐣ, ᐤ = ring | ᐦ = strs | ᐧ = dot
+| ᐨ = stre | ᐩ = plus | ᐪ = tack | ᐫ = en
+| ᐬ = in | ᐭ = on | ᐮ = an | ᐯ, ᗪ = pe
+| ᐰ = paai | ᐱ, ᗬ = pi | ᐲ = pii | ᐳ, ᗩ = po
+| ᐴ, ᐵ = poo | ᐶ = hee | ᐷ, ᕵ, ᗁ = hi | ᐸ, ᗭ = pa
+| ᐹ = paa | ᐺ, ᐻ = pwe | ᐼ, ᐽ = pwi | ᐾ, ᐿ = pwii
+| ᑀ, ᑁ = pwo | ᑂ, ᑃ = pwoo | ᑄ, ᑅ = pwa | ᑆ, ᑇ, ᑈ = pwaa
+| ᑉ, ᑊ, ᗮ =  p | ᑋ, ᕻ, ᕼ =  h | ᑌ = te | ᑍ = taai
+| ᑎ = ti | ᑏ = tii | ᑐ = to | ᑑ, ᑒ = too
+| ᑓ = dee | ᑔ = di | ᑕ = ta | ᑖ = taa
+| ᑗ, ᑘ = twe | ᑙ, ᑚ = twi | ᑛ, ᑜ = twii | ᑝ, ᑞ = two
+| ᑟ, ᑠ = twoo | ᑡ, ᑢ = twa | ᑣ, ᑤ, ᑥ = twaa | ᑦ =  t
+| ᑧ, ᗤ = tte | ᑨ, ᗦ = tti | ᑩ, ᗣ = tto | ᑪ, ᗧ = tta
+| ᑫ, ᖼ = ke | ᑬ = kaai | ᑭ, ᖽ = ki | ᑮ = kii
+| ᑯ, ᖾ = ko | ᑰ, ᑱ = koo | ᑲ, ᖿ = ka | ᑳ = kaa
+| ᑴ, ᑵ = kwe | ᑶ, ᑷ = kwi | ᑸ, ᑹ = kwii | ᑺ, ᑻ = kwo
+| ᑼ, ᑽ = kwoo | ᑾ, ᑿ = kwa | ᒀ, ᒁ, ᒂ = kwaa | ᒃ =  k
+| ᒄ = kw | ᒅ = keh | ᒆ = kih | ᒇ = koh
+| ᒈ = kah | ᒉ = ce | ᒊ = caai | ᒋ = ci
+| ᒌ = cii | ᒍ = co | ᒎ, ᒏ = coo | ᒐ = ca
+| ᒑ = caa | ᒒ, ᒓ = cwe | ᒔ, ᒕ = cwi | ᒖ, ᒗ = cwii
+| ᒘ, ᒙ = cwo | ᒚ, ᒛ = cwoo | ᒜ, ᒝ = cwa | ᒞ, ᒟ, ᒠ = cwaa
+| ᒡ =  c | ᒢ, ᕪ, ᖟ, ᖮ = th | ᒣ, ᘊ = me | ᒤ = maai
+| ᒥ, ᘌ = mi | ᒦ = mii | ᒧ, ᘉ = mo | ᒨ, ᒩ = moo
+| ᒪ, ᘍ = ma | ᒫ = maa | ᒬ, ᒭ = mwe | ᒮ, ᒯ = mwi
+| ᒰ, ᒱ = mwii | ᒲ, ᒳ = mwo | ᒴ, ᒵ = mwoo | ᒶ, ᒷ = mwa
+| ᒸ, ᒹ, ᒺ = mwaa | ᒻ, ᒼ, ᒾ, ᒿ =  m | ᒽ = mh | ᓀ, ᖸ, ᘄ = ne
+| ᓁ = naai | ᓂ, ᖹ, ᘆ = ni | ᓃ = nii | ᓄ, ᖺ, ᘃ = no
+| ᓅ, ᓆ = noo | ᓇ, ᖻ, ᘇ = na | ᓈ = naa | ᓉ, ᓊ = nwe
+| ᓋ, ᓌ = nwa | ᓍ, ᓎ, ᓏ = nwaa | ᓐ =  n | ᓑ, ᖕ = ng
+| ᓒ = nh | ᓓ, ᕄ, ᘤ = le | ᓔ = laai | ᓕ, ᘦ = li
+| ᓖ = lii | ᓗ, ᕊ, ᘣ = lo | ᓘ, ᓙ = loo | ᓚ, ᕍ, ᘧ = la
+| ᓛ = laa | ᓜ, ᓝ = lwe | ᓞ, ᓟ = lwi | ᓠ, ᓡ = lwii
+| ᓢ, ᓣ = lwo | ᓤ, ᓥ = lwoo | ᓦ, ᓧ = lwa | ᓨ, ᓩ = lwaa
+| ᓪ, ᓫ, ᓬ =  l | ᓭ, ᙐ = se | ᓮ = saai | ᓯ, ᙒ = si
+| ᓰ = sii | ᓱ, ᙏ = so | ᓲ, ᓳ = soo | ᓴ, ᙓ = sa
+| ᓵ = saa | ᓶ, ᓷ = swe | ᓸ, ᓹ = swi | ᓺ, ᓻ = swii
+| ᓼ, ᓽ = swo | ᓾ, ᓿ = swoo | ᔀ, ᔁ = swa | ᔂ, ᔃ, ᔄ = swaa
+| ᔅ, ᔆ, ᔈ =  s | ᔇ, ᔋ = sw | ᔉ = sk | ᔊ = skw
+| ᔌ = spwa | ᔍ = stwa | ᔎ = skwa | ᔏ = scwa
+| ᔐ, ᖗ, ᙖ = she | ᔑ, ᖘ, ᙘ = shi | ᔒ = shii | ᔓ, ᖙ, ᙕ = sho
+| ᔔ = shoo | ᔕ, ᖚ, ᙙ = sha | ᔖ = shaa | ᔗ, ᔘ = shwe
+| ᔙ, ᔚ, ᔛ, ᔜ = shwi | ᔝ, ᔞ, ᔟ, ᔠ = shwo | ᔡ, ᔢ, ᔣ, ᔤ = shwa | ᔥ, ᙚ = sh
+| ᔦ, ᘐ = ye | ᔧ = yaai | ᔨ, ᕁ, ᘒ = yi | ᔩ = yii
+| ᔪ, ᘏ = yo | ᔫ, ᔬ = yoo | ᔭ, ᘓ = ya | ᔮ = yaa
+| ᔯ, ᔰ = ywe | ᔱ, ᔲ = ywi | ᔳ, ᔴ = ywii | ᔵ, ᔶ = ywo
+| ᔷ, ᔸ = ywoo | ᔹ, ᔺ = ywa | ᔻ, ᔼ, ᔽ = ywaa | ᔾ, ᔿ, ᕀ =  y
+| ᕂ, ᕃ, ᖊ, ᗌ = re | ᕅ = raai | ᕆ, ᖋ, ᗎ = ri | ᕇ = rii
+| ᕈ, ᖌ, ᗋ = ro | ᕉ = roo | ᕋ, ᖍ, ᗏ = ra | ᕌ = raa
+| ᕎ, ᕏ = rwaa | ᕐ, ᕑ, ᕒ =  r | ᕓ = fe | ᕔ = faai
+| ᕕ = fi | ᕖ = fii | ᕗ = fo | ᕘ = foo
+| ᕙ = fa | ᕚ = faa | ᕛ, ᕜ = fwaa | ᕝ =  f
+| ᕞ, ᕟ, ᖛ, ᖧ, ᗞ = the | ᕠ, ᕡ, ᖜ, ᖨ, ᗠ = thi | ᕢ, ᕣ, ᖩ = thii | ᕤ, ᖝ, ᖪ, ᗝ = tho
+| ᕥ, ᖫ = thoo | ᕦ, ᖞ, ᖬ, ᗡ = tha | ᕧ, ᖭ = thaa | ᕨ, ᕩ = thwa
+| ᕫ = tthe | ᕬ = tthi | ᕭ = ttho | ᕮ = ttha
+| ᕯ = tth | ᕰ = tye | ᕱ = tyi | ᕲ = tyo
+| ᕳ = tya | ᕴ, ᗀ = he | ᕶ = hii | ᕷ, ᗂ = ho
+| ᕸ = hoo | ᕹ, ᗃ = ha | ᕺ = haa | ᕽ = hk
+| ᕾ = qaai | ᕿ = qi | ᖀ = qii | ᖁ = qo
+| ᖂ = qoo | ᖃ = qa | ᖄ = qaa | ᖅ =  q
+| ᖆ, ᘶ, ᘷ = tlhe | ᖇ, ᘸ = tlhi | ᖈ, ᘵ = tlho | ᖉ, ᘹ = tlha
+| ᖎ, ᙰ = ngai | ᖏ = ngi | ᖐ = ngii | ᖑ = ngo
+| ᖒ = ngoo | ᖓ = nga | ᖔ = ngaa | ᖖ = nng
+| ᖠ, ᘲ = lhi | ᖡ = lhii | ᖢ, ᘯ = lho | ᖣ = lhoo
+| ᖤ, ᘳ = lha | ᖥ = lhaa | ᖦ = lh | ᖯ =  b
+| ᗄ = ghu | ᗅ = gho | ᗆ = ghe | ᗇ = ghee
+| ᗈ = ghi | ᗉ = gha | ᗊ = ru | ᗍ = ree
+| ᗐ = wu | ᗓ = wee | ᗖ = hwu | ᗗ = hwo
+| ᗘ = hwe | ᗙ = hwee | ᗚ = hwi | ᗛ = hwa
+| ᗜ = thu | ᗟ = thee | ᗢ = ttu | ᗥ = ttee
+| ᗨ = pu | ᗫ = pee | ᗯ = gu | ᗰ = go
+| ᗱ = ge | ᗲ = gee | ᗳ = gi | ᗴ = ga
+| ᗵ = khu | ᗶ = kho | ᗷ = khe | ᗸ = khee
+| ᗹ = khi | ᗺ = kha | ᗻ = kku | ᗼ = kko
+| ᗽ = kke | ᗾ = kkee | ᗿ = kki | ᘀ = kka
+| ᘁ = kk | ᘂ = nu | ᘅ = nee | ᘈ = mu
+| ᘋ = mee | ᘎ = yu | ᘑ = yee | ᘔ, ᘕ = ju
+| ᘖ = jo | ᘗ = je | ᘘ = jee | ᘙ, ᘚ = ji
+| ᘛ = ja | ᘜ = jju | ᘝ = jjo | ᘞ = jje
+| ᘟ = jjee | ᘠ = jji | ᘡ = jja | ᘢ = lu
+| ᘥ = lee | ᘨ = dlu | ᘩ = dlo | ᘪ = dle
+| ᘫ = dlee | ᘬ = dli | ᘭ = dla | ᘮ = lhu
+| ᘰ = lhe | ᘱ = lhee | ᘴ = tlhu | ᘺ = tlu
+| ᘻ = tlo | ᘼ = tle | ᘽ = tlee | ᘾ = tli
+| ᘿ = tla | ᙀ = zu | ᙁ = zo | ᙂ = ze
+| ᙃ = zee | ᙄ = zi | ᙅ = za | ᙆ, ᙇ =  z
+| ᙈ = dzu | ᙉ = dzo | ᙊ = dze | ᙋ = dzee
+| ᙌ = dzi | ᙍ = dza | ᙎ = su | ᙑ = see
+| ᙔ = shu | ᙗ = shee | ᙛ = tsu | ᙜ = tso
+| ᙝ = tse | ᙞ = tsee | ᙟ = tsi | ᙠ = tsa
+| ᙡ = chu | ᙢ = cho | ᙣ = che | ᙤ = chee
+| ᙥ = chi | ᙦ = cha | ᙧ = ttsu | ᙨ = ttso
+| ᙩ, ᙪ = ttse | ᙫ = ttsi | ᙬ = ttsa | ᙭ = sign
+| ᙯ = qai | ᙱ, ᙲ = nngi | ᙳ, ᙴ = nngo | ᙵ, ᙶ = nnga
+|===
+
+.VAI
+|===
+| ꘠ =  0 | ꘡ =  1 | ꘢ =  2 | ꘣ =  3
+| ꘤ =  4 | ꘥ =  5 | ꘦ =  6 | ꘧ =  7
+| ꘨ =  8 | ꘩ =  9
+|===
+
+.YI_RADICALS
+|===
+| ꒐ = qot | ꒑ = li | ꒒ = kit | ꒓ = nyip
+| ꒔ = cyp | ꒕ = ssi | ꒖ = ggop | ꒗ = gep
+| ꒘ = mi | ꒙ = hxit | ꒚ = lyr | ꒛ = bbut
+| ꒜ = mop | ꒝ = yo | ꒞ = put | ꒟ = hxuo
+| ꒠ = tat | ꒡ = ga | ꒤ = ddur | ꒥ = bur
+| ꒦ = gguo | ꒧ = nyop | ꒨ = tu | ꒩ = op
+| ꒪ = jjut | ꒫ = zot | ꒬ = pyt | ꒭ = hmo
+| ꒮ = yit | ꒯ = vur | ꒰ = shy | ꒱ = vep
+| ꒲ = za | ꒳ = jo | ꒵ = jjy | ꒶ = got
+| ꒷ = jjie | ꒸ = wo | ꒹ = du | ꒺ = shur
+| ꒻ = lie | ꒼ = cy | ꒽ = cuop | ꒾ = cip
+| ꒿ = hxop | ꓀ = shat | ꓂ = shop | ꓃ = che
+| ꓄ = zzit | ꓆ = ke
+|===
+
+.YI_SYLLABLES
+|===
+| ꀀ = it | ꀁ = ix | ꀂ =  i | ꀃ = ip
+| ꀄ = iet | ꀅ = iex | ꀆ = ie | ꀇ = iep
+| ꀈ = at | ꀉ = ax | ꀊ =  a | ꀋ = ap
+| ꀌ = uox | ꀍ = uo | ꀎ = uop | ꀏ = ot
+| ꀐ = ox | ꀑ =  o | ꀒ = op | ꀓ = ex
+| ꀔ =  e | ꀕ = wu | ꀖ = bit | ꀗ = bix
+| ꀘ = bi | ꀙ = bip | ꀚ = biet | ꀛ = biex
+| ꀜ = bie | ꀝ = biep | ꀞ = bat | ꀟ = bax
+| ꀠ = ba | ꀡ = bap | ꀢ = buox | ꀣ = buo
+| ꀤ = buop | ꀥ = bot | ꀦ = box | ꀧ = bo
+| ꀨ = bop | ꀩ = bex | ꀪ = be | ꀫ = bep
+| ꀬ = but | ꀭ = bux | ꀮ = bu | ꀯ = bup
+| ꀰ = burx | ꀱ = bur | ꀲ = byt | ꀳ = byx
+| ꀴ = by | ꀵ = byp | ꀶ = byrx | ꀷ = byr
+| ꀸ = pit | ꀹ = pix | ꀺ = pi | ꀻ = pip
+| ꀼ = piex | ꀽ = pie | ꀾ = piep | ꀿ = pat
+| ꁀ = pax | ꁁ = pa | ꁂ = pap | ꁃ = puox
+| ꁄ = puo | ꁅ = puop | ꁆ = pot | ꁇ = pox
+| ꁈ = po | ꁉ = pop | ꁊ = put | ꁋ = pux
+| ꁌ = pu | ꁍ = pup | ꁎ = purx | ꁏ = pur
+| ꁐ = pyt | ꁑ = pyx | ꁒ = py | ꁓ = pyp
+| ꁔ = pyrx | ꁕ = pyr | ꁖ, ꁚ = bbit | ꁗ, ꁛ = bbix
+| ꁘ = bbi | ꁙ, ꁝ = bbip | ꁜ = bbie | ꁞ = bbat
+| ꁟ = bbax | ꁠ = bba | ꁡ = bbap | ꁢ, ꁭ, ꁰ = bbux
+| ꁣ = bbuo | ꁤ, ꁯ = bbup | ꁥ = bbot | ꁦ = bbox
+| ꁧ = bbo | ꁨ = bbop | ꁩ = bbex | ꁪ = bbe
+| ꁫ = bbep | ꁬ = bbut | ꁮ = bbu | ꁱ = bbur
+| ꁲ = bbyt | ꁳ = bbyx | ꁴ = bby | ꁵ = bbyp
+| ꁶ = nbit | ꁷ, ꁺ = nbix | ꁸ = nbi | ꁹ, ꁼ = nbip
+| ꁻ = nbie | ꁽ = nbat | ꁾ = nbax | ꁿ = nba
+| ꂀ = nbap | ꂁ = nbot | ꂂ = nbox | ꂃ = nbo
+| ꂄ = nbop | ꂅ = nbut | ꂆ, ꂉ = nbux | ꂇ = nbu
+| ꂈ = nbup | ꂊ = nbur | ꂋ = nbyt | ꂌ, ꂏ = nbyx
+| ꂍ = nby | ꂎ = nbyp | ꂐ = nbyr | ꂑ = hmit
+| ꂒ, ꂕ = hmix | ꂓ = hmi | ꂔ, ꂗ = hmip | ꂖ = hmie
+| ꂘ = hmat | ꂙ = hmax | ꂚ = hma | ꂛ = hmap
+| ꂜ, ꂤ, ꂧ = hmux | ꂝ = hmuo | ꂞ, ꂦ = hmup | ꂟ = hmot
+| ꂠ = hmox | ꂡ = hmo | ꂢ = hmop | ꂣ = hmut
+| ꂥ = hmu | ꂨ = hmur | ꂩ, ꂬ = hmyx | ꂪ = hmy
+| ꂫ = hmyp | ꂭ = hmyr | ꂮ = mit | ꂯ = mix
+| ꂰ = mi | ꂱ = mip | ꂲ = miex | ꂳ = mie
+| ꂴ = miep | ꂵ = mat | ꂶ = max | ꂷ = ma
+| ꂸ = map | ꂹ = muot | ꂺ = muox | ꂻ = muo
+| ꂼ = muop | ꂽ = mot | ꂾ = mox | ꂿ = mo
+| ꃀ = mop | ꃁ = mex | ꃂ = me | ꃃ = mut
+| ꃄ = mux | ꃅ = mu | ꃆ = mup | ꃇ = murx
+| ꃈ = mur | ꃉ = myt | ꃊ = myx | ꃋ = my
+| ꃌ = myp | ꃍ = fit | ꃎ = fix | ꃏ = fi
+| ꃐ = fip | ꃑ = fat | ꃒ = fax | ꃓ = fa
+| ꃔ = fap | ꃕ = fox | ꃖ = fo | ꃗ = fop
+| ꃘ = fut | ꃙ = fux | ꃚ = fu | ꃛ = fup
+| ꃜ = furx | ꃝ = fur | ꃞ = fyt | ꃟ = fyx
+| ꃠ = fy | ꃡ = fyp | ꃢ = vit | ꃣ = vix
+| ꃤ = vi | ꃥ = vip | ꃦ = viet | ꃧ = viex
+| ꃨ = vie | ꃩ = viep | ꃪ = vat | ꃫ = vax
+| ꃬ = va | ꃭ = vap | ꃮ = vot | ꃯ = vox
+| ꃰ = vo | ꃱ = vop | ꃲ = vex | ꃳ = vep
+| ꃴ = vut | ꃵ = vux | ꃶ = vu | ꃷ = vup
+| ꃸ = vurx | ꃹ = vur | ꃺ = vyt | ꃻ = vyx
+| ꃼ = vy | ꃽ = vyp | ꃾ = vyrx | ꃿ = vyr
+| ꄀ = dit | ꄁ = dix | ꄂ = di | ꄃ = dip
+| ꄄ = diex | ꄅ = die | ꄆ = diep | ꄇ = dat
+| ꄈ = dax | ꄉ = da | ꄊ = dap | ꄋ = duox
+| ꄌ = duo | ꄍ = dot | ꄎ = dox | ꄏ = do
+| ꄐ = dop | ꄑ = dex | ꄒ = de | ꄓ = dep
+| ꄔ = dut | ꄕ = dux | ꄖ = du | ꄗ = dup
+| ꄘ = durx | ꄙ = dur | ꄚ = tit | ꄛ = tix
+| ꄜ = ti | ꄝ = tip | ꄞ = tiex | ꄟ = tie
+| ꄠ = tiep | ꄡ = tat | ꄢ = tax | ꄣ = ta
+| ꄤ = tap | ꄥ = tuot | ꄦ = tuox | ꄧ = tuo
+| ꄨ = tuop | ꄩ = tot | ꄪ = tox | ꄫ = to
+| ꄬ = top | ꄭ = tex | ꄮ = te | ꄯ = tep
+| ꄰ = tut | ꄱ = tux | ꄲ = tu | ꄳ = tup
+| ꄴ = turx | ꄵ = tur | ꄶ = ddit | ꄷ, ꄺ = ddix
+| ꄸ = ddi | ꄹ, ꄼ = ddip | ꄻ = ddie | ꄽ = ddat
+| ꄾ = ddax | ꄿ = dda | ꅀ = ddap | ꅁ, ꅌ, ꅏ = ddux
+| ꅂ = dduo | ꅃ, ꅎ = ddup | ꅄ = ddot | ꅅ = ddox
+| ꅆ = ddo | ꅇ = ddop | ꅈ = ddex | ꅉ = dde
+| ꅊ = ddep | ꅋ = ddut | ꅍ = ddu | ꅐ = ddur
+| ꅑ = ndit | ꅒ, ꅕ = ndix | ꅓ = ndi | ꅔ = ndip
+| ꅖ = ndie | ꅗ = ndat | ꅘ = ndax | ꅙ = nda
+| ꅚ = ndap | ꅛ = ndot | ꅜ = ndox | ꅝ = ndo
+| ꅞ = ndop | ꅟ = ndex | ꅠ = nde | ꅡ = ndep
+| ꅢ = ndut | ꅣ, ꅦ = ndux | ꅤ = ndu | ꅥ = ndup
+| ꅧ = ndur | ꅨ, ꅬ = hnit | ꅩ, ꅭ = hnix | ꅪ = hni
+| ꅫ, ꅯ = hnip | ꅮ = hnie | ꅰ = hnat | ꅱ = hnax
+| ꅲ = hna | ꅳ = hnap | ꅴ = hnux | ꅵ = hnuo
+| ꅶ = hnot | ꅷ = hnox | ꅸ = hnop | ꅹ = hnex
+| ꅺ = hne | ꅻ = hnep | ꅼ = hnut | ꅽ = nit
+| ꅾ = nix | ꅿ = ni | ꆀ = nip | ꆁ = niex
+| ꆂ = nie | ꆃ = niep | ꆄ = nax | ꆅ = na
+| ꆆ = nap | ꆇ = nuox | ꆈ = nuo | ꆉ = nuop
+| ꆊ = not | ꆋ = nox | ꆌ = no | ꆍ = nop
+| ꆎ = nex | ꆏ = ne | ꆐ = nep | ꆑ = nut
+| ꆒ = nux | ꆓ = nu | ꆔ = nup | ꆕ = nurx
+| ꆖ = nur | ꆗ = hlit | ꆘ, ꆛ = hlix | ꆙ = hli
+| ꆚ, ꆝ = hlip | ꆜ = hlie | ꆞ = hlat | ꆟ = hlax
+| ꆠ = hla | ꆡ = hlap | ꆢ, ꆬ, ꆯ = hlux | ꆣ = hluo
+| ꆤ, ꆮ = hlup | ꆥ = hlox | ꆦ = hlo | ꆧ = hlop
+| ꆨ = hlex | ꆩ = hle | ꆪ = hlep | ꆫ = hlut
+| ꆭ = hlu | ꆰ = hlur | ꆱ = hlyt | ꆲ, ꆵ = hlyx
+| ꆳ = hly | ꆴ = hlyp | ꆶ = hlyr | ꆷ = lit
+| ꆸ = lix | ꆹ = li | ꆺ = lip | ꆻ = liet
+| ꆼ = liex | ꆽ = lie | ꆾ = liep | ꆿ = lat
+| ꇀ = lax | ꇁ = la | ꇂ = lap | ꇃ = luot
+| ꇄ = luox | ꇅ = luo | ꇆ = luop | ꇇ = lot
+| ꇈ = lox | ꇉ = lo | ꇊ = lop | ꇋ = lex
+| ꇌ = le | ꇍ = lep | ꇎ = lut | ꇏ = lux
+| ꇐ = lu | ꇑ = lup | ꇒ = lurx | ꇓ = lur
+| ꇔ = lyt | ꇕ = lyx | ꇖ = ly | ꇗ = lyp
+| ꇘ = lyrx | ꇙ = lyr | ꇚ = git | ꇛ = gix
+| ꇜ = gi | ꇝ = gip | ꇞ = giet | ꇟ = giex
+| ꇠ = gie | ꇡ = giep | ꇢ = gat | ꇣ = gax
+| ꇤ = ga | ꇥ = gap | ꇦ = guot | ꇧ = guox
+| ꇨ = guo | ꇩ = guop | ꇪ = got | ꇫ = gox
+| ꇬ = go | ꇭ = gop | ꇮ = get | ꇯ = gex
+| ꇰ = ge | ꇱ = gep | ꇲ = gut | ꇳ = gux
+| ꇴ = gu | ꇵ = gup | ꇶ = gurx | ꇷ = gur
+| ꇸ = kit | ꇹ = kix | ꇺ = ki | ꇻ = kip
+| ꇼ = kiex | ꇽ = kie | ꇾ = kiep | ꇿ = kat
+| ꈀ = kax | ꈁ = ka | ꈂ = kap | ꈃ = kuox
+| ꈄ = kuo | ꈅ = kuop | ꈆ = kot | ꈇ = kox
+| ꈈ = ko | ꈉ = kop | ꈊ = ket | ꈋ = kex
+| ꈌ = ke | ꈍ = kep | ꈎ = kut | ꈏ = kux
+| ꈐ = ku | ꈑ = kup | ꈒ = kurx | ꈓ = kur
+| ꈔ = ggit | ꈕ, ꈗ = ggix | ꈖ = ggi | ꈘ = ggie
+| ꈙ = ggip | ꈚ = ggat | ꈛ = ggax | ꈜ = gga
+| ꈝ = ggap | ꈞ, ꈪ = ggut | ꈟ, ꈫ, ꈮ = ggux | ꈠ = gguo
+| ꈡ, ꈭ = ggup | ꈢ = ggot | ꈣ = ggox | ꈤ = ggo
+| ꈥ = ggop | ꈦ = gget | ꈧ = ggex | ꈨ = gge
+| ꈩ = ggep | ꈬ = ggu | ꈯ = ggur | ꈰ = mgix
+| ꈱ = mgie | ꈲ = mgat | ꈳ = mgax | ꈴ = mga
+| ꈵ = mgap | ꈶ, ꉁ, ꉄ = mgux | ꈷ = mguo | ꈸ, ꉃ = mgup
+| ꈹ = mgot | ꈺ = mgox | ꈻ = mgo | ꈼ = mgop
+| ꈽ = mgex | ꈾ = mge | ꈿ = mgep | ꉀ = mgut
+| ꉂ = mgu | ꉅ = mgur | ꉆ, ꉊ = hxit | ꉇ, ꉋ = hxix
+| ꉈ = hxi | ꉉ, ꉍ = hxip | ꉌ = hxie | ꉎ = hxat
+| ꉏ = hxax | ꉐ = hxa | ꉑ = hxap | ꉒ = hxut
+| ꉓ = hxux | ꉔ = hxuo | ꉕ = hxup | ꉖ = hxot
+| ꉗ = hxox | ꉘ = hxo | ꉙ = hxop | ꉚ = hxex
+| ꉛ = hxe | ꉜ = hxep | ꉝ = ngix | ꉞ = ngie
+| ꉟ = ngip | ꉠ = ngat | ꉡ = ngax | ꉢ = nga
+| ꉣ = ngap | ꉤ = ngut | ꉥ = ngux | ꉦ = nguo
+| ꉧ = ngot | ꉨ = ngox | ꉩ = ngo | ꉪ = ngop
+| ꉫ = ngex | ꉬ = nge | ꉭ = ngep | ꉮ = hit
+| ꉯ = hiex | ꉰ = hie | ꉱ = hat | ꉲ = hax
+| ꉳ = ha | ꉴ = hap | ꉵ = huot | ꉶ = huox
+| ꉷ = huo | ꉸ = huop | ꉹ = hot | ꉺ = hox
+| ꉻ = ho | ꉼ = hop | ꉽ = hex | ꉾ = he
+| ꉿ = hep | ꊀ = wat | ꊁ = wax | ꊂ = wa
+| ꊃ = wap | ꊄ = wuox | ꊅ = wuo | ꊆ = wuop
+| ꊇ = wox | ꊈ = wo | ꊉ = wop | ꊊ = wex
+| ꊋ = we | ꊌ = wep | ꊍ = zit | ꊎ = zix
+| ꊏ = zi | ꊐ = zip | ꊑ = ziex | ꊒ = zie
+| ꊓ = ziep | ꊔ = zat | ꊕ = zax | ꊖ = za
+| ꊗ = zap | ꊘ = zuox | ꊙ = zuo | ꊚ = zuop
+| ꊛ = zot | ꊜ = zox | ꊝ = zo | ꊞ = zop
+| ꊟ = zex | ꊠ = ze | ꊡ = zep | ꊢ = zut
+| ꊣ = zux | ꊤ = zu | ꊥ = zup | ꊦ = zurx
+| ꊧ = zur | ꊨ = zyt | ꊩ = zyx | ꊪ = zy
+| ꊫ = zyp | ꊬ = zyrx | ꊭ = zyr | ꊮ = cit
+| ꊯ = cix | ꊰ = ci | ꊱ = cip | ꊲ = ciet
+| ꊳ = ciex | ꊴ = cie | ꊵ = ciep | ꊶ = cat
+| ꊷ = cax | ꊸ = ca | ꊹ = cap | ꊺ = cuox
+| ꊻ = cuo | ꊼ = cuop | ꊽ = cot | ꊾ = cox
+| ꊿ = co | ꋀ = cop | ꋁ = cex | ꋂ = ce
+| ꋃ = cep | ꋄ = cut | ꋅ = cux | ꋆ = cu
+| ꋇ = cup | ꋈ = curx | ꋉ = cur | ꋊ = cyt
+| ꋋ = cyx | ꋌ = cy | ꋍ = cyp | ꋎ = cyrx
+| ꋏ = cyr | ꋐ, ꋔ = zzit | ꋑ, ꋕ = zzix | ꋒ = zzi
+| ꋓ, ꋗ = zzip | ꋖ = zzie | ꋘ = zzat | ꋙ = zzax
+| ꋚ = zza | ꋛ = zzap | ꋜ = zzox | ꋝ = zzo
+| ꋞ = zzop | ꋟ = zzex | ꋠ = zze | ꋡ = zzep
+| ꋢ, ꋥ = zzux | ꋣ = zzu | ꋤ = zzup | ꋦ = zzur
+| ꋧ = zzyt | ꋨ, ꋫ = zzyx | ꋩ = zzy | ꋪ = zzyp
+| ꋬ = zzyr | ꋭ = nzit | ꋮ, ꋱ = nzix | ꋯ = nzi
+| ꋰ, ꋳ = nzip | ꋲ = nzie | ꋴ = nzat | ꋵ = nzax
+| ꋶ = nza | ꋷ = nzap | ꋸ, ꋾ, ꌁ = nzux | ꋹ = nzuo
+| ꋺ = nzox | ꋻ = nzop | ꋼ = nzex | ꋽ = nze
+| ꋿ = nzu | ꌀ = nzup | ꌂ = nzur | ꌃ = nzyt
+| ꌄ, ꌇ = nzyx | ꌅ = nzy | ꌆ = nzyp | ꌈ = nzyr
+| ꌉ = sit | ꌊ = six | ꌋ = si | ꌌ = sip
+| ꌍ = siex | ꌎ = sie | ꌏ = siep | ꌐ = sat
+| ꌑ = sax | ꌒ = sa | ꌓ = sap | ꌔ = suox
+| ꌕ = suo | ꌖ = suop | ꌗ = sot | ꌘ = sox
+| ꌙ = so | ꌚ = sop | ꌛ = sex | ꌜ = se
+| ꌝ = sep | ꌞ = sut | ꌟ = sux | ꌠ = su
+| ꌡ = sup | ꌢ = surx | ꌣ = sur | ꌤ = syt
+| ꌥ = syx | ꌦ = sy | ꌧ = syp | ꌨ = syrx
+| ꌩ = syr | ꌪ = ssit | ꌫ, ꌮ = ssix | ꌬ = ssi
+| ꌭ, ꌰ = ssip | ꌯ = ssie | ꌱ = ssat | ꌲ = ssax
+| ꌳ = ssa | ꌴ = ssap | ꌵ = ssot | ꌶ = ssox
+| ꌷ = sso | ꌸ = ssop | ꌹ = ssex | ꌺ = sse
+| ꌻ = ssep | ꌼ = ssut | ꌽ = ssux | ꌾ = ssu
+| ꌿ = ssup | ꍀ = ssyt | ꍁ, ꍄ = ssyx | ꍂ = ssy
+| ꍃ = ssyp | ꍅ = ssyr | ꍆ = zhat | ꍇ = zhax
+| ꍈ = zha | ꍉ = zhap | ꍊ, ꍖ, ꍙ = zhux | ꍋ = zhuo
+| ꍌ, ꍘ = zhup | ꍍ = zhot | ꍎ = zhox | ꍏ = zho
+| ꍐ = zhop | ꍑ = zhet | ꍒ = zhex | ꍓ = zhe
+| ꍔ = zhep | ꍕ = zhut | ꍗ = zhu | ꍚ = zhur
+| ꍛ = zhyt | ꍜ, ꍟ = zhyx | ꍝ = zhy | ꍞ = zhyp
+| ꍠ = zhyr | ꍡ = chat | ꍢ = chax | ꍣ = cha
+| ꍤ = chap | ꍥ = chut | ꍦ, ꍱ, ꍴ = chux | ꍧ = chuo
+| ꍨ, ꍳ = chup | ꍩ = chot | ꍪ = chox | ꍫ = cho
+| ꍬ = chop | ꍭ = chet | ꍮ = chex | ꍯ = che
+| ꍰ = chep | ꍲ = chu | ꍵ = chur | ꍶ = chyt
+| ꍷ, ꍺ = chyx | ꍸ = chy | ꍹ = chyp | ꍻ = chyr
+| ꍼ = rrax | ꍽ = rra | ꍾ, ꎉ, ꎌ = rrux | ꍿ = rruo
+| ꎀ = rrot | ꎁ = rrox | ꎂ = rro | ꎃ = rrop
+| ꎄ = rret | ꎅ = rrex | ꎆ = rre | ꎇ = rrep
+| ꎈ = rrut | ꎊ = rru | ꎋ = rrup | ꎍ = rrur
+| ꎎ = rryt | ꎏ, ꎒ = rryx | ꎐ = rry | ꎑ = rryp
+| ꎓ = rryr | ꎔ = nrat | ꎕ = nrax | ꎖ = nra
+| ꎗ = nrap | ꎘ = nrox | ꎙ = nro | ꎚ = nrop
+| ꎛ = nret | ꎜ = nrex | ꎝ = nre | ꎞ = nrep
+| ꎟ = nrut | ꎠ, ꎣ = nrux | ꎡ = nru | ꎢ = nrup
+| ꎤ = nrur | ꎥ = nryt | ꎦ, ꎩ = nryx | ꎧ = nry
+| ꎨ = nryp | ꎪ = nryr | ꎫ = shat | ꎬ = shax
+| ꎭ = sha | ꎮ = shap | ꎯ, ꎻ, ꎾ = shux | ꎰ = shuo
+| ꎱ, ꎽ = shup | ꎲ = shot | ꎳ = shox | ꎴ = sho
+| ꎵ = shop | ꎶ = shet | ꎷ = shex | ꎸ = she
+| ꎹ = shep | ꎺ = shut | ꎼ = shu | ꎿ = shur
+| ꏀ = shyt | ꏁ, ꏄ = shyx | ꏂ = shy | ꏃ = shyp
+| ꏅ = shyr | ꏆ = rat | ꏇ = rax | ꏈ = ra
+| ꏉ = rap | ꏊ = ruox | ꏋ = ruo | ꏌ = ruop
+| ꏍ = rot | ꏎ = rox | ꏏ = ro | ꏐ = rop
+| ꏑ = rex | ꏒ = re | ꏓ = rep | ꏔ = rut
+| ꏕ = rux | ꏖ = ru | ꏗ = rup | ꏘ = rurx
+| ꏙ = rur | ꏚ = ryt | ꏛ = ryx | ꏜ = ry
+| ꏝ = ryp | ꏞ = ryrx | ꏟ = ryr | ꏠ = jit
+| ꏡ = jix | ꏢ = ji | ꏣ = jip | ꏤ = jiet
+| ꏥ = jiex | ꏦ = jie | ꏧ = jiep | ꏨ = juot
+| ꏩ = juox | ꏪ = juo | ꏫ = juop | ꏬ = jot
+| ꏭ = jox | ꏮ = jo | ꏯ = jop | ꏰ = jut
+| ꏱ = jux | ꏲ = ju | ꏳ = jup | ꏴ = jurx
+| ꏵ = jur | ꏶ = jyt | ꏷ = jyx | ꏸ = jy
+| ꏹ = jyp | ꏺ = jyrx | ꏻ = jyr | ꏼ = qit
+| ꏽ = qix | ꏾ = qi | ꏿ = qip | ꐀ = qiet
+| ꐁ = qiex | ꐂ = qie | ꐃ = qiep | ꐄ = quot
+| ꐅ = quox | ꐆ = quo | ꐇ = quop | ꐈ = qot
+| ꐉ = qox | ꐊ = qo | ꐋ = qop | ꐌ = qut
+| ꐍ = qux | ꐎ = qu | ꐏ = qup | ꐐ = qurx
+| ꐑ = qur | ꐒ = qyt | ꐓ = qyx | ꐔ = qy
+| ꐕ = qyp | ꐖ = qyrx | ꐗ = qyr | ꐘ, ꐜ = jjit
+| ꐙ, ꐝ = jjix | ꐚ = jji | ꐛ, ꐟ = jjip | ꐞ = jjie
+| ꐠ, ꐨ, ꐫ = jjux | ꐡ = jjuo | ꐢ, ꐪ = jjup | ꐣ = jjot
+| ꐤ = jjox | ꐥ = jjo | ꐦ = jjop | ꐧ = jjut
+| ꐩ = jju | ꐬ = jjur | ꐭ = jjyt | ꐮ = jjyx
+| ꐯ = jjy | ꐰ = jjyp | ꐱ, ꐵ = njit | ꐲ, ꐶ = njix
+| ꐳ = nji | ꐴ, ꐸ = njip | ꐷ = njie | ꐹ, ꐿ, ꑂ = njux
+| ꐺ = njuo | ꐻ = njot | ꐼ = njox | ꐽ = njo
+| ꐾ = njop | ꑀ = nju | ꑁ = njup | ꑃ = njur
+| ꑄ = njyt | ꑅ, ꑈ = njyx | ꑆ = njy | ꑇ = njyp
+| ꑉ = njyr | ꑊ, ꑎ = nyit | ꑋ, ꑏ = nyix | ꑌ = nyi
+| ꑍ, ꑑ = nyip | ꑐ = nyie | ꑒ, ꑚ = nyux | ꑓ = nyuo
+| ꑔ, ꑜ = nyup | ꑕ = nyot | ꑖ = nyox | ꑗ = nyo
+| ꑘ = nyop | ꑙ = nyut | ꑛ = nyu | ꑝ = xit
+| ꑞ = xix | ꑟ = xi | ꑠ = xip | ꑡ = xiet
+| ꑢ = xiex | ꑣ = xie | ꑤ = xiep | ꑥ = xuox
+| ꑦ = xuo | ꑧ = xot | ꑨ = xox | ꑩ = xo
+| ꑪ = xop | ꑫ = xyt | ꑬ = xyx | ꑭ = xy
+| ꑮ = xyp | ꑯ = xyrx | ꑰ = xyr | ꑱ = yit
+| ꑲ = yix | ꑳ = yi | ꑴ = yip | ꑵ = yiet
+| ꑶ = yiex | ꑷ = yie | ꑸ = yiep | ꑹ = yuot
+| ꑺ = yuox | ꑻ = yuo | ꑼ = yuop | ꑽ = yot
+| ꑾ = yox | ꑿ = yo | ꒀ = yop | ꒁ = yut
+| ꒂ = yux | ꒃ = yu | ꒄ = yup | ꒅ = yurx
+| ꒆ = yur | ꒇ = yyt | ꒈ = yyx | ꒉ = yy
+| ꒊ = yyp | ꒋ = yyrx | ꒌ = yyr
+|===

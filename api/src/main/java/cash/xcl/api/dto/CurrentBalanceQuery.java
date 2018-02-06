@@ -17,7 +17,6 @@ public class CurrentBalanceQuery extends SignedMessage {
 
     }
 
-
     public long address() {
         return address;
     }

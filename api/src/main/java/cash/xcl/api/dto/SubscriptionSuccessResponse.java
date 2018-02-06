@@ -8,7 +8,6 @@ public class SubscriptionSuccessResponse extends SignedMessage {
 
     private SubscriptionQuery subscriptionQuery;
 
-
     public SubscriptionSuccessResponse(long sourceAddress, long eventTime, SubscriptionQuery subscriptionQuery) {
         super(sourceAddress, eventTime);
         this.subscriptionQuery = subscriptionQuery;

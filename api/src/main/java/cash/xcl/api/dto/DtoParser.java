@@ -15,7 +15,7 @@ public class DtoParser {
     final TreeBlockEvent treebe = new TreeBlockEvent();
     final OpeningBalanceEvent obe = new OpeningBalanceEvent();
     final FeesEvent fe = new FeesEvent();
-
+    final ServiceNodesEvent sne = new ServiceNodesEvent();
 
     final ApplicationMessageEvent ame = new ApplicationMessageEvent();
     final CommandFailedEvent cfe = new CommandFailedEvent();
@@ -39,8 +39,6 @@ public class DtoParser {
     final WithdrawValueEvent wve = new WithdrawValueEvent();
 
     final SubscriptionQuery sq = new SubscriptionQuery();
-    final SubscriptionSuccessResponse ss = new SubscriptionSuccessResponse();
-
 
     // Cluster
     final ClusterStatusQuery csq = new ClusterStatusQuery();
@@ -64,15 +62,12 @@ public class DtoParser {
     // ExecutionReport
     final ExecutionReportEvent execre = new ExecutionReportEvent();
 
-    // FIXME
-//    ClusterStatusResponse
-//    ClustersStatusResponse
-//    CurrentBalanceResponse
-//    ExchangeRateResponse
-
-
-
-
+    // Responses
+    final SubscriptionSuccessResponse ss = new SubscriptionSuccessResponse();
+    final ClusterStatusResponse csr = new ClusterStatusResponse();
+    final ClustersStatusResponse cSr = new ClustersStatusResponse();
+    final CurrentBalanceResponse cbr = new CurrentBalanceResponse();
+    final ExchangeRateResponse err = new ExchangeRateResponse();
 
     static <T extends SignedMessage, AM> void parse(Bytes bytes, T t, AM am, BiConsumer<AM, T> tConsumer) {
         t.reset();
@@ -108,6 +103,10 @@ public class DtoParser {
 
             case EXCHANGE_RATE_EVENT:
                 parse(bytes, ere, messages, AllMessages::exchangeRateEvent);
+                break;
+
+            case SERVICE_NODES:
+                parse(bytes, sne, messages, AllMessages::serviceNodesEvent);
                 break;
 
             // runtime events
@@ -158,26 +157,30 @@ public class DtoParser {
                 parse(bytes, sq, messages, AllMessages::subscriptionQuery);
                 break;
 
-
             // Regional commands and queries
             case TRANSFER_VALUE_EVENT:
                 parse(bytes, tve, messages, AllMessages::transferValueEvent);
                 break;
 
+            // Responses
             case SUBSCRIPTION_SUCCESS_RESPONSE:
                 parse(bytes, ss, messages, AllMessages::subscriptionSuccessResponse);
                 break;
 
             case CURRENT_BALANCE_RESPONSE:
-                parse(bytes, ss, messages, AllMessages::subscriptionSuccessResponse);
+                parse(bytes, cbr, messages, AllMessages::currentBalanceResponse);
                 break;
 
             case EXCHANGE_RATE_RESPONSE:
-                parse(bytes, ss, messages, AllMessages::subscriptionSuccessResponse);
+                parse(bytes, err, messages, AllMessages::exchangeRateResponse);
                 break;
 
             case CLUSTER_STATUS_RESPONSE:
-                parse(bytes, ss, messages, AllMessages::subscriptionSuccessResponse);
+                parse(bytes, csr, messages, AllMessages::clusterStatusResponse);
+                break;
+
+            case CLUSTERS_STATUS_RESPONSE:
+                parse(bytes, cSr, messages, AllMessages::clustersStatusResponse);
                 break;
 
             // deposit value
@@ -198,7 +201,6 @@ public class DtoParser {
                 parse(bytes, wve, messages, AllMessages::withdrawValueEvent);
                 break;
 
-
             // Cluster
             case CLUSTER_STATUS_QUERY:
                 parse(bytes, csq, messages, AllMessages::clusterStatusQuery);
@@ -208,11 +210,6 @@ public class DtoParser {
             case CLUSTERS_STATUS_QUERY:
                 parse(bytes, cSq, messages, AllMessages::clustersStatusQuery);
                 break;
-
-            case CLUSTERS_STATUS_RESPONSE:
-                parse(bytes, ss, messages, AllMessages::subscriptionSuccessResponse);
-                break;
-
 
             // CurrentBalance
             case CURRENT_BALANCE_EVENT:

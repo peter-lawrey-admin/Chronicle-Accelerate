@@ -22,7 +22,6 @@ public abstract class Order extends AbstractBytesMarshallable {
 
     private double filledQuantity;
 
-
     public Order(String id, String accountAddress, Side side, double initialQuantity, String symbol1symbol2, long createdTime, double filledQuantity) {
         this.id = id;
         this.accountAddress = accountAddress;
@@ -37,12 +36,9 @@ public abstract class Order extends AbstractBytesMarshallable {
 
     public abstract boolean isMarketOrder();
 
-
     public Side getSide() {
         return side;
     }
-
-
 
     boolean isFilled() {
         return false;
@@ -51,16 +47,12 @@ public abstract class Order extends AbstractBytesMarshallable {
     @Override
     public void readMarshallable(BytesIn bytes) throws IORuntimeException {
 
-
     }
 
     @Override
     public void writeMarshallable(BytesOut bytes) {
 
-
-
     }
-
 
     public String id() {
         return id;

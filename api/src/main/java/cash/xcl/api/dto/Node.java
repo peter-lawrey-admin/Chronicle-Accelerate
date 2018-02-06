@@ -1,6 +1,5 @@
 package cash.xcl.api.dto;
 
-
 import net.openhft.chronicle.bytes.BytesIn;
 import net.openhft.chronicle.bytes.BytesOut;
 import net.openhft.chronicle.core.annotation.NotNull;
@@ -22,8 +21,6 @@ public class Node extends AbstractBytesMarshallable {
 
     private Cluster parentCluster;
 
-
-
     public Node(@NotNull String ipAddress,
                 @NotNull String accountAddress,
                 double balance,
@@ -37,9 +34,6 @@ public class Node extends AbstractBytesMarshallable {
         this.nodeStatus = nodeStatus;
         this.parentCluster = parentCluster;
     }
-
-
-
 
     public String ipAddress() {
         return ipAddress;
@@ -89,12 +83,10 @@ public class Node extends AbstractBytesMarshallable {
     @Override
     public void readMarshallable(BytesIn bytes) throws IORuntimeException {
 
-
     }
 
     @Override
     public void writeMarshallable(BytesOut bytes) {
-
 
     }
 

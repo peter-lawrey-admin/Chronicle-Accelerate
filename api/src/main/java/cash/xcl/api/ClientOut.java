@@ -17,7 +17,17 @@ public interface ClientOut extends Closeable {
     void subscriptionQuery(SubscriptionQuery subscriptionQuery);
 
     void newLimitOrderCommand(NewLimitOrderCommand newLimitOrderCommand);
+
     void newMarketOrderCommand(NewMarketOrderCommand newMarketOrderCommand);
+
     void cancelOrderCommand(CancelOrderCommand cancelOrderCommand);
+
+    void clusterStatusQuery(ClusterStatusQuery clusterStatusQuery);
+
+    void clustersStatusQuery(ClustersStatusQuery clustersStatusQuery);
+
+    void currentBalanceQuery(CurrentBalanceQuery currentBalanceQuery);
+
+    void exchangeRateQuery(ExchangeRateQuery exchangeRateQuery);
 
 }

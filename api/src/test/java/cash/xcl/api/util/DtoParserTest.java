@@ -6,7 +6,6 @@ import cash.xcl.api.dto.MethodIds;
 import cash.xcl.api.dto.SignedMessage;
 import net.openhft.chronicle.bytes.Bytes;
 import net.openhft.chronicle.core.Mocker;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -20,7 +19,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.runners.Parameterized.Parameter;
 import static org.junit.runners.Parameterized.Parameters;
 
-@Ignore
+
 @RunWith(Parameterized.class)
 public class DtoParserTest {
     @Parameter(0)

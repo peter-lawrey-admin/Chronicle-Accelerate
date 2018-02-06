@@ -4,7 +4,7 @@ import cash.xcl.api.dto.*;
 
 /**
  * Any responses from the Server to the client needed, in addition to ServerOut.
- *
+ * <p>
  * Includes all Responses and any events which are expected to go back to a client.
  * In some cases the client may monitor Commands coming from the ServerOut
  */
@@ -24,6 +24,18 @@ public interface ClientIn {
 
     void withdrawValueEvent(WithdrawValueEvent withdrawValueEvent);
 
+    void executionReportEvent(ExecutionReportEvent executionReportEvent);
+
+    // Responses
     void subscriptionSuccessResponse(SubscriptionSuccessResponse subscriptionSuccessResponse);
+
+    void clusterStatusResponse(ClusterStatusResponse clusterStatusResponse);
+
+    void clustersStatusResponse(ClustersStatusResponse clustersStatusResponse);
+
+    void currentBalanceResponse(CurrentBalanceResponse currentBalanceResponse);
+
+    void exchangeRateResponse(ExchangeRateResponse exchangeRateResponse);
+
 
 }

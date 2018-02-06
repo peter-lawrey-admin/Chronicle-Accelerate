@@ -15,7 +15,6 @@ public class CreateNewAddressEvent extends SignedMessage {
         this.publicKey = publicKey;
     }
 
-
     public CreateNewAddressEvent() {
         super();
     }

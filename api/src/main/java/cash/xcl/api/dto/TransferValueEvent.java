@@ -12,7 +12,6 @@ public class TransferValueEvent extends SignedMessage {
         this.transferValueCommand = transferValueCommand;
     }
 
-
     public TransferValueEvent() {
         super();
     }

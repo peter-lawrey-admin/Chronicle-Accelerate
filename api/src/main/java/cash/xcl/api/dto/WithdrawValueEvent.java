@@ -3,7 +3,6 @@ package cash.xcl.api.dto;
 import net.openhft.chronicle.bytes.Bytes;
 import net.openhft.chronicle.bytes.BytesIn;
 
-
 public class WithdrawValueEvent extends SignedMessage {
     private WithdrawValueCommand withdrawValueCommand;
 

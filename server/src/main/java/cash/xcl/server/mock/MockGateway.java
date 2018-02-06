@@ -5,13 +5,15 @@ import cash.xcl.api.ClientOut;
 import cash.xcl.api.ServerOut;
 import cash.xcl.api.dto.*;
 
-public class MockGateway implements ClientOut, ServerOut {
+public class MockGateway implements ClientOut {
     private final MockServer mockServer = new MockServer(null);
     private final ClientIn clientIn;
+    private final MockServerOut serverOut;
 
     public MockGateway(ClientIn clientIn) {
         this.clientIn = clientIn;
-        mockServer.serverOut(this);
+        this.serverOut = new MockServerOut();
+        mockServer.serverOut(serverOut);
     }
 
     @Override
@@ -51,37 +53,71 @@ public class MockGateway implements ClientOut, ServerOut {
     }
 
     @Override
-    public void createNewAddressEvent(CreateNewAddressEvent createNewAddressEvent) {
-        clientIn.createNewAddressEvent(createNewAddressEvent);
+    public void clusterStatusQuery(ClusterStatusQuery clusterStatusQuery) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public void applicationMessageEvent(ApplicationMessageEvent applicationMessageEvent) {
-        throw new AssertionError(applicationMessageEvent.toString());
+    public void clustersStatusQuery(ClustersStatusQuery clustersStatusQuery) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public void commandFailedEvent(CommandFailedEvent commandFailedEvent) {
-        clientIn.commandFailedEvent(commandFailedEvent);
+    public void currentBalanceQuery(CurrentBalanceQuery currentBalanceQuery) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public void clusterTransferStep2Command(ClusterTransferStep2Command clusterTransferStep2Command) {
-        mockServer.clusterTransferStep2Command(clusterTransferStep2Command);
-    }
-
-    @Override
-    public void clusterTransferStep3Command(ClusterTransferStep3Command clusterTransferStep3Command) {
-        mockServer.clusterTransferStep3Command(clusterTransferStep3Command);
-    }
-
-    @Override
-    public void clusterTransferStep3Event(ClusterTransferStep3Event clusterTransferStep3Event) {
-        clientIn.clusterTransferStep3Event(clusterTransferStep3Event);
+    public void exchangeRateQuery(ExchangeRateQuery exchangeRateQuery) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void close() {
         mockServer.close();
     }
+
+    class MockServerOut implements ServerOut {
+
+        @Override
+        public void applicationMessageEvent(ApplicationMessageEvent applicationMessageEvent) {
+            throw new AssertionError(applicationMessageEvent.toString());
+        }
+
+        @Override
+        public void createNewAddressEvent(CreateNewAddressEvent createNewAddressEvent) {
+            clientIn.createNewAddressEvent(createNewAddressEvent);
+        }
+
+        @Override
+        public void commandFailedEvent(CommandFailedEvent commandFailedEvent) {
+            clientIn.commandFailedEvent(commandFailedEvent);
+        }
+
+        @Override
+        public void clusterTransferStep2Command(ClusterTransferStep2Command clusterTransferStep2Command) {
+//            clientIn.clusterTransferStep2Command(clusterTransferStep2Command);
+        }
+
+        @Override
+        public void clusterTransferStep3Command(ClusterTransferStep3Command clusterTransferStep3Command) {
+//            clientIn.clusterTransferStep3Command(clusterTransferStep3Command);
+        }
+
+        @Override
+        public void clusterTransferStep3Event(ClusterTransferStep3Event clusterTransferStep3Event) {
+            clientIn.clusterTransferStep3Event(clusterTransferStep3Event);
+        }
+
+        @Override
+        public void executionReportEvent(ExecutionReportEvent executionReportEvent) {
+            clientIn.executionReportEvent(executionReportEvent);
+        }
+
+        @Override
+        public void close() {
+
+        }
+    }
+
 }

@@ -3,7 +3,6 @@ package cash.xcl.api.dto;
 import net.openhft.chronicle.bytes.Bytes;
 import net.openhft.chronicle.bytes.BytesIn;
 
-
 // FIXME needs reviewing/completing
 // returns the status of the nodes in the current cluster
 public class ClusterStatusResponse extends SignedMessage {
@@ -13,8 +12,6 @@ public class ClusterStatusResponse extends SignedMessage {
     // cluster contains the nodes
     // and each node contains its own status
     private Cluster cluster;
-
-
 
     public ClusterStatusResponse(ClusterStatusQuery clusterStatusQuery, Cluster cluster) {
         this.clusterStatusQuery = clusterStatusQuery;
