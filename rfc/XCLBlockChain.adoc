@@ -92,6 +92,10 @@ This event records the fee structure determined by the AI at the start of the we
 
 This event lists all the weekly exchange rates with mid price. It is used to calculate fees when the balance is in other currencies.
 
+=== Service Nodes Event (0x07)
+
+This event lists all the nodes in a cluster for a service.
+
 == Runtime events
 
 These events can occur at any time and on any chain.
