@@ -1,7 +1,7 @@
 = XCL Block Chain
 Peter Lawrey
 
-The XCL Block Chain is an ordered collection of messages as commands and events. It's structure contains:
+The XCL Block Chain is an ordered collection of messages as commands and events. Its structure contains:
 
 - Signed Messages.
 - A Transaction Block which is a list of messages.
@@ -116,13 +116,20 @@ When a query fails to be processed it could trigger one of these events.
 
 == Main Chain Commands
 
-// todo add description of what this message means
+Main Chain Commands are commands which are used to execute Global operations - ie. operations which apply to all regions in the world. The results of executing these commands are new transactions being executed and then persisted to the Main Blockchain. The Main Blockchain holds cross-regional data like ...
+
+
+* Create New Address Command (0x20)
+* Cluster Transfer Value Step1 Command (0x21)
+* Cluster Transfer Value Step2 Command (0x22)
+* Cluster Transfer Value Step3 Command (0x23)
+* Clusters Status Query (0x2f)
 
 Range 0x20 - 0x2f
 
 === Create New Address Command (0x20)
 
-This message requests that a new account be created. This includes the public key and the region in which to create the address:
+This message is a command to request that a new account be created. This includes the public key and the region in which to create the address:
 
 |===
 | Success | Error
@@ -173,7 +180,8 @@ This message is a query for all the known clusters and the services they provide
 
 == Main Chain Events
 
-// todo add description of what this message means
+Main Chain Events are events which are sent as a result of executing Main Chain Commands. These events are confirmation of transactions performed at the global level ie. transactions which apply to all regions in the world. These events are published after the transactions have been executed, confirmed and persisted to the Main Blockchain.
+
 
 Range 0x30 - 0x3f
 
@@ -182,7 +190,7 @@ Range 0x30 - 0x3f
 This message:
 
  - is an event from the main chain to set the reference information of an address.
- - is dumped as part of the snap shot at the end of each week and loaded at the start of the next week.
+ - is dumped as part of the snap shot at the end of each week and loaded at the start of the next week.ffa
  - must come from the main chain or it will be rejected.
 
 The message includes:
@@ -206,7 +214,10 @@ A message detailing all the known clusters, their services and their host connec
 
 == Regional Chain Commands
 
-// todo add description of what this message means
+Regional Chain Commands are commands that are relevant to a specific region - as opposed to Main Chain Commands that apply globally to all regions across the world.
+
+The results of these commands are persisted to the Regional Blockchain for the appropriate region.
+
 
 // todo add table showing example of success and error if needed
 
@@ -234,7 +245,7 @@ The first step is to approve money be taken out of an account in one region/clus
 
 === Current Balance Query (0x4d)
 
-// todo add descripton of what this messages means
+The Current Balance Query message is a query for the current balance of an account address. An account address has a number of balances, one for each currency or asset held in the account. This message is a request for all balances for all currencies held within a given account.
 
 |===
 | Success | Error
@@ -243,7 +254,10 @@ The first step is to approve money be taken out of an account in one region/clus
 
 === Exchange Rate Query (0x4e)
 
-// todo add descripton of what this messages means
+This message is a query for the latest exchange Mid rate between 2 currencies, for example, the XCL/USD exchange rate.
+
+The Mid rates are calculated by the appropriate Exchange service for that currency/asset pair. 
+For example, the XCL/USD exchange rate will be calculated by the XCL/USD Exchange service. This service will return the Mid rate for 1,000,000 USD (?)
 
 |===
 | Success | Error
@@ -252,7 +266,14 @@ The first step is to approve money be taken out of an account in one region/clus
 
 === Cluster Status Query (0x4f)
 
-The status of the nodes in the current cluster.
+The Cluster Status Query message is a query for the status of the nodes in the current cluster. A node can have one of these status:
+
+    * WAITING_FOR_APPROVAL
+    * APPROVED_AND_NEVER_RUN
+    * RUNNING
+    * RUNNING_AND_DOING_ROUND_PROCESSING
+    * NOT_RUNNING
+    * DISABLED
 
 |===
 | Success | Error
@@ -261,7 +282,12 @@ The status of the nodes in the current cluster.
 
 == Regional Chain Events
 
-// todo add description of what this message means
+Regional Chain Events are events which are published in response to Regional Chain Commands.
+
+These are the Regional Chain Events:
+
+Transfer Value Event (0x50)
+// todo any more events?
 
 // todo add table showing example of success and error
 
@@ -269,37 +295,126 @@ Range 0x50 - 0x5f
 
 === Transfer Value Event (0x50)
 
-This message is a command to transfer value from one address to another.
+The Transfer Value Event message is an event which is sent in response to a:
+
+Transfer Value Command
+
+message.
+
+This event message contains the details of the transfer:
+
+sender's account address
+receiver's account address
+amount transferred
+currency
+timestamp
 
 // todo add table showing example of success and error
 
+
+== Regional Chain Responses
+
+Regional Chain Responses are commands which are sent in response to Regional Chain Queries.
+These response messages are:
+
+* Subscription Success Response (0x5c)
+* Current Balance Response (0x5d)
+* Cluster Status Response (0x5f)
+* Clusters Status Response (0x3f)
+* Exchange Rate Response (0x5e)
+
+
+
 === Subscription Success Response (0x5c)
 
-// todo add descripton of what this messages means
+The Subscription Success Response message is a message which is sent in response to a:
+
+Subscription Command
+
+message.
+
 
 // todo add table showing example of success and error
 
 === Current Balance Response (0x5d)
 
-// todo add descripton of what this messages means
+The Current Balance Response message is the message sent in response to the:
+
+        Current Balance Query (0x4d)
+
+message.
+
+This message will contain, for a given account address, the list of currencies/assets and the current balance for each of them. For example:  
+
+Accelerate Account Address:   394a3bfw93
+
+XCL       2,390
+
+GBP     243,300
+
+USD      39,000
+
 
 // todo add table showing example of success and error
 
 === Exchange Rate Response (0x5e)
 
-// todo add descripton of what this messages means
+The Exchange Rate Response message which is sent in response to the
+
+    Exchange Rate Query (0x4e)
+
+This message will contain the latest exchange Mid rates between 2 assets -eg. currencies, crypto currencies, etc-. 
+For example, a standard response will look something like:
+
+                Currencies  ExchangeRate
+
+                XCL/USD     2.3493
+
+The Mid rates are calculated by the appropriate Exchange service for that currency/asset pair. For example, the XCL/USD exchange rate will be calculated by the XCL/USD Exchange service. This service will return the Mid rate for 1 million USD 
+// todo USD?
+
 
 // todo add table showing example of success and error
 
 === Cluster Status Response (0x5f)
 
-// todo add descripton of what this messages means
+The Cluster Status Response message is the message sent in response to the:
+
+    Cluster Status Query (0x4f)
+
+message.
+
+This message contains the status of all the nodes in the current cluster. A node can have one of these status:
+
+    * WAITING_FOR_APPROVAL
+    * APPROVED_AND_NEVER_RUN
+    * RUNNING
+    * RUNNING_AND_DOING_ROUND_PROCESSING
+    * NOT_RUNNING
+    * DISABLED
+
 
 // todo add table showing example of success and error
 
 == Service Chain Commands
 
-// todo add descripton of what this messages means
+Service Chain Commands are commands which are used to perform service type operations like:
+
+* depositing and withdrawing funds and
+* placing Market/Limit orders in the Accelerate market.
+
+These commands are:
+
+* Deposit Value Command (0x60)
+* Withdraw Value Command (0x61)
+* Market Order to Buy/Sell XCL (0x62)
+* Limit Order to Buy/Sell XCL (0x63)
+* Cancel Order to Buy/Sell XCL (0x64)
+
+These commands are typically issued by a user from the Accelerate Website page.
+
+Service Chain Commands are requests to perform transactions which are persisted to the appropriate regional blockchain, ie, the blockchain for that region.
+
 
 // todo add table showing example of success and error
 
@@ -307,7 +422,9 @@ Range 0x60 - 0x6f
 
 === Deposit Value Command (0x60)
 
-This message is a command to transfer value from one address to another.
+This message is a command to make a deposit for an amount of standard real currency, eg. Sterling Pounds or Dollars, into an Accelerate address account. 
+
+A user would typically make this deposit on the Accelerate Website page by making a standard Debit/Credit card payment into his personal Accelerate account address.
 
 |===
 | Success | Error
@@ -316,7 +433,12 @@ This message is a command to transfer value from one address to another.
 
 === Withdraw Value Command (0x61)
 
-This message is a command to transfer value from one address to another.
+The Withdraw Value Command message is a command to make a withdrawal from an Accelerate account address and deposit the funds into a user's personal retail bank account.
+
+A user would typically issue this withdrawal on the Accelerate Website page by requesting a standard bank transfer from his Accelerate account address to his personal retail bank account.
+
+If the user is withdrawing funds held in XCL, then this withdrawal will involve a currency conversion from XCL to the user's home currency eg. Sterling Pounds or US Dollars.
+
 
 |===
 | Success | Error
@@ -325,25 +447,57 @@ This message is a command to transfer value from one address to another.
 
 === Market Order to Buy/Sell XCL (0x62)
 
-// todo add descripton of what this messages means
+The Market Order Command message is a command which is used to place a Market Order to buy or sell an amount of XCL on the Accelerate market at the current live market price.
 
-// todo add table showing example of success and error
+A Market Order is a type of Order that executes immediately at the best available price in the market.
+
+A user would typically place his Market Order on the Accelerate Website page.
+
+The result of placing a Market Order is a:
+
+* Execution Report (0x72)
+
+which will be executed immediately after the market order is placed at the best available price at the time.
+
 
 === Limit Order to Buy/Sell XCL (0x63)
 
-// todo add descripton of what this messages means
+The Limit Order Command message is a command which is used to place a Limit Order to buy or sell an amount of XCL on the Accelerate market at a specified price.
+
+A Limit Order is a type of order to execute a trade at a given maximum price, if buying, or, at a given minimum price, if selling. This given price is called the Limit Price.
+
+A Limit Order may never be executed, but it guarantees that if it is executed, it will be at the specified limit price or better.
+
+A user would typically place his Limit Order on the Accelerate Website page.
+
+After placing a Limit Order, a trade might be executed immediately or at some point in the future or not at all, depending on how aggressive the specified Limit Price is and the currently available live prices in the market.
+
+If a trade does get executed, the result of placing a Limit Order is a:
+
+* Execution Report Event (0x72)
+
+
 
 // todo add table showing example of success and error
 
 === Cancel Order to Buy/Sell XCL (0x64)
 
-// todo add descripton of what this messages means
+The Cancel Order Command message is a command to cancel a Market or Limit Order that a user previously placed in the Accelerate market.
+
 
 // todo add table showing example of success and error
 
 == Service Chain Events
 
-// todo add descripton of what this messages means
+Service Chain Events are events which are sent confirming that a Service Chain Command was executed successfully.
+Service Chain Events contain the details of the transaction that was executed.
+
+These events are:
+
+* Deposit Value Event (0x70)
+* Withdraw Value Event (0x71)
+* Execution Report to Buy/Sell XCL (0x72)
+
 
 // todo add table showing example of success and error
 
@@ -351,16 +505,42 @@ Range 0x70 - 0x7f
 
 === Deposit Value Event (0x70)
 
-// todo add descripton of what this messages means
+A Deposit Value Event message is a message which is sent as a response to a:
+
+* Deposit Value Command
+
+message.
+
+The Deposit Value Event message contains confirmation of all the deposit details including:
+
+* the amount deposited 
+* the currency
+* the user's account address
+
 
 // todo add table showing example of success and error
 
 === Withdraw Value Event (0x71)
 
-// todo add descripton of what this messages means
+A Withdraw Value Event is an event which is sent as a response to a:
 
-=== Execution Report to Buy/Sell XCL (0x72)
+* Withdraw Value Command
 
-// todo add descripton of what this messages means
+The Withdraw Value Event contains confirmation of the withdrawal details including:
 
-// todo add table showing example of success and error
+* the amount withdrew
+* the currency
+* the user's account address
+
+
+=== Execution Report Event (0x72)
+
+An Execution Report message is a message which is sent as a confirmation message of a trade executed in the Accelerate market. The Execution Report Event message contains:
+
+* the amount bought or sold
+* the currency
+* the price of the trade.
+
+Execution Reports are sent as a result of placing a Market or Limit Order on the Accelerate market.
+
+THE END
