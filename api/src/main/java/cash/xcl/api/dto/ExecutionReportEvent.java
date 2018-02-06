@@ -1,17 +1,12 @@
 package cash.xcl.api.dto;
 
-
 import net.openhft.chronicle.bytes.Bytes;
 import net.openhft.chronicle.bytes.BytesIn;
-
 
 // FIXME needs reviewing/completing
 public class ExecutionReportEvent extends SignedMessage {
 
-
     private ExecutionReport executionReport;
-
-
 
     public ExecutionReportEvent(long sourceAddress, long eventTime, ExecutionReport executionReport) {
         super(sourceAddress, eventTime);
@@ -20,7 +15,6 @@ public class ExecutionReportEvent extends SignedMessage {
 
     public ExecutionReportEvent() {
     }
-
 
     @Override
     protected void readMarshallable2(BytesIn bytes) {
@@ -36,8 +30,5 @@ public class ExecutionReportEvent extends SignedMessage {
     public int messageType() {
         return MethodIds.EXECUTION_REPORT;
     }
-
-
-
 
 }

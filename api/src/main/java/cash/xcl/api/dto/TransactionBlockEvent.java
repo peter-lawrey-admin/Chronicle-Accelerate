@@ -33,7 +33,6 @@ public class TransactionBlockEvent extends SignedMessage {
         bytes.write(transactions);
     }
 
-
     @Override
     public int messageType() {
         return MethodIds.TRANSACTION_BLOCK_EVENT;

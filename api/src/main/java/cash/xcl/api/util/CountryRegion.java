@@ -62,7 +62,6 @@ public class CountryRegion extends AbstractMarshallable {
         return regionName;
     }
 
-
     public int regionCodeLength() {
         return regionCode.length() - 3;
     }

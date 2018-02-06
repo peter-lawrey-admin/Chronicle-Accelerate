@@ -6,7 +6,6 @@ import cash.xcl.api.dto.MethodIds;
 import cash.xcl.api.dto.SignedMessage;
 import net.openhft.chronicle.bytes.Bytes;
 import net.openhft.chronicle.core.Mocker;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;

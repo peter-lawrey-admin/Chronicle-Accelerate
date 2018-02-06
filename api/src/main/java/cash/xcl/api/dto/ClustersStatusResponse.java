@@ -14,8 +14,6 @@ public class ClustersStatusResponse extends SignedMessage {
     // and each node contains its own status
     private Clusters clusters;
 
-
-
     public ClustersStatusResponse(ClusterStatusQuery clusterStatusQuery, Clusters clusters) {
         this.clusterStatusQuery = clusterStatusQuery;
         this.clusters = clusters;

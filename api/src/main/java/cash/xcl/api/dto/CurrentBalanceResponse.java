@@ -1,6 +1,5 @@
 package cash.xcl.api.dto;
 
-
 import net.openhft.chronicle.bytes.Bytes;
 import net.openhft.chronicle.bytes.BytesIn;
 
@@ -13,7 +12,6 @@ public class CurrentBalanceResponse extends CurrentBalanceEvent {
 
     // TODO: use this instead of inheritance
     //private CurrentBalanceEvent currentBalanceEvent;
-
 
     public CurrentBalanceResponse(long sourceAddress, long eventTime,
                                   long address,
@@ -30,7 +28,6 @@ public class CurrentBalanceResponse extends CurrentBalanceEvent {
 
     public CurrentBalanceResponse() {
     }
-
 
     public CurrentBalanceQuery currentBalanceQuery() {
         return currentBalanceQuery;

@@ -1,13 +1,10 @@
 package cash.xcl.api.dto;
 
-
-
 import cash.xcl.api.util.CountryRegion;
 import net.openhft.chronicle.bytes.BytesIn;
 import net.openhft.chronicle.bytes.BytesOut;
 import net.openhft.chronicle.core.io.IORuntimeException;
 import net.openhft.chronicle.wire.AbstractBytesMarshallable;
-
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,11 +20,9 @@ public class Cluster extends AbstractBytesMarshallable {
     // services provided by this cluster
     //private Services service;
 
-
     // TODO
     //private BlockChain blockChain;
     private BlockRecord blockRecord;
-
 
     public Cluster(List<Node> nodeList, CountryRegion region) {
         this.nodeList = nodeList;
@@ -42,10 +37,7 @@ public class Cluster extends AbstractBytesMarshallable {
     public Cluster() {
     }
 
-
-
-
-        public void addNode(Node node) {
+    public void addNode(Node node) {
         nodeList.add(node);
     }
 
@@ -95,6 +87,5 @@ public class Cluster extends AbstractBytesMarshallable {
     public void writeMarshallable(BytesOut bytes) {
 
     }
-
 
 }

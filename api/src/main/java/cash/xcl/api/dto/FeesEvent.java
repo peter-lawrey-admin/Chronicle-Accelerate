@@ -17,7 +17,6 @@ public class FeesEvent extends SignedMessage {
         this.transactionPercentageTransaction = transactionPercentageTransaction;
     }
 
-
     public FeesEvent() {
         super();
     }
