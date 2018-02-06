@@ -254,7 +254,7 @@ The Current Balance Query message is a query for the current balance of an accou
 
 === Exchange Rate Query (0x4e)
 
-This message is a query for the latest exchange Mid rate between 2 currencies, for example, the XCL/USD exchange rate.
+This message is a query for the latest Mid rate between 2 currencies, for example, the XCL/USD exchange rate.
 
 The Mid rates are calculated by the appropriate Exchange service for that currency/asset pair. 
 For example, the XCL/USD exchange rate will be calculated by the XCL/USD Exchange service. This service will return the Mid rate for 1,000,000 USD (?)
@@ -361,7 +361,7 @@ This message will contain, for a given account address, the list of currencies/a
 
 === Exchange Rate Response (0x5e)
 
-The Exchange Rate Response message which is sent in response to the
+The Exchange Rate Response message is the messages which is sent in response to the
 
     Exchange Rate Query (0x4e)
 
@@ -543,8 +543,8 @@ The Withdraw Value Event contains confirmation of the withdrawal details includi
 An Execution Report message is a message which is sent as a confirmation message of a trade executed in the Accelerate market. The Execution Report Event message contains:
 
 * the amount bought or sold
-* the currency
-* the price of the trade.
+* the currency pair
+* the price of the trade
 
 Execution Reports are sent as a result of placing a Market or Limit Order on the Accelerate market.
 
