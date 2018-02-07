@@ -5,7 +5,7 @@ Each service is designated to a region, or a set of regions.
 
 == Region codes
 
-Region code are based on ISO-3166 region codes with some additional services:
+Region codes are based on ISO-3166 region codes with some additional services:
 
 - codes starting with a letter are regional country codes.
 - codes starting with a 2-currency are exchange "regions".
@@ -16,12 +16,12 @@ Region code are based on ISO-3166 region codes with some additional services:
 Each region service manages a range of regions based on the following format, as a 32-bit unsigned value:
 
 |===
-| bits | description
-| 31 - 5 | region base
-| 4 - 0 | mask bits
+| Bits | Description
+| 31 - 5 | Region base
+| 4 - 0 | Mask bits
 |===
 
-e.g. The region `gbldn/25` could be just London in the UK with a mask of 25 bits.
+e.g. The region `gbldn/25` could be London in the UK, with a mask of 25 bits.
 
 == Region splitting
 
