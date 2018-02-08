@@ -15,8 +15,13 @@ public class ApplicationMessageEvent extends SignedErrorMessage {
 
     private String level;
 
-    public ApplicationMessageEvent(long sourceAddress, long eventTime, int origMessageType, long origSourceAddress, long origSourceEventTime, String reason, String level) {
-        super(sourceAddress, eventTime, origMessageType, origSourceAddress, origSourceEventTime, reason);
+    public ApplicationMessageEvent(long sourceAddress, long eventTime, SignedMessage orig, String reason, String level) {
+        super(sourceAddress, eventTime, orig, reason);
+        this.level = level;
+    }
+
+    public ApplicationMessageEvent(long sourceAddress, long eventTime, long origSourceAddress, long origEventTime, int origMessageType, String reason, String level) {
+        super(sourceAddress, eventTime, origSourceAddress, origEventTime, origMessageType, reason);
         level(level);
     }
 

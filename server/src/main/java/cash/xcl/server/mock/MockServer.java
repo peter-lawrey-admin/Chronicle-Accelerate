@@ -41,10 +41,12 @@ public class MockServer implements ServerIn {
         try {
             Bytes publicKey = createNewAddressCommand.publicKey();
             long address = addressService.createAddress(region, publicKey);
-            serverOut.createNewAddressEvent(new CreateNewAddressEvent(sourceAddress(), eventTime(), address, publicKey));
+            serverOut.createNewAddressEvent(
+                    new CreateNewAddressEvent(sourceAddress(), eventTime(), createNewAddressCommand, address, publicKey));
 
         } catch (IllegalArgumentException iae) {
-            serverOut.commandFailedEvent(new CommandFailedEvent(sourceAddress(), eventTime(), createNewAddressCommand, iae.getMessage()));
+            serverOut.commandFailedEvent(
+                    new CommandFailedEvent(sourceAddress(), eventTime(), createNewAddressCommand, iae.getMessage()));
         }
     }
 

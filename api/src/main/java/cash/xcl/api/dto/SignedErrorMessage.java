@@ -8,18 +8,20 @@ import static cash.xcl.api.dto.Validators.notNullOrEmpty;
 /**
  * A generic application message has been reported.  These should be used as little as possible as they cannot be easily processed downstream.
  */
-public class SignedErrorMessage extends SignedMessage {
+public class SignedErrorMessage extends SignedTracedMessage {
 
-    private long origSourceAddress;
-    private long origEventTime;
     private int origMessageType;
     private String reason;
 
-    public SignedErrorMessage(long sourceAddress, long eventTime, int origMessageType, long origSourceAddress, long origEventTime, String reason) {
-        super(sourceAddress, eventTime);
+    public SignedErrorMessage(long sourceAddress, long eventTime, SignedMessage orig, String reason) {
+        super(sourceAddress, eventTime, orig);
+        this.origMessageType = orig.messageType();
+        this.reason = reason;
+    }
+
+    public SignedErrorMessage(long sourceAddress, long eventTime, long origSourceAddress, long origEventTime, int origMessageType, String reason) {
+        super(sourceAddress, eventTime, origSourceAddress, origEventTime);
         this.origMessageType = origMessageType;
-        this.origSourceAddress = origSourceAddress;
-        this.origEventTime = origEventTime;
         this.reason = reason;
     }
 
@@ -29,24 +31,6 @@ public class SignedErrorMessage extends SignedMessage {
 
     public SignedErrorMessage messageType(int messageType) {
         this.origMessageType = messageType;
-        return this;
-    }
-
-    public long origSourceAddress() {
-        return origSourceAddress;
-    }
-
-    public SignedErrorMessage origSourceAddress(long origSourceAddress) {
-        this.origSourceAddress = origSourceAddress;
-        return this;
-    }
-
-    public long origEventTime() {
-        return origEventTime;
-    }
-
-    public SignedErrorMessage origEventTime(long origSourceEventTime) {
-        this.origEventTime = origSourceEventTime;
         return this;
     }
 
@@ -70,8 +54,6 @@ public class SignedErrorMessage extends SignedMessage {
     @Override
     protected void readMarshallable2(BytesIn bytes) {
         origMessageType = bytes.readUnsignedByte();
-        origSourceAddress = bytes.readLong();
-        origEventTime = bytes.readLong();
         reason = bytes.readUtf8();
     }
 
@@ -83,8 +65,6 @@ public class SignedErrorMessage extends SignedMessage {
     @Override
     protected void writeMarshallable2(Bytes bytes) {
         bytes.writeUnsignedByte(origMessageType);
-        bytes.writeLong(origSourceAddress);
-        bytes.writeLong(origEventTime);
         bytes.writeUtf8(reason);
     }
 }
