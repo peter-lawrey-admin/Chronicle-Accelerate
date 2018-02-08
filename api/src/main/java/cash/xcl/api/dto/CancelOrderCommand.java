@@ -28,7 +28,7 @@ public class CancelOrderCommand extends SignedMessage {
     @Override
     public int messageType() {
 
-        return MethodIds.CANCEL_ORDER_COMMAND;
+        return MessageTypes.CANCEL_ORDER_COMMAND;
     }
 
 }

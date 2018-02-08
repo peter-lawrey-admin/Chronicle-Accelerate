@@ -44,7 +44,7 @@ The message format looks like:
 |===
 <1> In the future, two protocol versions might be supported while an old one is deprecated.
 
-=== Transaction Block (message type = 0x01)
+=== Transaction Block Event (message type = 0x01)
 
 The transaction block is a signed message which contains zero or more messages.
 
@@ -62,7 +62,11 @@ The transaction block is a signed message which contains zero or more messages.
 
 Within the transaction block, each message is preceded by a message length which is 2 byte unsigned length.
 
-=== Tree Block (message type = 0x02)
+=== Transaction Block Gossip Event (message type = 0x02)
+
+The message publishes which blocks this node has received.
+
+=== Tree Block Event (message type = 0x03)
 
 The transaction block is a signed message which contains zero or more messages.
 
@@ -79,7 +83,7 @@ The transaction block is a signed message which contains zero or more messages.
 |===
 <1> The block status records how many times it has been replicated and whether it was timed out or not.
 
-=== Opening Balance Event (0x03)
+=== Opening Balance Event (0x04)
 
 This event holds the opening balance for an address at the start of the week.
 It is also the event produced at the end of the week to record the balance.
@@ -94,11 +98,11 @@ The message contains:
 
 - the list of currencies and balances
 
-=== Fees Event (0x04)
+=== Fees Event (0x05)
 
 This event records the fee structure determined by the AI at the start of the week.
 
-=== Exchange Rates Event (0x05)
+=== Exchange Rates Event (0x06)
 
 This event lists all the weekly exchange rates with mid price. It is used to calculate fees when the balance is in other currencies.
 

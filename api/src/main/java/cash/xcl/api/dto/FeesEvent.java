@@ -35,7 +35,7 @@ public class FeesEvent extends SignedMessage {
 
     @Override
     public int messageType() {
-        return MethodIds.FEES_EVENT;
+        return MessageTypes.FEES_EVENT;
     }
 
 }

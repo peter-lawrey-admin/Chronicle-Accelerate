@@ -28,7 +28,7 @@ public class TransferValueEvent extends SignedMessage {
 
     @Override
     public int messageType() {
-        return MethodIds.TRANSFER_VALUE_EVENT;
+        return MessageTypes.TRANSFER_VALUE_EVENT;
     }
 
     public TransferValueCommand transferValueCommand() {

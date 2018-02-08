@@ -28,7 +28,7 @@ public class ExecutionReportEvent extends SignedMessage {
 
     @Override
     public int messageType() {
-        return MethodIds.EXECUTION_REPORT;
+        return MessageTypes.EXECUTION_REPORT;
     }
 
 }

@@ -35,7 +35,7 @@ public class TransactionBlockEvent extends SignedMessage {
 
     @Override
     public int messageType() {
-        return MethodIds.TRANSACTION_BLOCK_EVENT;
+        return MessageTypes.TRANSACTION_BLOCK_EVENT;
     }
 
     // to add helper methods.

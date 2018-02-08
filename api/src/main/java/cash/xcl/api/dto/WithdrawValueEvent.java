@@ -27,7 +27,7 @@ public class WithdrawValueEvent extends SignedMessage {
 
     @Override
     public int messageType() {
-        return MethodIds.WITHDRAW_VALUE_EVENT;
+        return MessageTypes.WITHDRAW_VALUE_EVENT;
     }
 
     public WithdrawValueCommand withdrawValueCommand() {

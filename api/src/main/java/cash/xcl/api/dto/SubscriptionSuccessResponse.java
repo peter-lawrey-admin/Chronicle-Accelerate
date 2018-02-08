@@ -28,6 +28,6 @@ public class SubscriptionSuccessResponse extends SignedMessage {
     @Override
     public int messageType() {
 
-        return MethodIds.SUBSCRIPTION_SUCCESS_RESPONSE;
+        return MessageTypes.SUBSCRIPTION_SUCCESS_RESPONSE;
     }
 }

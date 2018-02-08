@@ -42,7 +42,7 @@ public class ApplicationMessageEvent extends SignedErrorMessage {
 
     @Override
     public int messageType() {
-        return MethodIds.APPLICATION_MESSAGE_EVENT;
+        return MessageTypes.APPLICATION_MESSAGE_EVENT;
     }
 
     @Override

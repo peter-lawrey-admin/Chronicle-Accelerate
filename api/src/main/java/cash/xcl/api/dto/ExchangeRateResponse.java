@@ -42,6 +42,6 @@ public class ExchangeRateResponse extends ExchangeRateEvent {
 
     @Override
     public int messageType() {
-        return MethodIds.EXCHANGE_RATE_RESPONSE;
+        return MessageTypes.EXCHANGE_RATE_RESPONSE;
     }
 }

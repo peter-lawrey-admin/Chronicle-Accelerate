@@ -37,7 +37,7 @@ public class ExchangeRateEvent extends SignedMessage {
 
     @Override
     public int messageType() {
-        return MethodIds.EXCHANGE_RATE_EVENT;
+        return MessageTypes.EXCHANGE_RATE_EVENT;
     }
 
     public String symbol1() {

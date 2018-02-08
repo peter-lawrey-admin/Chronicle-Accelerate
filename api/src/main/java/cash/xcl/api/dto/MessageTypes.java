@@ -14,7 +14,7 @@ package cash.xcl.api.dto;
  * <p>
  * Response are messages returned from a successful query.
  */
-public interface MethodIds {
+public interface MessageTypes {
     // bootstrap events
     int TRANSACTION_BLOCK_EVENT = 0x01;
     int TREE_BLOCK_EVENT = 0x02;

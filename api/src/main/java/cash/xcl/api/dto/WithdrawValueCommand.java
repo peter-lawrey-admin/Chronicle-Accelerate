@@ -23,7 +23,7 @@ public class WithdrawValueCommand extends TransferValueCommand {
 
     @Override
     public int messageType() {
-        return MethodIds.WITHDRAW_VALUE_COMMAND;
+        return MessageTypes.WITHDRAW_VALUE_COMMAND;
     }
 
     public String description() {

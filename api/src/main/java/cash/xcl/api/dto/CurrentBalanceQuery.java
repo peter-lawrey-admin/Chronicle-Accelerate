@@ -33,7 +33,7 @@ public class CurrentBalanceQuery extends SignedMessage {
 
     @Override
     public int messageType() {
-        return MethodIds.CURRENT_BALANCE_QUERY;
+        return MessageTypes.CURRENT_BALANCE_QUERY;
     }
 
     @Override

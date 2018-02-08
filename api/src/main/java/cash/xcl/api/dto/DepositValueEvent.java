@@ -28,7 +28,7 @@ public class DepositValueEvent extends SignedMessage {
 
     @Override
     public int messageType() {
-        return MethodIds.DEPOSIT_VALUE_EVENT;
+        return MessageTypes.DEPOSIT_VALUE_EVENT;
     }
 
     public DepositValueCommand depositValueCommand() {

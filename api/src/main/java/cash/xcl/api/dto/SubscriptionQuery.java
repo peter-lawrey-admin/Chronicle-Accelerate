@@ -19,7 +19,7 @@ public class SubscriptionQuery extends SignedMessage {
 
     @Override
     public int messageType() {
-        return MethodIds.SUBSCRIPTION_QUERY;
+        return MessageTypes.SUBSCRIPTION_QUERY;
     }
 
     @Override

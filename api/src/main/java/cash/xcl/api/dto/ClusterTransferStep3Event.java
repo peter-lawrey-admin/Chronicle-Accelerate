@@ -28,7 +28,7 @@ public class ClusterTransferStep3Event extends SignedMessage {
 
     @Override
     public int messageType() {
-        return MethodIds.CLUSTER_TRANSFER_STEP3_EVENT;
+        return MessageTypes.CLUSTER_TRANSFER_STEP3_EVENT;
     }
 
     public ClusterTransferStep3Command clusterTransferStep3Command() {

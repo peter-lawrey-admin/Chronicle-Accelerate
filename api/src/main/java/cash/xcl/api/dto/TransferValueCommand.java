@@ -39,7 +39,7 @@ public class TransferValueCommand extends SignedMessage {
 
     @Override
     public int messageType() {
-        return MethodIds.TRANSFER_VALUE_COMMAND;
+        return MessageTypes.TRANSFER_VALUE_COMMAND;
     }
 
     public long toAddress() {

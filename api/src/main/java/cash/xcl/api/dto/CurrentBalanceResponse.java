@@ -48,6 +48,6 @@ public class CurrentBalanceResponse extends CurrentBalanceEvent {
 
     @Override
     public int messageType() {
-        return MethodIds.CURRENT_BALANCE_RESPONSE;
+        return MessageTypes.CURRENT_BALANCE_RESPONSE;
     }
 }

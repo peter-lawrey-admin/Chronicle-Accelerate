@@ -22,7 +22,7 @@ public class ClustersStatusQuery extends SignedMessage {
 
     @Override
     public int messageType() {
-        return MethodIds.CLUSTERS_STATUS_QUERY;
+        return MessageTypes.CLUSTERS_STATUS_QUERY;
     }
 
     @Override

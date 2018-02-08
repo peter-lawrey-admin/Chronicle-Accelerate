@@ -35,7 +35,7 @@ public class CreateNewAddressEvent extends SignedMessage {
 
     @Override
     public int messageType() {
-        return MethodIds.CREATE_NEW_ADDRESS_EVENT;
+        return MessageTypes.CREATE_NEW_ADDRESS_EVENT;
     }
 
     public Bytes publicKey() {

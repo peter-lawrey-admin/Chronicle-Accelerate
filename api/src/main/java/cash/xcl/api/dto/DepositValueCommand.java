@@ -20,7 +20,7 @@ public class DepositValueCommand extends TransferValueCommand {
 
     @Override
     public int messageType() {
-        return MethodIds.DEPOSIT_VALUE_COMMAND;
+        return MessageTypes.DEPOSIT_VALUE_COMMAND;
     }
 
     public String description() {

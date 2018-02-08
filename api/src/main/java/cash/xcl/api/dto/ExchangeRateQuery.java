@@ -46,7 +46,7 @@ public class ExchangeRateQuery extends SignedMessage {
 
     @Override
     public int messageType() {
-        return MethodIds.EXCHANGE_RATE_QUERY;
+        return MessageTypes.EXCHANGE_RATE_QUERY;
     }
 
     @Override

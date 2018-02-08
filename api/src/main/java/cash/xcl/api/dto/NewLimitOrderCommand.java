@@ -35,6 +35,6 @@ public class NewLimitOrderCommand extends SignedMessage {
     @Override
     public int messageType() {
 
-        return MethodIds.NEW_LIMIT_ORDER_COMMAND;
+        return MessageTypes.NEW_LIMIT_ORDER_COMMAND;
     }
 }

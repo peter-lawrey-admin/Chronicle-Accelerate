@@ -77,7 +77,7 @@ public class SignedErrorMessage extends SignedMessage {
 
     @Override
     public int messageType() {
-        return MethodIds.COMMAND_FAILED_EVENT;
+        return MessageTypes.COMMAND_FAILED_EVENT;
     }
 
     @Override

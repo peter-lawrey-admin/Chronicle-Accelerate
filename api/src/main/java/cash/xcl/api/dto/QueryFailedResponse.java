@@ -15,6 +15,6 @@ public class QueryFailedResponse extends SignedErrorMessage {
 
     @Override
     public int messageType() {
-        return MethodIds.QUERY_FAILED_RESPONSE;
+        return MessageTypes.QUERY_FAILED_RESPONSE;
     }
 }

@@ -16,7 +16,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static cash.xcl.api.dto.DtoParser.MESSAGE_OFFSET;
-import static cash.xcl.api.dto.MethodIds.*;
+import static cash.xcl.api.dto.MessageTypes.*;
 
 public class XCLServer implements Closeable {
     final ThreadLocal<Bytes> bytesTL = ThreadLocal.withInitial(Bytes::allocateElasticDirect);

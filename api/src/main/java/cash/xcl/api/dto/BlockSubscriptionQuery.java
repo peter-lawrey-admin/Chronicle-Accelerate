@@ -31,7 +31,7 @@ public class BlockSubscriptionQuery extends SignedMessage {
 
     @Override
     public int messageType() {
-        return MethodIds.BLOCK_SUBSCRIPTION_QUERY;
+        return MessageTypes.BLOCK_SUBSCRIPTION_QUERY;
     }
 
     public int weekNumber() {

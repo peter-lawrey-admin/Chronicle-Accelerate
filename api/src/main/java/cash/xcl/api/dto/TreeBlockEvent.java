@@ -54,7 +54,7 @@ public class TreeBlockEvent extends SignedMessage {
 
     @Override
     public int messageType() {
-        return MethodIds.TREE_BLOCK_EVENT;
+        return MessageTypes.TREE_BLOCK_EVENT;
     }
 
     public int weekNumber() {

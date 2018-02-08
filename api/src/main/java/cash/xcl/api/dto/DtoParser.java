@@ -5,7 +5,7 @@ import net.openhft.chronicle.bytes.Bytes;
 
 import java.util.function.BiConsumer;
 
-import static cash.xcl.api.dto.MethodIds.*;
+import static cash.xcl.api.dto.MessageTypes.*;
 
 public class DtoParser {
     public static final int PROTOCOL_OFFSET = 80;

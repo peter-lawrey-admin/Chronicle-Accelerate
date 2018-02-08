@@ -2,7 +2,7 @@ package cash.xcl.api.util;
 
 import cash.xcl.api.AllMessages;
 import cash.xcl.api.dto.DtoParser;
-import cash.xcl.api.dto.MethodIds;
+import cash.xcl.api.dto.MessageTypes;
 import cash.xcl.api.dto.SignedMessage;
 import net.openhft.chronicle.bytes.Bytes;
 import net.openhft.chronicle.core.Mocker;
@@ -31,7 +31,7 @@ public class DtoParserTest {
     @Parameters(name = "{0}")
     public static Collection<Object[]> data() throws IllegalAccessException {
         List<Object[]> tests = new ArrayList<>();
-        for (Field field : MethodIds.class.getFields()) {
+        for (Field field : MessageTypes.class.getFields()) {
             if (field.getType() != int.class)
                 continue;
             Object[] test = {field.getName(), field.getInt(null)};

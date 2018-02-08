@@ -31,7 +31,7 @@ public class NewMarketOrderCommand extends SignedMessage {
     @Override
     public int messageType() {
 
-        return MethodIds.NEW_MARKET_ORDER_COMMAND;
+        return MessageTypes.NEW_MARKET_ORDER_COMMAND;
     }
 
     public NewMarketOrderCommand marketOrder(MarketOrder marketOrder) {

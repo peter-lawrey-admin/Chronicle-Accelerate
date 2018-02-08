@@ -38,6 +38,6 @@ public class ClusterStatusResponse extends SignedMessage {
 
     @Override
     public int messageType() {
-        return MethodIds.CLUSTER_STATUS_RESPONSE;
+        return MessageTypes.CLUSTER_STATUS_RESPONSE;
     }
 }

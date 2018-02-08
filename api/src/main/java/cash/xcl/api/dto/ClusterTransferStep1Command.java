@@ -15,6 +15,6 @@ public class ClusterTransferStep1Command extends TransferValueCommand {
 
     @Override
     public int messageType() {
-        return MethodIds.CLUSTER_TRANSFER_STEP1_COMMAND;
+        return MessageTypes.CLUSTER_TRANSFER_STEP1_COMMAND;
     }
 }
