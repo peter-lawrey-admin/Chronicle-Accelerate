@@ -1,10 +1,10 @@
 = XCL Block Chain
 Peter Lawrey
 
-The XCL Block Chain is an ordered collection of messages as commands and events. Its structure contains:
+The XCL Block Chain is an ordered collection of messages as commands + events and queries + responses. Its structure contains:
 
 - Signed Messages.
-- A Transaction Block which is a list of messages.
+- A Transaction Block which is a list of messages produced by a single node.
 - A Tree Block which describes the order of these blocks.
 
 All data is in little endian. All strings use UTF-8 encoding.
@@ -16,12 +16,21 @@ i.e. a recognised node in the current cluster, or a recognised node in the previ
 
 Message types are defined in the https://github.com/OpenHFT/Chronicle-Accelerate/blob/master/api/src/main/java/cash/xcl/api/dto/MethodIds.java[MethodIds] class.
 
+=== Trailing zeros
+
+All messages have notionally endless zeros at the end.
+If the schema changes and a field is added, it should be filled with 0 bytes ie. false, empty string, 0, or 0.0 as appropriate.
+If the message sent has more bytes than expected, they may be silently ignored.
+
+NOTE: The signature will always include only the bytes actually written and not include the notional extra zero bytes.
+
 === Signed Messages
 
 Messages written are either commands (an instruction to take an action which might be rejected), or events (something which has happened, might not need an action but cannot be rejected).
 
 The message format looks like:
 
+[width="80%",cols="1,3",options="header"]
 |===
 | Byte offset | Field
 | 0 - 63 | Signature
@@ -35,11 +44,11 @@ The message format looks like:
 |===
 <1> In the future, two protocol versions might be supported while an old one is deprecated.
 
-
 === Transaction Block (message type = 0x01)
 
 The transaction block is a signed message which contains zero or more messages.
 
+[width="80%",cols="1,3",options="header"]
 |===
 | Byte offset | Field
 | 0 - 81 | Message header
@@ -57,6 +66,7 @@ Within the transaction block, each message is preceded by a message length which
 
 The transaction block is a signed message which contains zero or more messages.
 
+[width="80%",cols="1,3",options="header"]
 |===
 | Byte offset | Field
 | 0 - 81 | Message header
@@ -96,6 +106,12 @@ This event lists all the weekly exchange rates with mid price. It is used to cal
 
 This event lists all the nodes in a cluster for a service.
 
+=== Block Subscription Query (0x0f)
+
+Request block be sent from a given block number in a week, for that node.
+
+Note: if the requested block number is -1, all the check point blocks (Weekly Events written) from the previous week will also be sent.
+
 == Runtime events
 
 These events can occur at any time and on any chain.
@@ -112,22 +128,22 @@ This event records that an error occured processing a command in a way which mig
 
 When a command fails to be processed it could trigger one of these events.
 
-=== Query Failed Message Event (0x11)
+=== Query Failed Response (0x12)
 
-This event records that an error occurs processing a query in a way which might be processed automatically.
+This response occurs when there is an error in processing a query in a way which might be processed automatically.
 
 When a query fails to be processed it could trigger one of these events.
 
-== Main Chain Commands
+NOTE: Responses are not written to a chain, only the connection sending the query.
+
+== Main Chain Command/Queries
 
 Main Chain Commands are commands which are used to execute Global operations - ie. operations which apply to all regions in the world. The results of executing these commands are new transactions being executed and then persisted to the Main Blockchain. The Main Blockchain holds cross-regional data like ...
-
 
 * Create New Address Command (0x20)
 * Cluster Transfer Value Step1 Command (0x21)
 * Cluster Transfer Value Step2 Command (0x22)
 * Cluster Transfer Value Step3 Command (0x23)
-* Clusters Status Query (0x2f)
 
 Range 0x20 - 0x2f
 
@@ -135,6 +151,7 @@ Range 0x20 - 0x2f
 
 This message is a command to request that a new account be created. This includes the public key and the region in which to create the address:
 
+[width="50%",options="header"]
 |===
 | Success | Error
 | Address Information Event (0x30) | Command Failed Event (0x11)
@@ -146,6 +163,7 @@ This message is a command to transfer value from one cluster to another, via the
 
 The first step is to approve money be taken out of an account in one region/cluster.
 
+[width="50%",options="header"]
 |===
 | Success | Error
 | Cluster Transfer Value Step2 Command (0x22) | Command Failed Event (0x11)
@@ -157,6 +175,7 @@ This message is a command to transfer value from one cluster to another, via the
 
 The second step is to pass the transfer main chain can reject it if a node or cluster fails risk checks e.g. transfers too much money, too quicky.
 
+[width="50%",options="header"]
 |===
 | Success | Error
 | Cluster Transfer Value Step3 Command (0x23) | Command Failed Event (0x11)
@@ -168,6 +187,7 @@ This message is a command to transfer value from one cluster to another via the 
 
 The last step is to notify the target cluster to add to the balance of an address.
 
+[width="50%",options="header"]
 |===
 | Success | Error
 | Cluster Transfer Value Step3 Event (0x33) | Application Message Event (0x10)
@@ -177,6 +197,7 @@ The last step is to notify the target cluster to add to the balance of an addres
 
 This message is a query for all the known clusters and the services they provide.
 
+[width="50%",options="header"]
 |===
 | Success | Error
 | Cluster Transfer Value Event (0x31) | Query Failed Response (0x12)
@@ -233,6 +254,7 @@ This message is a command to transfer value from one address to another in the s
 
 The first step is to approve money be taken out of an account in one region/cluster.
 
+[width="50%",options="header"]
 |===
 | Success | Error
 | Transfer Value Event (0x50) | Command Failed Event (0x11)
@@ -242,6 +264,7 @@ The first step is to approve money be taken out of an account in one region/clus
 
 // todo add descripton of what this messages means
 
+[width="50%",options="header"]
 |===
 | Success | Error
 | Subscription Success Response (0x5c) | Query Failed Response (0x12)
@@ -251,6 +274,7 @@ The first step is to approve money be taken out of an account in one region/clus
 
 The Current Balance Query message is a query for the current balance of an account address. An account address has a number of balances, one for each currency or asset held in the account. This message is a request for all balances for all currencies held within a given account.
 
+[width="50%",options="header"]
 |===
 | Success | Error
 | Current Balance Response (0x5d) | Query Failed Response (0x12)
@@ -263,6 +287,7 @@ This message is a query for the latest Mid rate between 2 currencies, for exampl
 The Mid rates are calculated by the appropriate Exchange service for that currency/asset pair. 
 For example, the XCL/USD exchange rate will be calculated by the XCL/USD Exchange service. This service will return the Mid rate for 1,000,000 USD (?)
 
+[width="50%",options="header"]
 |===
 | Success | Error
 | Exchange Rate Response (0x5e) | Query Failed Response (0x12)
@@ -279,6 +304,7 @@ The Cluster Status Query message is a query for the status of the nodes in the c
     * NOT_RUNNING
     * DISABLED
 
+[width="50%",options="header"]
 |===
 | Success | Error
 | Cluster Status Response (0x5f) | Query Failed Response (0x12)
@@ -290,19 +316,16 @@ Regional Chain Events are events which are published in response to Regional Cha
 
 These are the Regional Chain Events:
 
-Transfer Value Event (0x50)
+* Transfer Value Event (0x50)
 // todo any more events?
-
-// todo add table showing example of success and error
 
 Range 0x50 - 0x5f
 
+NOTE: Events and Responses are always assumed to be successfully processed or ignored unless an Application Message Event (0x10) is produced.
+
 === Transfer Value Event (0x50)
 
-The Transfer Value Event message is an event which is sent in response to a:
-
-Transfer Value Command
-
+The Transfer Value Event message is an event which is sent in response to a `Transfer Value Command`
 message.
 
 This event message contains the details of the transfer:
@@ -312,9 +335,6 @@ This event message contains the details of the transfer:
 * amount transferred
 * currency
 * timestamp
-
-// todo add table showing example of success and error
-
 
 == Regional Chain Responses
 
@@ -327,70 +347,46 @@ These response messages are:
 * Clusters Status Response (0x3f)
 * Exchange Rate Response (0x5e)
 
-
-
 === Subscription Success Response (0x5c)
 
-The Subscription Success Response message is a message which is sent in response to a:
-
-Subscription Command
-
-message.
-
-
-// todo add table showing example of success and error
+The Subscription Success Response message is a message which is sent in response to a
+`Subscription Command` message.
 
 === Current Balance Response (0x5d)
 
-The Current Balance Response message is the message sent in response to the:
-
-        Current Balance Query (0x4d)
-
-message.
+The Current Balance Response message is the message sent in response to the `Current Balance Query (0x4d)` message.
 
 This message will contain, for a given account address, the list of currencies/assets and the current balance for each of them. For example:  
 
-*Accelerate Account Address:   394a3bfw93*
-
-[width="100%",options="header"]
+.Accelerate Account Address:   @gb1ndar3bfw93
+[width="50%",options="header"]
 |====================
-|Currency  | Amount 
-|XCL  |     2,434 
-|GBP  | 3,493,343
-|USD  |    34,893 
+| Currency  | Amount
+| XCL  |     2,434
+| GBP  | 3,493,343
+| USD  |    34,893
 |====================
-
-
-// todo add table showing example of success and error
 
 === Exchange Rate Response (0x5e)
 
-The Exchange Rate Response message is the messages which is sent in response to the
-
-    Exchange Rate Query (0x4e)
+The Exchange Rate Response message which is sent in response to the `Exchange Rate Query (0x4e)` message
 
 This message will contain the latest exchange Mid rates between 2 assets -eg. currencies, crypto currencies, etc-. 
 For example, a standard response will look something like:
 
-[width="100%"]
+[width="50%",options="header"]
 |====================
-|Currencies  |  ExchangeRate
-|XCL/USD  |  2.3493
+| Currencies  |  mid | spread
+| USD/XCL  |  2.3493 | 0.0011
 |====================
 
 The Mid rates are calculated by the appropriate Exchange service for that currency/asset pair. For example, the XCL/USD exchange rate will be calculated by the XCL/USD Exchange service. This service will return the Mid rate for 1 million USD 
 // todo USD?
 
 
-// todo add table showing example of success and error
-
 === Cluster Status Response (0x5f)
 
-The Cluster Status Response message is the message sent in response to the:
-
-    Cluster Status Query (0x4f)
-
-message.
+The Cluster Status Response message is the message sent in response to the `Cluster Status Query (0x4f)` message.
 
 This message contains the status of all the nodes in the current cluster. A node can have one of these status:
 
@@ -401,8 +397,6 @@ This message contains the status of all the nodes in the current cluster. A node
     * NOT_RUNNING
     * DISABLED
 
-
-// todo add table showing example of success and error
 
 == Service Chain Commands
 
@@ -424,8 +418,6 @@ These commands are typically issued by a user from the Accelerate Website page.
 Service Chain Commands are requests to perform transactions which are persisted to the appropriate regional blockchain, ie, the blockchain for that region.
 
 
-// todo add table showing example of success and error
-
 Range 0x60 - 0x6f
 
 === Deposit Value Command (0x60)
@@ -434,6 +426,7 @@ This message is a command to make a deposit for an amount of standard real curre
 
 A user would typically make this deposit on the Accelerate Website page by making a standard Debit/Credit card payment into his personal Accelerate account address.
 
+[width="50%",options="header"]
 |===
 | Success | Error
 | Deposit Value Event (0x70) | Command Failed Event (0x11)
@@ -448,6 +441,7 @@ A user would typically issue this withdrawal on the Accelerate Website page by r
 If the user is withdrawing funds held in XCL, then this withdrawal will involve a currency conversion from XCL to the user's home currency eg. Sterling Pounds or US Dollars.
 
 
+[width="50%",options="header"]
 |===
 | Success | Error
 | Withdraw Value Event (0x71) | Command Failed Event (0x11)
@@ -461,11 +455,13 @@ A Market Order is a type of Order that executes immediately at the best availabl
 
 A user would typically place his Market Order on the Accelerate Website page.
 
-The result of placing a Market Order is a:
+The result of placing a Market Order is a `Execution Report (0x72)` which will be executed immediately after the market order is placed at the best available price at the time.
 
-* Execution Report (0x72)
-
-which will be executed immediately after the market order is placed at the best available price at the time.
+[width="50%",options="header"]
+|===
+| Success | Error
+| Execution Report (0x72) | Command Failed Event (0x11)
+|===
 
 
 === Limit Order to Buy/Sell XCL (0x63)
@@ -480,21 +476,23 @@ A user would typically place his Limit Order on the Accelerate Website page.
 
 After placing a Limit Order, a trade might be executed immediately or at some point in the future or not at all, depending on how aggressive the specified Limit Price is and the currently available live prices in the market.
 
-The result of placing a Limit Order is a:
+The result of placing a Limit Order is a `Execution Report Event (0x72)` but only, if and when, a trade takes place at the requested Limit Price.
 
-* Execution Report Event (0x72)
-
-but only, if and when, a trade takes place at the requested Limit Price.
-
-
-// todo add table showing example of success and error
+[width="50%",options="header"]
+|===
+| Success | Error
+| Execution Report (0x72) | Command Failed Event (0x11)
+|===
 
 === Cancel Order to Buy/Sell XCL (0x64)
 
 The Cancel Order Command message is a command to cancel a Market or Limit Order that a user previously placed in the Accelerate market.
 
-
-// todo add table showing example of success and error
+[width="50%",options="header"]
+|===
+| Success | Error
+| Execution Report (0x72) | Command Failed Event (0x11)
+|===
 
 == Service Chain Events
 
@@ -507,18 +505,13 @@ These events are:
 * Withdraw Value Event (0x71)
 * Execution Report to Buy/Sell XCL (0x72)
 
-
-// todo add table showing example of success and error
-
 Range 0x70 - 0x7f
+
+NOTE: Events and Responses are always assumed to be successfully processed or ignored unless an Application Message Event (0x10) is produced.
 
 === Deposit Value Event (0x70)
 
-A Deposit Value Event message is a message which is sent as a response to a:
-
-* Deposit Value Command
-
-message.
+A Deposit Value Event message is a message which is sent as a response to a `Deposit Value Command` message.
 
 The Deposit Value Event message contains confirmation of all the deposit details including:
 
@@ -531,9 +524,7 @@ The Deposit Value Event message contains confirmation of all the deposit details
 
 === Withdraw Value Event (0x71)
 
-A Withdraw Value Event is an event which is sent as a response to a:
-
-* Withdraw Value Command
+A Withdraw Value Event is an event which is sent as a response to a `Withdraw Value Command` message
 
 The Withdraw Value Event contains confirmation of the withdrawal details including:
 
@@ -552,4 +543,4 @@ An Execution Report message is a message which is sent as a confirmation message
 
 Execution Reports are sent as a result of placing a Market or Limit Order on the Accelerate market.
 
-THE END
+// THE END

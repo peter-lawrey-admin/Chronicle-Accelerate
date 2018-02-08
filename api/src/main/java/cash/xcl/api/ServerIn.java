@@ -14,6 +14,9 @@ public interface ServerIn extends Closeable {
 
     void clusterTransferStep1Command(ClusterTransferStep1Command clusterTransferStep1Command);
 
+    // inter cluster query
+    void blockSubscriptionQuery(BlockSubscriptionQuery blockSubscriptionQuery);
+
     // inter cluster commands
     void clusterTransferStep2Command(ClusterTransferStep2Command clusterTransferStep2Command);
 

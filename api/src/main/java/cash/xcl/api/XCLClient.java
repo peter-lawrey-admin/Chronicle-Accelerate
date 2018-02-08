@@ -66,6 +66,11 @@ public class XCLClient implements AllMessages, Closeable {
     }
 
     @Override
+    public void blockSubscriptionQuery(BlockSubscriptionQuery blockSubscriptionQuery) {
+        write(blockSubscriptionQuery);
+    }
+
+    @Override
     public void transferValueCommand(TransferValueCommand transferValueCommand) {
         write(transferValueCommand);
     }

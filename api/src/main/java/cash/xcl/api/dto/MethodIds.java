@@ -24,6 +24,8 @@ public interface MethodIds {
     int CURRENT_BALANCE_EVENT = 0x06;
     int SERVICE_NODES = 0x07;
 
+    int BLOCK_SUBSCRIPTION_QUERY = 0x0f;
+
     // runtime events
     int APPLICATION_MESSAGE_EVENT = 0x10;
     int COMMAND_FAILED_EVENT = 0x11;

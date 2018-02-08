@@ -16,6 +16,7 @@ public class DtoParser {
     final OpeningBalanceEvent obe = new OpeningBalanceEvent();
     final FeesEvent fe = new FeesEvent();
     final ServiceNodesEvent sne = new ServiceNodesEvent();
+    final BlockSubscriptionQuery bsq = new BlockSubscriptionQuery();
 
     final ApplicationMessageEvent ame = new ApplicationMessageEvent();
     final CommandFailedEvent cfe = new CommandFailedEvent();
@@ -107,6 +108,10 @@ public class DtoParser {
 
             case SERVICE_NODES:
                 parse(bytes, sne, messages, AllMessages::serviceNodesEvent);
+                break;
+
+            case BLOCK_SUBSCRIPTION_QUERY:
+                parse(bytes, bsq, messages, AllMessages::blockSubscriptionQuery);
                 break;
 
             // runtime events
