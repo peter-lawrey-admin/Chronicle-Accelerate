@@ -5,20 +5,57 @@ import cash.xcl.api.ServerComponent;
 import cash.xcl.api.ServerIn;
 import cash.xcl.api.XCLServer;
 import cash.xcl.api.dto.*;
+import cash.xcl.api.util.CountryRegion;
 
-public class GatewayFrame implements AllMessages, ServerComponent {
+public class RegionalFrame implements AllMessages, ServerComponent {
+    private final CountryRegion region;
     private XCLServer xclServer;
     private ServerIn mainChain;
     private ServerIn localChain;
 
-    public GatewayFrame(ServerIn mainChain, ServerIn localChain) {
+    public RegionalFrame(CountryRegion region) {
+        this.region = region;
+    }
+
+    public RegionalFrame mainChain(ServerIn mainChain) {
         this.mainChain = mainChain;
+        return this;
+    }
+
+    public RegionalFrame localChain(ServerIn localChain) {
         this.localChain = localChain;
+        return this;
     }
 
     @Override
     public void xclServer(XCLServer xclServer) {
         this.xclServer = xclServer;
+    }
+
+    @Override
+    public void openingBalanceEvent(OpeningBalanceEvent openingBalanceEvent) {
+        localChain.openingBalanceEvent(openingBalanceEvent);
+    }
+
+    @Override
+    public void transferValueCommand(TransferValueCommand transferValueCommand) {
+        localChain.transferValueCommand(transferValueCommand);
+    }
+
+    @Override
+    public void transferValueEvent(TransferValueEvent transferValueEvent) {
+        xclServer.write(transferValueEvent.transferValueCommand().sourceAddress(), transferValueEvent);
+        xclServer.write(transferValueEvent.transferValueCommand().toAddress(), transferValueEvent);
+    }
+
+    @Override
+    public void createNewAddressCommand(CreateNewAddressCommand createNewAddressCommand) {
+        mainChain.createNewAddressCommand(createNewAddressCommand);
+    }
+
+    @Override
+    public void createNewAddressEvent(CreateNewAddressEvent createNewAddressEvent) {
+        xclServer.write(createNewAddressEvent.origSourceAddress(), createNewAddressEvent);
     }
 
     @Override
@@ -28,16 +65,6 @@ public class GatewayFrame implements AllMessages, ServerComponent {
 
     @Override
     public void queryFailedResponse(QueryFailedResponse queryFailedResponse) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void createNewAddressEvent(CreateNewAddressEvent createNewAddressEvent) {
-        xclServer.write(createNewAddressEvent.origSourceAddress(), createNewAddressEvent);
-    }
-
-    @Override
-    public void transferValueEvent(TransferValueEvent transferValueEvent) {
         throw new UnsupportedOperationException();
     }
 
@@ -87,23 +114,13 @@ public class GatewayFrame implements AllMessages, ServerComponent {
     }
 
     @Override
-    public void createNewAddressCommand(CreateNewAddressCommand createNewAddressCommand) {
-        mainChain.createNewAddressCommand(createNewAddressCommand);
-    }
-
-    @Override
-    public void transferValueCommand(TransferValueCommand transferValueCommand) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public void clusterTransferStep1Command(ClusterTransferStep1Command clusterTransferStep1Command) {
         throw new UnsupportedOperationException();
     }
 
     @Override
     public void subscriptionQuery(SubscriptionQuery subscriptionQuery) {
-        throw new UnsupportedOperationException();
+
     }
 
     @Override
@@ -197,22 +214,19 @@ public class GatewayFrame implements AllMessages, ServerComponent {
     }
 
     @Override
-    public void openingBalanceEvent(OpeningBalanceEvent openingBalanceEvent) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public void currentBalanceEvent(CurrentBalanceResponse currentBalanceResponse) {
         throw new UnsupportedOperationException();
     }
 
     @Override
     public void serviceNodesEvent(ServiceNodesEvent serviceNodesEvent) {
-        throw new UnsupportedOperationException();
+        mainChain.serviceNodesEvent(serviceNodesEvent);
+        localChain.serviceNodesEvent(serviceNodesEvent);
     }
 
     @Override
     public void close() {
-        throw new UnsupportedOperationException();
+        mainChain.close();
+        localChain.close();
     }
 }
