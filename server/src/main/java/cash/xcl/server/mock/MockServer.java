@@ -49,6 +49,11 @@ public class MockServer implements ServerIn {
     }
 
     @Override
+    public void blockSubscriptionQuery(BlockSubscriptionQuery blockSubscriptionQuery) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public void transferValueCommand(TransferValueCommand transferValueCommand) {
         throw new UnsupportedOperationException();
     }

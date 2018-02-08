@@ -5,9 +5,10 @@ import net.openhft.chronicle.bytes.BytesIn;
 import net.openhft.chronicle.bytes.BytesStore;
 
 public class TransactionBlockEvent extends SignedMessage {
-    private final Bytes transactions = Bytes.allocateElasticDirect();
     private int weekNumber;
-    private long blockNumber;
+    private long blockNumber; // unsigned int
+
+    private Bytes transactions = Bytes.allocateElasticDirect();
 
     public TransactionBlockEvent(long sourceAddress, long eventTime, int weekNumber, long blockNumber) {
         super(sourceAddress, eventTime);
@@ -23,6 +24,7 @@ public class TransactionBlockEvent extends SignedMessage {
     protected void readMarshallable2(BytesIn bytes) {
         weekNumber = bytes.readUnsignedShort();
         blockNumber = bytes.readUnsignedInt();
+        if (transactions == null) transactions = Bytes.allocateElasticDirect();
         transactions.clear().write((BytesStore) bytes);
     }
 

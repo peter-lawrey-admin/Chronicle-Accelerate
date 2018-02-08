@@ -12,6 +12,7 @@ public class DtoParser {
     public static final int MESSAGE_OFFSET = 81;
 
     final TransactionBlockEvent tbe = new TransactionBlockEvent();
+    final TransactionBlockGossipEvent tbge = new TransactionBlockGossipEvent();
     final TreeBlockEvent treebe = new TreeBlockEvent();
     final OpeningBalanceEvent obe = new OpeningBalanceEvent();
     final FeesEvent fe = new FeesEvent();
@@ -49,7 +50,7 @@ public class DtoParser {
 
     // CurrentBalance
     final CurrentBalanceQuery cbq = new CurrentBalanceQuery();
-    final CurrentBalanceEvent cbe = new CurrentBalanceEvent();
+    final CurrentBalanceResponse cbe = new CurrentBalanceResponse();
 
     // ExchangeRate
     final ExchangeRateQuery erq = new ExchangeRateQuery();
@@ -90,6 +91,10 @@ public class DtoParser {
                 parse(bytes, tbe, messages, AllMessages::transactionBlockEvent);
                 break;
 
+            case TRANSACTION_BLOCK_GOSSIP_EVENT:
+                parse(bytes, tbge, messages, AllMessages::transactionBlockGossipEvent);
+                break;
+
             case TREE_BLOCK_EVENT:
                 parse(bytes, treebe, messages, AllMessages::treeBlockEvent);
                 break;
@@ -106,7 +111,7 @@ public class DtoParser {
                 parse(bytes, ere, messages, AllMessages::exchangeRateEvent);
                 break;
 
-            case SERVICE_NODES:
+            case SERVICE_NODES_EVENT:
                 parse(bytes, sne, messages, AllMessages::serviceNodesEvent);
                 break;
 
@@ -214,11 +219,6 @@ public class DtoParser {
             //ClusterS
             case CLUSTERS_STATUS_QUERY:
                 parse(bytes, cSq, messages, AllMessages::clustersStatusQuery);
-                break;
-
-            // CurrentBalance
-            case CURRENT_BALANCE_EVENT:
-                parse(bytes, cbe, messages, AllMessages::currentBalanceEvent);
                 break;
 
             case CURRENT_BALANCE_QUERY:

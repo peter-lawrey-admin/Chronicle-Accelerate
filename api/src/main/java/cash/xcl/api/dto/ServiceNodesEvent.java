@@ -30,7 +30,7 @@ public class ServiceNodesEvent extends SignedMessage {
 
     @Override
     public int messageType() {
-        return MessageTypes.SERVICE_NODES;
+        return MessageTypes.SERVICE_NODES_EVENT;
     }
 
     @Override

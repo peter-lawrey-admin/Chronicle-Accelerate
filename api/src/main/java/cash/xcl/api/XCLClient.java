@@ -61,6 +61,11 @@ public class XCLClient implements AllMessages, Closeable {
     }
 
     @Override
+    public void transactionBlockGossipEvent(TransactionBlockGossipEvent transactionBlockGossipEvent) {
+        write(transactionBlockGossipEvent);
+    }
+
+    @Override
     public void feesEvent(FeesEvent feesEvent) {
         write(feesEvent);
     }
@@ -176,8 +181,8 @@ public class XCLClient implements AllMessages, Closeable {
     }
 
     @Override
-    public void currentBalanceEvent(CurrentBalanceEvent currentBalanceEvent) {
-        write(currentBalanceEvent);
+    public void currentBalanceEvent(CurrentBalanceResponse currentBalanceResponse) {
+        write(currentBalanceResponse);
     }
 
     @Override

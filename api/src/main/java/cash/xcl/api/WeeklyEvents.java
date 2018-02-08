@@ -7,6 +7,8 @@ public interface WeeklyEvents extends Closeable {
     // weekly events
     void transactionBlockEvent(TransactionBlockEvent transactionBlockEvent);
 
+    void transactionBlockGossipEvent(TransactionBlockGossipEvent transactionBlockGossipEvent);
+
     void treeBlockEvent(TreeBlockEvent treeBlockEvent);
 
     void feesEvent(FeesEvent feesEvent);
@@ -17,7 +19,7 @@ public interface WeeklyEvents extends Closeable {
 
     void openingBalanceEvent(OpeningBalanceEvent openingBalanceEvent);
 
-    void currentBalanceEvent(CurrentBalanceEvent currentBalanceEvent);
+    void currentBalanceEvent(CurrentBalanceResponse currentBalanceResponse);
 
     void serviceNodesEvent(ServiceNodesEvent serviceNodesEvent);
 
