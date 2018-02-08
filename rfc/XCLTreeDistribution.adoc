@@ -1,1 +1,44 @@
 = Block Distribution
+Peter Lawrey
+
+Transaction are distributed in three stages;
+
+1. They are packed together by each node into blocks.
+1. The nodes gossip about which blocks they have received from other nodes.
+1. The blocks are assembled into a tree of nodes from the chains of each node.
+
+Once a node has assembled a tree of blocks it can process the transactions in order to determine whether they are successful or not.
+
+== Chain vs Tree
+
+Each node produces a chain of signed blocks containing transactions.
+However, the order of these block relative to one another can be important.
+esp if an address is attempting to double spend by transferring from two chains at once.
+
+To prevent double spend, each node broadcasts the chain it is producing and gossips about all the chains it has received.
+
+Once a node has detected that a super majority of nodes have gossiped that they have received a block, it can be placed in order.
+
+The order will be based on
+
+- the order blocks are confirmed
+- the block eventTime
+- the signature for the block
+
+Periodically, once a node has decided the order it broadcasts a tree block containing the order of blocks it will be processing.
+
+A process might be need to reconcile what happens if different nodes don't agree on the order or blocks. esp if they are not running the same code.
+
+=== Block activity
+
+A Transaction Block could be produced around every 1 milli-seconds to 1 second.
+Transaction Blocks are expected to be ~200 B to 100 KB.
+The soft limit size in the implementation is 1 MB and protocol limit is around 4 GB or ~40 million transactions
+however blocks this size are unlikely to be practical
+and it would be better to send more, smaller blocks more often as volumes increase.
+
+Gossip about block could occur after every block received and could be 10 - 100x more often but should be much smaller.
+
+A Tree Block could be produced around every 2 ms to 10 seconds and is expected to be less often than the Transaction Blocks.
+
+NOTE: Transaction Blocks and Tree Blocks both have block numbers and are part of the same chain for replication purposes.
