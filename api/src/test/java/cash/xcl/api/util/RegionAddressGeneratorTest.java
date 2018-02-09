@@ -154,7 +154,7 @@ public class RegionAddressGeneratorTest {
             RegionAddressGenerator generator = new RegionAddressGenerator(cr);
             long address = generator.newAddress();
             String encodedAddress = AddressUtil.encode(address);
-            assertEquals(regionIndex.matchCountryRegion(encodedAddress), cr);
+            assertEquals(cr, regionIndex.matchCountryRegion(encodedAddress));
         }
     }
 }

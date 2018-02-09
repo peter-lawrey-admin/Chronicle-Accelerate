@@ -1,6 +1,7 @@
 package cash.xcl.api.util;
 
 import cash.xcl.api.dto.Validators;
+import net.openhft.chronicle.bytes.Bytes;
 import net.openhft.chronicle.core.io.IORuntimeException;
 import net.openhft.chronicle.wire.AbstractMarshallable;
 import net.openhft.chronicle.wire.WireIn;
@@ -19,6 +20,7 @@ public class CountryRegion extends AbstractMarshallable {
     private final String countryCode2;
     private transient String[] overlappedSuffixes;
     private transient String regionCodeBase32;
+    private transient long regionCodeAddress;
 
     public CountryRegion(String countryName, String countryCode2, String countryCode3, String regionCode, String regionName) {
         this.countryName = notNullOrEmpty(countryName).trim();
@@ -36,6 +38,7 @@ public class CountryRegion extends AbstractMarshallable {
         }
         this.regionName = notNullOrEmpty(regionName.trim());
         this.regionCodeBase32 = XCLBase32.normalize(this.regionCode);
+        this.regionCodeAddress = XCLBase32.decode(Bytes.from(regionCodeBase32));
     }
 
     public String countryName() {
@@ -121,5 +124,9 @@ public class CountryRegion extends AbstractMarshallable {
         super.readMarshallable(wireIn);
         overlappedSuffixes = NO_STRINGS;
         regionCodeBase32 = XCLBase32.normalize(regionCode);
+    }
+
+    public long regionCodeAddress() {
+        return regionCodeAddress;
     }
 }

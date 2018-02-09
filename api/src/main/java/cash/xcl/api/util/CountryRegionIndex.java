@@ -77,7 +77,7 @@ public class CountryRegionIndex {
     }
 
     public CountryRegion matchCountryRegion(String encodedAddress) {
-        String possibleCode = encodedAddress.substring(0, Math.min(5, encodedAddress.length()));
+        String possibleCode = encodedAddress.substring(0, Math.min(6, encodedAddress.length()));
         while (possibleCode.length() > 2) {
             CountryRegion countryRegion = indexByBase32.get(possibleCode);
             if (countryRegion != null) {

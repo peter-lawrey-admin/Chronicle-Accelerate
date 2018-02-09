@@ -1,5 +1,6 @@
 package cash.xcl.api.tcp;
 
+import cash.xcl.api.AllMessageLookup;
 import cash.xcl.api.AllMessages;
 import cash.xcl.api.ClientException;
 import cash.xcl.api.ServerComponent;
@@ -21,7 +22,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import static cash.xcl.api.dto.DtoParser.MESSAGE_OFFSET;
 import static cash.xcl.api.dto.MessageTypes.*;
 
-public class XCLServer extends WritingAllMessages implements Closeable {
+public class XCLServer implements AllMessageLookup, Closeable {
     final ThreadLocal<Bytes> bytesTL = ThreadLocal.withInitial(Bytes::allocateElasticDirect);
 
     final TCPServer tcpServer;
@@ -29,8 +30,8 @@ public class XCLServer extends WritingAllMessages implements Closeable {
     private final Bytes secretKey;
     private final ServerComponent serverComponent;
     private final Map<Long, TCPConnection> connections = new ConcurrentHashMap<>();
-    private final ThreadLocal<long[]> addressTL = ThreadLocal.withInitial(() -> new long[1]);
     private final Map<Long, TCPConnection> remoteMap = new ConcurrentHashMap<>();
+    private final Map<Long, AllMessages> allMessagesMap = new ConcurrentHashMap<>();
 
     public XCLServer(String name, int port, long address, Bytes secretKey, ServerComponent serverComponent) throws IOException {
         this.address = address;
@@ -39,7 +40,7 @@ public class XCLServer extends WritingAllMessages implements Closeable {
         tcpServer = new VanillaTCPServer(name, port, new XCLConnectionListener());
 
         // do this last after initialisation.
-        serverComponent.xclServer(this);
+        serverComponent.allMessageLoopkup(this);
     }
 
     /**
@@ -54,13 +55,7 @@ public class XCLServer extends WritingAllMessages implements Closeable {
 
     @Override
     public AllMessages to(long addressOrRegion) {
-        addressTL.get()[0] = addressOrRegion;
-        return this;
-    }
-
-    @Override
-    protected void write(SignedMessage message) {
-        write(addressTL.get()[0], message);
+        return allMessagesMap.computeIfAbsent(addressOrRegion, OneWritingAllMessages::new);
     }
 
     public void write(long address, SignedMessage message) {
@@ -130,6 +125,29 @@ public class XCLServer extends WritingAllMessages implements Closeable {
                     throw (IOException) iore.getCause();
                 throw iore;
             }
+        }
+    }
+
+    private class OneWritingAllMessages extends WritingAllMessages {
+        private final long address;
+
+        public OneWritingAllMessages(long address) {
+            this.address = address;
+        }
+
+        @Override
+        public AllMessages to(long addressOrRegion) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        protected void write(SignedMessage message) {
+            XCLServer.this.write(address, message);
+        }
+
+        @Override
+        public void close() {
+
         }
     }
 }

@@ -1,5 +1,6 @@
 package cash.xcl.server.frame;
 
+import cash.xcl.api.AllMessageLookup;
 import cash.xcl.api.AllMessages;
 import cash.xcl.api.ServerIn;
 import cash.xcl.api.dto.*;
@@ -8,27 +9,21 @@ import cash.xcl.api.util.CountryRegion;
 
 public class RegionalFrame implements AllMessages {
     private final CountryRegion region;
+    private final AllMessageLookup lookup;
     private XCLServer xclServer;
     private ServerIn mainChain;
     private ServerIn localChain;
 
-    public RegionalFrame(CountryRegion region) {
+    public RegionalFrame(CountryRegion region, AllMessageLookup lookup) {
         this.region = region;
-    }
-
-    public RegionalFrame mainChain(ServerIn mainChain) {
-        this.mainChain = mainChain;
-        return this;
-    }
-
-    public RegionalFrame localChain(ServerIn localChain) {
-        this.localChain = localChain;
-        return this;
+        this.lookup = lookup;
+        mainChain = lookup.to(0L);
+        localChain = lookup.to(region.regionCodeAddress());
     }
 
     @Override
     public AllMessages to(long addressOrRegion) {
-        throw new UnsupportedOperationException();
+        return lookup.to(addressOrRegion);
     }
 
     @Override
