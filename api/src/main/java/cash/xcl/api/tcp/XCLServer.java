@@ -1,5 +1,8 @@
-package cash.xcl.api;
+package cash.xcl.api.tcp;
 
+import cash.xcl.api.AllMessages;
+import cash.xcl.api.ClientException;
+import cash.xcl.api.ServerComponent;
 import cash.xcl.api.dto.DtoParser;
 import cash.xcl.api.dto.SignedMessage;
 import cash.xcl.net.TCPConnection;
@@ -18,7 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import static cash.xcl.api.dto.DtoParser.MESSAGE_OFFSET;
 import static cash.xcl.api.dto.MessageTypes.*;
 
-public class XCLServer implements Closeable {
+public class XCLServer extends WritingAllMessages implements Closeable {
     final ThreadLocal<Bytes> bytesTL = ThreadLocal.withInitial(Bytes::allocateElasticDirect);
 
     final TCPServer tcpServer;
@@ -26,6 +29,8 @@ public class XCLServer implements Closeable {
     private final Bytes secretKey;
     private final ServerComponent serverComponent;
     private final Map<Long, TCPConnection> connections = new ConcurrentHashMap<>();
+    private final ThreadLocal<long[]> addressTL = ThreadLocal.withInitial(() -> new long[1]);
+    private final Map<Long, TCPConnection> remoteMap = new ConcurrentHashMap<>();
 
     public XCLServer(String name, int port, long address, Bytes secretKey, ServerComponent serverComponent) throws IOException {
         this.address = address;
@@ -37,10 +42,36 @@ public class XCLServer implements Closeable {
         serverComponent.xclServer(this);
     }
 
+    /**
+     * Add known connections between clusters
+     *
+     * @param addressOrRegion to associate with this connection
+     * @param tcpConnection   to connect to.
+     */
+    public void addTCPConnection(long addressOrRegion, TCPConnection tcpConnection) {
+        remoteMap.put(addressOrRegion, tcpConnection);
+    }
+
+    @Override
+    public AllMessages to(long addressOrRegion) {
+        addressTL.get()[0] = addressOrRegion;
+        return this;
+    }
+
+    @Override
+    protected void write(SignedMessage message) {
+        write(addressTL.get()[0], message);
+    }
+
     public void write(long address, SignedMessage message) {
-        TCPConnection tcpConnection = connections.get(address);
+        Long addressLong = address;
+        TCPConnection tcpConnection = connections.get(addressLong);
+        if (tcpConnection == null)
+            tcpConnection = remoteMap.get(addressLong);
+
         if (tcpConnection == null)
             return;
+
         try {
 
             if (!message.hasSignature()) {

@@ -1,6 +1,8 @@
 package cash.xcl.api;
 
 import cash.xcl.api.dto.CreateNewAddressCommand;
+import cash.xcl.api.tcp.XCLClient;
+import cash.xcl.api.tcp.XCLServer;
 import net.openhft.chronicle.bytes.Bytes;
 import net.openhft.chronicle.core.Jvm;
 import net.openhft.chronicle.core.Mocker;
@@ -42,7 +44,7 @@ public class XCLClientServerTest {
             if (out.toString().contains("createNewAddressCommand")) break;
             System.out.println(out);
         }
-        assertEquals("xclServer[cash.xcl.api.XCLServer@xxxxxxxx]\n" +
+        assertEquals("xclServer[cash.xcl.api.tcp.XCLServer@xxxxxxxx]\n" +
                 "createNewAddressCommand[!cash.xcl.api.dto.CreateNewAddressCommand {\n" +
                 "  sourceAddress: 2,\n" +
                 "  eventTime: 0,\n" +

@@ -1,13 +1,12 @@
 package cash.xcl.server.frame;
 
 import cash.xcl.api.AllMessages;
-import cash.xcl.api.ServerComponent;
 import cash.xcl.api.ServerIn;
-import cash.xcl.api.XCLServer;
 import cash.xcl.api.dto.*;
+import cash.xcl.api.tcp.XCLServer;
 import cash.xcl.api.util.CountryRegion;
 
-public class RegionalFrame implements AllMessages, ServerComponent {
+public class RegionalFrame implements AllMessages {
     private final CountryRegion region;
     private XCLServer xclServer;
     private ServerIn mainChain;
@@ -28,8 +27,8 @@ public class RegionalFrame implements AllMessages, ServerComponent {
     }
 
     @Override
-    public void xclServer(XCLServer xclServer) {
-        this.xclServer = xclServer;
+    public AllMessages to(long addressOrRegion) {
+        throw new UnsupportedOperationException();
     }
 
     @Override

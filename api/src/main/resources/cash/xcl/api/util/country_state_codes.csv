@@ -1,4 +1,6 @@
 countryName, regionCode, regionName, countryCode3, countryCode2
+Global, 0000, Main Chain, 000, 00
+Exchange, 2-EUR, EUR Exchange, 2EU, EU
 Afghanistan, AF-BDS, Badakhshān, AFG, AF
 Afghanistan, AF-BGL, Baghlān, AFG, AF
 Afghanistan, AF-BAL, Balkh, AFG, AF
