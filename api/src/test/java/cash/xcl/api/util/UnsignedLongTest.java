@@ -4,7 +4,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-@SuppressWarnings("NumericOverflow")
+@SuppressWarnings({"NumericOverflow", "ConstantOverflow"})
 public class UnsignedLongTest {
 
     @Test

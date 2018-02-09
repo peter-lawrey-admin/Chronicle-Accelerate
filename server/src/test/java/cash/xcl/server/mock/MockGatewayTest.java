@@ -45,6 +45,8 @@ public class MockGatewayTest {
                 "createNewAddressEvent[!cash.xcl.api.dto.CreateNewAddressEvent {\n" +
                 "  sourceAddress: 0,\n" +
                 "  eventTime: 0,\n" +
+                "  origSourceAddress: 0,\n" +
+                "  origEventTime: 0,\n" +
                 "  address: -7811493390981337397,\n" +
                 "  publicKey: !!binary AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=\n" +
                 "}\n" +
@@ -52,6 +54,8 @@ public class MockGatewayTest {
                 "createNewAddressEvent[!cash.xcl.api.dto.CreateNewAddressEvent {\n" +
                 "  sourceAddress: 0,\n" +
                 "  eventTime: 0,\n" +
+                "  origSourceAddress: 0,\n" +
+                "  origEventTime: 0,\n" +
                 "  address: -7810885632407925157,\n" +
                 "  publicKey: !!binary AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=\n" +
                 "}\n" +
@@ -59,6 +63,8 @@ public class MockGatewayTest {
                 "createNewAddressEvent[!cash.xcl.api.dto.CreateNewAddressEvent {\n" +
                 "  sourceAddress: 0,\n" +
                 "  eventTime: 0,\n" +
+                "  origSourceAddress: 0,\n" +
+                "  origEventTime: 0,\n" +
                 "  address: -7810898871858203435,\n" +
                 "  publicKey: !!binary AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=\n" +
                 "}\n" +
