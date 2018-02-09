@@ -41,11 +41,58 @@ public class MockServer implements ServerIn {
         try {
             Bytes publicKey = createNewAddressCommand.publicKey();
             long address = addressService.createAddress(region, publicKey);
-            serverOut.createNewAddressEvent(new CreateNewAddressEvent(sourceAddress(), eventTime(), address, publicKey));
+            serverOut.createNewAddressEvent(
+                    new CreateNewAddressEvent(sourceAddress(), eventTime(), createNewAddressCommand, address, publicKey));
 
         } catch (IllegalArgumentException iae) {
-            serverOut.commandFailedEvent(new CommandFailedEvent(sourceAddress(), eventTime(), createNewAddressCommand, iae.getMessage()));
+            serverOut.commandFailedEvent(
+                    new CommandFailedEvent(sourceAddress(), eventTime(), createNewAddressCommand, iae.getMessage()));
         }
+    }
+
+    @Override
+    public void transactionBlockEvent(TransactionBlockEvent transactionBlockEvent) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void transactionBlockGossipEvent(TransactionBlockGossipEvent transactionBlockGossipEvent) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void treeBlockEvent(TreeBlockEvent treeBlockEvent) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void feesEvent(FeesEvent feesEvent) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void createNewAddressEvent(CreateNewAddressEvent createNewAddressEvent) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void exchangeRateEvent(ExchangeRateEvent exchangeRateEvent) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void openingBalanceEvent(OpeningBalanceEvent openingBalanceEvent) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void currentBalanceEvent(CurrentBalanceResponse currentBalanceResponse) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void serviceNodesEvent(ServiceNodesEvent serviceNodesEvent) {
+        throw new UnsupportedOperationException();
     }
 
     @Override

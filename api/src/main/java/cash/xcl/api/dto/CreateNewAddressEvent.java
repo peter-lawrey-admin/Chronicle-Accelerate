@@ -4,23 +4,28 @@ import net.openhft.chronicle.bytes.Bytes;
 import net.openhft.chronicle.bytes.BytesIn;
 import net.openhft.chronicle.salt.Ed25519;
 
-public class CreateNewAddressEvent extends SignedMessage {
+public class CreateNewAddressEvent extends SignedTracedMessage {
     private long address;
     private Bytes publicKey;
-    // add verifiable facts such as verified address
 
-    public CreateNewAddressEvent(long sourceAddress, long eventTime, long address, Bytes publicKey) {
-        super(sourceAddress, eventTime);
+    public CreateNewAddressEvent(long sourceAddress, long eventTime, SignedMessage orig, long address, Bytes publicKey) {
+        super(sourceAddress, eventTime, orig);
+        this.address = address;
+        this.publicKey = publicKey;
+    }
+
+    public CreateNewAddressEvent(long sourceAddress, long eventTime, long origSourceAddress, long origEventTime, long address, Bytes publicKey) {
+        super(sourceAddress, eventTime, origSourceAddress, origEventTime);
         this.address = address;
         this.publicKey = publicKey;
     }
 
     public CreateNewAddressEvent() {
-        super();
     }
 
     @Override
     protected void readMarshallable2(BytesIn bytes) {
+        super.readMarshallable2(bytes);
         if (publicKey == null) publicKey = Bytes.allocateDirect(Ed25519.PUBLIC_KEY_LENGTH);
         publicKey.clear();
         bytes.read(publicKey, Ed25519.PUBLIC_KEY_LENGTH);
@@ -29,6 +34,7 @@ public class CreateNewAddressEvent extends SignedMessage {
 
     @Override
     protected void writeMarshallable2(Bytes bytes) {
+        super.writeMarshallable2(bytes);
         bytes.write(publicKey);
         bytes.writeLong(address);
     }
