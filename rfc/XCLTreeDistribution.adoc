@@ -9,6 +9,60 @@ Transaction are distributed in three stages;
 
 Once a node has assembled a tree of blocks it can process the transactions in order to determine whether they are successful or not.
 
+== Reaching consensus
+
+Consensus is reached by going through stages with the purpose of
+
+- determining the order transactions will be processed.
+- come to a collective decision in a reasonable time frame.
+- reach consensus even when some nodes are not running or mis-behaving.
+
+=== Building blocks
+
+Transactions are assembled into batches called blocks.  These blocks are assembled in parallel on each node.
+These block in turn are ordered into a chain of blocks.  At this point, all the block produced by a node can be said to be in order,
+however the blocks in these chains could be interlaced in any order.
+
+=== Proposing an order for a round
+
+From the start of the week, the building the blocks into a single ordered tree occurs in rounds.
+
+At the start of a round, each node which has a block which has not be assembled into the tree proposes
+an order blocks yet to be added could be processed. This is called gossip about the blocks to be added.
+
+=== Voting of the order of new blocks.
+
+Each node votes of the proposals for a given round. There is three possible states.
+
+1. At least one node can see the majority of nodes agree on a proposal.
+1. At least one node can see that a majority cannot be achieved.
+1. No node sees a majority.
+
+In case 1, each node which sees a majority can publish a tree block recording the order blocks should be processed.
+
+In case 2, a node can start the next round, though whether it should is not clear.
+
+In case 3, after the round has expired, a new proposal can be made.  Once the proposal for a new has been accepted it replaces
+all previously unsuccessful rounds.
+
+NOTE: After a new round has been proposed but before it has been accepted, an old round might be accepted.
+When this happens, all the blocks in the old round must come before the blocks proposed in the new round.
+
+=== Sorting blocks within a round.
+
+Each message has a microsecond resolution timestamp.  Within a round, blocks are sorted by this timestamp to minimise
+how much difference the round process makes when everything is running correctly.
+
+When some nodes are not running ideally, the rounds will ensure the blocks can be placed in order even if;
+
+- the clock of one node is way off.
+- nodes are down
+- nodes are very slow.
+
+
+
+Each node published the blocks it has and proposes an order for the outstanding blocks it has
+
 == Chain vs Tree
 
 Each node produces a chain of signed blocks containing transactions.
