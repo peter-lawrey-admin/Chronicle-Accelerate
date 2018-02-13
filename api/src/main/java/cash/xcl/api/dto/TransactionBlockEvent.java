@@ -1,5 +1,6 @@
 package cash.xcl.api.dto;
 
+import cash.xcl.api.AllMessages;
 import net.openhft.chronicle.bytes.Bytes;
 import net.openhft.chronicle.bytes.BytesIn;
 import net.openhft.chronicle.bytes.BytesStore;
@@ -10,6 +11,8 @@ public class TransactionBlockEvent extends SignedMessage {
 
     private Bytes transactions = Bytes.allocateElasticDirect();
 
+    private transient DtoParser dtoParser;
+
     public TransactionBlockEvent(long sourceAddress, long eventTime, int weekNumber, long blockNumber) {
         super(sourceAddress, eventTime);
         this.weekNumber = weekNumber;
@@ -18,6 +21,21 @@ public class TransactionBlockEvent extends SignedMessage {
 
     public TransactionBlockEvent() {
 
+    }
+
+    public void clear() {
+        transactions.clear();
+        blockNumber++;
+    }
+
+    public void addTransaction(SignedMessage message) {
+        message.writeMarshallable(transactions);
+    }
+
+    public void replay(AllMessages allMessages) {
+        if (dtoParser == null) dtoParser = new DtoParser();
+        while (!transactions.isEmpty())
+            dtoParser.parseOne(transactions, allMessages);
     }
 
     @Override

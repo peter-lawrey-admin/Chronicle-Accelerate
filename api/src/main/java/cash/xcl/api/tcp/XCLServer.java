@@ -90,7 +90,7 @@ public class XCLServer implements AllMessagesLookup, Closeable {
     }
 
     class XCLConnectionListener implements TCPServerConnectionListener {
-        final DtoParser parser = new DtoParser();
+        final ThreadLocal<DtoParser> parserTL = ThreadLocal.withInitial(DtoParser::new);
 
         @Override
         public void onMessage(TCPServer server, TCPConnection channel, Bytes bytes) throws IOException {
@@ -105,7 +105,7 @@ public class XCLServer implements AllMessagesLookup, Closeable {
                     connections.put(address, channel);
                 }
 
-                parser.parseOne(bytes, serverComponent);
+                parserTL.get().parseOne(bytes, serverComponent);
 
             } catch (ClientException ce) {
                 SignedMessage message = ce.message();

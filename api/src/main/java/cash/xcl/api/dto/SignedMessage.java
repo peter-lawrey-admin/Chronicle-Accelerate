@@ -79,7 +79,7 @@ public abstract class SignedMessage extends AbstractBytesMarshallable {
     }
 
     public boolean hasSignature() {
-        return sigAndMsg != null && sigAndMsg.readRemaining() > Ed25519.SIGNATURE_LENGTH;
+        return sigAndMsg != null && sigAndMsg.readRemaining() >= Ed25519.SIGNATURE_LENGTH;
     }
 
     public Bytes<ByteBuffer> sigAndMsg() {
