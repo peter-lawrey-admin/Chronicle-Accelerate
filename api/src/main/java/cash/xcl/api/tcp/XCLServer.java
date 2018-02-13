@@ -14,6 +14,7 @@ import net.openhft.chronicle.bytes.Bytes;
 import net.openhft.chronicle.core.Jvm;
 import net.openhft.chronicle.core.io.Closeable;
 import net.openhft.chronicle.core.io.IORuntimeException;
+import net.openhft.chronicle.salt.Ed25519;
 
 import java.io.IOException;
 import java.util.Map;
@@ -95,7 +96,7 @@ public class XCLServer implements AllMessagesLookup, Closeable {
         @Override
         public void onMessage(TCPServer server, TCPConnection channel, Bytes bytes) throws IOException {
             try {
-                long address = bytes.readLong(bytes.readPosition() + 64);
+                long address = bytes.readLong(bytes.readPosition() + Ed25519.SIGNATURE_LENGTH);
                 long messageType = bytes.readUnsignedByte(bytes.readPosition() + MESSAGE_OFFSET);
                 if (messageType == SUBSCRIPTION_QUERY ||
                         messageType == CURRENT_BALANCE_QUERY ||
