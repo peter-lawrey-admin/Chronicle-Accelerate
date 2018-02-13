@@ -27,7 +27,7 @@ public class RegionalServerBenchmarkMain {
         XCLServer server = new XCLServer("regional", 12345, 0, secretKey, new RegionalServer());
 
         List<InetSocketAddress> addresses = Arrays.asList(new InetSocketAddress("localhost", 12345));
-        int threads = 2;
+        int threads = 1;
 
         for (int t = 0; t < 10; t++) {
             int msgs = 10000;
