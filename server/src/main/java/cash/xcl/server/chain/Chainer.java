@@ -12,21 +12,24 @@ import net.openhft.chronicle.threads.NamedThreadFactory;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 public class Chainer extends WritingAllMessages implements ServerComponent, Runnable {
     private final int periodMS;
     private final long[] addresses;
     private final Object transactionLock = new Object();
     private final ScheduledExecutorService ses = Executors.newSingleThreadScheduledExecutor(new NamedThreadFactory("chain", true));
+    private final Consumer<TransactionBlockEvent> tbeConsumer;
     private AllMessagesLookup lookup;
     private TransactionBlockEvent tbe = new TransactionBlockEvent();
     private TransactionBlockEvent tbe2 = new TransactionBlockEvent();
     private long nextSend;
 
-    public Chainer(int periodMS, long[] addresses) {
+    public Chainer(int periodMS, long[] addresses, Consumer<TransactionBlockEvent> tbeConsumer) {
         this.periodMS = periodMS;
         this.addresses = addresses;
         nextSend = System.currentTimeMillis() / periodMS * periodMS + periodMS;
+        this.tbeConsumer = tbeConsumer;
 
         ses.submit(this);
     }
@@ -61,6 +64,7 @@ public class Chainer extends WritingAllMessages implements ServerComponent, Runn
                 tbe.clear();
             }
             System.out.println("Sending " + tbeToSend.count() + " transactions");
+            tbeConsumer.accept(tbeToSend);
             for (long address : addresses) {
                 lookup.to(address).transactionBlockEvent(tbeToSend);
             }

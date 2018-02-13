@@ -12,7 +12,8 @@ public class ChainerTest {
     @Test
     public void testTransactions() {
         // todo turn this into a real test.
-        Chainer chainer = new Chainer(10, new long[1]);
+        Chainer chainer = new Chainer(10, new long[1], tbe -> {
+        });
         StringWriter out = new StringWriter();
         chainer.allMessagesLookup(addressOrRegion -> Mocker.logging(AllMessages.class, "to " + addressOrRegion + " ", out));
         TransferValueCommand xcl = new TransferValueCommand(0, 1, 0, 1, "XCL", "");
