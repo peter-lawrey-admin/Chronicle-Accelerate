@@ -34,6 +34,7 @@ public class TransactionBlockEvent extends SignedMessage {
 
     public void replay(AllMessages allMessages) {
         if (dtoParser == null) dtoParser = new DtoParser();
+        transactions.readPosition(0);
         while (!transactions.isEmpty())
             dtoParser.parseOne(transactions, allMessages);
     }
