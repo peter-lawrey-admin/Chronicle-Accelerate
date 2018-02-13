@@ -1,7 +1,7 @@
 package cash.xcl.api.tcp;
 
-import cash.xcl.api.AllMessageLookup;
 import cash.xcl.api.AllMessages;
+import cash.xcl.api.AllMessagesLookup;
 import cash.xcl.api.ClientException;
 import cash.xcl.api.ServerComponent;
 import cash.xcl.api.dto.DtoParser;
@@ -22,7 +22,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import static cash.xcl.api.dto.DtoParser.MESSAGE_OFFSET;
 import static cash.xcl.api.dto.MessageTypes.*;
 
-public class XCLServer implements AllMessageLookup, Closeable {
+public class XCLServer implements AllMessagesLookup, Closeable {
     final ThreadLocal<Bytes> bytesTL = ThreadLocal.withInitial(Bytes::allocateElasticDirect);
 
     final TCPServer tcpServer;
@@ -40,7 +40,7 @@ public class XCLServer implements AllMessageLookup, Closeable {
         tcpServer = new VanillaTCPServer(name, port, new XCLConnectionListener());
 
         // do this last after initialisation.
-        serverComponent.allMessageLoopkup(this);
+        serverComponent.allMessagesLoopkup(this);
     }
 
     /**

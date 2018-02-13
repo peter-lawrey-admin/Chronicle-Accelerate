@@ -44,7 +44,7 @@ public class XCLClientServerTest {
             if (out.toString().contains("createNewAddressCommand")) break;
             System.out.println(out);
         }
-        assertEquals("allMessageLoopkup[cash.xcl.api.tcp.XCLServer@xxxxxxxx]\n" +
+        assertEquals("allMessagesLoopkup[cash.xcl.api.tcp.XCLServer@xxxxxxxx]\n" +
                 "createNewAddressCommand[!cash.xcl.api.dto.CreateNewAddressCommand {\n" +
                 "  sourceAddress: 2,\n" +
                 "  eventTime: 0,\n" +

@@ -1,6 +1,6 @@
 package cash.xcl.api;
 
 @FunctionalInterface
-public interface AllMessageLookup {
+public interface AllMessagesLookup {
     AllMessages to(long addressOrRegion);
 }

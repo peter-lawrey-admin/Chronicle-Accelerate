@@ -1,5 +1,5 @@
 package cash.xcl.api;
 
-public interface AllMessages extends ClientOut, ClientIn, ServerIn, ServerOut, WeeklyEvents, AllMessageLookup {
+public interface AllMessages extends ClientOut, ClientIn, ServerIn, ServerOut, WeeklyEvents, AllMessagesLookup {
 
 }

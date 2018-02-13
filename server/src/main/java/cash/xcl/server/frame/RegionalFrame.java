@@ -1,7 +1,7 @@
 package cash.xcl.server.frame;
 
-import cash.xcl.api.AllMessageLookup;
 import cash.xcl.api.AllMessages;
+import cash.xcl.api.AllMessagesLookup;
 import cash.xcl.api.ServerIn;
 import cash.xcl.api.dto.*;
 import cash.xcl.api.tcp.XCLServer;
@@ -9,12 +9,12 @@ import cash.xcl.api.util.CountryRegion;
 
 public class RegionalFrame implements AllMessages {
     private final CountryRegion region;
-    private final AllMessageLookup lookup;
+    private final AllMessagesLookup lookup;
     private XCLServer xclServer;
     private ServerIn mainChain;
     private ServerIn localChain;
 
-    public RegionalFrame(CountryRegion region, AllMessageLookup lookup) {
+    public RegionalFrame(CountryRegion region, AllMessagesLookup lookup) {
         this.region = region;
         this.lookup = lookup;
         mainChain = lookup.to(0L);
