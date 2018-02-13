@@ -20,12 +20,11 @@ import java.util.concurrent.*;
 import static org.junit.Assert.assertEquals;
 
 public class RegionalServerBenchmarkMain {
-    static XCLServer server;
 
     public static void main(String[] args) throws IOException, InterruptedException, ExecutionException {
         VanillaBytes<Void> secretKey = Bytes.allocateDirect(Ed25519.SECRET_KEY_LENGTH);
         secretKey.writeSkip(Ed25519.SECRET_KEY_LENGTH);
-        server = new XCLServer("regional", 12345, 0, secretKey, new RegionalServer());
+        XCLServer server = new XCLServer("regional", 12345, 0, secretKey, new RegionalServer());
 
         List<InetSocketAddress> addresses = Arrays.asList(new InetSocketAddress("localhost", 12345));
         int threads = 2;
