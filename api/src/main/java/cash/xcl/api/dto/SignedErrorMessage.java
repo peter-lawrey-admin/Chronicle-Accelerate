@@ -1,7 +1,7 @@
 package cash.xcl.api.dto;
 
-import net.openhft.chronicle.bytes.Bytes;
 import net.openhft.chronicle.bytes.BytesIn;
+import net.openhft.chronicle.bytes.BytesOut;
 
 import static cash.xcl.api.dto.Validators.notNullOrEmpty;
 
@@ -52,7 +52,7 @@ public class SignedErrorMessage extends SignedTracedMessage {
     }
 
     @Override
-    protected void readMarshallable2(BytesIn bytes) {
+    protected void readMarshallable2(BytesIn<?> bytes) {
         origMessageType = bytes.readUnsignedByte();
         reason = bytes.readUtf8();
     }
@@ -63,7 +63,7 @@ public class SignedErrorMessage extends SignedTracedMessage {
     }
 
     @Override
-    protected void writeMarshallable2(Bytes bytes) {
+    protected void writeMarshallable2(BytesOut<?> bytes) {
         bytes.writeUnsignedByte(origMessageType);
         bytes.writeUtf8(reason);
     }

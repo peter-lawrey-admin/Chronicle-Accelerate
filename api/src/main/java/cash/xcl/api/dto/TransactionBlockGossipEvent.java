@@ -1,7 +1,7 @@
 package cash.xcl.api.dto;
 
-import net.openhft.chronicle.bytes.Bytes;
 import net.openhft.chronicle.bytes.BytesIn;
+import net.openhft.chronicle.bytes.BytesOut;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -22,7 +22,7 @@ public class TransactionBlockGossipEvent extends SignedMessage {
     }
 
     @Override
-    protected void readMarshallable2(BytesIn bytes) {
+    protected void readMarshallable2(BytesIn<?> bytes) {
         weekNumber = bytes.readUnsignedShort();
         blockNumber = bytes.readUnsignedInt();
         int entries = (int) bytes.readStopBit();
@@ -32,12 +32,12 @@ public class TransactionBlockGossipEvent extends SignedMessage {
     }
 
     @Override
-    protected void writeMarshallable2(Bytes bytes) {
+    protected void writeMarshallable2(BytesOut<?> bytes) {
         bytes.writeUnsignedShort(weekNumber);
         bytes.writeUnsignedInt(blockNumber);
         bytes.writeStopBit(addressToBlockNumberMap.size());
         for (Map.Entry<Long, Long> entry : addressToBlockNumberMap.entrySet())
-            bytes.writeLong(entry.getKey(), entry.getValue());
+            bytes.writeLong(entry.getKey()).writeLong(entry.getValue());
     }
 
     @Override

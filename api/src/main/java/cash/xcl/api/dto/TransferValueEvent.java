@@ -2,6 +2,7 @@ package cash.xcl.api.dto;
 
 import net.openhft.chronicle.bytes.Bytes;
 import net.openhft.chronicle.bytes.BytesIn;
+import net.openhft.chronicle.bytes.BytesOut;
 
 public class TransferValueEvent extends SignedMessage {
 
@@ -17,12 +18,12 @@ public class TransferValueEvent extends SignedMessage {
     }
 
     @Override
-    protected void readMarshallable2(BytesIn bytes) {
+    protected void readMarshallable2(BytesIn<?> bytes) {
         transferValueCommand = ((Bytes<?>) bytes).readMarshallableLength16(TransferValueCommand.class, transferValueCommand);
     }
 
     @Override
-    protected void writeMarshallable2(Bytes bytes) {
+    protected void writeMarshallable2(BytesOut<?> bytes) {
         bytes.writeMarshallableLength16(transferValueCommand);
     }
 

@@ -1,7 +1,7 @@
 package cash.xcl.api.dto;
 
-import net.openhft.chronicle.bytes.Bytes;
 import net.openhft.chronicle.bytes.BytesIn;
+import net.openhft.chronicle.bytes.BytesOut;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -18,7 +18,7 @@ public class ServiceNodesEvent extends SignedMessage {
     }
 
     @Override
-    protected void readMarshallable2(BytesIn bytes) {
+    protected void readMarshallable2(BytesIn<?> bytes) {
         region = bytes.readUtf8();
         int entries = (int) bytes.readStopBit();
         if (addressToIP == null) addressToIP = new LinkedHashMap<>();
@@ -34,7 +34,7 @@ public class ServiceNodesEvent extends SignedMessage {
     }
 
     @Override
-    protected void writeMarshallable2(Bytes bytes) {
+    protected void writeMarshallable2(BytesOut<?> bytes) {
         bytes.writeUtf8(region);
         bytes.writeStopBit(addressToIP.size());
         for (Map.Entry<Long, String> entry : addressToIP.entrySet()) {

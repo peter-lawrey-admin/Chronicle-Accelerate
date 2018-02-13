@@ -1,7 +1,7 @@
 package cash.xcl.api.dto;
 
-import net.openhft.chronicle.bytes.Bytes;
 import net.openhft.chronicle.bytes.BytesIn;
+import net.openhft.chronicle.bytes.BytesOut;
 
 public class ExchangeRateEvent extends SignedMessage {
     private String symbol1, symbol2;
@@ -20,7 +20,7 @@ public class ExchangeRateEvent extends SignedMessage {
     }
 
     @Override
-    protected void readMarshallable2(BytesIn bytes) {
+    protected void readMarshallable2(BytesIn<?> bytes) {
         symbol1 = bytes.readUtf8();
         symbol2 = bytes.readUtf8();
         buyPrice = bytes.readDouble();
@@ -28,7 +28,7 @@ public class ExchangeRateEvent extends SignedMessage {
     }
 
     @Override
-    protected void writeMarshallable2(Bytes bytes) {
+    protected void writeMarshallable2(BytesOut<?> bytes) {
         bytes.writeUtf8(symbol1);
         bytes.writeUtf8(symbol2);
         bytes.writeDouble(buyPrice);

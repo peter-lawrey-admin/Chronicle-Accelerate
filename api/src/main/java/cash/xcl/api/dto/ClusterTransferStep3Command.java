@@ -2,6 +2,7 @@ package cash.xcl.api.dto;
 
 import net.openhft.chronicle.bytes.Bytes;
 import net.openhft.chronicle.bytes.BytesIn;
+import net.openhft.chronicle.bytes.BytesOut;
 
 public class ClusterTransferStep3Command extends SignedMessage {
 
@@ -17,12 +18,12 @@ public class ClusterTransferStep3Command extends SignedMessage {
     }
 
     @Override
-    protected void readMarshallable2(BytesIn bytes) {
+    protected void readMarshallable2(BytesIn<?> bytes) {
         clusterTransferStep2Command = ((Bytes<?>) bytes).readMarshallableLength16(ClusterTransferStep2Command.class, clusterTransferStep2Command);
     }
 
     @Override
-    protected void writeMarshallable2(Bytes bytes) {
+    protected void writeMarshallable2(BytesOut<?> bytes) {
         bytes.writeMarshallableLength16(clusterTransferStep2Command);
     }
 

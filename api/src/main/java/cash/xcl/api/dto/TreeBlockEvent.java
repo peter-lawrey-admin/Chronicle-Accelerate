@@ -1,7 +1,7 @@
 package cash.xcl.api.dto;
 
-import net.openhft.chronicle.bytes.Bytes;
 import net.openhft.chronicle.bytes.BytesIn;
+import net.openhft.chronicle.bytes.BytesOut;
 import net.openhft.chronicle.core.annotation.NotNull;
 
 import java.util.ArrayList;
@@ -26,7 +26,7 @@ public class TreeBlockEvent extends SignedMessage {
     }
 
     @Override
-    protected void readMarshallable2(BytesIn bytes) {
+    protected void readMarshallable2(BytesIn<?> bytes) {
         weekNumber = bytes.readUnsignedShort();
         blockNumber = bytes.readUnsignedInt();
         blockRecords.clear();
@@ -45,7 +45,7 @@ public class TreeBlockEvent extends SignedMessage {
     }
 
     @Override
-    protected void writeMarshallable2(Bytes bytes) {
+    protected void writeMarshallable2(BytesOut<?> bytes) {
         bytes.writeUnsignedShort(weekNumber);
         bytes.writeUnsignedInt(blockNumber);
         for (int i = 0; i < blockRecords.size(); i++)

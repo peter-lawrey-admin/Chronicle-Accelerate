@@ -1,7 +1,7 @@
 package cash.xcl.api.dto;
 
-import net.openhft.chronicle.bytes.Bytes;
 import net.openhft.chronicle.bytes.BytesIn;
+import net.openhft.chronicle.bytes.BytesOut;
 
 // FIXME needs reviewing/completing
 // queries the status of the nodes in the current cluster
@@ -15,7 +15,7 @@ public class ClusterStatusQuery extends SignedMessage {
     }
 
     @Override
-    protected void readMarshallable2(BytesIn bytes) {
+    protected void readMarshallable2(BytesIn<?> bytes) {
 
     }
 
@@ -25,7 +25,7 @@ public class ClusterStatusQuery extends SignedMessage {
     }
 
     @Override
-    protected void writeMarshallable2(Bytes bytes) {
+    protected void writeMarshallable2(BytesOut<?> bytes) {
 
     }
 }

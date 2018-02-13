@@ -2,6 +2,7 @@ package cash.xcl.api.dto;
 
 import net.openhft.chronicle.bytes.Bytes;
 import net.openhft.chronicle.bytes.BytesIn;
+import net.openhft.chronicle.bytes.BytesOut;
 import net.openhft.chronicle.salt.Ed25519;
 
 public class CreateNewAddressCommand extends SignedMessage {
@@ -19,7 +20,7 @@ public class CreateNewAddressCommand extends SignedMessage {
     }
 
     @Override
-    protected void readMarshallable2(BytesIn bytes) {
+    protected void readMarshallable2(BytesIn<?> bytes) {
         if (publicKey == null) publicKey = Bytes.allocateDirect(Ed25519.PUBLIC_KEY_LENGTH);
         publicKey.clear();
         bytes.read(publicKey, Ed25519.PUBLIC_KEY_LENGTH);
@@ -28,7 +29,7 @@ public class CreateNewAddressCommand extends SignedMessage {
     }
 
     @Override
-    protected void writeMarshallable2(Bytes bytes) {
+    protected void writeMarshallable2(BytesOut<?> bytes) {
         bytes.write(publicKey);
 
         bytes.writeUtf8(region);

@@ -37,7 +37,7 @@ public abstract class SignedMessage extends AbstractBytesMarshallable {
         readMarshallable2(bytes);
     }
 
-    protected abstract void readMarshallable2(BytesIn bytes);
+    protected abstract void readMarshallable2(BytesIn<?> bytes);
 
     @Override
     public final void writeMarshallable(BytesOut bytes) {
@@ -45,7 +45,15 @@ public abstract class SignedMessage extends AbstractBytesMarshallable {
             bytes.write(sigAndMsg);
             return;
         }
-        throw new IllegalStateException("Need to add a signature first");
+        // todo should never need to write without a signature in production.
+        for (int i = 0; i < Ed25519.SIGNATURE_LENGTH; i += 8)
+            bytes.writeLong(0L);
+        bytes.writeLong(sourceAddress);
+        bytes.writeLong(eventTime);
+        bytes.writeUnsignedByte(1);
+        bytes.writeUnsignedByte(messageType());
+        bytes.writeUnsignedShort(0); // padding.
+        writeMarshallable2(bytes);
     }
 
     public void sign(Bytes tempBytes, long sourceAddress, Bytes secretKey) {
@@ -69,7 +77,7 @@ public abstract class SignedMessage extends AbstractBytesMarshallable {
 
     public abstract int messageType();
 
-    protected abstract void writeMarshallable2(Bytes bytes);
+    protected abstract void writeMarshallable2(BytesOut<?> bytes);
 
     @Override
     public void reset() {

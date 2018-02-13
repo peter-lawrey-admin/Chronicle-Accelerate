@@ -1,7 +1,7 @@
 package cash.xcl.api.dto;
 
-import net.openhft.chronicle.bytes.Bytes;
 import net.openhft.chronicle.bytes.BytesIn;
+import net.openhft.chronicle.bytes.BytesOut;
 
 /**
  * A generic application message has been reported.  These should be used as little as possible as they cannot be easily processed downstream.
@@ -44,13 +44,13 @@ public abstract class SignedTracedMessage extends SignedMessage {
     }
 
     @Override
-    protected void readMarshallable2(BytesIn bytes) {
+    protected void readMarshallable2(BytesIn<?> bytes) {
         origSourceAddress = bytes.readLong();
         origEventTime = bytes.readLong();
     }
 
     @Override
-    protected void writeMarshallable2(Bytes bytes) {
+    protected void writeMarshallable2(BytesOut<?> bytes) {
         bytes.writeLong(origSourceAddress);
         bytes.writeLong(origEventTime);
     }

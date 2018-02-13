@@ -1,7 +1,7 @@
 package cash.xcl.api.dto;
 
-import net.openhft.chronicle.bytes.Bytes;
 import net.openhft.chronicle.bytes.BytesIn;
+import net.openhft.chronicle.bytes.BytesOut;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -21,7 +21,7 @@ public class OpeningBalanceEvent extends SignedMessage {
     }
 
     @Override
-    protected void readMarshallable2(BytesIn bytes) {
+    protected void readMarshallable2(BytesIn<?> bytes) {
         address = bytes.readLong();
         int count = (int) bytes.readStopBit();
         if (balances == null) balances = new LinkedHashMap<>();
@@ -30,7 +30,7 @@ public class OpeningBalanceEvent extends SignedMessage {
     }
 
     @Override
-    protected void writeMarshallable2(Bytes bytes) {
+    protected void writeMarshallable2(BytesOut<?> bytes) {
         bytes.writeLong(address);
         bytes.writeStopBit(balances.size());
         for (Map.Entry<String, Double> entry : balances.entrySet()) {

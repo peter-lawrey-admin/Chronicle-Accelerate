@@ -1,7 +1,7 @@
 package cash.xcl.api.dto;
 
-import net.openhft.chronicle.bytes.Bytes;
 import net.openhft.chronicle.bytes.BytesIn;
+import net.openhft.chronicle.bytes.BytesOut;
 
 public class BlockSubscriptionQuery extends SignedMessage {
     private int weekNumber;
@@ -18,13 +18,13 @@ public class BlockSubscriptionQuery extends SignedMessage {
     }
 
     @Override
-    protected void readMarshallable2(BytesIn bytes) {
+    protected void readMarshallable2(BytesIn<?> bytes) {
         weekNumber = bytes.readUnsignedShort();
         blockNumber = bytes.readUnsignedInt();
     }
 
     @Override
-    protected void writeMarshallable2(Bytes bytes) {
+    protected void writeMarshallable2(BytesOut<?> bytes) {
         bytes.writeUnsignedShort(weekNumber);
         bytes.writeUnsignedInt(blockNumber);
     }
