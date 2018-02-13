@@ -40,7 +40,7 @@ public class XCLServer implements AllMessagesLookup, Closeable {
         tcpServer = new VanillaTCPServer(name, port, new XCLConnectionListener());
 
         // do this last after initialisation.
-        serverComponent.allMessagesLoopkup(this);
+        serverComponent.allMessagesLookup(this);
     }
 
     /**
