@@ -38,6 +38,7 @@ public class RegionalServer implements ServerComponent {
 
     @Override
     public void transferValueCommand(TransferValueCommand transferValueCommand) {
+//        System.out.println(transferValueCommand);
         TransferValueEvent event = new TransferValueEvent(serverAddress, eventTime(), transferValueCommand);
         lookup.to(transferValueCommand.sourceAddress())
                 .transferValueEvent(event);
@@ -131,7 +132,7 @@ public class RegionalServer implements ServerComponent {
 
     @Override
     public void subscriptionQuery(SubscriptionQuery subscriptionQuery) {
-        throw new UnsupportedOperationException();
+        // handled by the XCLServer.
     }
 
     @Override
