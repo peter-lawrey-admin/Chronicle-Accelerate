@@ -14,20 +14,24 @@ public class TransactionBlockEventTest {
 
     @Test
     public void writeMarshallable() {
-        TransactionBlockEvent tbe = new TransactionBlockEvent();
-        tbe.addTransaction(new CreateNewAddressCommand(1, 2, Bytes.wrapForRead(new byte[32]), "gb1dn"));
-        tbe.addTransaction(new TransferValueCommand(0, 3, 1, 1.23, "XCL", "init"));
+        TransactionBlockEvent tbe = new TransactionBlockEvent()
+                .region("gb1dn")
+                .addTransaction(
+                        new CreateNewAddressCommand(1, 2, Bytes.wrapForRead(new byte[32]), "gb1dn"))
+                .addTransaction(
+                        new TransferValueCommand(0, 3, 1, 1.23, "XCL", "init"));
 
-        assertEquals("!cash.xcl.api.dto.TransactionBlockEvent {\n" +
+        assertEquals("!TransactionBlockEvent {\n" +
                 "  sourceAddress: 0,\n" +
                 "  eventTime: 0,\n" +
+                "  region: gb1dn,\n" +
                 "  weekNumber: 0,\n" +
                 "  blockNumber: 0,\n" +
                 "  transactions: [\n" +
-                "    !cash.xcl.api.dto.CreateNewAddressCommand { sourceAddress: 1, eventTime: 2, publicKey: !!binary AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=, region: gb1dn },\n" +
-                "    !cash.xcl.api.dto.TransferValueCommand { sourceAddress: 0, eventTime: 3, toAddress: 1, amount: 1.23, currency: XCL, reference: init }\n" +
+                "    !CreateNewAddressCommand { sourceAddress: 1, eventTime: 2, publicKey: !!binary AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=, region: gb1dn },\n" +
+                "    !TransferValueCommand { sourceAddress: 0, eventTime: 3, toAddress: 1, amount: 1.23, currency: XCL, reference: init }\n" +
                 "  ]\n" +
-                "}\n", tbe.toString());
+                "}\n", tbe.toString().replaceAll("\r", ""));
     }
 
     @Test
@@ -35,6 +39,7 @@ public class TransactionBlockEventTest {
         TransactionBlockEvent tbe = Marshallable.fromString("!cash.xcl.api.dto.TransactionBlockEvent {\n" +
                 "  sourceAddress: 0,\n" +
                 "  eventTime: 0,\n" +
+                "  region: gb1dn,\n" +
                 "  weekNumber: 0,\n" +
                 "  blockNumber: 0,\n" +
                 "  transactions: [\n" +
@@ -44,14 +49,14 @@ public class TransactionBlockEventTest {
                 "}\n");
         StringWriter out = new StringWriter();
         tbe.replay(Mocker.logging(AllMessages.class, "out ", out));
-        assertEquals("out createNewAddressCommand[!cash.xcl.api.dto.CreateNewAddressCommand {\n" +
+        assertEquals("out createNewAddressCommand[!CreateNewAddressCommand {\n" +
                 "  sourceAddress: 1,\n" +
                 "  eventTime: 2,\n" +
                 "  publicKey: !!binary AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=,\n" +
                 "  region: gb1dn\n" +
                 "}\n" +
                 "]\n" +
-                "out transferValueCommand[!cash.xcl.api.dto.TransferValueCommand {\n" +
+                "out transferValueCommand[!TransferValueCommand {\n" +
                 "  sourceAddress: 0,\n" +
                 "  eventTime: 3,\n" +
                 "  toAddress: 1,\n" +
@@ -59,7 +64,7 @@ public class TransactionBlockEventTest {
                 "  currency: XCL,\n" +
                 "  reference: init\n" +
                 "}\n" +
-                "]\n", out.toString());
+                "]\n", out.toString().replaceAll("\r", ""));
 
     }
 }

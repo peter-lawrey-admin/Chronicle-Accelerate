@@ -33,7 +33,7 @@ public class MockGatewayTest {
         mg.createNewAddressCommand(new CreateNewAddressCommand(0, 0, publicKey, "IE-D"));
         mg.createNewAddressCommand(new CreateNewAddressCommand(0, 0, publicKey, "IE-DL"));
 
-        assertEquals("commandFailedEvent[!cash.xcl.api.dto.CommandFailedEvent {\n" +
+        assertEquals("commandFailedEvent[!CommandFailedEvent {\n" +
                 "  sourceAddress: 0,\n" +
                 "  eventTime: 0,\n" +
                 "  origSourceAddress: 0,\n" +
@@ -42,7 +42,7 @@ public class MockGatewayTest {
                 "  reason: Unknown region code iea\n" +
                 "}\n" +
                 "]\n" +
-                "createNewAddressEvent[!cash.xcl.api.dto.CreateNewAddressEvent {\n" +
+                "createNewAddressEvent[!CreateNewAddressEvent {\n" +
                 "  sourceAddress: 0,\n" +
                 "  eventTime: 0,\n" +
                 "  origSourceAddress: 0,\n" +
@@ -51,7 +51,7 @@ public class MockGatewayTest {
                 "  publicKey: !!binary AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=\n" +
                 "}\n" +
                 "]\n" +
-                "createNewAddressEvent[!cash.xcl.api.dto.CreateNewAddressEvent {\n" +
+                "createNewAddressEvent[!CreateNewAddressEvent {\n" +
                 "  sourceAddress: 0,\n" +
                 "  eventTime: 0,\n" +
                 "  origSourceAddress: 0,\n" +
@@ -60,7 +60,7 @@ public class MockGatewayTest {
                 "  publicKey: !!binary AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=\n" +
                 "}\n" +
                 "]\n" +
-                "createNewAddressEvent[!cash.xcl.api.dto.CreateNewAddressEvent {\n" +
+                "createNewAddressEvent[!CreateNewAddressEvent {\n" +
                 "  sourceAddress: 0,\n" +
                 "  eventTime: 0,\n" +
                 "  origSourceAddress: 0,\n" +

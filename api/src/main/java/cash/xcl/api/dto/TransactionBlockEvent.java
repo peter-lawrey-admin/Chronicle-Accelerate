@@ -12,6 +12,7 @@ import net.openhft.chronicle.wire.WireOut;
 import org.jetbrains.annotations.NotNull;
 
 public class TransactionBlockEvent extends SignedMessage {
+    private String region;
     private int weekNumber;
     private long blockNumber; // unsigned int
 
@@ -20,8 +21,9 @@ public class TransactionBlockEvent extends SignedMessage {
     private transient int count;
     private transient DtoParser dtoParser;
 
-    public TransactionBlockEvent(long sourceAddress, long eventTime, int weekNumber, long blockNumber) {
+    public TransactionBlockEvent(long sourceAddress, long eventTime, String region, int weekNumber, long blockNumber) {
         super(sourceAddress, eventTime);
+        this.region = region;
         this.weekNumber = weekNumber;
         this.blockNumber = blockNumber;
     }
@@ -39,9 +41,10 @@ public class TransactionBlockEvent extends SignedMessage {
         blockNumber++;
     }
 
-    public void addTransaction(SignedMessage message) {
+    public TransactionBlockEvent addTransaction(SignedMessage message) {
         count++;
         message.writeMarshallable(transactions);
+        return this;
     }
 
     public void replay(AllMessages allMessages) {
@@ -53,6 +56,7 @@ public class TransactionBlockEvent extends SignedMessage {
 
     @Override
     protected void readMarshallable2(BytesIn<?> bytes) {
+        region = bytes.readUtf8();
         weekNumber = bytes.readUnsignedShort();
         blockNumber = bytes.readUnsignedInt();
         if (transactions == null) transactions = Bytes.allocateElasticDirect();
@@ -61,6 +65,7 @@ public class TransactionBlockEvent extends SignedMessage {
 
     @Override
     protected void writeMarshallable2(BytesOut<?> bytes) {
+        bytes.writeUtf8(region);
         bytes.writeUnsignedShort(weekNumber);
         bytes.writeUnsignedInt(blockNumber);
         bytes.write(transactions);
@@ -122,6 +127,15 @@ public class TransactionBlockEvent extends SignedMessage {
 
     public TransactionBlockEvent blockNumber(long blockNumber) {
         this.blockNumber = blockNumber;
+        return this;
+    }
+
+    public String region() {
+        return region;
+    }
+
+    public TransactionBlockEvent region(String region) {
+        this.region = region;
         return this;
     }
 

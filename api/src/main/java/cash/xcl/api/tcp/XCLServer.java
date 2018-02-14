@@ -59,8 +59,8 @@ public class XCLServer implements AllMessagesLookup, Closeable {
         return allMessagesMap.computeIfAbsent(addressOrRegion, OneWritingAllMessages::new);
     }
 
-    public void write(long address, SignedMessage message) {
-        Long addressLong = address;
+    public void write(long toAddress, SignedMessage message) {
+        Long addressLong = toAddress;
         TCPConnection tcpConnection = connections.get(addressLong);
         if (tcpConnection == null)
             tcpConnection = remoteMap.get(addressLong);
@@ -73,20 +73,28 @@ public class XCLServer implements AllMessagesLookup, Closeable {
             if (!message.hasSignature()) {
                 Bytes bytes = bytesTL.get();
                 bytes.clear();
-                message.sign(bytes, address, secretKey);
+                message.sign(bytes, address(), secretKey);
             }
             tcpConnection.write(message.sigAndMsg());
 
         } catch (Exception e) {
             // assume it's dead.
             Closeable.closeQuietly(tcpConnection);
-            connections.remove(address);
-            Jvm.warn().on(getClass(), "Unable to write to " + address + " " + message, e);
+            connections.remove(toAddress);
+            Jvm.warn().on(getClass(), "Unable to write to " + toAddress + " " + message, e);
         }
+    }
+
+    private long address() {
+        return address;
     }
 
     @Override
     public void close() {
+        for (TCPConnection connection : remoteMap.values()) {
+            Closeable.closeQuietly(connection);
+        }
+        remoteMap.clear();
         tcpServer.close();
     }
 

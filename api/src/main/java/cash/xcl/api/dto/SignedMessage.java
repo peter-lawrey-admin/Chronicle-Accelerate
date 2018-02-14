@@ -5,6 +5,7 @@ import net.openhft.chronicle.bytes.BytesIn;
 import net.openhft.chronicle.bytes.BytesOut;
 import net.openhft.chronicle.bytes.BytesStore;
 import net.openhft.chronicle.core.io.IORuntimeException;
+import net.openhft.chronicle.core.pool.ClassAliasPool;
 import net.openhft.chronicle.salt.Ed25519;
 import net.openhft.chronicle.wire.AbstractBytesMarshallable;
 
@@ -14,6 +15,53 @@ public abstract class SignedMessage extends AbstractBytesMarshallable {
     private transient Bytes<ByteBuffer> sigAndMsg;
     private long sourceAddress;
     private long eventTime;
+
+    static {
+        ClassAliasPool.CLASS_ALIASES.addAlias(
+                cash.xcl.api.dto.TransactionBlockEvent.class,
+                cash.xcl.api.dto.TransactionBlockGossipEvent.class,
+                cash.xcl.api.dto.TransactionBlockVoteEvent.class,
+                cash.xcl.api.dto.TreeBlockEvent.class,
+                cash.xcl.api.dto.OpeningBalanceEvent.class,
+                cash.xcl.api.dto.FeesEvent.class,
+                cash.xcl.api.dto.ExchangeRateEvent.class,
+                cash.xcl.api.dto.ServiceNodesEvent.class,
+                cash.xcl.api.dto.BlockSubscriptionQuery.class,
+                cash.xcl.api.dto.ApplicationMessageEvent.class,
+                cash.xcl.api.dto.CommandFailedEvent.class,
+                cash.xcl.api.dto.QueryFailedResponse.class,
+                cash.xcl.api.dto.CreateNewAddressCommand.class,
+                cash.xcl.api.dto.ClusterTransferStep1Command.class,
+                cash.xcl.api.dto.ClusterTransferStep2Command.class,
+                cash.xcl.api.dto.ClusterTransferStep3Command.class,
+                cash.xcl.api.dto.ClustersStatusQuery.class,
+                cash.xcl.api.dto.CreateNewAddressEvent.class,
+                cash.xcl.api.dto.ClusterTransferStep3Event.class,
+                cash.xcl.api.dto.ClustersStatusResponse.class,
+                cash.xcl.api.dto.TransferValueCommand.class,
+                cash.xcl.api.dto.SubscriptionQuery.class,
+                cash.xcl.api.dto.CurrentBalanceQuery.class,
+                cash.xcl.api.dto.ExchangeRateQuery.class,
+                cash.xcl.api.dto.ClusterStatusQuery.class,
+                cash.xcl.api.dto.TransferValueEvent.class,
+                cash.xcl.api.dto.SubscriptionSuccessResponse.class,
+                cash.xcl.api.dto.CurrentBalanceResponse.class,
+                cash.xcl.api.dto.ExchangeRateResponse.class,
+                cash.xcl.api.dto.ClusterStatusResponse.class,
+                cash.xcl.api.dto.DepositValueCommand.class,
+                cash.xcl.api.dto.WithdrawValueCommand.class,
+                cash.xcl.api.dto.NewMarketOrderCommand.class,
+                cash.xcl.api.dto.NewLimitOrderCommand.class,
+                cash.xcl.api.dto.CancelOrderCommand.class,
+                cash.xcl.api.dto.DepositValueEvent.class,
+                cash.xcl.api.dto.WithdrawValueEvent.class,
+                cash.xcl.api.dto.ExecutionReportEvent.class
+        );
+    }
+
+    public static void addAliases() {
+        // initialised in static block
+    }
 
     protected SignedMessage() {
     }
