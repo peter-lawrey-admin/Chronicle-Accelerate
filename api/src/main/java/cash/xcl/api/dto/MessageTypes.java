@@ -18,12 +18,13 @@ public interface MessageTypes {
     // bootstrap events
     int TRANSACTION_BLOCK_EVENT = 0x01;
     int TRANSACTION_BLOCK_GOSSIP_EVENT = 0x02;
-    int TREE_BLOCK_EVENT = 0x03;
-    int OPENING_BALANCE_EVENT = 0x04;
-    int FEES_EVENT = 0x05;
-    int EXCHANGE_RATE_EVENT = 0x06;
-    //    int CURRENT_BALANCE_EVENT = 0x06;
-    int SERVICE_NODES_EVENT = 0x07;
+    int TRANSACTION_BLOCK_VOTE_EVENT = 0x03;
+    int TREE_BLOCK_EVENT = 0x04;
+
+    int OPENING_BALANCE_EVENT = 0x05;
+    int FEES_EVENT = 0x06;
+    int EXCHANGE_RATE_EVENT = 0x07;
+    int SERVICE_NODES_EVENT = 0x08;
 
     int BLOCK_SUBSCRIPTION_QUERY = 0x0f;
 

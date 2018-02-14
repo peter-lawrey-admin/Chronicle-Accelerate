@@ -61,6 +61,11 @@ public class MockServer implements ServerIn {
     }
 
     @Override
+    public void transactionBlockVoteEvent(TransactionBlockVoteEvent transactionBlockVoteEvent) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public void treeBlockEvent(TreeBlockEvent treeBlockEvent) {
         throw new UnsupportedOperationException();
     }

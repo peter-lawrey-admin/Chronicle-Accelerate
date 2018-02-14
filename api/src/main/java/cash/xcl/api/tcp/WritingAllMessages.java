@@ -43,6 +43,11 @@ public abstract class WritingAllMessages implements AllMessages {
     }
 
     @Override
+    public void transactionBlockVoteEvent(TransactionBlockVoteEvent transactionBlockVoteEvent) {
+        write(transactionBlockVoteEvent);
+    }
+
+    @Override
     public void feesEvent(FeesEvent feesEvent) {
         write(feesEvent);
     }
