@@ -12,7 +12,7 @@ public class ChainerTest {
     @Test
     public void testTransactions() {
         // todo turn this into a real test.
-        Chainer chainer = new Chainer(10, new long[1], tbe -> {
+        Chainer chainer = new Chainer("gb1dn", 10, new long[1], tbe -> {
         });
         StringWriter out = new StringWriter();
         chainer.allMessagesLookup(addressOrRegion -> Mocker.logging(AllMessages.class, "to " + addressOrRegion + " ", out));

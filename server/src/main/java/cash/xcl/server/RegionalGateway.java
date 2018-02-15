@@ -7,9 +7,10 @@ import cash.xcl.api.dto.*;
 import cash.xcl.server.chain.Chainer;
 
 public class RegionalGateway implements AllMessages, ServerComponent {
+    public static final String MAIN_CHAIN = "0";
     private final long address;
-    private final Chainer mainChain = new Chainer(100, new long[]{1001, 1002, 1003}, this::transactionBlockEvent);
-    private final Chainer localChain = new Chainer(100, new long[]{1001, 1002, 1003}, this::transactionBlockEvent);
+    private final Chainer localChain = new Chainer("gb", 100, new long[]{1001, 1002, 1003}, this::transactionBlockEvent);
+    private final Chainer mainChain = new Chainer(MAIN_CHAIN, 100, new long[]{1001, 1002, 1003}, this::transactionBlockEvent);
     private AllMessagesLookup lookup;
 
     public RegionalGateway(long address) {
@@ -31,17 +32,20 @@ public class RegionalGateway implements AllMessages, ServerComponent {
     }
 
     @Override
+    public void transactionBlockEvent(TransactionBlockEvent transactionBlockEvent) {
+        if (transactionBlockEvent.region().equals(MAIN_CHAIN))
+            mainChain.transactionBlockEvent(transactionBlockEvent);
+        else
+            localChain.transactionBlockEvent(transactionBlockEvent);
+    }
+
+    @Override
     public void commandFailedEvent(CommandFailedEvent commandFailedEvent) {
         throw new UnsupportedOperationException();
     }
 
     @Override
     public void queryFailedResponse(QueryFailedResponse queryFailedResponse) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void transactionBlockEvent(TransactionBlockEvent transactionBlockEvent) {
         throw new UnsupportedOperationException();
     }
 
@@ -147,7 +151,7 @@ public class RegionalGateway implements AllMessages, ServerComponent {
 
     @Override
     public void createNewAddressCommand(CreateNewAddressCommand createNewAddressCommand) {
-        throw new UnsupportedOperationException();
+        mainChain.createNewAddressCommand(createNewAddressCommand);
     }
 
     @Override
@@ -227,6 +231,7 @@ public class RegionalGateway implements AllMessages, ServerComponent {
 
     @Override
     public void close() {
-        throw new UnsupportedOperationException();
+        mainChain.close();
+        localChain.close();
     }
 }

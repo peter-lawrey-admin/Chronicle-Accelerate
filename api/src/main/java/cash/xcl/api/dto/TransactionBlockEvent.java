@@ -37,10 +37,6 @@ public class TransactionBlockEvent extends SignedMessage {
         count = 0;
     }
 
-    public void incrementBlockNumber() {
-        blockNumber++;
-    }
-
     public TransactionBlockEvent addTransaction(SignedMessage message) {
         count++;
         message.writeMarshallable(transactions);

@@ -14,7 +14,7 @@ public class RegionalServerMain {
         VanillaBytes<Void> secretKey = Bytes.allocateDirect(32);
         secretKey.writeSkip(32);
         RegionalServer regionalServer = new RegionalServer();
-        Chainer chainer = new Chainer(10, new long[0], tbe -> tbe.replay(regionalServer));
+        Chainer chainer = new Chainer("gn1dn", 10, new long[0], tbe -> tbe.replay(regionalServer));
         server = new XCLServer("regional", 12345, 0, secretKey, chainer);
         regionalServer.allMessagesLookup(server);
     }
