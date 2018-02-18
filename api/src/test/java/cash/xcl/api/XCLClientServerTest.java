@@ -45,7 +45,7 @@ public class XCLClientServerTest {
             System.out.println(out);
         }
         assertEquals("allMessagesLookup[cash.xcl.api.tcp.XCLServer@xxxxxxxx]\n" +
-                "createNewAddressCommand[!cash.xcl.api.dto.CreateNewAddressCommand {\n" +
+                "createNewAddressCommand[!CreateNewAddressCommand {\n" +
                 "  sourceAddress: 2,\n" +
                 "  eventTime: 0,\n" +
                 "  publicKey: !!binary O2onvM62pC1io6jQKm8Nc2UyFXcd4kOmOsBIoYtZ2ik=,\n" +

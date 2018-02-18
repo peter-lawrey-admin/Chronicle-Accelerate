@@ -52,6 +52,7 @@ public class DtoParserTest {
         parser.parseOne(bytes, Mocker.intercepting(AllMessages.class,
                 (String method, Object[] args) -> {
                     SignedMessage arg0 = (SignedMessage) args[0];
+//                    System.out.println(arg0.getClass().getName()+".class,");
                     assertEquals(name, methodId, arg0.messageType());
                 },
                 null));

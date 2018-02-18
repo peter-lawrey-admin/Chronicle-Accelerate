@@ -193,6 +193,11 @@ public class RegionalFrame implements AllMessages {
     }
 
     @Override
+    public void transactionBlockVoteEvent(TransactionBlockVoteEvent transactionBlockVoteEvent) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public void treeBlockEvent(TreeBlockEvent treeBlockEvent) {
         throw new UnsupportedOperationException();
     }

@@ -1,0 +1,31 @@
+package cash.xcl.api.dto;
+
+import net.openhft.chronicle.bytes.BytesIn;
+import net.openhft.chronicle.bytes.BytesOut;
+
+public class TransactionBlockVoteEvent extends SignedMessage {
+    private TransactionBlockGossipEvent gossipEvent;
+
+    public TransactionBlockVoteEvent(long sourceAddress, long eventTime, TransactionBlockGossipEvent gossipEvent) {
+        super(sourceAddress, eventTime);
+        this.gossipEvent = gossipEvent;
+    }
+
+    public TransactionBlockVoteEvent() {
+    }
+
+    @Override
+    protected void readMarshallable2(BytesIn<?> bytes) {
+        gossipEvent = bytes.readMarshallableLength16(TransactionBlockGossipEvent.class, gossipEvent);
+    }
+
+    @Override
+    protected void writeMarshallable2(BytesOut<?> bytes) {
+        bytes.writeMarshallableLength16(gossipEvent);
+    }
+
+    @Override
+    public int messageType() {
+        return MessageTypes.TRANSACTION_BLOCK_VOTE_EVENT;
+    }
+}

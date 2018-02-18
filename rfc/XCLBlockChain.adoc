@@ -67,7 +67,11 @@ Within the transaction block, each message is preceded by a message length which
 
 The message publishes which blocks this node has received.
 
-=== Tree Block Event (message type = 0x03)
+=== Transaction Block Vote Event (message type = 0x03)
+
+The message publishes a vote on what the next tree node should be.
+
+=== Tree Block Event (message type = 0x04)
 
 The transaction block is a signed message which contains zero or more messages.
 
@@ -84,7 +88,7 @@ The transaction block is a signed message which contains zero or more messages.
 |===
 <1> The block status records how many times it has been replicated and whether it was timed out or not.
 
-=== Opening Balance Event (0x04)
+=== Opening Balance Event (0x05)
 
 This event holds the opening balance for an address at the start of the week.
 It is also the event produced at the end of the week to record the balance.
@@ -99,15 +103,15 @@ The message contains:
 
 - the list of currencies and balances
 
-=== Fees Event (0x05)
+=== Fees Event (0x06)
 
 This event records the fee structure determined by the AI at the start of the week.
 
-=== Exchange Rates Event (0x06)
+=== Exchange Rates Event (0x07)
 
 This event lists all the weekly exchange rates with mid price. It is used to calculate fees when the balance is in other currencies.
 
-=== Service Nodes Event (0x07)
+=== Service Nodes Event (0x08)
 
 This event lists all the nodes in a cluster for a service.
 

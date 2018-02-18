@@ -13,6 +13,7 @@ public class DtoParser {
 
     final TransactionBlockEvent tbe = new TransactionBlockEvent();
     final TransactionBlockGossipEvent tbge = new TransactionBlockGossipEvent();
+    final TransactionBlockVoteEvent tbve = new TransactionBlockVoteEvent();
     final TreeBlockEvent treebe = new TreeBlockEvent();
     final OpeningBalanceEvent obe = new OpeningBalanceEvent();
     final FeesEvent fe = new FeesEvent();
@@ -93,6 +94,10 @@ public class DtoParser {
 
             case TRANSACTION_BLOCK_GOSSIP_EVENT:
                 parse(bytes, tbge, messages, AllMessages::transactionBlockGossipEvent);
+                break;
+
+            case TRANSACTION_BLOCK_VOTE_EVENT:
+                parse(bytes, tbve, messages, AllMessages::transactionBlockVoteEvent);
                 break;
 
             case TREE_BLOCK_EVENT:

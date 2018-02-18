@@ -14,6 +14,7 @@ import net.openhft.chronicle.core.io.IORuntimeException;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.List;
 
 public class XCLClient extends WritingAllMessages implements Closeable, TCPConnection {
@@ -22,6 +23,15 @@ public class XCLClient extends WritingAllMessages implements Closeable, TCPConne
     private final long address;
     private final Bytes secretKey;
     private final AllMessages allMessageListener;
+
+    public XCLClient(String name,
+                     String socketHost,
+                     int socketPort,
+                     long address,
+                     Bytes secretKey,
+                     AllMessages allMessageListener) {
+        this(name, Arrays.asList(new InetSocketAddress(socketHost, socketPort)), address, secretKey, allMessageListener);
+    }
 
     public XCLClient(String name,
                      List<InetSocketAddress> socketAddresses,
