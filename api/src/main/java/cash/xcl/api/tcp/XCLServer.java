@@ -14,6 +14,7 @@ import net.openhft.chronicle.bytes.Bytes;
 import net.openhft.chronicle.core.Jvm;
 import net.openhft.chronicle.core.io.Closeable;
 import net.openhft.chronicle.core.io.IORuntimeException;
+import net.openhft.chronicle.core.time.SystemTimeProvider;
 import net.openhft.chronicle.salt.Ed25519;
 
 import java.io.IOException;
@@ -73,6 +74,7 @@ public class XCLServer implements AllMessagesLookup, Closeable {
         try {
 
             if (!message.hasSignature()) {
+                message.eventTime(SystemTimeProvider.INSTANCE.currentTimeMicros());
                 Bytes bytes = bytesTL.get();
                 bytes.clear();
                 message.sign(bytes, address(), secretKey);

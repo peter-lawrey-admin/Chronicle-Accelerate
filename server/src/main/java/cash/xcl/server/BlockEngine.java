@@ -119,7 +119,7 @@ public class BlockEngine extends AbstractAllMessages {
                     to(clusterAddress).transactionBlockEvent(tbe);
             }
 
-            int subRound = Math.max(1, periodMS / 5);
+            int subRound = Math.max(1, periodMS / 10);
             Jvm.pause(subRound);
             gossiper.sendGossip(blockNumber);
             Jvm.pause(subRound);

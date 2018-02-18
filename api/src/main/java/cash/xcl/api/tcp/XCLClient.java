@@ -10,6 +10,7 @@ import cash.xcl.net.VanillaTCPClient;
 import net.openhft.chronicle.bytes.Bytes;
 import net.openhft.chronicle.core.io.Closeable;
 import net.openhft.chronicle.core.io.IORuntimeException;
+import net.openhft.chronicle.core.time.SystemTimeProvider;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -55,6 +56,8 @@ public class XCLClient extends WritingAllMessages implements Closeable, TCPConne
     protected void write(SignedMessage message) {
         try {
             if (!message.hasSignature()) {
+                if (message.eventTime() == 0)
+                    message.eventTime(SystemTimeProvider.INSTANCE.currentTimeMicros());
                 Bytes bytes = bytesTL.get();
                 bytes.clear();
                 message.sign(bytes, address, secretKey);

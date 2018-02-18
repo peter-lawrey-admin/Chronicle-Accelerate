@@ -31,7 +31,7 @@ public class VanillaGateway extends AbstractAllMessages implements Gateway {
                 regionAddress,
                 region2,
                 BlockEngine.newMain(address, 1000, clusterAddresses),
-                BlockEngine.newLocal(address, region2, 100, clusterAddresses)
+                BlockEngine.newLocal(address, region2, 500, clusterAddresses)
         );
     }
 
@@ -102,8 +102,12 @@ public class VanillaGateway extends AbstractAllMessages implements Gateway {
 
     @Override
     public void createNewAddressEvent(CreateNewAddressEvent createNewAddressEvent) {
-        // cannot be received here.
-        throw new UnsupportedOperationException();
+        // received as a weekly event
+        checkTrusted(createNewAddressEvent);
+    }
+
+    private void checkTrusted(SignedMessage message) {
+
     }
 
     @Override

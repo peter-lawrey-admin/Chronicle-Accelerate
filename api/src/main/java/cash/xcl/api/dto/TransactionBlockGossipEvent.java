@@ -45,7 +45,7 @@ public class TransactionBlockGossipEvent extends SignedMessage {
         bytes.writeUnsignedInt(blockNumber);
         bytes.writeStopBit(addressToBlockNumberMap.size());
         for (Map.Entry<Long, Long> entry : addressToBlockNumberMap.entrySet())
-            bytes.writeLong(entry.getKey()).writeLong(entry.getValue());
+            bytes.writeLong(entry.getKey()).writeUnsignedInt(entry.getValue());
     }
 
     @Override
