@@ -7,6 +7,9 @@ import cash.xcl.api.dto.TreeBlockEvent;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+// TODO only take a majority view rather than last one wins.
+// TODO might need a stage before this where the servers announce a proposed TreeNode.
+
 public class VanillaVoteTaker implements VoteTaker {
     private final long address;
     private final long[] clusterAddresses;
