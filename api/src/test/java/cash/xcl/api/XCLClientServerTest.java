@@ -49,7 +49,8 @@ public class XCLClientServerTest {
                 "  sourceAddress: 2,\n" +
                 "  eventTime: 0,\n" +
                 "  publicKey: !!binary O2onvM62pC1io6jQKm8Nc2UyFXcd4kOmOsBIoYtZ2ik=,\n" +
-                "  region: usny\n" +
+                "  region: usny,\n" +
+                "  newAddressSeed: 0\n" +
                 "}\n" +
                 "]\n", out.toString()
                 .replaceAll("\r", "")

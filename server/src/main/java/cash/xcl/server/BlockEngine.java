@@ -2,10 +2,7 @@ package cash.xcl.server;
 
 import cash.xcl.api.AllMessagesLookup;
 import cash.xcl.api.AllMessagesServer;
-import cash.xcl.api.dto.CreateNewAddressCommand;
-import cash.xcl.api.dto.TransactionBlockEvent;
-import cash.xcl.api.dto.TransactionBlockGossipEvent;
-import cash.xcl.api.dto.TreeBlockEvent;
+import cash.xcl.api.dto.*;
 import cash.xcl.api.util.AbstractAllMessages;
 import cash.xcl.api.util.CountryRegion;
 import net.openhft.chronicle.core.Jvm;
@@ -22,6 +19,7 @@ public class BlockEngine extends AbstractAllMessages {
 
     private final AllMessagesServer fastPath;
     private final VanillaChainer chainer;
+    private final Gossiper gossiper;
     private final Voter voter;
     private final VoteTaker voteTaker;
     private final BlockReplayer blockReplayer;
@@ -42,10 +40,11 @@ public class BlockEngine extends AbstractAllMessages {
         this.chainer = chainer;
         this.postBlockChainProcessor = postBlockChainProcessor;
         finalRouter = new VanillaFinalRouter(address);
-        tbge = new TransactionBlockGossipEvent(region);
+        tbge = new TransactionBlockGossipEvent();
         nextSend = System.currentTimeMillis() / periodMS * periodMS + periodMS;
         this.clusterAddresses = clusterAddresses;
-        voter = new VanillaVoter(region, clusterAddresses);
+        gossiper = new VanillaGossiper(address, region, clusterAddresses);
+        voter = new VanillaVoter(address, region, clusterAddresses);
         voteTaker = new VanillaVoteTaker(address, region, clusterAddresses);
         blockReplayer = new VanillaBlockReplayer(address, postBlockChainProcessor);
     }
@@ -76,6 +75,7 @@ public class BlockEngine extends AbstractAllMessages {
     public void allMessagesLookup(AllMessagesLookup lookup) {
         super.allMessagesLookup(lookup);
         fastPath.allMessagesLookup(this);
+        gossiper.allMessagesLookup(this);
         voter.allMessagesLookup(this);
         voteTaker.allMessagesLookup(this);
         postBlockChainProcessor.allMessagesLookup(this);
@@ -90,12 +90,17 @@ public class BlockEngine extends AbstractAllMessages {
     @Override
     public void transactionBlockEvent(TransactionBlockEvent transactionBlockEvent) {
         blockReplayer.transactionBlockEvent(transactionBlockEvent);
-        voter.transactionBlockEvent(transactionBlockEvent);
+        gossiper.transactionBlockEvent(transactionBlockEvent);
     }
 
     @Override
     public void transactionBlockGossipEvent(TransactionBlockGossipEvent transactionBlockGossipEvent) {
-        voteTaker.transactionBlockGossipEvent(transactionBlockGossipEvent);
+        voter.transactionBlockGossipEvent(transactionBlockGossipEvent);
+    }
+
+    @Override
+    public void transactionBlockVoteEvent(TransactionBlockVoteEvent transactionBlockVoteEvent) {
+        voteTaker.transactionBlockVoteEvent(transactionBlockVoteEvent);
     }
 
     @Override
@@ -114,7 +119,9 @@ public class BlockEngine extends AbstractAllMessages {
                     to(clusterAddress).transactionBlockEvent(tbe);
             }
 
-            int subRound = Math.max(1, periodMS / 4);
+            int subRound = Math.max(1, periodMS / 5);
+            Jvm.pause(subRound);
+            gossiper.sendGossip(blockNumber);
             Jvm.pause(subRound);
             voter.sendVote(blockNumber);
             Jvm.pause(subRound);

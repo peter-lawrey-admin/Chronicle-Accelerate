@@ -1,7 +1,7 @@
 package cash.xcl.server;
 
 import cash.xcl.api.AllMessagesLookup;
-import cash.xcl.api.dto.TransactionBlockGossipEvent;
+import cash.xcl.api.dto.TransactionBlockVoteEvent;
 import cash.xcl.api.dto.TreeBlockEvent;
 
 import java.util.LinkedHashMap;
@@ -34,9 +34,11 @@ public class VanillaVoteTaker implements VoteTaker {
 
     }
 
+
     @Override
-    public synchronized void transactionBlockGossipEvent(TransactionBlockGossipEvent transactionBlockGossipEvent) {
-        Map<Long, Long> addressToBlockNumberMap = transactionBlockGossipEvent.addressToBlockNumberMap();
+    public void transactionBlockVoteEvent(TransactionBlockVoteEvent transactionBlockVoteEvent) {
+        System.out.println(address + " " + transactionBlockVoteEvent);
+        Map<Long, Long> addressToBlockNumberMap = transactionBlockVoteEvent.gossipEvent().addressToBlockNumberMap();
         assert !addressToBlockNumberMap.containsKey(0L);
         this.addressToBlockNumberMap.putAll(addressToBlockNumberMap);
     }

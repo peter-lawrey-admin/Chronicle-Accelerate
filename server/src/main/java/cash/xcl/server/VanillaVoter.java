@@ -1,8 +1,8 @@
 package cash.xcl.server;
 
 import cash.xcl.api.AllMessagesLookup;
-import cash.xcl.api.dto.TransactionBlockEvent;
 import cash.xcl.api.dto.TransactionBlockGossipEvent;
+import cash.xcl.api.dto.TransactionBlockVoteEvent;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -11,14 +11,18 @@ public class VanillaVoter implements Voter {
     static final Long NO_BLOCK = -1L;
     private final Map<Long, Long> lastBlockMap = new LinkedHashMap<>();
     private final Map<Long, Long> lastVoteMap;
+    private final long address;
+    private final String region;
     private final long[] clusterAddresses;
-    private final TransactionBlockGossipEvent vote;
     private AllMessagesLookup lookup;
+    private TransactionBlockGossipEvent gossip = new TransactionBlockGossipEvent();
+    private TransactionBlockVoteEvent vote = new TransactionBlockVoteEvent();
 
-    public VanillaVoter(String region, long[] clusterAddresses) {
+    public VanillaVoter(long address, String region, long[] clusterAddresses) {
+        this.address = address;
+        this.region = region;
         this.clusterAddresses = clusterAddresses;
         lastVoteMap = new LinkedHashMap<>();
-        vote = new TransactionBlockGossipEvent(0, 0, region, 0, 0, lastVoteMap);
     }
 
     @Override
@@ -32,27 +36,20 @@ public class VanillaVoter implements Voter {
     }
 
     @Override
-    public synchronized void transactionBlockEvent(TransactionBlockEvent transactionBlockEvent) {
-        Long sourceAddress = transactionBlockEvent.sourceAddress();
-        if (sourceAddress == 0) {
-            System.err.println("Missing sourceAddress " + transactionBlockEvent);
-            return;
-        }
-        long lastBlockNumber = lastBlockMap.getOrDefault(sourceAddress, NO_BLOCK);
-        long blockNumber = transactionBlockEvent.blockNumber();
-        if (lastBlockNumber < blockNumber)
-            lastBlockMap.put(sourceAddress, blockNumber);
+    public synchronized void transactionBlockGossipEvent(TransactionBlockGossipEvent transactionBlockGossipEvent) {
+        System.out.println(address + " " + transactionBlockGossipEvent);
+        transactionBlockGossipEvent.copyTo(this.gossip);
     }
 
     @Override
     public void sendVote(long blockNumber) {
         vote.reset();
-        vote.blockNumber(blockNumber);
         synchronized (this) {
-            lastVoteMap.putAll(lastBlockMap);
+            gossip.copyTo(vote.gossipEvent());
         }
         for (long clusterAddress : clusterAddresses) {
-            lookup.to(clusterAddress).transactionBlockGossipEvent(vote);
+            lookup.to(clusterAddress)
+                    .transactionBlockVoteEvent(vote);
         }
     }
 }

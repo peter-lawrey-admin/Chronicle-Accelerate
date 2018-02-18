@@ -74,6 +74,17 @@ public class VanillaGateway extends AbstractAllMessages implements Gateway {
     }
 
     @Override
+    public void transactionBlockVoteEvent(TransactionBlockVoteEvent transactionBlockVoteEvent) {
+        String region = transactionBlockVoteEvent.region();
+        if (CountryRegion.MAIN_NAME.equals(region))
+            main.transactionBlockVoteEvent(transactionBlockVoteEvent);
+        else if (this.region.equals(region))
+            local.transactionBlockVoteEvent(transactionBlockVoteEvent);
+        else
+            System.err.println("Unknown region " + region);
+    }
+
+    @Override
     public void treeBlockEvent(TreeBlockEvent treeBlockEvent) {
         String region = treeBlockEvent.region();
         if (CountryRegion.MAIN_NAME.equals(region))

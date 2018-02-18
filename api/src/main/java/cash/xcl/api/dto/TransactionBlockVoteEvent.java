@@ -28,4 +28,22 @@ public class TransactionBlockVoteEvent extends SignedMessage {
     public int messageType() {
         return MessageTypes.TRANSACTION_BLOCK_VOTE_EVENT;
     }
+
+    public TransactionBlockGossipEvent gossipEvent() {
+        if (gossipEvent == null) gossipEvent = new TransactionBlockGossipEvent();
+        return gossipEvent;
+    }
+
+    public TransactionBlockVoteEvent gossipEvent(TransactionBlockGossipEvent gossipEvent) {
+        this.gossipEvent = gossipEvent;
+        return this;
+    }
+
+    public String region() {
+        return gossipEvent.region();
+    }
+
+    public long blockNumber() {
+        return gossipEvent.blockNumber();
+    }
 }

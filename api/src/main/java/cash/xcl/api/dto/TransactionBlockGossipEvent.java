@@ -20,8 +20,7 @@ public class TransactionBlockGossipEvent extends SignedMessage {
         this.addressToBlockNumberMap = addressToBlockNumberMap;
     }
 
-    public TransactionBlockGossipEvent(String region) {
-        this.region = region;
+    public TransactionBlockGossipEvent() {
         addressToBlockNumberMap = new LinkedHashMap<>();
     }
 
@@ -39,6 +38,7 @@ public class TransactionBlockGossipEvent extends SignedMessage {
 
     @Override
     protected void writeMarshallable2(BytesOut<?> bytes) {
+        assert sourceAddress() != 0;
         assert !addressToBlockNumberMap.containsKey(0L);
         bytes.writeUtf8(region);
         bytes.writeUnsignedShort(weekNumber);

@@ -28,15 +28,15 @@ public class MockGatewayTest {
         MockGateway mg = new MockGateway(clientIn);
 
         Bytes<byte[]> publicKey = Bytes.wrapForRead(new byte[32]);
-        mg.createNewAddressCommand(new CreateNewAddressCommand(0, 0, publicKey, "IE-A"));
-        mg.createNewAddressCommand(new CreateNewAddressCommand(0, 0, publicKey, "IE-CO"));
-        mg.createNewAddressCommand(new CreateNewAddressCommand(0, 0, publicKey, "IE-D"));
-        mg.createNewAddressCommand(new CreateNewAddressCommand(0, 0, publicKey, "IE-DL"));
+        mg.createNewAddressCommand(new CreateNewAddressCommand(1, 0, publicKey, "IE-A"));
+        mg.createNewAddressCommand(new CreateNewAddressCommand(1, 0, publicKey, "IE-CO"));
+        mg.createNewAddressCommand(new CreateNewAddressCommand(1, 0, publicKey, "IE-D"));
+        mg.createNewAddressCommand(new CreateNewAddressCommand(1, 0, publicKey, "IE-DL"));
 
         assertEquals("commandFailedEvent[!CommandFailedEvent {\n" +
                 "  sourceAddress: 0,\n" +
                 "  eventTime: 0,\n" +
-                "  origSourceAddress: 0,\n" +
+                "  origSourceAddress: 1,\n" +
                 "  origEventTime: 0,\n" +
                 "  origMessageType: 32,\n" +
                 "  reason: Unknown region code iea\n" +
@@ -45,7 +45,7 @@ public class MockGatewayTest {
                 "createNewAddressEvent[!CreateNewAddressEvent {\n" +
                 "  sourceAddress: 0,\n" +
                 "  eventTime: 0,\n" +
-                "  origSourceAddress: 0,\n" +
+                "  origSourceAddress: 1,\n" +
                 "  origEventTime: 0,\n" +
                 "  address: -7811493390981337397,\n" +
                 "  publicKey: !!binary AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=\n" +
@@ -54,7 +54,7 @@ public class MockGatewayTest {
                 "createNewAddressEvent[!CreateNewAddressEvent {\n" +
                 "  sourceAddress: 0,\n" +
                 "  eventTime: 0,\n" +
-                "  origSourceAddress: 0,\n" +
+                "  origSourceAddress: 1,\n" +
                 "  origEventTime: 0,\n" +
                 "  address: -7810885632407925157,\n" +
                 "  publicKey: !!binary AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=\n" +
@@ -63,7 +63,7 @@ public class MockGatewayTest {
                 "createNewAddressEvent[!CreateNewAddressEvent {\n" +
                 "  sourceAddress: 0,\n" +
                 "  eventTime: 0,\n" +
-                "  origSourceAddress: 0,\n" +
+                "  origSourceAddress: 1,\n" +
                 "  origEventTime: 0,\n" +
                 "  address: -7810898871858203435,\n" +
                 "  publicKey: !!binary AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=\n" +
