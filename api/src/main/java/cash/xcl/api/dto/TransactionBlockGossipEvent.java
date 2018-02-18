@@ -2,6 +2,8 @@ package cash.xcl.api.dto;
 
 import net.openhft.chronicle.bytes.BytesIn;
 import net.openhft.chronicle.bytes.BytesOut;
+import net.openhft.chronicle.wire.Marshallable;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -80,7 +82,24 @@ public class TransactionBlockGossipEvent extends SignedMessage {
         return this;
     }
 
+    public TransactionBlockGossipEvent region(String region) {
+        this.region = region;
+        return this;
+    }
+
     public String region() {
         return region;
+    }
+
+    @Override
+    public <T extends Marshallable> T copyTo(@NotNull T t) {
+        super.copyTo(t);
+        TransactionBlockGossipEvent tbge = (TransactionBlockGossipEvent) t;
+        tbge.weekNumber(weekNumber)
+                .blockNumber(blockNumber)
+                .region(region);
+        Map<Long, Long> map = tbge.addressToBlockNumberMap();
+        map.putAll(addressToBlockNumberMap);
+        return t;
     }
 }

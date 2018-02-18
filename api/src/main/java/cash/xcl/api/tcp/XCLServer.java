@@ -6,6 +6,8 @@ import cash.xcl.api.AllMessagesServer;
 import cash.xcl.api.ClientException;
 import cash.xcl.api.dto.DtoParser;
 import cash.xcl.api.dto.SignedMessage;
+import cash.xcl.api.util.PublicKeyRegistry;
+import cash.xcl.api.util.VanillaPublicKeyRegistry;
 import cash.xcl.net.TCPConnection;
 import cash.xcl.net.TCPServer;
 import cash.xcl.net.TCPServerConnectionListener;
@@ -24,7 +26,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import static cash.xcl.api.dto.DtoParser.MESSAGE_OFFSET;
 import static cash.xcl.api.dto.MessageTypes.*;
 
-public class XCLServer implements AllMessagesLookup, Closeable {
+public class XCLServer implements AllMessagesLookup, PublicKeyRegistry, Closeable {
     final ThreadLocal<Bytes> bytesTL = ThreadLocal.withInitial(Bytes::allocateElasticDirect);
 
     final TCPServer tcpServer;
@@ -34,6 +36,7 @@ public class XCLServer implements AllMessagesLookup, Closeable {
     private final Map<Long, TCPConnection> connections = new ConcurrentHashMap<>();
     private final Map<Long, TCPConnection> remoteMap = new ConcurrentHashMap<>();
     private final Map<Long, AllMessages> allMessagesMap = new ConcurrentHashMap<>();
+    private final PublicKeyRegistry publicKeyRegistry = new VanillaPublicKeyRegistry();
 
     public XCLServer(String name, int port, long address, Bytes secretKey, AllMessagesServer serverComponent) throws IOException {
         this.address = address;
@@ -103,6 +106,16 @@ public class XCLServer implements AllMessagesLookup, Closeable {
         tcpServer.close();
     }
 
+    @Override
+    public void register(long address, Bytes<?> publicKey) {
+        publicKeyRegistry.register(address, publicKey);
+    }
+
+    @Override
+    public Boolean verify(long address, Bytes<?> sigAndMsg) {
+        return publicKeyRegistry.verify(address, sigAndMsg);
+    }
+
     class XCLConnectionListener implements TCPServerConnectionListener {
         final ThreadLocal<DtoParser> parserTL = ThreadLocal.withInitial(DtoParser::new);
 
@@ -111,6 +124,11 @@ public class XCLServer implements AllMessagesLookup, Closeable {
             try {
                 long address = bytes.readLong(bytes.readPosition() + Ed25519.SIGNATURE_LENGTH);
                 long messageType = bytes.readUnsignedByte(bytes.readPosition() + MESSAGE_OFFSET);
+                Boolean verify = publicKeyRegistry.verify(address, bytes);
+                if (verify == null || !verify) {
+                    System.err.println("Verify: " + verify);
+                    return;
+                }
                 if (messageType == SUBSCRIPTION_QUERY ||
                         messageType == CURRENT_BALANCE_QUERY ||
                         messageType == EXCHANGE_RATE_QUERY ||

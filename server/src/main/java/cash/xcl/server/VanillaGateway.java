@@ -5,6 +5,7 @@ import cash.xcl.api.AllMessagesLookup;
 import cash.xcl.api.dto.*;
 import cash.xcl.api.util.AbstractAllMessages;
 import cash.xcl.api.util.CountryRegion;
+import cash.xcl.api.util.PublicKeyRegistry;
 import cash.xcl.api.util.XCLBase32;
 
 /**
@@ -15,6 +16,7 @@ public class VanillaGateway extends AbstractAllMessages implements Gateway {
     private final String region;
     private final BlockEngine main;
     private final BlockEngine local;
+    private PublicKeyRegistry publicKeyRegistery;
 
     public VanillaGateway(long address, long regionAddress, String region, BlockEngine main, BlockEngine local) {
         super(address);
@@ -40,6 +42,7 @@ public class VanillaGateway extends AbstractAllMessages implements Gateway {
         super.allMessagesLookup(lookup);
         main.allMessagesLookup(lookup);
         local.allMessagesLookup(lookup);
+        publicKeyRegistery = (PublicKeyRegistry) lookup;
     }
 
     @Override
@@ -104,6 +107,7 @@ public class VanillaGateway extends AbstractAllMessages implements Gateway {
     public void createNewAddressEvent(CreateNewAddressEvent createNewAddressEvent) {
         // received as a weekly event
         checkTrusted(createNewAddressEvent);
+        publicKeyRegistery.register(createNewAddressEvent.address(), createNewAddressEvent.publicKey());
     }
 
     private void checkTrusted(SignedMessage message) {
