@@ -32,7 +32,9 @@ public class VanillaTCPServer implements TCPServer {
         try {
             while (running) {
                 SocketChannel accept = serverChannel.accept();
-                pool.submit(new VanillaTCPServerConnection(this, accept)::run);
+                VanillaTCPServerConnection connection = new VanillaTCPServerConnection(this, accept);
+                connections.add(connection);
+                pool.submit(connection::run);
             }
         } catch (Throwable t) {
             if (running)

@@ -1,27 +1,8 @@
 package cash.xcl.server;
 
-import cash.xcl.api.AllMessages;
-import cash.xcl.api.dto.SubscriptionQuery;
-import cash.xcl.api.dto.TransferValueCommand;
-import cash.xcl.api.tcp.XCLClient;
-import cash.xcl.api.tcp.XCLServer;
-import net.openhft.chronicle.bytes.Bytes;
-import net.openhft.chronicle.bytes.VanillaBytes;
-import net.openhft.chronicle.core.Mocker;
-import net.openhft.chronicle.salt.Ed25519;
-
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.*;
-
-import static org.junit.Assert.assertEquals;
-
 public class RegionalServerBenchmarkMain {
 
-    public static void main(String[] args) throws IOException, InterruptedException, ExecutionException {
+   /* public static void main(String[] args) throws IOException, InterruptedException, ExecutionException {
         VanillaBytes<Void> secretKey = Bytes.allocateDirect(Ed25519.SECRET_KEY_LENGTH);
         secretKey.writeSkip(Ed25519.SECRET_KEY_LENGTH);
         XCLServer server = new XCLServer("regional", 12345, 0, secretKey, new RegionalServer());
@@ -59,5 +40,5 @@ public class RegionalServerBenchmarkMain {
         }
 
         server.close();
-    }
+    }*/
 }

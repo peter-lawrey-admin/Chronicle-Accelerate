@@ -8,6 +8,7 @@ import net.openhft.chronicle.salt.Ed25519;
 public class CreateNewAddressCommand extends SignedMessage {
     private Bytes publicKey;
     private String region;
+    private long newAddressSeed;
 
     public CreateNewAddressCommand(long sourceAddress, long eventTime, Bytes publicKey, String region) {
         super(sourceAddress, eventTime);
@@ -26,6 +27,7 @@ public class CreateNewAddressCommand extends SignedMessage {
         bytes.read(publicKey, Ed25519.PUBLIC_KEY_LENGTH);
 
         region = bytes.readUtf8();
+        newAddressSeed = bytes.readLong();
     }
 
     @Override
@@ -33,6 +35,8 @@ public class CreateNewAddressCommand extends SignedMessage {
         bytes.write(publicKey);
 
         bytes.writeUtf8(region);
+
+        bytes.writeLong(newAddressSeed);
     }
 
     @Override
@@ -55,6 +59,15 @@ public class CreateNewAddressCommand extends SignedMessage {
 
     public CreateNewAddressCommand region(String region) {
         this.region = region;
+        return this;
+    }
+
+    public long newAddressSeed() {
+        return newAddressSeed;
+    }
+
+    public CreateNewAddressCommand newAddressSeed(long newAddressSeed) {
+        this.newAddressSeed = newAddressSeed;
         return this;
     }
 }

@@ -7,6 +7,7 @@ import net.openhft.chronicle.bytes.BytesIn;
 import net.openhft.chronicle.bytes.BytesOut;
 import net.openhft.chronicle.bytes.BytesStore;
 import net.openhft.chronicle.core.io.IORuntimeException;
+import net.openhft.chronicle.wire.Marshallable;
 import net.openhft.chronicle.wire.WireIn;
 import net.openhft.chronicle.wire.WireOut;
 import org.jetbrains.annotations.NotNull;
@@ -32,7 +33,8 @@ public class TransactionBlockEvent extends SignedMessage {
 
     }
 
-    public void clear() {
+    public void reset() {
+        super.reset();
         transactions.clear();
         count = 0;
     }
@@ -48,6 +50,7 @@ public class TransactionBlockEvent extends SignedMessage {
         transactions.readPosition(0);
         while (!transactions.isEmpty())
             dtoParser.parseOne(transactions, allMessages);
+        transactions.readPosition(0);
     }
 
     @Override
@@ -61,6 +64,7 @@ public class TransactionBlockEvent extends SignedMessage {
 
     @Override
     protected void writeMarshallable2(BytesOut<?> bytes) {
+//        System.out.println("Write " + this);
         bytes.writeUtf8(region);
         bytes.writeUnsignedShort(weekNumber);
         bytes.writeUnsignedInt(blockNumber);
@@ -69,12 +73,35 @@ public class TransactionBlockEvent extends SignedMessage {
 
     @Override
     public void readMarshallable(@NotNull WireIn wire) throws IORuntimeException {
+        reset();
         super.readMarshallable(wire);
-        clear();
         wire.read("transactions").sequence(this, (tbe, in) -> {
             while (in.hasNextSequenceItem())
                 tbe.addTransaction(in.object(SignedMessage.class));
         });
+//        System.out.println("Read " + this);
+    }
+
+
+    @NotNull
+    @Override
+    public <T> T deepCopy() {
+        TransactionBlockEvent tbe = new TransactionBlockEvent();
+        this.copyTo(tbe);
+        return (T) tbe;
+    }
+
+    @Override
+    public <T extends Marshallable> T copyTo(@NotNull T t) {
+        TransactionBlockEvent tbe = (TransactionBlockEvent) t;
+        super.copyTo(t);
+        tbe.region(region);
+        tbe.weekNumber(weekNumber);
+        tbe.blockNumber(blockNumber);
+        tbe.transactions()
+                .clear()
+                .write(transactions);
+        return t;
     }
 
     @Override

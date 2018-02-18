@@ -12,7 +12,7 @@ public class DtoParser {
     public static final int MESSAGE_OFFSET = 81;
 
     final TransactionBlockEvent tbe = new TransactionBlockEvent();
-    final TransactionBlockGossipEvent tbge = new TransactionBlockGossipEvent();
+    final TransactionBlockGossipEvent tbge = new TransactionBlockGossipEvent(null);
     final TransactionBlockVoteEvent tbve = new TransactionBlockVoteEvent();
     final TreeBlockEvent treebe = new TreeBlockEvent();
     final OpeningBalanceEvent obe = new OpeningBalanceEvent();

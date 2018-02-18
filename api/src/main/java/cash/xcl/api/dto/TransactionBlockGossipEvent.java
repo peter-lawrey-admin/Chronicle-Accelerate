@@ -7,32 +7,40 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class TransactionBlockGossipEvent extends SignedMessage {
+    private String region;
     private int weekNumber;
     private long blockNumber; // unsigned int
     private Map<Long, Long> addressToBlockNumberMap;
 
-    public TransactionBlockGossipEvent(long sourceAddress, long eventTime, int weekNumber, long blockNumber, Map<Long, Long> addressToBlockNumberMap) {
+    public TransactionBlockGossipEvent(long sourceAddress, long eventTime, String region, int weekNumber, long blockNumber, Map<Long, Long> addressToBlockNumberMap) {
         super(sourceAddress, eventTime);
         this.weekNumber = weekNumber;
         this.blockNumber = blockNumber;
+        this.region = region;
+        this.addressToBlockNumberMap = addressToBlockNumberMap;
     }
 
-    public TransactionBlockGossipEvent() {
+    public TransactionBlockGossipEvent(String region) {
+        this.region = region;
         addressToBlockNumberMap = new LinkedHashMap<>();
     }
 
     @Override
     protected void readMarshallable2(BytesIn<?> bytes) {
+        region = bytes.readUtf8();
         weekNumber = bytes.readUnsignedShort();
         blockNumber = bytes.readUnsignedInt();
         int entries = (int) bytes.readStopBit();
         if (addressToBlockNumberMap == null) addressToBlockNumberMap = new LinkedHashMap<>();
         for (int i = 0; i < entries; i++)
             addressToBlockNumberMap.put(bytes.readLong(), bytes.readUnsignedInt());
+        assert !addressToBlockNumberMap.containsKey(0L);
     }
 
     @Override
     protected void writeMarshallable2(BytesOut<?> bytes) {
+        assert !addressToBlockNumberMap.containsKey(0L);
+        bytes.writeUtf8(region);
         bytes.writeUnsignedShort(weekNumber);
         bytes.writeUnsignedInt(blockNumber);
         bytes.writeStopBit(addressToBlockNumberMap.size());
@@ -70,5 +78,9 @@ public class TransactionBlockGossipEvent extends SignedMessage {
     public TransactionBlockGossipEvent addressToBlockNumberMap(Map<Long, Long> addressToBlockNumberMap) {
         this.addressToBlockNumberMap = addressToBlockNumberMap;
         return this;
+    }
+
+    public String region() {
+        return region;
     }
 }

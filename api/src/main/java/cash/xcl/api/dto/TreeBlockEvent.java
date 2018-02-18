@@ -2,22 +2,23 @@ package cash.xcl.api.dto;
 
 import net.openhft.chronicle.bytes.BytesIn;
 import net.openhft.chronicle.bytes.BytesOut;
-import net.openhft.chronicle.core.annotation.NotNull;
+import net.openhft.chronicle.wire.Marshallable;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class TreeBlockEvent extends SignedMessage {
+    private String region;
     private int weekNumber;
     private long blockNumber;
-    private List<BlockRecord> blockRecordsBuffer = new ArrayList<>();
-    private List<BlockRecord> blockRecords = new ArrayList<>();
+    private Map<Long, Long> blockRecords = new LinkedHashMap<>();
 
-    public TreeBlockEvent(long sourceAddress, long eventTime, int weekNumber, long blockNumber, List<BlockRecord> blockRecordsBuffer, List<BlockRecord> blockRecords) {
+    public TreeBlockEvent(long sourceAddress, long eventTime, String region, int weekNumber, long blockNumber, Map<Long, Long> blockRecords) {
         super(sourceAddress, eventTime);
+        this.region = region;
         this.weekNumber = weekNumber;
         this.blockNumber = blockNumber;
-        this.blockRecordsBuffer = blockRecordsBuffer;
         this.blockRecords = blockRecords;
     }
 
@@ -25,36 +26,65 @@ public class TreeBlockEvent extends SignedMessage {
 
     }
 
+    @NotNull
+    @Override
+    public <T> T deepCopy() {
+        TreeBlockEvent tbe = new TreeBlockEvent();
+        this.copyTo(tbe);
+        return (T) tbe;
+    }
+
+    @Override
+    public <T extends Marshallable> T copyTo(@NotNull T t) {
+        TreeBlockEvent tbe = (TreeBlockEvent) t;
+        super.copyTo(t);
+        tbe.region(region);
+        tbe.weekNumber(weekNumber);
+        tbe.blockNumber(blockNumber);
+        assert !blockRecords.containsKey(0L);
+        tbe.blockRecords().putAll(blockRecords);
+        return t;
+    }
+
     @Override
     protected void readMarshallable2(BytesIn<?> bytes) {
+        region = bytes.readUtf8();
         weekNumber = bytes.readUnsignedShort();
         blockNumber = bytes.readUnsignedInt();
         blockRecords.clear();
-        while (bytes.readRemaining() >= 16) {
-            nextBlockRecord().readMarshallable(bytes);
-        }
+        int blocks = (int) bytes.readStopBit();
+        for (int i = 0; i < blocks; i++)
+            blockRecords.put(bytes.readLong(), bytes.readLong());
+//        System.out.println("Read "+this);
+        assert !blockRecords.containsKey(0L);
     }
 
-    @NotNull
-    public BlockRecord nextBlockRecord() {
-        if (blockRecords.size() == blockRecordsBuffer.size())
-            blockRecordsBuffer.add(new BlockRecord());
-        BlockRecord br = blockRecordsBuffer.get(blockRecords.size());
-        blockRecords.add(br);
-        return br;
-    }
 
     @Override
     protected void writeMarshallable2(BytesOut<?> bytes) {
+        assert !blockRecords.containsKey(0L);
+//        System.out.println("Write "+this);
+        bytes.writeUtf8(region);
         bytes.writeUnsignedShort(weekNumber);
         bytes.writeUnsignedInt(blockNumber);
-        for (int i = 0; i < blockRecords.size(); i++)
-            blockRecords.get(i).writeMarshallable(bytes);
+        bytes.writeStopBit(blockRecords.size());
+        for (Map.Entry<Long, Long> entry : blockRecords.entrySet()) {
+            bytes.writeLong(entry.getKey()).writeLong(entry.getValue());
+        }
     }
 
     @Override
     public int messageType() {
         return MessageTypes.TREE_BLOCK_EVENT;
+    }
+
+    public String region() {
+        return region;
+    }
+
+    public TreeBlockEvent region(String region) {
+        this.region = region;
+        return this;
     }
 
     public int weekNumber() {
@@ -75,14 +105,10 @@ public class TreeBlockEvent extends SignedMessage {
         return this;
     }
 
-    public TreeBlockEvent clearBlockRecords() {
-        this.blockRecords.clear();
-        return this;
-    }
-
-    public TreeBlockEvent addBlockRecord(BlockRecord br) {
-        this.blockRecords.add(br);
-        return this;
+    public Map<Long, Long> blockRecords() {
+        if (blockRecords == null)
+            blockRecords = new LinkedHashMap<>();
+        return blockRecords;
     }
 }
 

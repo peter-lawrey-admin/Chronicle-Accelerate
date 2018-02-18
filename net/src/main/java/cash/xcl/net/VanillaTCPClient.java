@@ -58,7 +58,9 @@ public class VanillaTCPClient extends AbstractTCPConnection {
                 } else {
                     try {
                         readChannel(readBytes);
+
                     } catch (IOException ioe) {
+                        Jvm.pause(1);
                         if (running)
                             ioe.printStackTrace();
                         channel.close();
@@ -86,6 +88,7 @@ public class VanillaTCPClient extends AbstractTCPConnection {
         } catch (IOException ioe) {
             ioe.printStackTrace();
             channel = null;
+            Jvm.pause(500);
         }
     }
 }

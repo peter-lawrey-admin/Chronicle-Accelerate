@@ -1,19 +1,17 @@
-package cash.xcl.server;
+package cash.xcl.api.util;
 
 import cash.xcl.api.AllMessages;
 import cash.xcl.api.AllMessagesLookup;
-import cash.xcl.api.ServerComponent;
+import cash.xcl.api.AllMessagesServer;
 import cash.xcl.api.dto.*;
-import cash.xcl.api.util.XCLBase32;
-import net.openhft.chronicle.bytes.Bytes;
-import net.openhft.chronicle.core.time.SystemTimeProvider;
-import net.openhft.chronicle.core.time.TimeProvider;
 
-public class RegionalServer implements ServerComponent {
-    private final AddressService addressService = new AddressService();
-    private long serverAddress;
-    private TimeProvider timeProvider = SystemTimeProvider.INSTANCE;
+public class AbstractAllMessages implements AllMessagesServer {
+    protected final long address;
     private AllMessagesLookup lookup;
+
+    public AbstractAllMessages(long address) {
+        this.address = address;
+    }
 
     @Override
     public void allMessagesLookup(AllMessagesLookup lookup) {
@@ -21,232 +19,209 @@ public class RegionalServer implements ServerComponent {
     }
 
     @Override
-    public void createNewAddressCommand(CreateNewAddressCommand createNewAddressCommand) {
-        String region = XCLBase32.normalize(createNewAddressCommand.region());
-        try {
-            Bytes publicKey = createNewAddressCommand.publicKey();
-            long address = addressService.createAddress(region, publicKey);
-            lookup.to(createNewAddressCommand.sourceAddress())
-                    .createNewAddressEvent(
-                            new CreateNewAddressEvent(serverAddress(), eventTime(), createNewAddressCommand, address, publicKey));
-
-        } catch (IllegalArgumentException iae) {
-            lookup.to(createNewAddressCommand.sourceAddress())
-                    .commandFailedEvent(new CommandFailedEvent(serverAddress(), eventTime(), createNewAddressCommand, iae.getMessage()));
-        }
-    }
-
-    @Override
-    public void transferValueCommand(TransferValueCommand transferValueCommand) {
-//        System.out.println(transferValueCommand);
-        TransferValueEvent event = new TransferValueEvent(serverAddress, eventTime(), transferValueCommand);
-        lookup.to(transferValueCommand.sourceAddress())
-                .transferValueEvent(event);
-        lookup.to(transferValueCommand.toAddress())
-                .transferValueEvent(event);
-    }
-
-    private long eventTime() {
-        return timeProvider.currentTimeMicros();
-    }
-
-
-    public long serverAddress() {
-        return serverAddress;
-    }
-
-    @Override
     public AllMessages to(long addressOrRegion) {
-        throw new UnsupportedOperationException();
+        if (addressOrRegion == address)
+            return this;
+        return lookup.to(addressOrRegion);
     }
 
     @Override
     public void commandFailedEvent(CommandFailedEvent commandFailedEvent) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException(getClass().getName());
     }
 
     @Override
     public void queryFailedResponse(QueryFailedResponse queryFailedResponse) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException(getClass().getName());
     }
 
     @Override
     public void createNewAddressEvent(CreateNewAddressEvent createNewAddressEvent) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException(getClass().getName());
     }
 
     @Override
     public void transferValueEvent(TransferValueEvent transferValueEvent) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException(getClass().getName());
     }
 
     @Override
     public void clusterTransferStep3Event(ClusterTransferStep3Event clusterTransferStep3Event) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException(getClass().getName());
     }
 
     @Override
     public void depositValueEvent(DepositValueEvent depositValueEvent) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException(getClass().getName());
     }
 
     @Override
     public void withdrawValueEvent(WithdrawValueEvent withdrawValueEvent) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException(getClass().getName());
     }
 
     @Override
     public void executionReportEvent(ExecutionReportEvent executionReportEvent) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException(getClass().getName());
     }
 
     @Override
     public void subscriptionSuccessResponse(SubscriptionSuccessResponse subscriptionSuccessResponse) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException(getClass().getName());
     }
 
     @Override
     public void clusterStatusResponse(ClusterStatusResponse clusterStatusResponse) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException(getClass().getName());
     }
 
     @Override
     public void clustersStatusResponse(ClustersStatusResponse clustersStatusResponse) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException(getClass().getName());
     }
 
     @Override
     public void currentBalanceResponse(CurrentBalanceResponse currentBalanceResponse) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException(getClass().getName());
     }
 
     @Override
     public void exchangeRateResponse(ExchangeRateResponse exchangeRateResponse) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException(getClass().getName());
+    }
+
+    @Override
+    public void createNewAddressCommand(CreateNewAddressCommand createNewAddressCommand) {
+        throw new UnsupportedOperationException(getClass().getName());
+    }
+
+    @Override
+    public void transferValueCommand(TransferValueCommand transferValueCommand) {
+        throw new UnsupportedOperationException(getClass().getName());
     }
 
     @Override
     public void clusterTransferStep1Command(ClusterTransferStep1Command clusterTransferStep1Command) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException(getClass().getName());
     }
 
     @Override
     public void subscriptionQuery(SubscriptionQuery subscriptionQuery) {
-        // handled by the XCLServer.
+        throw new UnsupportedOperationException(getClass().getName());
     }
 
     @Override
     public void newLimitOrderCommand(NewLimitOrderCommand newLimitOrderCommand) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException(getClass().getName());
     }
 
     @Override
     public void newMarketOrderCommand(NewMarketOrderCommand newMarketOrderCommand) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException(getClass().getName());
     }
 
     @Override
     public void cancelOrderCommand(CancelOrderCommand cancelOrderCommand) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException(getClass().getName());
     }
 
     @Override
     public void clusterStatusQuery(ClusterStatusQuery clusterStatusQuery) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException(getClass().getName());
     }
 
     @Override
     public void clustersStatusQuery(ClustersStatusQuery clustersStatusQuery) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException(getClass().getName());
     }
 
     @Override
     public void currentBalanceQuery(CurrentBalanceQuery currentBalanceQuery) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException(getClass().getName());
     }
 
     @Override
     public void exchangeRateQuery(ExchangeRateQuery exchangeRateQuery) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException(getClass().getName());
     }
 
     @Override
     public void blockSubscriptionQuery(BlockSubscriptionQuery blockSubscriptionQuery) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException(getClass().getName());
     }
 
     @Override
     public void clusterTransferStep2Command(ClusterTransferStep2Command clusterTransferStep2Command) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException(getClass().getName());
     }
 
     @Override
     public void clusterTransferStep3Command(ClusterTransferStep3Command clusterTransferStep3Command) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException(getClass().getName());
     }
 
     @Override
     public void depositValueCommand(DepositValueCommand depositValueCommand) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException(getClass().getName());
     }
 
     @Override
     public void withdrawValueCommand(WithdrawValueCommand withdrawValueCommand) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException(getClass().getName());
     }
 
     @Override
     public void applicationMessageEvent(ApplicationMessageEvent applicationMessageEvent) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException(getClass().getName());
     }
 
     @Override
     public void transactionBlockEvent(TransactionBlockEvent transactionBlockEvent) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException(getClass().getName());
     }
 
     @Override
     public void transactionBlockGossipEvent(TransactionBlockGossipEvent transactionBlockGossipEvent) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException(getClass().getName());
     }
 
     @Override
     public void transactionBlockVoteEvent(TransactionBlockVoteEvent transactionBlockVoteEvent) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException(getClass().getName());
     }
 
     @Override
     public void treeBlockEvent(TreeBlockEvent treeBlockEvent) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException(getClass().getName());
     }
 
     @Override
     public void feesEvent(FeesEvent feesEvent) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException(getClass().getName());
     }
 
     @Override
     public void exchangeRateEvent(ExchangeRateEvent exchangeRateEvent) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException(getClass().getName());
     }
 
     @Override
     public void openingBalanceEvent(OpeningBalanceEvent openingBalanceEvent) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException(getClass().getName());
     }
 
     @Override
     public void currentBalanceEvent(CurrentBalanceResponse currentBalanceResponse) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException(getClass().getName());
     }
 
     @Override
     public void serviceNodesEvent(ServiceNodesEvent serviceNodesEvent) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException(getClass().getName());
     }
 
     @Override
     public void close() {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException(getClass().getName());
     }
 }

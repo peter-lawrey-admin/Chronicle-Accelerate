@@ -45,7 +45,7 @@ public class XCLBase32Test {
     }
 
     private void doTest2(String expected, String input) {
-        assertEquals(expected, Long.toHexString(decode(Bytes.from(input))));
+        assertEquals(expected, Long.toHexString(decode(input)));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -91,6 +91,17 @@ public class XCLBase32Test {
 
         val1 = decode(Bytes.from("asdf\u00ff123"));
         val2 = decode(Bytes.from("asdf"));
+        assertEquals(val1, val2);
+    }
+
+    @Test
+    public void decodeUnicodeIn2() {
+        long val1 = decode("asdf\u0219123");
+        long val2 = decode(Bytes.from("asdf"));
+        assertEquals(val1, val2);
+
+        val1 = decode(Bytes.from("asdf\u00ff123"));
+        val2 = decode("asdf");
         assertEquals(val1, val2);
     }
 

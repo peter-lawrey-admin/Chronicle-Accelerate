@@ -8,14 +8,12 @@ import net.openhft.chronicle.core.io.IORuntimeException;
 import net.openhft.chronicle.core.pool.ClassAliasPool;
 import net.openhft.chronicle.salt.Ed25519;
 import net.openhft.chronicle.wire.AbstractBytesMarshallable;
+import net.openhft.chronicle.wire.Marshallable;
+import org.jetbrains.annotations.NotNull;
 
 import java.nio.ByteBuffer;
 
 public abstract class SignedMessage extends AbstractBytesMarshallable {
-    private transient Bytes<ByteBuffer> sigAndMsg;
-    private long sourceAddress;
-    private long eventTime;
-
     static {
         ClassAliasPool.CLASS_ALIASES.addAlias(
                 cash.xcl.api.dto.TransactionBlockEvent.class,
@@ -59,9 +57,9 @@ public abstract class SignedMessage extends AbstractBytesMarshallable {
         );
     }
 
-    public static void addAliases() {
-        // initialised in static block
-    }
+    private transient Bytes<ByteBuffer> sigAndMsg;
+    private long sourceAddress;
+    private long eventTime;
 
     protected SignedMessage() {
     }
@@ -69,6 +67,10 @@ public abstract class SignedMessage extends AbstractBytesMarshallable {
     protected SignedMessage(long sourceAddress, long eventTime) {
         this.sourceAddress = sourceAddress;
         this.eventTime = eventTime;
+    }
+
+    public static void addAliases() {
+        // initialised in static block
     }
 
     @Override
@@ -123,6 +125,22 @@ public abstract class SignedMessage extends AbstractBytesMarshallable {
         Ed25519.sign(sigAndMsg, tempBytes, secretKey);
     }
 
+    @Override
+    public <T extends Marshallable> T copyTo(@NotNull T t) {
+        SignedMessage sm = (SignedMessage) t;
+        if (sigAndMsg == null) {
+            if (sm.sigAndMsg != null)
+                sm.sigAndMsg.clear();
+        } else {
+            if (sm.sigAndMsg == null)
+                sm.sigAndMsg = Bytes.elasticByteBuffer((int) sigAndMsg.readRemaining());
+            sm.sigAndMsg.clear().write(sigAndMsg);
+        }
+        sm.sourceAddress(sourceAddress);
+        sm.eventTime(eventTime);
+        return t;
+    }
+
     public abstract int messageType();
 
     protected abstract void writeMarshallable2(BytesOut<?> bytes);
@@ -148,10 +166,12 @@ public abstract class SignedMessage extends AbstractBytesMarshallable {
     }
 
     public long sourceAddress() {
+        assert sourceAddress != 0;
         return sourceAddress;
     }
 
     public SignedMessage sourceAddress(long sourceAddress) {
+        assert sourceAddress != 0;
         this.sourceAddress = sourceAddress;
         return this;
     }

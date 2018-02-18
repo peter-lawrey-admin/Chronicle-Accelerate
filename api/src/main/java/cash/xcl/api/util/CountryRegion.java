@@ -1,7 +1,6 @@
 package cash.xcl.api.util;
 
 import cash.xcl.api.dto.Validators;
-import net.openhft.chronicle.bytes.Bytes;
 import net.openhft.chronicle.core.io.IORuntimeException;
 import net.openhft.chronicle.wire.AbstractMarshallable;
 import net.openhft.chronicle.wire.WireIn;
@@ -12,6 +11,7 @@ import static cash.xcl.api.dto.Validators.notNullOrEmpty;
 
 public class CountryRegion extends AbstractMarshallable {
 
+    public static final String MAIN_NAME = "0000";
     static final String[] NO_STRINGS = new String[0];
     private final String countryName;
     private final String regionCode;
@@ -38,7 +38,7 @@ public class CountryRegion extends AbstractMarshallable {
         }
         this.regionName = notNullOrEmpty(regionName.trim());
         this.regionCodeBase32 = XCLBase32.normalize(this.regionCode);
-        this.regionCodeAddress = XCLBase32.decode(Bytes.from(regionCodeBase32));
+        this.regionCodeAddress = XCLBase32.decode(regionCodeBase32);
     }
 
     public String countryName() {

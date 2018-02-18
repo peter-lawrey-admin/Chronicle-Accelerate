@@ -1,6 +1,7 @@
 package cash.xcl.net;
 
 import net.openhft.chronicle.bytes.Bytes;
+import net.openhft.chronicle.core.Jvm;
 
 import java.io.EOFException;
 import java.io.IOException;
@@ -35,7 +36,9 @@ public class VanillaTCPServerConnection extends AbstractTCPConnection {
         } catch (EOFException eof) {
             // connection closed
         } catch (Throwable t) {
-            t.printStackTrace();
+            Jvm.pause(1);
+            if (running)
+                t.printStackTrace();
 
         } finally {
             tcpServer.connectionListener().onClosedConnection(tcpServer, this);

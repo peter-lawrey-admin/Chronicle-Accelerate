@@ -15,7 +15,7 @@ public enum AddressUtil {
     }
 
     public static long decode(String address) {
-        return XCLBase32.decode(bytesCache.get().clear().append(address));
+        return XCLBase32.decode(address);
     }
 
     public static boolean isValid(long address) {

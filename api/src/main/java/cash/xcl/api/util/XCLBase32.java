@@ -73,6 +73,23 @@ public enum XCLBase32 {
         return n;
     }
 
+    public static long decode(CharSequence chars) {
+        if (chars instanceof Bytes)
+            return decode((Bytes<?>) chars);
+        long n = 0;
+        int shift = Long.SIZE - BITS_PER_CHAR;
+        for (int i = 0; i < chars.length() && shift >= -1; i++) {
+            int ch = chars.charAt(i);
+            long value = ch < PARSING.length ? PARSING[ch] : -1;
+            if (value < 0) {
+                return n;
+            }
+            n |= shift < 0 ? value >> -shift : value << shift;
+            shift -= BITS_PER_CHAR;
+        }
+        return n;
+    }
+
     public static String normalize(String regionCode) {
         StringBuilder sb = new StringBuilder(regionCode.length());
         for (int i = 0; i < regionCode.length(); i++) {

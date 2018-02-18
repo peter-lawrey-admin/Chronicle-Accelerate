@@ -30,7 +30,7 @@ public class XCLClientServerTest {
         Ed25519.privateToPublicAndSecret(publicKey, secretKey, privateKey);
 
         StringWriter out = new StringWriter();
-        ServerComponent logging = Mocker.logging(ServerComponent.class, "", out);
+        AllMessagesServer logging = Mocker.logging(AllMessagesServer.class, "", out);
         XCLServer server = new XCLServer("test", 9900, 1, secretKey, logging);
 
         List<InetSocketAddress> addresses = Arrays.asList(new InetSocketAddress("localhost", 9900));

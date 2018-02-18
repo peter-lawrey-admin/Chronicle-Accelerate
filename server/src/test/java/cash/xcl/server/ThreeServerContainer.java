@@ -2,6 +2,7 @@ package cash.xcl.server;
 
 import cash.xcl.api.AllMessages;
 import cash.xcl.api.dto.CreateNewAddressCommand;
+import cash.xcl.api.dto.SubscriptionQuery;
 import cash.xcl.api.tcp.XCLClient;
 import cash.xcl.api.tcp.XCLServer;
 import net.openhft.chronicle.bytes.Bytes;
@@ -17,7 +18,7 @@ import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertEquals;
 
-public class ThreeServerContainer implements Closeable {
+public class ThreeServerContainer {
 
     private final XCLServer one, two, three;
     private final XCLClient toOne, toTwo, toThree;
@@ -27,37 +28,41 @@ public class ThreeServerContainer implements Closeable {
         Bytes<Void> secretKey = Bytes.allocateDirect(Ed25519.SECRET_KEY_LENGTH);
         secretKey.writeSkip(Ed25519.SECRET_KEY_LENGTH);
 
-        RegionalGateway gateway1 = new RegionalGateway(1001);
-        one = new XCLServer("one", 1001, 1001, secretKey, gateway1);
-        RegionalGateway gateway2 = new RegionalGateway(1002);
-        two = new XCLServer("two", 1002, 1002, secretKey, gateway2);
-        RegionalGateway gateway3 = new RegionalGateway(1003);
-        three = new XCLServer("two", 1003, 1003, secretKey, gateway3);
+        long[] clusterAddresses = {10001, 10002, 10003};
+        Gateway gateway1 = VanillaGateway.newGateway(10001, "gb1dn", clusterAddresses);
+        one = new XCLServer("one", 10001, 10001, secretKey, gateway1);
+        Gateway gateway2 = VanillaGateway.newGateway(10002, "gb1dn", clusterAddresses);
+        two = new XCLServer("two", 10002, 10002, secretKey, gateway2);
+        Gateway gateway3 = VanillaGateway.newGateway(10003, "gb1dn", clusterAddresses);
+        three = new XCLServer("two", 10003, 10003, secretKey, gateway3);
 
-        one.addTCPConnection(1002,
-                new XCLClient("two", "localhost", 1002, 1001, secretKey, gateway1));
-        one.addTCPConnection(1003,
-                new XCLClient("three", "localhost", 1003, 1001, secretKey, gateway1));
+        one.addTCPConnection(10002,
+                new XCLClient("two", "localhost", 10002, 10001, secretKey, gateway1));
+        one.addTCPConnection(10003,
+                new XCLClient("three", "localhost", 10003, 10001, secretKey, gateway1));
 
-        two.addTCPConnection(1001,
-                new XCLClient("one", "localhost", 1001, 1002, secretKey, gateway2));
-        two.addTCPConnection(1003,
-                new XCLClient("three", "localhost", 1003, 1002, secretKey, gateway2));
+        two.addTCPConnection(10001,
+                new XCLClient("one", "localhost", 10001, 10002, secretKey, gateway2));
+        two.addTCPConnection(10003,
+                new XCLClient("three", "localhost", 10003, 10002, secretKey, gateway2));
 
-        three.addTCPConnection(1002,
-                new XCLClient("two", "localhost", 1002, 1003, secretKey, gateway3));
-        three.addTCPConnection(1001,
-                new XCLClient("one", "localhost", 1001, 1003, secretKey, gateway3));
+        three.addTCPConnection(10002,
+                new XCLClient("two", "localhost", 10002, 10003, secretKey, gateway3));
+        three.addTCPConnection(10001,
+                new XCLClient("one", "localhost", 10001, 10003, secretKey, gateway3));
 
         oneQ = new LinkedBlockingQueue<>();
-        toOne = new XCLClient("one", "localhost", 1001, 1, secretKey,
-                Mocker.queuing(AllMessages.class, "one", oneQ));
+        toOne = new XCLClient("one", "localhost", 10001, 1, secretKey,
+                Mocker.queuing(AllMessages.class, "one ", oneQ));
         twoQ = new LinkedBlockingQueue<>();
-        toTwo = new XCLClient("two", "localhost", 1002, 1, secretKey,
-                Mocker.queuing(AllMessages.class, "two", twoQ));
+        toTwo = new XCLClient("two", "localhost", 10002, 1, secretKey,
+                Mocker.queuing(AllMessages.class, "two ", twoQ));
         threeQ = new LinkedBlockingQueue<>();
-        toThree = new XCLClient("three", "localhost", 1003, 1, secretKey,
-                Mocker.queuing(AllMessages.class, "three", threeQ));
+        toThree = new XCLClient("three", "localhost", 10003, 1, secretKey,
+                Mocker.queuing(AllMessages.class, "three ", threeQ));
+        gateway1.start();
+        gateway2.start();
+        gateway3.start();
     }
 
     public static void main(String[] args) throws IOException, InterruptedException {
@@ -66,18 +71,29 @@ public class ThreeServerContainer implements Closeable {
 
         ThreeServerContainer tsc = new ThreeServerContainer();
         try {
+            tsc.toOne.subscriptionQuery(new SubscriptionQuery(1, 0));
             tsc.toOne.createNewAddressCommand(
-                    new CreateNewAddressCommand(1, 1, publicKey, "gb1dn"));
-            String poll = tsc.oneQ.poll(1, TimeUnit.SECONDS);
-            assertEquals("", poll);
+                    new CreateNewAddressCommand(1, 1, publicKey, "gb1nd"));
+            String poll = tsc.oneQ.poll(10, TimeUnit.SECONDS);
+            assertEquals("one createNewAddressEvent[!CreateNewAddressEvent {\n" +
+                    "  sourceAddress: 10001,\n" +
+                    "  eventTime: 0,\n" +
+                    "  origSourceAddress: 1,\n" +
+                    "  origEventTime: 1,\n" +
+                    "  address: 0,\n" +
+                    "  publicKey: !!binary AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=\n" +
+                    "}\n" +
+                    "]", poll);
         } finally {
-            Jvm.pause(100);
+            Jvm.pause(1000);
             tsc.close();
         }
     }
 
-    @Override
     public void close() {
+        Closeable.closeQuietly(toOne);
+        Closeable.closeQuietly(toTwo);
+        Closeable.closeQuietly(toThree);
         Closeable.closeQuietly(one);
         Closeable.closeQuietly(two);
         Closeable.closeQuietly(three);

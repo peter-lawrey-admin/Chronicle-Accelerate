@@ -2,8 +2,8 @@ package cash.xcl.api.tcp;
 
 import cash.xcl.api.AllMessages;
 import cash.xcl.api.AllMessagesLookup;
+import cash.xcl.api.AllMessagesServer;
 import cash.xcl.api.ClientException;
-import cash.xcl.api.ServerComponent;
 import cash.xcl.api.dto.DtoParser;
 import cash.xcl.api.dto.SignedMessage;
 import cash.xcl.net.TCPConnection;
@@ -29,12 +29,12 @@ public class XCLServer implements AllMessagesLookup, Closeable {
     final TCPServer tcpServer;
     private final long address;
     private final Bytes secretKey;
-    private final ServerComponent serverComponent;
+    private final AllMessagesServer serverComponent;
     private final Map<Long, TCPConnection> connections = new ConcurrentHashMap<>();
     private final Map<Long, TCPConnection> remoteMap = new ConcurrentHashMap<>();
     private final Map<Long, AllMessages> allMessagesMap = new ConcurrentHashMap<>();
 
-    public XCLServer(String name, int port, long address, Bytes secretKey, ServerComponent serverComponent) throws IOException {
+    public XCLServer(String name, int port, long address, Bytes secretKey, AllMessagesServer serverComponent) throws IOException {
         this.address = address;
         this.secretKey = secretKey;
         this.serverComponent = serverComponent;
@@ -65,8 +65,10 @@ public class XCLServer implements AllMessagesLookup, Closeable {
         if (tcpConnection == null)
             tcpConnection = remoteMap.get(addressLong);
 
-        if (tcpConnection == null)
+        if (tcpConnection == null) {
+            System.out.println(address + " - No connection to address " + addressLong + " to send " + message);
             return;
+        }
 
         try {
 
@@ -94,6 +96,7 @@ public class XCLServer implements AllMessagesLookup, Closeable {
         for (TCPConnection connection : remoteMap.values()) {
             Closeable.closeQuietly(connection);
         }
+        Closeable.closeQuietly(serverComponent);
         remoteMap.clear();
         tcpServer.close();
     }

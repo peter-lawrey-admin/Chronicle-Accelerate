@@ -15,9 +15,9 @@ public class TransactionBlockEventTest {
     @Test
     public void writeMarshallable() {
         TransactionBlockEvent tbe = new TransactionBlockEvent()
-                .region("gb1dn")
+                .region("gb1nd")
                 .addTransaction(
-                        new CreateNewAddressCommand(1, 2, Bytes.wrapForRead(new byte[32]), "gb1dn"))
+                        new CreateNewAddressCommand(1, 2, Bytes.wrapForRead(new byte[32]), "gb1nd"))
                 .addTransaction(
                         new TransferValueCommand(0, 3, 1, 1.23, "XCL", "init"));
 

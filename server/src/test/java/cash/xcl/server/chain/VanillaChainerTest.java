@@ -1,18 +1,12 @@
 package cash.xcl.server.chain;
 
-import cash.xcl.api.AllMessages;
-import cash.xcl.api.dto.TransferValueCommand;
-import net.openhft.chronicle.core.Jvm;
-import net.openhft.chronicle.core.Mocker;
 import org.junit.Test;
 
-import java.io.StringWriter;
-
-public class ChainerTest {
+public class VanillaChainerTest {
     @Test
     public void testTransactions() {
-        // todo turn this into a real test.
-        Chainer chainer = new Chainer("gb1dn", 10, new long[1], tbe -> {
+      /*  // todo turn this into a real test.
+        VanillaChainer chainer = new VanillaChainer("gb1dn", 10, new long[1], tbe -> {
         });
         StringWriter out = new StringWriter();
         chainer.allMessagesLookup(addressOrRegion -> Mocker.logging(AllMessages.class, "to " + addressOrRegion + " ", out));
@@ -24,6 +18,6 @@ public class ChainerTest {
         }
         Jvm.pause(25);
         chainer.close();
-        System.out.println(out);
+        System.out.println(out);*/
     }
 }

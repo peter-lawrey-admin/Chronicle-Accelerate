@@ -1,5 +1,7 @@
 package cash.xcl.api;
 
-public interface ServerComponent extends AllMessages {
+import net.openhft.chronicle.core.io.Closeable;
+
+public interface ServerComponent extends Closeable {
     void allMessagesLookup(AllMessagesLookup lookup);
 }
