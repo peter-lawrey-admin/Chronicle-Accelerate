@@ -32,7 +32,13 @@ public class BlockEngine extends AbstractAllMessages {
     long blockNumber = 0;
     private long nextSend;
 
-    public BlockEngine(long address, String region, int periodMS, AllMessagesServer fastPath, VanillaChainer chainer, AllMessagesServer postBlockChainProcessor, long[] clusterAddresses) {
+    public BlockEngine(long address,
+                       String region,
+                       int periodMS,
+                       AllMessagesServer fastPath,
+                       VanillaChainer chainer,
+                       AllMessagesServer postBlockChainProcessor,
+                       long[] clusterAddresses) {
         super(address);
         this.region = region;
         this.periodMS = periodMS;
@@ -108,7 +114,7 @@ public class BlockEngine extends AbstractAllMessages {
         blockReplayer.treeBlockEvent(treeBlockEvent);
     }
 
-    public void run() {
+    void run() {
         try {
             TransactionBlockEvent tbe = chainer.nextTransactionBlockEvent();
 //            System.out.println("TBE "+tbe);
@@ -126,7 +132,10 @@ public class BlockEngine extends AbstractAllMessages {
             voter.sendVote(blockNumber);
             Jvm.pause(subRound);
 //            System.out.println(address + " " + blockNumber);
-            voteTaker.sendTreeNode(blockNumber++);
+            if (voteTaker.hasMajority())
+                voteTaker.sendTreeNode(blockNumber++);
+
+            // TODO might be triggered asynchronously to improve performance.
             blockReplayer.replayBlocks();
 
         } catch (Throwable t) {

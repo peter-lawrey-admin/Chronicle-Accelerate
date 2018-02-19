@@ -43,8 +43,14 @@ public class VanillaVoteTaker implements VoteTaker {
         this.addressToBlockNumberMap.putAll(addressToBlockNumberMap);
     }
 
+    public boolean hasMajority() {
+        return true;
+    }
+
     @Override
     public void sendTreeNode(long blockNumber) {
+        // TODO only do this when a majority of nodes vote the same.
+        // TODO see previous method on determining the majority.
         treeBlockEvent.reset();
         treeBlockEvent.sourceAddress(address);
         treeBlockEvent.region(region);
