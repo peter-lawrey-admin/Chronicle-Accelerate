@@ -5,9 +5,6 @@ import cash.xcl.api.dto.CommandFailedEvent;
 import cash.xcl.api.dto.CreateNewAddressCommand;
 import cash.xcl.api.dto.CreateNewAddressEvent;
 import net.openhft.chronicle.bytes.Bytes;
-import net.openhft.chronicle.core.time.SetTimeProvider;
-import net.openhft.chronicle.core.time.SystemTimeProvider;
-import net.openhft.chronicle.core.time.TimeProvider;
 
 public class MainPostBlockChainProcessor extends LocalPostBlockChainProcessor {
     private final AddressService addressService;
@@ -17,19 +14,11 @@ public class MainPostBlockChainProcessor extends LocalPostBlockChainProcessor {
         this.addressService = addressService;
     }
 
-    TimeProvider timeProvider = SystemTimeProvider.INSTANCE;
-
     // Used for testing purposes
     MainPostBlockChainProcessor(AllMessagesServer allMessagesServer) {
         super(121212121212L);
         addressService = new AddressService();
         allMessagesLookup(allMessagesServer);
-    }
-
-    public void time(long time) {
-        if (timeProvider instanceof SystemTimeProvider)
-            timeProvider = new SetTimeProvider();
-        ((SetTimeProvider) timeProvider).currentTimeMicros(time);
     }
 
     @Override
