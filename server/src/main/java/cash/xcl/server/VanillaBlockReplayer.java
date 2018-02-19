@@ -38,6 +38,7 @@ public class VanillaBlockReplayer implements BlockReplayer {
         notifyAll();
     }
 
+    // TODO Ideally blocks should be replayed in order, though it doesn't matter much esp if they are all up to date.
     @Override
     public void replayBlocks() throws InterruptedException {
         List<Runnable> replayActions = new ArrayList<>();
