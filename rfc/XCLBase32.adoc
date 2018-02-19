@@ -1,16 +1,16 @@
 = XCLBase32 specification
 Peter Lawrey
 
-XCLBase32 is an extension of hexa-decimal for encoding a string of bytes.
+XCLBase32 is an extension of hexadecimal for encoding a string of bytes.
 
-There are Base32 specifications such as https://tools.ietf.org/html/rfc4648[IETF - RFC4648] for encoding a string of bytes
-which starts at the highest bits and includes the length of bytes; the byte length of any training zeros is not important. As such encoding is aligned to the highest bits.
+There are Base32 specifications such as https://tools.ietf.org/html/rfc4648[IETF - RFC4648] for encoding a string of bytes,
+which starts at the highest bits and includes the length of bytes; the byte length of any training zeros is not important. As such, encoding is aligned to the highest bits.
 
 One of the aims is to produce numbers which can also be used to form words.
 
 == Extended Hexadecimal
 
-The encoding is the same as base16, with the rest of the alphabet except:
+The encoding is the same as Base16, with the rest of the alphabet except:
 
 - l and O as they can be confused with 1 and 0.
 - q and x as these are rare letters.
