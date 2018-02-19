@@ -68,8 +68,8 @@ public abstract class WritingAllMessages implements AllMessages {
     }
 
     @Override
-    public void treeBlockEvent(TreeBlockEvent treeBlockEvent) {
-        write(treeBlockEvent);
+    public void endOfRoundBlockEvent(EndOfRoundBlockEvent endOfRoundBlockEvent) {
+        write(endOfRoundBlockEvent);
     }
 
     @Override

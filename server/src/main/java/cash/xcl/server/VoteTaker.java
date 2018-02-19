@@ -8,5 +8,5 @@ public interface VoteTaker extends ServerComponent {
 
     boolean hasMajority();
 
-    void sendTreeNode(long blockNumber);
+    void sendEndOfRoundBlock(long blockNumber);
 }

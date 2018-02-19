@@ -88,12 +88,12 @@ public class VanillaGateway extends AbstractAllMessages implements Gateway {
     }
 
     @Override
-    public void treeBlockEvent(TreeBlockEvent treeBlockEvent) {
-        String region = treeBlockEvent.region();
+    public void endOfRoundBlockEvent(EndOfRoundBlockEvent endOfRoundBlockEvent) {
+        String region = endOfRoundBlockEvent.region();
         if (CountryRegion.MAIN_NAME.equals(region))
-            main.treeBlockEvent(treeBlockEvent);
+            main.endOfRoundBlockEvent(endOfRoundBlockEvent);
         else if (this.region.equals(region))
-            local.treeBlockEvent(treeBlockEvent);
+            local.endOfRoundBlockEvent(endOfRoundBlockEvent);
         else
             System.err.println("Unknown region " + region);
     }

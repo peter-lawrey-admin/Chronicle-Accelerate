@@ -5,9 +5,9 @@ Transaction are distributed in three stages;
 
 1. They are packed together by each node into blocks.
 1. The nodes gossip about which blocks they have received from other nodes.
-1. The blocks are assembled into a tree of nodes from the chains of each node.
+1. The blocks are assembled into a rounds of blocks from the chains of each node.
 
-Once a node has assembled a tree of blocks it can process the transactions in order to determine whether they are successful or not.
+Once a node has assembled a rounds of blocks it can process the transactions in order to determine whether they are successful or not.
 
 == Reaching consensus
 
@@ -25,9 +25,9 @@ however the blocks in these chains could be interlaced in any order.
 
 === Proposing an order for a round
 
-From the start of the week, the building the blocks into a single ordered tree occurs in rounds.
+From the start of the week, the building the blocks into a single ordered rounds of blocks occurs in rounds.
 
-At the start of a round, each node which has a block which has not be assembled into the tree proposes
+At the start of a round, each node which has a block which has not be assembled into the rounds of blocks proposes
 an order blocks yet to be added could be processed. This is called gossip about the blocks to be added.
 
 === Voting of the order of new blocks.
@@ -38,7 +38,7 @@ Each node votes of the proposals for a given round. There is three possible stat
 1. At least one node can see that a majority cannot be achieved.
 1. No node sees a majority.
 
-In case 1, each node which sees a majority can publish a tree block recording the order blocks should be processed.
+In case 1, each node which sees a majority can publish a round of blocks recording the order blocks should be processed.
 
 In case 2, a node can start the next round, though whether it should is not clear.
 
@@ -63,7 +63,7 @@ When some nodes are not running ideally, the rounds will ensure the blocks can b
 
 Each node published the blocks it has and proposes an order for the outstanding blocks it has
 
-== Chain vs Tree
+== Chain vs Rounds of Blocks
 
 Each node produces a chain of signed blocks containing transactions.
 However, the order of these block relative to one another can be important.
@@ -79,7 +79,7 @@ The order will be based on
 - the block eventTime
 - the signature for the block
 
-Periodically, once a node has decided the order it broadcasts a tree block containing the order of blocks it will be processing.
+Periodically, once a node has decided the order it broadcasts an End of Round Block Event containing the order of blocks it will be processing.
 
 A process might be need to reconcile what happens if different nodes don't agree on the order or blocks. esp if they are not running the same code.
 
@@ -93,6 +93,6 @@ and it would be better to send more, smaller blocks more often as volumes increa
 
 Gossip about block could occur after every block received and could be 10 - 100x more often but should be much smaller.
 
-A Tree Block could be produced around every 2 ms to 10 seconds and is expected to be less often than the Transaction Blocks.
+An End Of Round Block could be produced around every 2 ms to 10 seconds and is expected to be less often than the Transaction Blocks.
 
-NOTE: Transaction Blocks and Tree Blocks both have block numbers and are part of the same chain for replication purposes.
+NOTE: Transaction Blocks and End of Round Block Event both have block numbers and are part of the same chain for replication purposes.

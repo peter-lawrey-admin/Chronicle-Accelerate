@@ -191,7 +191,7 @@ public class AbstractAllMessages implements AllMessagesServer {
     }
 
     @Override
-    public void treeBlockEvent(TreeBlockEvent treeBlockEvent) {
+    public void endOfRoundBlockEvent(EndOfRoundBlockEvent endOfRoundBlockEvent) {
         throw new UnsupportedOperationException(getClass().getName());
     }
 

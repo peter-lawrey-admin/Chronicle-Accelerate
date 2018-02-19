@@ -5,7 +5,7 @@ The XCL Block Chain is an ordered collection of messages as commands + events an
 
 - Signed Messages.
 - A Transaction Block which is a list of messages produced by a single node.
-- A Tree Block which describes the order of these blocks.
+- A End of Round Block which describes the order of these blocks.
 
 All data is in little endian. All strings use UTF-8 encoding.
 
@@ -69,9 +69,9 @@ The message publishes which blocks this node has received.
 
 === Transaction Block Vote Event (message type = 0x03)
 
-The message publishes a vote on what the next tree node should be.
+The message publishes a vote on what the next End of Round Block Event should be.
 
-=== Tree Block Event (message type = 0x04)
+=== End Of Round Block Event (message type = 0x04)
 
 The transaction block is a signed message which contains zero or more messages.
 

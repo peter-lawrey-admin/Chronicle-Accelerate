@@ -198,7 +198,7 @@ public class RegionalFrame implements AllMessages {
     }
 
     @Override
-    public void treeBlockEvent(TreeBlockEvent treeBlockEvent) {
+    public void endOfRoundBlockEvent(EndOfRoundBlockEvent endOfRoundBlockEvent) {
         throw new UnsupportedOperationException();
     }
 

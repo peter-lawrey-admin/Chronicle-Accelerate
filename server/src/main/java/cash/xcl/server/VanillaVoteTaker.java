@@ -1,14 +1,14 @@
 package cash.xcl.server;
 
 import cash.xcl.api.AllMessagesLookup;
+import cash.xcl.api.dto.EndOfRoundBlockEvent;
 import cash.xcl.api.dto.TransactionBlockVoteEvent;
-import cash.xcl.api.dto.TreeBlockEvent;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 // TODO only take a majority view rather than last one wins.
-// TODO might need a stage before this where the servers announce a proposed TreeNode.
+// TODO might need a stage before this where the servers announce a proposed EndOfRoundBlock.
 
 public class VanillaVoteTaker implements VoteTaker {
     private final long address;
@@ -16,7 +16,7 @@ public class VanillaVoteTaker implements VoteTaker {
     private final String region;
     private AllMessagesLookup lookup;
     private Map<Long, Long> addressToBlockNumberMap = new LinkedHashMap<>();
-    private TreeBlockEvent treeBlockEvent = new TreeBlockEvent();
+    private EndOfRoundBlockEvent endOfRoundBlockEvent = new EndOfRoundBlockEvent();
 
     public VanillaVoteTaker(long address, String region, long[] clusterAddresses) {
         this.address = address;
@@ -48,20 +48,20 @@ public class VanillaVoteTaker implements VoteTaker {
     }
 
     @Override
-    public void sendTreeNode(long blockNumber) {
+    public void sendEndOfRoundBlock(long blockNumber) {
         // TODO only do this when a majority of nodes vote the same.
         // TODO see previous method on determining the majority.
-        treeBlockEvent.reset();
-        treeBlockEvent.sourceAddress(address);
-        treeBlockEvent.region(region);
+        endOfRoundBlockEvent.reset();
+        endOfRoundBlockEvent.sourceAddress(address);
+        endOfRoundBlockEvent.region(region);
         synchronized (this) {
             assert !addressToBlockNumberMap.containsKey(0L);
-            treeBlockEvent.blockRecords().putAll(addressToBlockNumberMap);
+            endOfRoundBlockEvent.blockRecords().putAll(addressToBlockNumberMap);
         }
-        treeBlockEvent.blockNumber(blockNumber);
+        endOfRoundBlockEvent.blockNumber(blockNumber);
         for (long clusterAddress : clusterAddresses) {
             lookup.to(clusterAddress)
-                    .treeBlockEvent(treeBlockEvent);
+                    .endOfRoundBlockEvent(endOfRoundBlockEvent);
         }
     }
 }

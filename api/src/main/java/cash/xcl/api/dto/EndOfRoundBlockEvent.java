@@ -8,13 +8,13 @@ import org.jetbrains.annotations.NotNull;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class TreeBlockEvent extends SignedMessage {
+public class EndOfRoundBlockEvent extends SignedMessage {
     private String region;
     private int weekNumber;
     private long blockNumber;
     private Map<Long, Long> blockRecords = new LinkedHashMap<>();
 
-    public TreeBlockEvent(long sourceAddress, long eventTime, String region, int weekNumber, long blockNumber, Map<Long, Long> blockRecords) {
+    public EndOfRoundBlockEvent(long sourceAddress, long eventTime, String region, int weekNumber, long blockNumber, Map<Long, Long> blockRecords) {
         super(sourceAddress, eventTime);
         this.region = region;
         this.weekNumber = weekNumber;
@@ -22,21 +22,21 @@ public class TreeBlockEvent extends SignedMessage {
         this.blockRecords = blockRecords;
     }
 
-    public TreeBlockEvent() {
+    public EndOfRoundBlockEvent() {
 
     }
 
     @NotNull
     @Override
     public <T> T deepCopy() {
-        TreeBlockEvent tbe = new TreeBlockEvent();
+        EndOfRoundBlockEvent tbe = new EndOfRoundBlockEvent();
         this.copyTo(tbe);
         return (T) tbe;
     }
 
     @Override
     public <T extends Marshallable> T copyTo(@NotNull T t) {
-        TreeBlockEvent tbe = (TreeBlockEvent) t;
+        EndOfRoundBlockEvent tbe = (EndOfRoundBlockEvent) t;
         super.copyTo(t);
         tbe.region(region);
         tbe.weekNumber(weekNumber);
@@ -82,7 +82,7 @@ public class TreeBlockEvent extends SignedMessage {
         return region;
     }
 
-    public TreeBlockEvent region(String region) {
+    public EndOfRoundBlockEvent region(String region) {
         this.region = region;
         return this;
     }
@@ -91,7 +91,7 @@ public class TreeBlockEvent extends SignedMessage {
         return weekNumber;
     }
 
-    public TreeBlockEvent weekNumber(int weekNumber) {
+    public EndOfRoundBlockEvent weekNumber(int weekNumber) {
         this.weekNumber = weekNumber;
         return this;
     }
@@ -100,7 +100,7 @@ public class TreeBlockEvent extends SignedMessage {
         return blockNumber;
     }
 
-    public TreeBlockEvent blockNumber(long blockNumber) {
+    public EndOfRoundBlockEvent blockNumber(long blockNumber) {
         this.blockNumber = blockNumber;
         return this;
     }

@@ -11,7 +11,7 @@ Queries and responses are never passed to the block chain. They are only exchang
 
 NOTE: Servers act as client to other servers blurring the distinction. For the purpose of the discussion, the client queries and the server responds
 
-Time is divided into rounds of equal length. e.g. 10 milli-seconds. At the end of each round new blocks are added to the end of the tree determining the order all servers should process the blocks.
+Time is divided into rounds of equal length. e.g. 10 milli-seconds. At the end of each round new blocks are added to the end of the chain determining the order all servers should process the blocks.
 
 This component takes all message types.
 
@@ -32,7 +32,7 @@ The Chainer takes Commands from the Fast Path and Events from the Post Block Cha
 This block is a chained from the last block the same server produced. It is after;
 
 - every other block this server produced.
-- every block already added to a Tree.
+- every block already added to the chain.
 
 However, it's order relative to new blocks produced by other servers needs to be determined in the voting phase
 
@@ -40,9 +40,9 @@ This component takes all message types and produces blocks
 
 === Voting component
 
-The voting component looks at all the new blocks it has produced or have been replicated to it and proposes a new tree node.
+The voting component looks at all the new blocks it has produced or have been replicated to it and proposes a new end of round block Event.
 
-The blocks in this proposed extension to the tree, come after all the blocks already in the tree, and in eventTime chronological order within this proposal.
+The blocks in this proposed extension to the chain of blocks, come after all the blocks already in the tree, and in eventTime chronological order within this proposal.
 
 NOTE: it is possible and likely some blocks will be out of order by time between rounds of voting.
 
@@ -50,18 +50,18 @@ This component only processes Transaction Blocks and produces a vote message.
 
 === VoteTaker component
 
-The vote taker listens to votes in a given round. Once a majority of servers vote on the same proposal a new tree node is created. The round is abandoned if
+The vote taker listens to votes in a given round. Once a majority of servers vote on the same proposal a new end of round block Event is created. The round is abandoned if
 
 - a majority cannot be reached.
 - a majority is reached on a later round.
 
-This component only processes the vote messages and produces a TreeNode
+This component only processes the vote messages and produces a EndOfRoundBlockNode
 
 === BlockReplayer component
 
 The Block Replayer, replays the events in order to the Post BlockChain component which determines the Commands outcomes.
 
-This component processes Blocks and TreeNodes and produces all the messages in the blocks.
+This component processes Blocks and EndOfRoundBlocks and produces all the messages in the blocks.
 
 === PostBlockChainProcessor component
 

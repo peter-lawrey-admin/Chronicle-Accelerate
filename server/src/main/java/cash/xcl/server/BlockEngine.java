@@ -110,8 +110,8 @@ public class BlockEngine extends AbstractAllMessages {
     }
 
     @Override
-    public void treeBlockEvent(TreeBlockEvent treeBlockEvent) {
-        blockReplayer.treeBlockEvent(treeBlockEvent);
+    public void endOfRoundBlockEvent(EndOfRoundBlockEvent endOfRoundBlockEvent) {
+        blockReplayer.treeBlockEvent(endOfRoundBlockEvent);
     }
 
     void run() {
@@ -133,7 +133,7 @@ public class BlockEngine extends AbstractAllMessages {
             Jvm.pause(subRound);
 //            System.out.println(address + " " + blockNumber);
             if (voteTaker.hasMajority())
-                voteTaker.sendTreeNode(blockNumber++);
+                voteTaker.sendEndOfRoundBlock(blockNumber++);
 
             // TODO might be triggered asynchronously to improve performance.
             blockReplayer.replayBlocks();

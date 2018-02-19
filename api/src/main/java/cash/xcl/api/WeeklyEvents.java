@@ -11,7 +11,7 @@ public interface WeeklyEvents extends Closeable {
 
     void transactionBlockVoteEvent(TransactionBlockVoteEvent transactionBlockVoteEvent);
 
-    void treeBlockEvent(TreeBlockEvent treeBlockEvent);
+    void endOfRoundBlockEvent(EndOfRoundBlockEvent endOfRoundBlockEvent);
 
     void feesEvent(FeesEvent feesEvent);
 

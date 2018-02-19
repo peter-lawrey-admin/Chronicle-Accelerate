@@ -14,7 +14,7 @@ public class DtoParser {
     final TransactionBlockEvent tbe = new TransactionBlockEvent();
     final TransactionBlockGossipEvent tbge = new TransactionBlockGossipEvent();
     final TransactionBlockVoteEvent tbve = new TransactionBlockVoteEvent();
-    final TreeBlockEvent treebe = new TreeBlockEvent();
+    final EndOfRoundBlockEvent treebe = new EndOfRoundBlockEvent();
     final OpeningBalanceEvent obe = new OpeningBalanceEvent();
     final FeesEvent fe = new FeesEvent();
     final ServiceNodesEvent sne = new ServiceNodesEvent();
@@ -101,7 +101,7 @@ public class DtoParser {
                 break;
 
             case TREE_BLOCK_EVENT:
-                parse(bytes, treebe, messages, AllMessages::treeBlockEvent);
+                parse(bytes, treebe, messages, AllMessages::endOfRoundBlockEvent);
                 break;
 
             case OPENING_BALANCE_EVENT:
