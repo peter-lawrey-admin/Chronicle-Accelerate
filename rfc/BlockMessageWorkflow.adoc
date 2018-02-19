@@ -1,72 +1,71 @@
 = Block Message Workflow
 Peter Lawrey
 
-Messages are passed around the platform to package up transactions into block, vote on the order of those blocks, and choose and order.
+Messages are passed around the platform to package up transactions into a block, vote on the order of those blocks, then choose and order.
 
 === Inbound messages
 
-Commands and Events are passed to the block chain after being validated by the Fast Path component.
+Commands and events are passed to the block chain after being validated by the Fast Path component.
 
 Queries and responses are never passed to the block chain. They are only exchanged between a requesting client and a server.
 
-NOTE: Servers act as client to other servers blurring the distinction. For the purpose of the discussion, the client queries and the server responds
+NOTE: Servers act as client to other servers blurring the distinction. For the purpose of the discussion, the client queries and the server responds.
 
-Time is divided into rounds of equal length. e.g. 10 milli-seconds. At the end of each round new blocks are added to the end of the chain determining the order all servers should process the blocks.
+Time is divided into rounds of equal length, for example 10 milli-seconds. At the end of each round, new blocks are added to the end of the chain determining the order all servers should process the blocks.
 
 This component takes all message types.
 
-=== Fast Path component
+=== Fast Path Component
 
-The Fast path component validates commands and in some cases handles the command itself directly.
-Initially this will be very few commands, however the aim is to handle as much as 95% of commands in the fast path,
-avoiding the need to wait for the block chain.
+The Fast Path component validates commands and in some cases handles the command itself directly.
+Initially this will be very few commands, however the aim is to handle as much as 95% of commands in the fast path, avoiding the need to wait for the block chain.
 
-Once a command has been validated, a command is passed to the block chain. The command might be different if the Fast path handles it, or the same if not.
+Once a command has been validated, a command is passed to the block chain. The command might be different if the fast path handles it, or the same if not.
 
 This component takes all message types.
 
 === Chainer
 
-The Chainer takes Commands from the Fast Path and Events from the Post Block Chain processor and adds them to a Transaction Block.
+The Chainer takes commands from the Fast Path and events from the Post Block Chain Processor, then adds them to a transaction block.
 
-This block is a chained from the last block the same server produced. It is after;
+This block is chained from the last block the same server produced. It is after:
 
 - every other block this server produced.
 - every block already added to the chain.
 
-However, it's order relative to new blocks produced by other servers needs to be determined in the voting phase
+However, it's order relative to new blocks produced by other servers needs to be determined in the voting phase.
 
-This component takes all message types and produces blocks
+This component takes all message types and produces blocks.
 
-=== Voting component
+=== Voting Component
 
-The voting component looks at all the new blocks it has produced or have been replicated to it and proposes a new end of round block Event.
+The voting component looks at all the new blocks it has produced, or have been replicated to it, and proposes a new end of round block event.
 
 The blocks in this proposed extension to the chain of blocks, come after all the blocks already in the tree, and in eventTime chronological order within this proposal.
 
-NOTE: it is possible and likely some blocks will be out of order by time between rounds of voting.
+NOTE: It is possible and likely some blocks will be out of order by time between rounds of voting.
 
-This component only processes Transaction Blocks and produces a vote message.
+This component only processes transaction blocks and produces a vote message.
 
-=== VoteTaker component
+=== VoteTaker Component
 
-The vote taker listens to votes in a given round. Once a majority of servers vote on the same proposal a new end of round block Event is created. The round is abandoned if
+The vote taker listens to votes in a given round. Once a majority of servers vote on the same proposal, a new end of round block event is created. The round is abandoned if:
 
 - a majority cannot be reached.
 - a majority is reached on a later round.
 
-This component only processes the vote messages and produces a EndOfRoundBlockNode
+This component only processes the vote messages and produces a EndOfRoundBlockNode.
 
-=== BlockReplayer component
+=== BlockReplayer Component
 
-The Block Replayer, replays the events in order to the Post BlockChain component which determines the Commands outcomes.
+The Block Replayer, replays the events in order to the Post BlockChain component which determines the commands outcomes.
 
 This component processes Blocks and EndOfRoundBlocks and produces all the messages in the blocks.
 
-=== PostBlockChainProcessor component
+=== PostBlockChainProcessor Component
 
 This component processes the messages and can issue any message.
 
-=== FinalMessageRouter component
+=== FinalMessageRouter Component
 
-This component takes messages and passes them to the gateway, or another server, or passes them to the Chainer.
+This component takes messages and passes them to the gateway, another server, or passes them to the Chainer.
