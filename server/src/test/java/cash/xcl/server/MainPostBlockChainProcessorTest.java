@@ -33,4 +33,9 @@ public class MainPostBlockChainProcessorTest {
     public void createNewAddressCommand() {
         test("post-block-chain/create-new-address");
     }
+
+    @Test
+    public void createNewAddressCommandFails() {
+        test("post-block-chain/create-new-address-fails");
+    }
 }

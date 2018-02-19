@@ -1,0 +1,15 @@
+createNewAddressCommand: {
+  sourceAddress: 2,
+  eventTime: 12345678900000,
+  publicKey: !!binary O2onvM62pC1io6jQKm8Nc2UyFXcd4kOmOsBIoYtZ2ik=,
+  region: usny,
+  newAddressSeed: -2419021951110769737
+}
+---
+createNewAddressCommand: {
+  sourceAddress: 2,
+  eventTime: 12345678900000,
+  publicKey: !!binary O2onvM62pC1io6jQKm8Nc2UyFXcd4kOmOsBIoYtZ2it=,
+  region: usny,
+  newAddressSeed: -2419021951110769737
+}
