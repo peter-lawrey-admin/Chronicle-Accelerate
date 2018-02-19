@@ -1,5 +1,6 @@
 package cash.xcl.server;
 
+import cash.xcl.api.AllMessagesServer;
 import cash.xcl.api.dto.CreateNewAddressCommand;
 import cash.xcl.api.dto.CreateNewAddressEvent;
 import net.openhft.chronicle.bytes.Bytes;
@@ -10,6 +11,13 @@ public class MainPostBlockChainProcessor extends LocalPostBlockChainProcessor {
     public MainPostBlockChainProcessor(long address, AddressService addressService) {
         super(address);
         this.addressService = addressService;
+    }
+
+    // Used for testing purposes
+    MainPostBlockChainProcessor(AllMessagesServer allMessagesServer) {
+        super(0);
+        addressService = new AddressService();
+        allMessagesLookup(allMessagesServer);
     }
 
     @Override
