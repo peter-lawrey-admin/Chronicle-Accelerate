@@ -1,7 +1,7 @@
 = Block Distribution
 Peter Lawrey
 
-Transaction are distributed in three stages;
+Transaction are distributed in three stages:
 
 1. They are packed together by each node into blocks.
 1. The nodes gossip about which blocks they have received from other nodes.
@@ -9,30 +9,30 @@ Transaction are distributed in three stages;
 
 Once a node has assembled a rounds of blocks it can process the transactions in order to determine whether they are successful or not.
 
-== Reaching consensus
+== Reaching Consensus
 
-Consensus is reached by going through stages with the purpose of
+Consensus is reached by going through stages with the purpose of:
 
 - determining the order transactions will be processed.
-- come to a collective decision in a reasonable time frame.
-- reach consensus even when some nodes are not running or mis-behaving.
+- reaching a collective decision in a reasonable time frame.
+- reaching consensus even when some nodes are not running or mis-behaving.
 
-=== Building blocks
+=== Building Blocks
 
-Transactions are assembled into batches called blocks.  These blocks are assembled in parallel on each node.
-These block in turn are ordered into a chain of blocks.  At this point, all the block produced by a node can be said to be in order,
+Transactions are assembled into batches called blocks. These blocks are assembled in parallel on each node.
+These blocks in turn are ordered into a chain of blocks. At this point, all the blocks produced by a node can be said to be in order,
 however the blocks in these chains could be interlaced in any order.
 
-=== Proposing an order for a round
+=== Proposing An Order For A Round
 
-From the start of the week, the building the blocks into a single ordered rounds of blocks occurs in rounds.
+From the start of the week, the building of the blocks into a single ordered rounds of blocks occurs in rounds.
 
-At the start of a round, each node which has a block which has not be assembled into the rounds of blocks proposes
-an order blocks yet to be added could be processed. This is called gossip about the blocks to be added.
+At the start of a round, each node which has a block that has not be assembled into the rounds of blocks, proposes
+an order of the blocks to be added and to be processed. This is called gossip about the blocks to be added.
 
-=== Voting of the order of new blocks.
+=== Voting Of The Order Of New Blocks
 
-Each node votes of the proposals for a given round. There is three possible states.
+Each node votes of the proposals for a given round. There are three possible states:
 
 1. At least one node can see the majority of nodes agree on a proposal.
 1. At least one node can see that a majority cannot be achieved.
@@ -42,56 +42,51 @@ In case 1, each node which sees a majority can publish a round of blocks recordi
 
 In case 2, a node can start the next round, though whether it should is not clear.
 
-In case 3, after the round has expired, a new proposal can be made.  Once the proposal for a new has been accepted it replaces
-all previously unsuccessful rounds.
+In case 3, after the round has expired, a new proposal can be made. Once the new proposal has been accepted, it replaces
+all previous unsuccessful rounds.
 
 NOTE: After a new round has been proposed but before it has been accepted, an old round might be accepted.
 When this happens, all the blocks in the old round must come before the blocks proposed in the new round.
 
-=== Sorting blocks within a round.
+=== Sorting Blocks Within A Round.
 
-Each message has a microsecond resolution timestamp.  Within a round, blocks are sorted by this timestamp to minimise
+Each message has a microsecond resolution timestamp. Within a round, blocks are sorted by this timestamp to minimise
 how much difference the round process makes when everything is running correctly.
 
-When some nodes are not running ideally, the rounds will ensure the blocks can be placed in order even if;
+When some nodes are not running ideally, the rounds will ensure the blocks can be placed in order even if:
 
 - the clock of one node is way off.
-- nodes are down
+- nodes are down.
 - nodes are very slow.
 
-
-
-Each node published the blocks it has and proposes an order for the outstanding blocks it has
+Each node published the blocks it has and proposes an order for the outstanding blocks it has.
 
 == Chain vs Rounds of Blocks
 
 Each node produces a chain of signed blocks containing transactions.
-However, the order of these block relative to one another can be important.
-esp if an address is attempting to double spend by transferring from two chains at once.
+However, the order of these blocks relative to one another can be important, especially if an address is attempting to double spend by transferring from two chains at once.
 
 To prevent double spend, each node broadcasts the chain it is producing and gossips about all the chains it has received.
 
 Once a node has detected that a super majority of nodes have gossiped that they have received a block, it can be placed in order.
 
-The order will be based on
+The order will be based on:
 
-- the order blocks are confirmed
-- the block eventTime
-- the signature for the block
+- the order blocks confirmed.
+- the block eventTime.
+- the signature for the block.
 
 Periodically, once a node has decided the order it broadcasts an End of Round Block Event containing the order of blocks it will be processing.
 
-A process might be need to reconcile what happens if different nodes don't agree on the order or blocks. esp if they are not running the same code.
+A process might be need to reconcile what happens if different nodes don't agree on the order or blocks, especially if they are not running the same code.
 
-=== Block activity
+=== Block Activity
 
 A Transaction Block could be produced around every 1 milli-seconds to 1 second.
 Transaction Blocks are expected to be ~200 B to 100 KB.
-The soft limit size in the implementation is 1 MB and protocol limit is around 4 GB or ~40 million transactions
-however blocks this size are unlikely to be practical
-and it would be better to send more, smaller blocks more often as volumes increase.
+The soft limit size in the implementation is 1 MB and protocol limit is around 4 GB or ~40 million transactions, however blocks this size are unlikely to be practical. Therefore it would be more efficient to send more, smaller blocks more often as volumes increase.
 
-Gossip about block could occur after every block received and could be 10 - 100x more often but should be much smaller.
+Gossip about block could occur after every block received and could be 10 - 100x more often, but should be much smaller.
 
 An End Of Round Block could be produced around every 2 ms to 10 seconds and is expected to be less often than the Transaction Blocks.
 
