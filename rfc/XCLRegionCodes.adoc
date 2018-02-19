@@ -3,7 +3,7 @@ Peter Lawrey
 
 Each service is designated to a region, or a set of regions.
 
-== Region codes
+== Region Codes
 
 Region codes are based on ISO-3166 region codes with some additional services:
 
@@ -11,7 +11,7 @@ Region codes are based on ISO-3166 region codes with some additional services:
 - codes starting with a 2-currency are exchange "regions".
 - codes starting with 3, 4, 5, 6 or 7 are reserved for additional services.
 
-== Region specification
+== Region Specification
 
 Each region service manages a range of regions based on the following format, as a 32-bit unsigned value:
 
