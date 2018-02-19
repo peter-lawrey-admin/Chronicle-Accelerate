@@ -20,7 +20,7 @@ Message types are defined in the https://github.com/OpenHFT/Chronicle-Accelerate
 === Trailing zeros
 
 All messages have notionally endless zeros at the end.
-If the schema changes and a field is added, it should be filled with 0 bytes ie. false, empty string, 0, or 0.0 as appropriate.
+If the schema changes and a field is added, it should be filled with 0 bytes; i.e. false, empty string, 0, or 0.0 as appropriate.
 If the message sent has more bytes than expected, they may be silently ignored.
 
 NOTE: The signature will always include only the bytes actually written and not include the notional extra zero bytes.
@@ -117,11 +117,11 @@ This event lists all the nodes in a cluster for a service.
 
 === Block Subscription Query (0x0f)
 
-Request block be sent from a given block number in a week, for that node.
+Requests a block be sent from a given block number in a week, for that node.
 
-Note: if the requested block number is -1, all the check point blocks (Weekly Events written) from the previous week will also be sent.
+Note: If the requested block number is -1, all the check point blocks (Weekly Events written) from the previous week will also be sent.
 
-== Runtime events
+== Runtime Events
 
 These events can occur at any time and on any chain.
 
@@ -147,7 +147,7 @@ NOTE: Responses are not written to a chain, only the connection sending the quer
 
 == Main Chain Command/Queries
 
-Main Chain Commands are commands which are used to execute Global operations - ie. operations which apply to all regions in the world. The results of executing these commands are new transactions being executed and then persisted to the Main Blockchain. The Main Blockchain holds cross-regional data like ...
+Main Chain Commands are commands which are used to execute Global operations; i.e. operations which apply to all regions in the world. The results of executing these commands are new transactions being executed and then persisted to the Main Blockchain. The Main Blockchain holds cross-regional data like ...
 
 * Create New Address Command (0x20)
 * Cluster Transfer Value Step1 Command (0x21)
@@ -182,7 +182,7 @@ The first step is to approve money be taken out of an account in one region/clus
 
 This message is a command to transfer value from one cluster to another, via the main chain.
 
-The second step is to pass the transfer main chain can reject it if a node or cluster fails risk checks e.g. transfers too much money, too quicky.
+The second step is to pass the transfer main chain can reject it if a node or cluster fails risk checks; e.g. transfers too much money, too quickly.
 
 [width="50%",options="header"]
 |===
@@ -214,7 +214,7 @@ This message is a query for all the known clusters and the services they provide
 
 == Main Chain Events
 
-Main Chain Events are events which are sent as a result of executing Main Chain Commands. These events are confirmation of transactions performed at the global level ie. transactions which apply to all regions in the world. These events are published after the transactions have been executed, confirmed and persisted to the Main Blockchain.
+Main Chain Events are events which are sent as a result of executing Main Chain Commands. These events are confirmation of transactions performed at the global level; i.e. transactions which apply to all regions in the world. These events are published after the transactions have been executed, confirmed and persisted to the Main Blockchain.
 
 
 Range 0x30 - 0x3f
@@ -248,7 +248,7 @@ A message detailing all the known clusters, their services and their host connec
 
 == Regional Chain Commands
 
-Regional Chain Commands are commands that are relevant to a specific region - as opposed to Main Chain Commands that apply globally to all regions across the world.
+Regional Chain Commands are commands that are relevant to a specific region, as opposed to Main Chain Commands that apply globally to all regions across the world.
 
 The results of these commands are persisted to the Regional Blockchain for the appropriate region.
 
@@ -378,9 +378,10 @@ This message will contain, for a given account address, the list of currencies/a
 
 === Exchange Rate Response (0x5e)
 
-The Exchange Rate Response message which is sent in response to the `Exchange Rate Query (0x4e)` message
+The Exchange Rate Response message is sent in response to the `Exchange Rate Query (0x4e)` message.
 
-This message will contain the latest exchange Mid rates between 2 assets -eg. currencies, crypto currencies, etc-. 
+This message will contain the latest exchange Mid rates between 2 assets; e.g. currencies, crypto currencies, etc. 
+
 For example, a standard response will look something like:
 
 [width="50%",options="header"]
@@ -411,7 +412,7 @@ This message contains the status of all the nodes in the current cluster. A node
 
 Service Chain Commands are commands which are used to perform service type operations like:
 
-* depositing and withdrawing funds and
+* depositing and withdrawing funds.
 * placing Market/Limit orders in the Accelerate market.
 
 These commands are:
@@ -424,16 +425,16 @@ These commands are:
 
 These commands are typically issued by a user from the Accelerate Website page.
 
-Service Chain Commands are requests to perform transactions which are persisted to the appropriate regional blockchain, ie, the blockchain for that region.
+Service Chain Commands are requests to perform transactions which are persisted to the appropriate regional blockchain; i.e the blockchain for that region.
 
 
 Range 0x60 - 0x6f
 
 === Deposit Value Command (0x60)
 
-This message is a command to make a deposit for an amount of standard real currency, eg. Sterling Pounds or Dollars, into an Accelerate address account. 
+This message is a command to make a deposit for an amount of standard real currenc, e.g. Sterling Pounds or Dollars, into an Accelerate address account. 
 
-A user would typically make this deposit on the Accelerate Website page by making a standard Debit/Credit card payment into his personal Accelerate account address.
+A user would typically make this deposit on the Accelerate Website page by making a standard Debit/Credit card payment into their personal Accelerate account address.
 
 [width="50%",options="header"]
 |===
@@ -445,9 +446,9 @@ A user would typically make this deposit on the Accelerate Website page by makin
 
 The Withdraw Value Command message is a command to make a withdrawal from an Accelerate account address and deposit the funds into a user's personal retail bank account.
 
-A user would typically issue this withdrawal on the Accelerate Website page by requesting a standard bank transfer from his Accelerate account address to his personal retail bank account.
+A user would typically issue this withdrawal on the Accelerate Website page by requesting a standard bank transfer from their Accelerate account address to their personal retail bank account.
 
-If the user is withdrawing funds held in XCL, then this withdrawal will involve a currency conversion from XCL to the user's home currency eg. Sterling Pounds or US Dollars.
+If the user is withdrawing funds held in XCL, then this withdrawal will involve a currency conversion from XCL to the user's home currency; e.g. Sterling Pounds or US Dollars.
 
 
 [width="50%",options="header"]
@@ -462,7 +463,7 @@ The Market Order Command message is a command which is used to place a Market Or
 
 A Market Order is a type of Order that executes immediately at the best available price in the market.
 
-A user would typically place his Market Order on the Accelerate Website page.
+A user would typically place their Market Order on the Accelerate Website page.
 
 The result of placing a Market Order is a `Execution Report (0x72)` which will be executed immediately after the market order is placed at the best available price at the time.
 
@@ -477,11 +478,11 @@ The result of placing a Market Order is a `Execution Report (0x72)` which will b
 
 The Limit Order Command message is a command which is used to place a Limit Order to buy or sell an amount of XCL on the Accelerate market at a specified price.
 
-A Limit Order is a type of order to execute a trade at a given maximum price, if buying, or, at a given minimum price, if selling. This given price is called the Limit Price.
+A Limit Order is a type of order to execute a trade at a given maximum price, if buying, or at a given minimum price, if selling. This given price is called the Limit Price.
 
 A Limit Order may never be executed, but it guarantees that if it is executed, it will be at the specified limit price or better.
 
-A user would typically place his Limit Order on the Accelerate Website page.
+A user would typically place their Limit Order on the Accelerate Website page.
 
 After placing a Limit Order, a trade might be executed immediately or at some point in the future or not at all, depending on how aggressive the specified Limit Price is and the currently available live prices in the market.
 
@@ -533,11 +534,11 @@ The Deposit Value Event message contains confirmation of all the deposit details
 
 === Withdraw Value Event (0x71)
 
-A Withdraw Value Event is an event which is sent as a response to a `Withdraw Value Command` message
+A Withdraw Value Event is an event which is sent as a response to a `Withdraw Value Command` message.
 
 The Withdraw Value Event contains confirmation of the withdrawal details including:
 
-* the amount withdrew
+* the amount withdrawn
 * the currency
 * the user's account address
 
