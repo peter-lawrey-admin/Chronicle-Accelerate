@@ -3,12 +3,13 @@ package cash.xcl.server.exch;
 import static cash.xcl.api.dto.Validators.notInfinite;
 import static cash.xcl.api.dto.Validators.positive;
 
+import net.openhft.chronicle.core.annotation.SingleThreaded;
+
+@SingleThreaded
 public class Account {
 
     private final long accountId;
-
     private double money;
-
     private double lockedMoney;
 
 
@@ -30,7 +31,7 @@ public class Account {
 
     public double withdraw(double withdraw) throws TransactionFailedException {
         double withdrawValue = notInfinite(positive(withdraw));
-        if (withdrawValue < availableMoney()) {
+        if (withdrawValue <= availableMoney()) {
             money -= withdrawValue;
             return money;
         } else {
@@ -39,7 +40,7 @@ public class Account {
     }
 
     boolean lockMoney(double amount) {
-        if (availableMoney() <= amount) {
+        if (availableMoney() >= amount) {
             lockedMoney += amount;
             return true;
         }
@@ -47,7 +48,7 @@ public class Account {
     }
 
     boolean unlockMoney(double amount) {
-        if (lockedMoney <= amount) {
+        if (lockedMoney >= amount) {
             lockedMoney -= amount;
             return true;
         }
@@ -58,22 +59,15 @@ public class Account {
         return money - lockedMoney;
     }
 
-    public void transferTo(Account account, double transfer) throws TransactionFailedException {
-        try {
-            this.withdraw(transfer);
-            account.deposit(transfer);
-        } catch (Exception ex) {
-            throw new TransactionFailedException(ex);
-        }
+    double lockedMoney() {
+        return lockedMoney;
     }
 
-    public double getValue() {
+    double money() {
         return money;
     }
 
-    public long getAccountId() {
+    long getAccountId() {
         return accountId;
     }
-
-
 }
