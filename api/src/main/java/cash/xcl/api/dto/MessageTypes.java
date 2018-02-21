@@ -73,6 +73,6 @@ public interface MessageTypes {
     // Exchange service events and responses
     int DEPOSIT_VALUE_EVENT = 0x70;
     int WITHDRAW_VALUE_EVENT = 0x71;
-
     int EXECUTION_REPORT = 0x72;
+    int ORDER_CLOSED_EVENT = 0x73;
 }

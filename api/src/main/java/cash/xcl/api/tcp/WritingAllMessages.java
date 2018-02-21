@@ -22,7 +22,6 @@ import cash.xcl.api.dto.EndOfRoundBlockEvent;
 import cash.xcl.api.dto.ExchangeRateEvent;
 import cash.xcl.api.dto.ExchangeRateQuery;
 import cash.xcl.api.dto.ExchangeRateResponse;
-import cash.xcl.api.dto.ExecutionReportEvent;
 import cash.xcl.api.dto.FeesEvent;
 import cash.xcl.api.dto.OpeningBalanceEvent;
 import cash.xcl.api.dto.QueryFailedResponse;
@@ -38,7 +37,9 @@ import cash.xcl.api.dto.TransferValueEvent;
 import cash.xcl.api.dto.WithdrawValueCommand;
 import cash.xcl.api.dto.WithdrawValueEvent;
 import cash.xcl.api.exch.CancelOrderCommand;
+import cash.xcl.api.exch.ExecutionReportEvent;
 import cash.xcl.api.exch.NewLimitOrderCommand;
+import cash.xcl.api.exch.OrderClosedEvent;
 
 public abstract class WritingAllMessages implements AllMessages {
     @Override
@@ -217,6 +218,11 @@ public abstract class WritingAllMessages implements AllMessages {
     @Override
     public void executionReportEvent(ExecutionReportEvent executionReportEvent) {
         write(executionReportEvent);
+    }
+
+    @Override
+    public void orderClosedEvent(OrderClosedEvent orderClosedEvent) {
+        write(orderClosedEvent);
     }
 
     @Override

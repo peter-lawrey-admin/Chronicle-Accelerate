@@ -1,5 +1,6 @@
-package cash.xcl.api.dto;
+package cash.xcl.api.exch;
 
+import cash.xcl.api.dto.Side;
 import net.openhft.chronicle.bytes.BytesIn;
 import net.openhft.chronicle.bytes.BytesOut;
 import net.openhft.chronicle.core.io.IORuntimeException;
