@@ -11,7 +11,9 @@ import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import cash.xcl.api.exch.NewLimitOrderCommand;
+import net.openhft.chronicle.core.annotation.SingleThreaded;
 
+@SingleThreaded
 class ExchangeMarket implements Closeable {
     // This is just POC implementation. The interface is ok, however
     // in order to be scalable the internal structure of the class must be changed,

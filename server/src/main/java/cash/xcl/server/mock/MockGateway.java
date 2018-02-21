@@ -15,11 +15,11 @@ import cash.xcl.api.dto.CreateNewAddressCommand;
 import cash.xcl.api.dto.CreateNewAddressEvent;
 import cash.xcl.api.dto.CurrentBalanceQuery;
 import cash.xcl.api.dto.ExchangeRateQuery;
-import cash.xcl.api.dto.ExecutionReportEvent;
 import cash.xcl.api.dto.SubscriptionQuery;
 import cash.xcl.api.dto.SubscriptionSuccessResponse;
 import cash.xcl.api.dto.TransferValueCommand;
 import cash.xcl.api.exch.CancelOrderCommand;
+import cash.xcl.api.exch.ExecutionReportEvent;
 import cash.xcl.api.exch.NewLimitOrderCommand;
 
 public class MockGateway implements ClientOut {
