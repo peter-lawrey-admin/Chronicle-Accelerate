@@ -127,11 +127,7 @@ public enum Side {
 
     };
 
-    private static final double DEFAULT_PRECISION_FACTOR = 1E-7;
-
-    public static enum PriceCompareResult {
-        WORSE, SAME, BETTER;
-    }
+    static final double DEFAULT_PRECISION_FACTOR = 1E-7;
 
     @NotNull
     public abstract PriceCompareResult compare(double newPrice, double referencePrice, double precision);
@@ -176,11 +172,15 @@ public enum Side {
     }
 
     public static int ticksBetween(double bestPrice, double worstPrice, double tickSize) {
-        return (int) (round(abs(bestPrice - worstPrice) / tickSize) + 1);
+        return (int) round(abs(bestPrice - worstPrice) / tickSize);
     }
 
     public static double getDefaultPrecision(double tickSize) {
         return nextUp(tickSize * DEFAULT_PRECISION_FACTOR);
+    }
+
+    public static enum PriceCompareResult {
+        WORSE, SAME, BETTER;
     }
 
 }
