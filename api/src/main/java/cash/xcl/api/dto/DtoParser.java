@@ -1,11 +1,49 @@
 package cash.xcl.api.dto;
 
-import cash.xcl.api.AllMessages;
-import net.openhft.chronicle.bytes.Bytes;
+import static cash.xcl.api.dto.MessageTypes.APPLICATION_MESSAGE_EVENT;
+import static cash.xcl.api.dto.MessageTypes.BLOCK_SUBSCRIPTION_QUERY;
+import static cash.xcl.api.dto.MessageTypes.CANCEL_ORDER_COMMAND;
+import static cash.xcl.api.dto.MessageTypes.CLUSTERS_STATUS_QUERY;
+import static cash.xcl.api.dto.MessageTypes.CLUSTERS_STATUS_RESPONSE;
+import static cash.xcl.api.dto.MessageTypes.CLUSTER_STATUS_QUERY;
+import static cash.xcl.api.dto.MessageTypes.CLUSTER_STATUS_RESPONSE;
+import static cash.xcl.api.dto.MessageTypes.CLUSTER_TRANSFER_STEP1_COMMAND;
+import static cash.xcl.api.dto.MessageTypes.CLUSTER_TRANSFER_STEP2_COMMAND;
+import static cash.xcl.api.dto.MessageTypes.CLUSTER_TRANSFER_STEP3_COMMAND;
+import static cash.xcl.api.dto.MessageTypes.CLUSTER_TRANSFER_STEP3_EVENT;
+import static cash.xcl.api.dto.MessageTypes.COMMAND_FAILED_EVENT;
+import static cash.xcl.api.dto.MessageTypes.CREATE_NEW_ADDRESS_COMMAND;
+import static cash.xcl.api.dto.MessageTypes.CREATE_NEW_ADDRESS_EVENT;
+import static cash.xcl.api.dto.MessageTypes.CURRENT_BALANCE_QUERY;
+import static cash.xcl.api.dto.MessageTypes.CURRENT_BALANCE_RESPONSE;
+import static cash.xcl.api.dto.MessageTypes.DEPOSIT_VALUE_COMMAND;
+import static cash.xcl.api.dto.MessageTypes.DEPOSIT_VALUE_EVENT;
+import static cash.xcl.api.dto.MessageTypes.EXCHANGE_RATE_EVENT;
+import static cash.xcl.api.dto.MessageTypes.EXCHANGE_RATE_QUERY;
+import static cash.xcl.api.dto.MessageTypes.EXCHANGE_RATE_RESPONSE;
+import static cash.xcl.api.dto.MessageTypes.EXECUTION_REPORT;
+import static cash.xcl.api.dto.MessageTypes.FEES_EVENT;
+import static cash.xcl.api.dto.MessageTypes.NEW_LIMIT_ORDER_COMMAND;
+import static cash.xcl.api.dto.MessageTypes.OPENING_BALANCE_EVENT;
+import static cash.xcl.api.dto.MessageTypes.QUERY_FAILED_RESPONSE;
+import static cash.xcl.api.dto.MessageTypes.SERVICE_NODES_EVENT;
+import static cash.xcl.api.dto.MessageTypes.SUBSCRIPTION_QUERY;
+import static cash.xcl.api.dto.MessageTypes.SUBSCRIPTION_SUCCESS_RESPONSE;
+import static cash.xcl.api.dto.MessageTypes.TRANSACTION_BLOCK_EVENT;
+import static cash.xcl.api.dto.MessageTypes.TRANSACTION_BLOCK_GOSSIP_EVENT;
+import static cash.xcl.api.dto.MessageTypes.TRANSACTION_BLOCK_VOTE_EVENT;
+import static cash.xcl.api.dto.MessageTypes.TRANSFER_VALUE_COMMAND;
+import static cash.xcl.api.dto.MessageTypes.TRANSFER_VALUE_EVENT;
+import static cash.xcl.api.dto.MessageTypes.TREE_BLOCK_EVENT;
+import static cash.xcl.api.dto.MessageTypes.WITHDRAW_VALUE_COMMAND;
+import static cash.xcl.api.dto.MessageTypes.WITHDRAW_VALUE_EVENT;
 
 import java.util.function.BiConsumer;
 
-import static cash.xcl.api.dto.MessageTypes.*;
+import cash.xcl.api.AllMessages;
+import cash.xcl.api.exch.CancelOrderCommand;
+import cash.xcl.api.exch.NewLimitOrderCommand;
+import net.openhft.chronicle.bytes.Bytes;
 
 public class DtoParser {
     public static final int PROTOCOL_OFFSET = 80;
@@ -59,7 +97,6 @@ public class DtoParser {
 
     // Orders
     final NewLimitOrderCommand nloc = new NewLimitOrderCommand();
-    final NewMarketOrderCommand nmoc = new NewMarketOrderCommand();
     final CancelOrderCommand coc = new CancelOrderCommand();
 
     // ExecutionReport
@@ -83,8 +120,9 @@ public class DtoParser {
         int protocol = bytes.readUnsignedByte(bytes.readPosition() + PROTOCOL_OFFSET);
         int messageType = bytes.readUnsignedByte(bytes.readPosition() + MESSAGE_OFFSET);
 
-        if (protocol != 1)
+        if (protocol != 1) {
             throw new IllegalArgumentException("protocol: " + protocol);
+        }
 
         switch (messageType) {
             // weekly events
@@ -233,11 +271,6 @@ public class DtoParser {
             // ExchangeRate
             case EXCHANGE_RATE_QUERY:
                 parse(bytes, erq, messages, AllMessages::exchangeRateQuery);
-                break;
-
-            // Orders
-            case NEW_MARKET_ORDER_COMMAND:
-                parse(bytes, nmoc, messages, AllMessages::newMarketOrderCommand);
                 break;
 
             case NEW_LIMIT_ORDER_COMMAND:
