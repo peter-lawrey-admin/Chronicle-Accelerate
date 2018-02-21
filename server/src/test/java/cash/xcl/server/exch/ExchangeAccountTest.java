@@ -4,9 +4,6 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import cash.xcl.server.exch.ExchangeAccount;
-import cash.xcl.server.exch.TransactionFailedException;
-
 public class ExchangeAccountTest {
 
     private static final double EPSILON = Math.pow(10, -10);
@@ -47,7 +44,24 @@ public class ExchangeAccountTest {
 
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void withdrawFromUnexistingAccount() throws TransactionFailedException {
+        ExchangeAccount exchAccount = new ExchangeAccount("EUR");
+        exchAccount.withdraw(12345678, 1000);
+    }
+
     @Test
+    public void valueFromUnexistingAccount() throws TransactionFailedException {
+        ExchangeAccount exchAccount = new ExchangeAccount("EUR");
+        assertEquals(0, exchAccount.getValue(12345678), EPSILON);
+    }
+
+    @Test
+    public void currency() {
+        ExchangeAccount exchAccount = new ExchangeAccount("EUR");
+        assertEquals("EUR", exchAccount.getCurrency());
+    }
+
     public void testTransfer() throws TransactionFailedException {
         ExchangeAccount exchAccount = new ExchangeAccount("EUR");
         long accountAddress1 = 1234567L;

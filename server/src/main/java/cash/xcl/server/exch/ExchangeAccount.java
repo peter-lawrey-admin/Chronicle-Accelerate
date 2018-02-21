@@ -1,13 +1,14 @@
 package cash.xcl.server.exch;
 
 import java.util.HashMap;
-import java.util.concurrent.atomic.AtomicReference;
 
+import net.openhft.chronicle.core.annotation.SingleThreaded;
 
+@SingleThreaded
 class ExchangeAccount {
     private final String currency;
 
-    private final AtomicReference<Double> totalValue = new AtomicReference<>(0D);
+    private double totalValue = 0;
     private final HashMap<Long, Account> accounts = new HashMap<>();
 
     ExchangeAccount(String currency) {
@@ -22,7 +23,7 @@ class ExchangeAccount {
         if (account != null) {
             account.deposit(money);
         }
-        totalValue.accumulateAndGet(money, (a, b) -> a + b);
+        totalValue += money;
     }
 
     /**
@@ -34,7 +35,7 @@ class ExchangeAccount {
             throw new IllegalArgumentException("Unknown Address");
         }
         account.withdraw(money);
-        totalValue.accumulateAndGet(money, (a, b) -> a - b);
+        totalValue -= money;
     }
 
     double getValue(long accountAddress) {
@@ -42,16 +43,16 @@ class ExchangeAccount {
         if (account == null) {
             return 0.0;
         } else {
-            return account.getValue();
+            return account.money();
         }
     }
 
     double getTotalValue() {
-        return totalValue.get().doubleValue();
+        return totalValue;
     }
 
     double computeTotalValue() {
-        throw new UnsupportedOperationException();
+        return accounts.values().stream().map((a) -> a.money()).reduce(0D, (a, b) -> a + b);
     }
 
     public String getCurrency() {
