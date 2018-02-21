@@ -40,6 +40,7 @@ import cash.xcl.api.dto.WithdrawValueEvent;
 import cash.xcl.api.exch.CancelOrderCommand;
 import cash.xcl.api.exch.ExecutionReportEvent;
 import cash.xcl.api.exch.NewLimitOrderCommand;
+import cash.xcl.api.exch.OrderClosedEvent;
 import cash.xcl.api.tcp.XCLServer;
 import cash.xcl.api.util.CountryRegion;
 
@@ -185,6 +186,11 @@ public class RegionalFrame implements AllMessages {
     }
 
     @Override
+    public void orderClosedEvent(OrderClosedEvent orderClosedEvent) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public void blockSubscriptionQuery(BlockSubscriptionQuery blockSubscriptionQuery) {
         throw new UnsupportedOperationException();
     }
@@ -260,4 +266,7 @@ public class RegionalFrame implements AllMessages {
         mainChain.close();
         localChain.close();
     }
+
+
+
 }
