@@ -11,8 +11,7 @@ public class AccountTest {
 
     @Test
     public void basicFlow() throws TransactionFailedException {
-        Account account = new Account(12345, 10);
-        assertEquals(12345, account.getAccountId());
+        Account account = new Account(10);
         assertEquals(10.0, account.money(), EPSILON);
         assertEquals(10.0, account.availableMoney(), EPSILON);
         assertEquals(0, account.lockedMoney(), EPSILON);
@@ -49,13 +48,13 @@ public class AccountTest {
 
     @Test(expected = TransactionFailedException.class)
     public void unsufficientFunds1() throws TransactionFailedException {
-        Account account = new Account(12345);
+        Account account = new Account();
         account.withdraw(1234);
     }
 
     @Test(expected = TransactionFailedException.class)
     public void unsufficientFunds2() throws TransactionFailedException {
-        Account account = new Account(12345, 50);
+        Account account = new Account(50);
         account.withdraw(50.1);
     }
 

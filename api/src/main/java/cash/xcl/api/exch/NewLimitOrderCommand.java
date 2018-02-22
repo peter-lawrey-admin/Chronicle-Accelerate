@@ -1,7 +1,7 @@
 package cash.xcl.api.exch;
 
 import static cash.xcl.api.dto.Validators.notNaN;
-import static cash.xcl.api.dto.Validators.notNullOrEmpty;
+import static cash.xcl.api.dto.Validators.notNull;
 import static cash.xcl.api.dto.Validators.positive;
 import static cash.xcl.api.dto.Validators.strictPositive;
 
@@ -15,20 +15,20 @@ public class NewLimitOrderCommand extends SignedMessage {
     private boolean buyAction;
     private long quantity;
     private double maxPrice;
-    private String currency;
+    private CurrencyPair currencyPair;
     private long timeToLive;
 
     public NewLimitOrderCommand() {
 
     }
 
-    public NewLimitOrderCommand(long sourceAddress, long eventTime, boolean buyAction, long qty, double maxPrice, String currency,
+    public NewLimitOrderCommand(long sourceAddress, long eventTime, boolean buyAction, long qty, double maxPrice, CurrencyPair currencyPair,
                                 long timeToLive) {
         super(sourceAddress, eventTime);
         this.buyAction = buyAction;
         setQuantity(qty);
         setMaxPrice(maxPrice);
-        setCurrency(currency);
+        setCurrency(currencyPair);
         setTimeToLive(timeToLive);
     }
 
@@ -38,7 +38,10 @@ public class NewLimitOrderCommand extends SignedMessage {
         this.buyAction = bytes.readBoolean();
         setQuantity(bytes.readLong());
         setMaxPrice(bytes.readDouble());
-        setCurrency(bytes.readUtf8());
+        if (currencyPair == null) {
+            currencyPair = new CurrencyPair();
+        }
+        currencyPair.readMarshallable(bytes);
         setTimeToLive(bytes.readLong());
     }
 
@@ -47,7 +50,7 @@ public class NewLimitOrderCommand extends SignedMessage {
         bytes.writeBoolean(buyAction);
         bytes.writeLong(quantity);
         bytes.writeDouble(maxPrice);
-        bytes.writeUtf8(currency);
+        currencyPair.writeMarshallable(bytes);
         bytes.writeLong(timeToLive);
     }
 
@@ -81,12 +84,12 @@ public class NewLimitOrderCommand extends SignedMessage {
         this.maxPrice = notNaN(maxPrice); // it could be infinite if you really want to buy it
     }
 
-    public String getCurrency() {
-        return currency;
+    public CurrencyPair getCurrencyPair() {
+        return currencyPair;
     }
 
-    void setCurrency(String currency) {
-        this.currency = notNullOrEmpty(currency);
+    void setCurrency(CurrencyPair currencyPair) {
+        this.currencyPair = notNull(currencyPair);
     }
 
     public long getTimeToLive() {

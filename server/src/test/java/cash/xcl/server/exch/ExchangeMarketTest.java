@@ -8,6 +8,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
 
+import cash.xcl.api.exch.CurrencyPair;
 import cash.xcl.api.exch.NewLimitOrderCommand;
 
 public class ExchangeMarketTest {
@@ -16,7 +17,8 @@ public class ExchangeMarketTest {
     public void userCancel() {
         try (ExchangeMarket market = new ExchangeMarket(2.5)) {
             market.setCurrentTime(101);
-            market.processOrder(new NewLimitOrderCommand(1, 100, true, 111, 200, "EUR", 1000));
+            CurrencyPair currencyPair = new CurrencyPair("EUR", "XCL");
+            market.processOrder(new NewLimitOrderCommand(1, 100, true, 111, 200, currencyPair, 1000));
             assertEquals(1, market.getOrdersCount(Side.BUY));
             market.setCurrentTime(105);
             AtomicBoolean cancelBuyCalled = new AtomicBoolean();
@@ -28,7 +30,7 @@ public class ExchangeMarketTest {
             assertTrue(cancelBuyCalled.get());
             assertEquals(0, market.getOrdersCount(Side.BUY));
             market.setCurrentTime(205);
-            market.processOrder(new NewLimitOrderCommand(1, 200, false, 111, 200, "EUR", 1000));
+            market.processOrder(new NewLimitOrderCommand(1, 200, false, 111, 200, currencyPair, 1000));
             assertEquals(1, market.getOrdersCount(Side.SELL));
             market.setCurrentTime(210);
             AtomicBoolean cancelSellCalled = new AtomicBoolean();
@@ -44,15 +46,16 @@ public class ExchangeMarketTest {
 
     @Test
     public void timeoutCancel() {
+        CurrencyPair currencyPair = new CurrencyPair("EUR", "XCL");
         try (ExchangeMarket market = new ExchangeMarket(2.5)) {
             market.setCurrentTime(100);
-            market.processOrder(new NewLimitOrderCommand(1, 100, true, 111, 200.0, "EUR", 1400));
-            market.processOrder(new NewLimitOrderCommand(1, 101, true, 111, 200.0, "EUR", 1000));
-            market.processOrder(new NewLimitOrderCommand(1, 102, true, 111, 200.0, "EUR", 10000));
+            market.processOrder(new NewLimitOrderCommand(1, 100, true, 111, 200.0, currencyPair, 1400));
+            market.processOrder(new NewLimitOrderCommand(1, 101, true, 111, 200.0, currencyPair, 1000));
+            market.processOrder(new NewLimitOrderCommand(1, 102, true, 111, 200.0, currencyPair, 10000));
             market.setCurrentTime(200);
-            market.processOrder(new NewLimitOrderCommand(1, 201, false, 111, 201.0, "EUR", 1300));
-            market.processOrder(new NewLimitOrderCommand(1, 202, false, 111, 201.0, "EUR", 1000));
-            market.processOrder(new NewLimitOrderCommand(1, 203, false, 111, 201.0, "EUR", 10000));
+            market.processOrder(new NewLimitOrderCommand(1, 201, false, 111, 201.0, currencyPair, 1300));
+            market.processOrder(new NewLimitOrderCommand(1, 202, false, 111, 201.0, currencyPair, 1000));
+            market.processOrder(new NewLimitOrderCommand(1, 203, false, 111, 201.0, currencyPair, 10000));
             market.setCurrentTime(1500);
             AtomicInteger count = new AtomicInteger();
             market.removeExpired((order) -> {

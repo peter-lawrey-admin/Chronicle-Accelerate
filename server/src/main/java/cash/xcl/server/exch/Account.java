@@ -6,30 +6,27 @@ import static cash.xcl.api.dto.Validators.positive;
 import net.openhft.chronicle.core.annotation.SingleThreaded;
 
 @SingleThreaded
-public class Account {
+final class Account {
 
-    private final long accountId;
     private double money;
     private double lockedMoney;
 
-
-    public Account(long accountId) {
-        this(accountId, 0D);
+    Account() {
+        this(0D);
     }
 
-    public Account(long accountAddress, double money) {
-        this.accountId = accountAddress;
+    Account(double money) {
         this.money = notInfinite(positive(money));
     }
 
-    public double deposit(double deposit) {
+    double deposit(double deposit) {
         double depositValue = notInfinite(positive(deposit));
         money += depositValue;
         return money;
     }
 
 
-    public double withdraw(double withdraw) throws TransactionFailedException {
+    double withdraw(double withdraw) throws TransactionFailedException {
         double withdrawValue = notInfinite(positive(withdraw));
         if (withdrawValue <= availableMoney()) {
             money -= withdrawValue;
@@ -67,7 +64,5 @@ public class Account {
         return money;
     }
 
-    long getAccountId() {
-        return accountId;
-    }
+
 }
