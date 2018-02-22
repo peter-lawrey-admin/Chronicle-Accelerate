@@ -1,11 +1,13 @@
 package cash.xcl.server.exch;
 
+import cash.xcl.api.AllMessages;
 import cash.xcl.api.AllMessagesServer;
 import cash.xcl.api.dto.CommandFailedEvent;
 import cash.xcl.api.dto.DepositValueCommand;
 import cash.xcl.api.dto.WithdrawValueCommand;
 import cash.xcl.api.exch.CancelOrderCommand;
 import cash.xcl.api.exch.NewLimitOrderCommand;
+import cash.xcl.api.exch.OrderClosedEvent;
 import cash.xcl.server.LocalPostBlockChainProcessor;
 import cash.xcl.server.VanillaFinalRouter;
 import net.openhft.chronicle.core.time.SystemTimeProvider;
@@ -20,10 +22,10 @@ public class ExchangePostBlockChainProcessor extends LocalPostBlockChainProcesso
 
     private final ExchangeMarket exchangeMarket;
 
-    private VanillaFinalRouter finalRouter;
+    private AllMessages finalRouter;
 
     public ExchangePostBlockChainProcessor(long address, String currency, double tickSize, TimeProvider timeProvider,
-                                           VanillaFinalRouter finalRouter) {
+                                           AllMessages finalRouter) {
         super(address);
         this.finalRouter = finalRouter;
         this.exchangeAccounts = new ExchangeAccount(currency);
@@ -65,7 +67,17 @@ public class ExchangePostBlockChainProcessor extends LocalPostBlockChainProcesso
 
     @Override
     public void cancelOrderCommand(CancelOrderCommand cancelOrderCommand) {
-        exchangeMarket.cancelOrder(cancelOrderCommand.sourceAddress(), cancelOrderCommand.getOrderTime());
+        exchangeMarket.cancelOrder(cancelOrderCommand.sourceAddress(), cancelOrderCommand.getOrderTime(), this::publishUserCancel);
+    }
+
+    private void publishUserCancel(Order order) {
+        finalRouter.orderClosedEvent(new OrderClosedEvent(address, timeProvider.currentTimeMicros(), order.getOwnerAddress(),
+                order.getOwnerOrderTime(), OrderClosedEvent.REASON.USER_REQUEST));
+    }
+
+    private void publishExpired(Order order) {
+        finalRouter.orderClosedEvent(new OrderClosedEvent(address, timeProvider.currentTimeMicros(), order.getOwnerAddress(),
+                order.getOwnerOrderTime(), OrderClosedEvent.REASON.TIME_OUT));
     }
 
     @Override
@@ -75,7 +87,7 @@ public class ExchangePostBlockChainProcessor extends LocalPostBlockChainProcesso
 
     @Override
     public void replyFinished() {
-        exchangeMarket.removeExpired();
+        exchangeMarket.removeExpired(this::publishExpired);
     }
 
 }

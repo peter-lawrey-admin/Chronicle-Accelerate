@@ -84,7 +84,7 @@ public class SideTest {
     @Test
     public void testCompareVeryClosePrices() {
         double price = nextUp(10.0);
-        Side.onBothSides((side) -> {
+        Side.forEach((side) -> {
             assertEquals(PriceCompareResult.SAME, side.compare(price, side.improveBy(price, DELTA), DELTA));
             assertEquals(PriceCompareResult.SAME, side.compare(price, side.worsenBy(price, DELTA), DELTA));
             assertEquals(PriceCompareResult.WORSE, side.compare(price, side.improveBy(price, 2 * DELTA), DELTA));
@@ -96,7 +96,7 @@ public class SideTest {
     public void testCompareVerySmallPrices() {
         // double precision = DELTA;
         double price = 0;
-        Side.onBothSides((side) -> {
+        Side.forEach((side) -> {
             assertEquals(PriceCompareResult.SAME, side.compare(price, side.improveBy(price, MIN_VALUE), MIN_VALUE));
             assertEquals(PriceCompareResult.WORSE, side.compare(price, side.improveBy(price, 2 * MIN_VALUE), MIN_VALUE));
             assertEquals(PriceCompareResult.BETTER, side.compare(price, side.worsenBy(price, 2 * MIN_VALUE), MIN_VALUE));
@@ -172,7 +172,7 @@ public class SideTest {
         double value = 99.995;
         double tickSize = 0.01;
         double epsilon = tickSize / 10;
-        Side.onBothSides((side) -> {
+        Side.forEach((side) -> {
             double betterPrice = side.roundBetter(value, tickSize);
             assertTrue(side.isBetter(betterPrice, value, epsilon));
             assertTrue(side.isSame(betterPrice, side.roundBetter(value, tickSize), epsilon));
@@ -186,7 +186,7 @@ public class SideTest {
         double value = 99.995;
         double tickSize = 0.01;
         double epsilon = tickSize / 10;
-        Side.onBothSides((side) -> {
+        Side.forEach((side) -> {
             double worsePrice = side.roundWorse(value, tickSize);
             assertTrue(side.isWorse(worsePrice, value, epsilon));
             assertTrue(side.isSame(worsePrice, side.roundWorse(value, tickSize), epsilon));
@@ -202,7 +202,7 @@ public class SideTest {
         double value = 99.995;
         double tickSize = 0.01;
         double epsilon = tickSize / 10;
-        Side.onBothSides((side) -> {
+        Side.forEach((side) -> {
             double betterPrice = side.improveBy(value, tickSize);
             assertTrue(side.isBetter(betterPrice, value, epsilon));
             assertTrue(isNaN(side.improveBy(Double.NaN, tickSize)));
@@ -215,7 +215,7 @@ public class SideTest {
         double value = 99.995;
         double tickSize = 0.01;
         double epsilon = tickSize / 10;
-        Side.onBothSides((side) -> {
+        Side.forEach((side) -> {
             double worsenPrice = side.worsenBy(value, tickSize);
             assertTrue(side.isWorse(worsenPrice, value, epsilon));
             assertTrue(isNaN(side.worsenBy(Double.NaN, tickSize)));
@@ -228,7 +228,7 @@ public class SideTest {
         double value = 99.995;
         double tickSize = 0.01;
         double epsilon = tickSize / 10;
-        Side.onBothSides((side) -> {
+        Side.forEach((side) -> {
             double betterPrice = side.roundBetter(value, tickSize);
             double worsPrice = side.roundWorse(value, tickSize);
             assertTrue(side.isBetter(betterPrice, worsPrice, epsilon));
@@ -238,7 +238,7 @@ public class SideTest {
     @Test
     public void testAccept() {
         final AtomicInteger counter = new AtomicInteger(0);
-        Side.onBothSides((s) -> counter.incrementAndGet());
+        Side.forEach((s) -> counter.incrementAndGet());
         assertTrue(counter.get() == 2);
     }
 

@@ -3,6 +3,7 @@ package cash.xcl.server.exch;
 import static cash.xcl.api.dto.Validators.notNaN;
 
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 import static java.lang.Math.abs;
 import static java.lang.Math.nextUp;
@@ -166,9 +167,17 @@ public enum Side {
 
     public abstract Side other();
 
-    public static void onBothSides(Consumer<Side> consumer) {
+    public static void forEach(Consumer<Side> consumer) {
         consumer.accept(BUY);
         consumer.accept(SELL);
+    }
+
+    public static <T> T applyOnce(Function<Side, T> function) {
+        T result = function.apply(BUY);
+        if (result == null) {
+            result = function.apply(SELL);
+        }
+        return result;
     }
 
     public static int ticksBetween(double bestPrice, double worstPrice, double tickSize) {
@@ -182,5 +191,6 @@ public enum Side {
     public static enum PriceCompareResult {
         WORSE, SAME, BETTER;
     }
+
 
 }

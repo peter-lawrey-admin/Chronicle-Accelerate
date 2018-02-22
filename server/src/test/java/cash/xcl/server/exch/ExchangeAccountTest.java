@@ -62,7 +62,7 @@ public class ExchangeAccountTest {
         assertEquals("EUR", exchAccount.getCurrency());
     }
 
-    public void testTransfer() throws TransactionFailedException {
+    void transfer() throws TransactionFailedException {
         ExchangeAccount exchAccount = new ExchangeAccount("EUR");
         long accountAddress1 = 1234567L;
         exchAccount.deposit(accountAddress1, 50);

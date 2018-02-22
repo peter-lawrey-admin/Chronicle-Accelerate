@@ -9,6 +9,7 @@ public class OrderClosedEvent extends SignedMessage {
     public static enum REASON {
         USER_REQUEST((byte) 0), TIME_OUT((byte) 32);
         private byte value;
+
         REASON(byte value) {
             this.value = value;
         }
@@ -27,8 +28,8 @@ public class OrderClosedEvent extends SignedMessage {
 
     }
 
-    public OrderClosedEvent(long orderSourceAddress, long orderEventTime, REASON reason) {
-        super();
+    public OrderClosedEvent(long sourceAddress, long eventTime, long orderSourceAddress, long orderEventTime, REASON reason) {
+        super(sourceAddress, eventTime);
         this.orderSourceAddress = orderSourceAddress;
         this.orderEventTime = orderEventTime;
         this.reason = reason;

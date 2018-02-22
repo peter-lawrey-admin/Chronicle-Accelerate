@@ -4,11 +4,10 @@ import static cash.xcl.api.dto.Validators.positive;
 import static cash.xcl.api.dto.Validators.validNumber;
 
 import java.io.Closeable;
-import java.io.IOException;
 import java.util.Iterator;
 import java.util.PriorityQueue;
 import java.util.TreeSet;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
 
 import cash.xcl.api.exch.NewLimitOrderCommand;
 import net.openhft.chronicle.core.annotation.SingleThreaded;
@@ -23,7 +22,7 @@ class ExchangeMarket implements Closeable {
     private final TreeSet<Order> buyOrders = new TreeSet<>(Order.getBuyComparator());
     private final TreeSet<Order> sellOrders = new TreeSet<>(Order.getSellComparator());
     private final PriorityQueue<Order> expirationOrder = new PriorityQueue<>(
-            (o1, o2) -> Long.compare(o2.getExpirationTime(), o1.getExpirationTime()));
+            (o1, o2) -> Long.compare(o1.getExpirationTime(), o2.getExpirationTime()));
 
     private final double tickSize;
     private final double precision;
@@ -115,46 +114,54 @@ class ExchangeMarket implements Closeable {
     /**
      * inefficient, but good for testing
      */
-    void removeExpired() {
-        Iterator<Order> it = expirationOrder.iterator();
-        while (it.hasNext()) {
-            Order order = it.next();
-            if (order.getExpirationTime() < currentTime) {
-                it.remove();
+    void removeExpired(Consumer<Order> processor) {
+        assert expirationOrder.size() == (buyOrders.size() + sellOrders.size());
+        while (!expirationOrder.isEmpty()) {
+            Order order = expirationOrder.peek();
+            if (order.getExpirationTime() <= currentTime) {
+                expirationOrder.poll();
                 // we don't know if is a buy or sell order, but we could figure out later
                 // either by having separate priority queues or, buy assigning odd order ids to buy and even to sell
                 if (!buyOrders.remove(order)) {
                     sellOrders.remove(order);
                 }
+                processor.accept(order);
+            } else {
+                break;
             }
         }
+        assert expirationOrder.size() == (buyOrders.size() + sellOrders.size());
     }
+
+    void cancelOrder(long sourceAddress, long orderTime, Consumer<Order> processor) {
+        processor.accept(Side.<Order>applyOnce((side) -> findOrder(side, sourceAddress, orderTime)));
+    }
+
 
     /**
      * VERY VERY inefficient, but good for testing
      */
-    void cancelOrder(long sourceAddress, long orderTime) {
-        AtomicBoolean found = new AtomicBoolean(false);
-        Side.onBothSides((side) -> {
-            if (found.get()) {
-                return;
+    private Order findOrder(Side side, long sourceAddress, long orderTime) {
+        TreeSet<Order> market = getMarket(side);
+        Iterator<Order> it = market.iterator();
+        while (it.hasNext()) {
+            Order order = it.next();
+            if (order.matches(sourceAddress, orderTime)) {
+                it.remove();
+                expirationOrder.remove(order);
+                return order;
             }
-            TreeSet<Order> market = getMarket(side);
-            Iterator<Order> it = market.iterator();
-            while (it.hasNext()) {
-                Order order = it.next();
-                if (order.matches(sourceAddress, orderTime)) {
-                    it.remove();
-                    expirationOrder.remove(order);
-                    found.set(true);
-                    break;
-                }
-            }
-        });
+        }
+        return null;
     }
 
+    int getOrdersCount(Side side) {
+        return getMarket(side).size();
+    }
+
+
     @Override
-    public void close() throws IOException {
+    public void close() {
         buyOrders.clear();
         sellOrders.clear();
         expirationOrder.clear();
