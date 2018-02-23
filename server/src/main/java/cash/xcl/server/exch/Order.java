@@ -36,7 +36,7 @@ class Order extends AbstractMarshallable {
     }
 
     long fill(long fillQty) {
-        assert fillQty < getQuantityLeft();
+        assert fillQty <= getQuantityLeft();
         filled += fillQty;
         return getQuantityLeft();
     }
