@@ -1,49 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <parent>
-        <artifactId>parent-pom</artifactId>
-        <groupId>cash.xcl</groupId>
-        <version>0.1.0-SNAPSHOT</version>
-    </parent>
-    <modelVersion>4.0.0</modelVersion>
-
-    <artifactId>server</artifactId>
-    <name>Chronicle-Accelerate/Server</name>
-    <description>Chronicle-Accelerate Server</description>
-
-
-    <dependencies>
-        <dependency>
-            <groupId>cash.xcl</groupId>
-            <artifactId>api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-simple</artifactId>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
-    <build>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <parent>
+    <artifactId>parent-pom</artifactId>
+    <groupId>cash.xcl</groupId>
+    <version>0.1.0-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>server</artifactId>
+  <name>Chronicle-Accelerate/Server</name>
+  <description>Chronicle-Accelerate Server</description>
+  <dependencies>
+    <dependency>
+      <groupId>cash.xcl</groupId>
+      <artifactId>api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-simple</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+  <build>
     <plugins>
-       <plugin>
-          <groupId>org.pitest</groupId>
-          <artifactId>pitest-maven</artifactId>
-          <version>1.2.5</version>
-          <configuration>
-            <verbose>false</verbose>
-            <enableAssertions>true</enableAssertions>
-             <targetClasses>
-                <param>cash.xcl.server.exch*</param>
-            </targetClasses>
-            <targetTests>
-                <param>cash.xcl.server.exch*</param>
-            </targetTests>
-          </configuration>
-        </plugin>
-        </plugins>    
-    </build>
+      <plugin>
+        <groupId>org.pitest</groupId>
+        <artifactId>pitest-maven</artifactId>
+        <version>1.2.5</version>
+        <configuration>
+          <verbose>false</verbose>
+          <enableAssertions>true</enableAssertions>
+          <targetClasses>
+            <param>cash.xcl.server.exch*</param>
+          </targetClasses>
+          <targetTests>
+            <param>cash.xcl.server.exch*</param>
+          </targetTests>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>
