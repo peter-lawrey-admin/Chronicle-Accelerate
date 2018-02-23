@@ -39,6 +39,7 @@
           </targetClasses>
           <targetTests>
             <param>cash.xcl.api.exch*</param>
+             <param>cash.xcl.api.MarshalingTest</param>
           </targetTests>
         </configuration>
       </plugin>

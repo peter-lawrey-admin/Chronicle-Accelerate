@@ -1,0 +1,9 @@
+Valid Cancel Order Command: {
+ input: !cash.xcl.api.exch.CancelOrderCommand {
+    sourceAddress: 1234,
+    eventTime: 12345,
+    orderTime: 12340
+  },
+  output: !!null ""
+}
+

@@ -1,0 +1,110 @@
+Valid NewLimitOrderCommand: {
+  input: !cash.xcl.api.exch.NewLimitOrderCommand {
+    sourceAddress: 123456,
+    eventTime: 1234567,
+    action: SELL,
+    quantity: 1234,
+    maxPrice: 123.0,
+    currencyPair: {
+      base: XCL,
+      quote: USD
+    },
+    timeToLive: 2323
+  },
+  output: !!null ""
+}
+
+No currency pair NewLimitOrderCommand: {
+  input: !cash.xcl.api.exch.NewLimitOrderCommand {
+    sourceAddress: 123456,
+    eventTime: 1234567,
+    action: !!null "",
+    quantity: 1234,
+    maxPrice: 123.0,
+    currencyPair: {
+      base: XCL,
+      quote: USD
+    },
+    timeToLive: 2323
+  },
+  output: !type java.lang.NullPointerException
+}
+
+No action NewLimitOrderCommand: {
+  input: !cash.xcl.api.exch.NewLimitOrderCommand {
+    sourceAddress: 123456,
+    eventTime: 1234567,
+    action: SELL,
+    quantity: 1234,
+    maxPrice: 123.0,
+    currencyPair: !!null "",
+    timeToLive: 2323
+  },
+  output: !type java.lang.NullPointerException
+}
+
+
+Negative quantity NewLimitOrderCommand: {
+  input: !cash.xcl.api.exch.NewLimitOrderCommand {
+    sourceAddress: 123456,
+    eventTime: 1234567,
+    action: SELL,
+    quantity: -1234,
+    maxPrice: 123.0,
+    currencyPair: {
+      base: XCL,
+      quote: USD
+    },
+    timeToLive: 2323
+  },
+  output: !type java.lang.IllegalArgumentException
+}
+
+Zero quantity NewLimitOrderCommand: {
+  input: !cash.xcl.api.exch.NewLimitOrderCommand {
+    sourceAddress: 123456,
+    eventTime: 1234567,
+    action: SELL,
+    quantity: 0,
+    maxPrice: 123.0,
+    currencyPair: {
+      base: XCL,
+      quote: USD
+    },
+    timeToLive: 2323
+  },
+  output: !type java.lang.IllegalArgumentException
+}
+
+NaN price NewLimitOrderCommand: {
+  input: !cash.xcl.api.exch.NewLimitOrderCommand {
+    sourceAddress: 123456,
+    eventTime: 1234567,
+    action: SELL,
+    quantity: 1234,
+    maxPrice: NaN,
+    currencyPair: {
+      base: XCL,
+      quote: USD
+    },
+    timeToLive: 2323
+  },
+  output: !type java.lang.IllegalArgumentException
+}
+
+
+Negative ttl NewLimitOrderCommand: {
+  input: !cash.xcl.api.exch.NewLimitOrderCommand {
+    sourceAddress: 123456,
+    eventTime: 1234567,
+    action: SELL,
+    quantity: 1234,
+    maxPrice: 123,
+    currencyPair: {
+      base: XCL,
+      quote: USD
+    },
+    timeToLive: -9
+  },
+  output: !type java.lang.IllegalArgumentException
+}

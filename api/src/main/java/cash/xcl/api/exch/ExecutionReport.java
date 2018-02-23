@@ -18,37 +18,43 @@ public class ExecutionReport extends AbstractBytesMarshallable {
     private long initiator;
     private long aggressor;
 
-    public ExecutionReport() {
+    ExecutionReport() {
+
     }
 
-    public ExecutionReport(CurrencyPair pair, Side side, long quantity, double price, long aggressor, long initiator) {
-        this.pair = pair;
-        this.action = side;
-        this.quantity = quantity;
-        this.price = price;
+    public ExecutionReport(CurrencyPair pair, Side action, long quantity, double price, long aggressor, long initiator) {
+        assert initiator != aggressor;
+        setPair(pair);
+        setAction(action);
+        setQuantity(quantity);
+        setPrice(price);
         this.initiator = initiator;
         this.aggressor = aggressor;
     }
 
-    @SuppressWarnings({"rawtypes", "unchecked"})
+    @SuppressWarnings({"rawtypes"})
     @Override
     public void readMarshallable(BytesIn bytes) throws IORuntimeException {
         if (pair == null) {
             pair = new CurrencyPair();
         }
         pair.readMarshallable(bytes);
-        setAction((Side) bytes.<Side>readEnum(Side.class));
+        setAction(Side.fromId(bytes.readInt()));
         setQuantity(bytes.readLong());
-        setPrice(price);
+        setPrice(bytes.readDouble());
+        this.aggressor = bytes.readLong();
+        this.initiator = bytes.readLong();
     }
 
-    @SuppressWarnings({"rawtypes", "unchecked"})
+    @SuppressWarnings({"rawtypes"})
     @Override
     public void writeMarshallable(BytesOut bytes) {
         pair.writeMarshallable(bytes);
-        bytes.<Side>writeEnum(action);
+        bytes.writeInt(action.ordinal());
         bytes.writeLong(quantity);
         bytes.writeDouble(price);
+        bytes.writeLong(aggressor);
+        bytes.writeLong(initiator);
     }
 
     public CurrencyPair getPair() {
@@ -87,16 +93,9 @@ public class ExecutionReport extends AbstractBytesMarshallable {
         return initiator;
     }
 
-    void setInitiator(long initiator) {
-        this.initiator = initiator;
-    }
 
     public long getAggressor() {
         return aggressor;
-    }
-
-    void setAggressor(long partner) {
-        this.aggressor = partner;
     }
 
 

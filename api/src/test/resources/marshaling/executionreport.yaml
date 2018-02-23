@@ -1,0 +1,89 @@
+Valid Execution Report: {
+ input: !cash.xcl.api.exch.ExecutionReport {
+    pair: {
+      base: XCL,
+      quote: USD
+    },
+    action: BUY,
+    quantity: 100,
+    price: 12.5,
+    initiator: 321,
+    aggressor: 123
+    },
+  output: !!null ""
+}
+
+Null Pair Execution Report: {
+ input: !cash.xcl.api.exch.ExecutionReport {
+    pair: !!null "",
+    action: BUY,
+    quantity: 100,
+    price: 12.5,
+    initiator: 321,
+    aggressor: 123
+    },
+  output: !type java.lang.NullPointerException    
+}
+
+
+No action Execution Report: {
+ input: !cash.xcl.api.exch.ExecutionReport {
+    pair: {
+      base: XCL,
+      quote: USD
+    },
+    action: !!null "",
+    quantity: 100,
+    price: 12.5,
+    initiator: 321,
+    aggressor: 123
+    },
+  output: !type java.lang.NullPointerException    
+}
+
+
+Negative quantity Execution Report: {
+ input: !cash.xcl.api.exch.ExecutionReport {
+    pair: {
+      base: XCL,
+      quote: USD
+    },
+    action: BUY,
+    quantity: -100,
+    price: 12.5,
+    initiator: 321,
+    aggressor: 123
+    },
+  output: !type java.lang.IllegalArgumentException
+}
+
+NaN price Execution Report: {
+ input: !cash.xcl.api.exch.ExecutionReport {
+    pair: {
+      base: XCL,
+      quote: USD
+    },
+    action: BUY,
+    quantity: 100,
+    price: NaN,
+    initiator: 321,
+    aggressor: 123
+    },
+  output: !type java.lang.IllegalArgumentException
+}
+
+
+infinite price Execution Report: {
+ input: !cash.xcl.api.exch.ExecutionReport {
+    pair: {
+      base: XCL,
+      quote: USD
+    },
+    action: BUY,
+    quantity: 100,
+    price: -Infinity,
+    initiator: 321,
+    aggressor: 123
+    },
+  output: !type java.lang.IllegalArgumentException
+}
