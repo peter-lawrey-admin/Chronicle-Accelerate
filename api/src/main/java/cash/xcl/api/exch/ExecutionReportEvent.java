@@ -5,7 +5,7 @@ import cash.xcl.api.dto.SignedMessage;
 import net.openhft.chronicle.bytes.BytesIn;
 import net.openhft.chronicle.bytes.BytesOut;
 
-// FIXME needs reviewing/completing
+
 public class ExecutionReportEvent extends SignedMessage {
 
     private ExecutionReport executionReport;
@@ -20,7 +20,10 @@ public class ExecutionReportEvent extends SignedMessage {
 
     @Override
     protected void readMarshallable2(BytesIn<?> bytes) {
-        //executionReport.readMarshallable(bytes);
+        if (executionReport == null) {
+            executionReport = new ExecutionReport();
+        }
+        executionReport.readMarshallable(bytes);
     }
 
     @Override

@@ -1,4 +1,4 @@
-package cash.xcl.server.exch;
+package cash.xcl.api.exch;
 
 import static cash.xcl.api.dto.Validators.notNaN;
 
@@ -167,6 +167,15 @@ public enum Side {
 
     public abstract Side other();
 
+    private static final Side SIDES[] = { BUY, SELL };
+    static {
+        assert (BUY.ordinal() == 0) && (SELL.ordinal() == 1);
+    }
+
+    public static Side fromId(int ordinal) {
+        return SIDES[ordinal];
+    }
+
     public static void forEach(Consumer<Side> consumer) {
         consumer.accept(BUY);
         consumer.accept(SELL);
@@ -191,6 +200,7 @@ public enum Side {
     public static enum PriceCompareResult {
         WORSE, SAME, BETTER;
     }
+
 
 
 }

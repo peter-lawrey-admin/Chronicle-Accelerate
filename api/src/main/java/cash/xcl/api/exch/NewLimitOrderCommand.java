@@ -12,7 +12,7 @@ import net.openhft.chronicle.bytes.BytesOut;
 
 public class NewLimitOrderCommand extends SignedMessage {
 
-    private boolean buyAction;
+    private Side action;
     private long quantity;
     private double maxPrice;
     private CurrencyPair currencyPair;
@@ -22,10 +22,10 @@ public class NewLimitOrderCommand extends SignedMessage {
 
     }
 
-    public NewLimitOrderCommand(long sourceAddress, long eventTime, boolean buyAction, long qty, double maxPrice, CurrencyPair currencyPair,
+    public NewLimitOrderCommand(long sourceAddress, long eventTime, Side action, long qty, double maxPrice, CurrencyPair currencyPair,
                                 long timeToLive) {
         super(sourceAddress, eventTime);
-        this.buyAction = buyAction;
+        this.action = action;
         setQuantity(qty);
         setMaxPrice(maxPrice);
         setCurrency(currencyPair);
@@ -35,7 +35,7 @@ public class NewLimitOrderCommand extends SignedMessage {
 
     @Override
     protected void readMarshallable2(BytesIn<?> bytes) {
-        this.buyAction = bytes.readBoolean();
+        this.action = Side.fromId(bytes.readInt());
         setQuantity(bytes.readLong());
         setMaxPrice(bytes.readDouble());
         if (currencyPair == null) {
@@ -47,7 +47,7 @@ public class NewLimitOrderCommand extends SignedMessage {
 
     @Override
     protected void writeMarshallable2(BytesOut<?> bytes) {
-        bytes.writeBoolean(buyAction);
+        bytes.writeInt(action.ordinal());
         bytes.writeLong(quantity);
         bytes.writeDouble(maxPrice);
         currencyPair.writeMarshallable(bytes);
@@ -60,12 +60,8 @@ public class NewLimitOrderCommand extends SignedMessage {
     }
 
 
-    public boolean isBuyAction() {
-        return buyAction;
-    }
-
-    public boolean isSellAction() {
-        return !buyAction;
+    public Side getAction() {
+        return action;
     }
 
     public long getQuantity() {

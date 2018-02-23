@@ -1,7 +1,7 @@
-package cash.xcl.server.exch;
+package cash.xcl.api.exch;
 
 
-import static cash.xcl.server.exch.Side.getDefaultPrecision;
+import static cash.xcl.api.exch.Side.getDefaultPrecision;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -15,7 +15,7 @@ import static java.lang.Double.isNaN;
 import static java.lang.Math.abs;
 import static java.lang.Math.nextUp;
 
-import cash.xcl.server.exch.Side.PriceCompareResult;
+import cash.xcl.api.exch.Side.PriceCompareResult;
 
 public class SideTest {
 
@@ -41,40 +41,40 @@ public class SideTest {
                 PriceCompareResult result = translate(expectedResult[i], side);
                 assertTrue(side.compare(newPrices[i], refPrices[i], DELTA) == result);
                 switch (result) {
-                    case BETTER:
-                        assertTrue(side.isBetter(newPrices[i], refPrices[i], DELTA));
-                        assertTrue(side.isBetterOrSame(newPrices[i], refPrices[i], DELTA));
-                        assertEquals(side.getBetter(newPrices[i], refPrices[i]), newPrices[i], DELTA);
-                        assertEquals(side.getBetter(newPrices[i], refPrices[i]), side.other().getWorse(refPrices[i], newPrices[i]), DELTA);
-                        assertFalse(side.isWorse(newPrices[i], refPrices[i], DELTA));
-                        assertFalse(side.isWorseOrSame(newPrices[i], refPrices[i], DELTA));
-                        assertEquals(side.getWorse(newPrices[i], refPrices[i]), refPrices[i], DELTA);
-                        assertFalse(side.isSame(newPrices[i], refPrices[i], DELTA));
-                        assertTrue(abs(newPrices[i] - refPrices[i]) > DELTA);
-                        break;
-                    case SAME:
-                        assertFalse(side.isBetter(newPrices[i], refPrices[i], DELTA));
-                        assertTrue(side.isBetterOrSame(newPrices[i], refPrices[i], DELTA));
-                        assertEquals(side.getBetter(newPrices[i], refPrices[i]), refPrices[i], DELTA);
-                        assertFalse(side.isWorse(newPrices[i], refPrices[i], DELTA));
-                        assertTrue(side.isWorseOrSame(newPrices[i], refPrices[i], DELTA));
-                        assertEquals(side.getWorse(newPrices[i], refPrices[i]), newPrices[i], DELTA);
-                        assertTrue(side.isSame(newPrices[i], refPrices[i], DELTA));
-                        assertTrue(abs(newPrices[i] - refPrices[i]) <= DELTA);
-                        break;
-                    case WORSE:
-                        assertFalse(side.isBetter(newPrices[i], refPrices[i], DELTA));
-                        assertFalse(side.isBetterOrSame(newPrices[i], refPrices[i], DELTA));
-                        assertEquals(side.getBetter(newPrices[i], refPrices[i]), refPrices[i], DELTA);
-                        assertEquals(side.getBetter(newPrices[i], refPrices[i]), side.other().getWorse(refPrices[i], newPrices[i]), DELTA);
-                        assertTrue(side.isWorse(newPrices[i], refPrices[i], DELTA));
-                        assertTrue(side.isWorseOrSame(newPrices[i], refPrices[i], DELTA));
-                        assertEquals(side.getWorse(newPrices[i], refPrices[i]), newPrices[i], DELTA);
-                        assertFalse(side.isSame(newPrices[i], refPrices[i], DELTA));
-                        assertTrue(abs(newPrices[i] - refPrices[i]) > DELTA);
-                        break;
-                    default:
-                        throw new AssertionError();
+                case BETTER:
+                    assertTrue(side.isBetter(newPrices[i], refPrices[i], DELTA));
+                    assertTrue(side.isBetterOrSame(newPrices[i], refPrices[i], DELTA));
+                    assertEquals(side.getBetter(newPrices[i], refPrices[i]), newPrices[i], DELTA);
+                    assertEquals(side.getBetter(newPrices[i], refPrices[i]), side.other().getWorse(refPrices[i], newPrices[i]), DELTA);
+                    assertFalse(side.isWorse(newPrices[i], refPrices[i], DELTA));
+                    assertFalse(side.isWorseOrSame(newPrices[i], refPrices[i], DELTA));
+                    assertEquals(side.getWorse(newPrices[i], refPrices[i]), refPrices[i], DELTA);
+                    assertFalse(side.isSame(newPrices[i], refPrices[i], DELTA));
+                    assertTrue(abs(newPrices[i] - refPrices[i]) > DELTA);
+                    break;
+                case SAME:
+                    assertFalse(side.isBetter(newPrices[i], refPrices[i], DELTA));
+                    assertTrue(side.isBetterOrSame(newPrices[i], refPrices[i], DELTA));
+                    assertEquals(side.getBetter(newPrices[i], refPrices[i]), refPrices[i], DELTA);
+                    assertFalse(side.isWorse(newPrices[i], refPrices[i], DELTA));
+                    assertTrue(side.isWorseOrSame(newPrices[i], refPrices[i], DELTA));
+                    assertEquals(side.getWorse(newPrices[i], refPrices[i]), newPrices[i], DELTA);
+                    assertTrue(side.isSame(newPrices[i], refPrices[i], DELTA));
+                    assertTrue(abs(newPrices[i] - refPrices[i]) <= DELTA);
+                    break;
+                case WORSE:
+                    assertFalse(side.isBetter(newPrices[i], refPrices[i], DELTA));
+                    assertFalse(side.isBetterOrSame(newPrices[i], refPrices[i], DELTA));
+                    assertEquals(side.getBetter(newPrices[i], refPrices[i]), refPrices[i], DELTA);
+                    assertEquals(side.getBetter(newPrices[i], refPrices[i]), side.other().getWorse(refPrices[i], newPrices[i]), DELTA);
+                    assertTrue(side.isWorse(newPrices[i], refPrices[i], DELTA));
+                    assertTrue(side.isWorseOrSame(newPrices[i], refPrices[i], DELTA));
+                    assertEquals(side.getWorse(newPrices[i], refPrices[i]), newPrices[i], DELTA);
+                    assertFalse(side.isSame(newPrices[i], refPrices[i], DELTA));
+                    assertTrue(abs(newPrices[i] - refPrices[i]) > DELTA);
+                    break;
+                default:
+                    throw new AssertionError();
 
                 }
             }

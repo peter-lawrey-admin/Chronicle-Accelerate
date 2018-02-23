@@ -7,9 +7,12 @@ import java.io.Closeable;
 import java.util.Iterator;
 import java.util.PriorityQueue;
 import java.util.TreeSet;
-import java.util.function.Consumer;
+
+import static java.lang.Math.min;
 
 import cash.xcl.api.exch.NewLimitOrderCommand;
+import cash.xcl.api.exch.OrderClosedEvent.REASON;
+import cash.xcl.api.exch.Side;
 import net.openhft.chronicle.core.annotation.SingleThreaded;
 
 @SingleThreaded
@@ -26,23 +29,19 @@ class ExchangeMarket implements Closeable {
 
     private final double tickSize;
     private final double precision;
+    private final OrderClosedListener closedListener;
+    private final TradeListener tradeListener;
 
     private long currentTime = 0;
     private long idGen = 1;
 
-    ExchangeMarket(double tickSize) {
+    ExchangeMarket(double tickSize, TradeListener tradeListener, OrderClosedListener closedListener) {
+        this.tradeListener = tradeListener;
+        this.closedListener = closedListener;
         this.tickSize = positive(validNumber(tickSize));
         this.precision = Side.getDefaultPrecision(tickSize);
     }
 
-
-    private TreeSet<Order> getMarket(boolean buySide) {
-        if (buySide) {
-            return buyOrders;
-        } else {
-            return sellOrders;
-        }
-    }
 
     private TreeSet<Order> getMarket(Side side) {
         if (side == Side.BUY) {
@@ -52,61 +51,43 @@ class ExchangeMarket implements Closeable {
         }
     }
 
-    private Side getSide(boolean buySide) {
-        if (buySide) {
-            return Side.BUY;
-        } else {
-            return Side.SELL;
-        }
-    }
-
-
     void setCurrentTime(long currentTime) {
         this.currentTime = currentTime;
     }
 
-    void processOrder(NewLimitOrderCommand newLimitOrderCommand) {
+    void executeOrder(NewLimitOrderCommand newLimitOrderCommand) {
         long orderId = idGen++;
-        Side orderSide = getSide(newLimitOrderCommand.isBuyAction());
+        Side orderSide = newLimitOrderCommand.getAction();
         double orderPrice = orderSide.roundWorse(newLimitOrderCommand.getMaxPrice(), tickSize);
-        Order newOrder = new Order(orderId, newLimitOrderCommand.getQuantity(), orderPrice,
+        Order newOrder = new Order(orderId, orderSide, newLimitOrderCommand.getQuantity(), orderPrice,
                 newLimitOrderCommand.getTimeToLive() + currentTime, newLimitOrderCommand.sourceAddress(), newLimitOrderCommand.eventTime());
-        TreeSet<Order> sideToMatch = getMarket(!newLimitOrderCommand.isBuyAction());
+        TreeSet<Order> sideToMatch = getMarket(orderSide.other());
         Iterator<Order> it = sideToMatch.iterator();
         while (it.hasNext()) {
             Order topOrder = it.next();
             if (topOrder.getExpirationTime() <= currentTime) {
                 it.remove();
                 expirationOrder.remove(topOrder);
+                closedListener.onClosed(topOrder, REASON.TIME_OUT);
                 // send order expired event
             } else {
                 if (orderSide.isBetterOrSame(orderPrice, topOrder.getPrice(), precision)) {
-                    if (newOrder.getQuantityLeft() <= topOrder.getQuantityLeft()) { // complete fill
-                        long fillQty = newOrder.getQuantityLeft();
-                        newOrder.fill(fillQty);
-                        topOrder.fill(fillQty);
-                        if (topOrder.getQuantityLeft() == 0) {
-                            it.remove();
-                            expirationOrder.remove(topOrder);
-                        }
-                        // send the message
-                        break;
-                    } else {
-                        // partial fill
-                        long fillQty = topOrder.getQuantityLeft();
-                        newOrder.fill(fillQty);
-                        topOrder.fill(fillQty);
-                        // send the message
+                    long fillQty = min(newOrder.getQuantityLeft(), topOrder.getQuantityLeft());
+                    newOrder.fill(fillQty);
+                    topOrder.fill(fillQty);
+                    tradeListener.onTrade(newOrder, topOrder, fillQty);
+                    if (topOrder.getQuantityLeft() == 0) {
                         it.remove();
                         expirationOrder.remove(topOrder);
                     }
-                } else {
-                    break;
+                    if (newOrder.getQuantityLeft() == 0) {
+                        break;
+                    }
                 }
             }
         }
         if ((newLimitOrderCommand.getTimeToLive() > 0) && (newOrder.getQuantityLeft() > 0)) {
-            getMarket(newLimitOrderCommand.isBuyAction()).add(newOrder);
+            getMarket(orderSide).add(newOrder);
             expirationOrder.add(newOrder);
         }
     }
@@ -114,7 +95,7 @@ class ExchangeMarket implements Closeable {
     /**
      * inefficient, but good for testing
      */
-    void removeExpired(Consumer<Order> processor) {
+    void removeExpired() {
         assert expirationOrder.size() == (buyOrders.size() + sellOrders.size());
         while (!expirationOrder.isEmpty()) {
             Order order = expirationOrder.peek();
@@ -125,7 +106,7 @@ class ExchangeMarket implements Closeable {
                 if (!buyOrders.remove(order)) {
                     sellOrders.remove(order);
                 }
-                processor.accept(order);
+                closedListener.onClosed(order, REASON.TIME_OUT);
             } else {
                 break;
             }
@@ -133,8 +114,11 @@ class ExchangeMarket implements Closeable {
         assert expirationOrder.size() == (buyOrders.size() + sellOrders.size());
     }
 
-    void cancelOrder(long sourceAddress, long orderTime, Consumer<Order> processor) {
-        processor.accept(Side.<Order>applyOnce((side) -> findOrder(side, sourceAddress, orderTime)));
+    void cancelOrder(long sourceAddress, long orderTime) {
+        Order order = Side.<Order>applyOnce((side) -> findOrder(side, sourceAddress, orderTime));
+        if (order != null) {
+            closedListener.onClosed(order, REASON.USER_REQUEST);
+        }
     }
 
 
@@ -167,5 +151,14 @@ class ExchangeMarket implements Closeable {
         expirationOrder.clear();
     }
 
+    @FunctionalInterface
+    public static interface OrderClosedListener {
+        void onClosed(Order order, REASON reason);
+    }
+
+    @FunctionalInterface
+    public static interface TradeListener {
+        void onTrade(Order aggressive, Order initiator, long qty);
+    }
 
 }

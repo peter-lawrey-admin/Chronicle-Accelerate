@@ -1,4 +1,4 @@
-package cash.xcl.server.exch;
+package cash.xcl.api.exch;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;

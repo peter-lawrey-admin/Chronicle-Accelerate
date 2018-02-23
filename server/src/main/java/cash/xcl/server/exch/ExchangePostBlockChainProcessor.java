@@ -1,5 +1,8 @@
 package cash.xcl.server.exch;
 
+
+import static cash.xcl.api.exch.Side.BUY;
+
 import cash.xcl.api.AllMessages;
 import cash.xcl.api.AllMessagesServer;
 import cash.xcl.api.dto.CommandFailedEvent;
@@ -9,6 +12,8 @@ import cash.xcl.api.dto.WithdrawValueCommand;
 import cash.xcl.api.dto.WithdrawValueEvent;
 import cash.xcl.api.exch.CancelOrderCommand;
 import cash.xcl.api.exch.CurrencyPair;
+import cash.xcl.api.exch.ExecutionReport;
+import cash.xcl.api.exch.ExecutionReportEvent;
 import cash.xcl.api.exch.NewLimitOrderCommand;
 import cash.xcl.api.exch.OrderClosedEvent;
 import cash.xcl.server.LocalPostBlockChainProcessor;
@@ -43,7 +48,7 @@ public class ExchangePostBlockChainProcessor extends LocalPostBlockChainProcesso
         this.lotSize = lotSize;
         this.finalRouter = finalRouter;
         this.exchangeAccounts = new ExchangeAccounts(currencyPair);
-        this.exchangeMarket = new ExchangeMarket(tickSize);
+        this.exchangeMarket = new ExchangeMarket(tickSize, this::onTrade, this::onCancel);
     }
 
     // // only for testing purposes.
@@ -92,24 +97,59 @@ public class ExchangePostBlockChainProcessor extends LocalPostBlockChainProcesso
 
     @Override
     public void newLimitOrderCommand(NewLimitOrderCommand newLimitOrderCommand) {
-        exchangeMarket.processOrder(newLimitOrderCommand);
+        long accountAddress = newLimitOrderCommand.sourceAddress();
+        if (newLimitOrderCommand.getAction() == BUY) {
+            Account quoteAccount = exchangeAccounts.getQuoteAccount(accountAddress, true);
+            if (quoteAccount.lockMoney(newLimitOrderCommand.getQuantity() * newLimitOrderCommand.getMaxPrice() * lotSize)) {
+                exchangeMarket.executeOrder(newLimitOrderCommand);
+            } else {
+                finalRouter.commandFailedEvent(
+                        new CommandFailedEvent(address, timeProvider.currentTimeMicros(), newLimitOrderCommand, "Not enough funds"));
+            }
+        } else {
+            Account baseAccount = exchangeAccounts.getBaseAccount(accountAddress, true);
+            if (baseAccount.lockMoney(newLimitOrderCommand.getQuantity() * lotSize)) {
+                exchangeMarket.executeOrder(newLimitOrderCommand);
+            } else {
+                finalRouter.commandFailedEvent(
+                        new CommandFailedEvent(address, timeProvider.currentTimeMicros(), newLimitOrderCommand, "Not enough funds"));
+            }
+        }
     }
 
+    private void onTrade(Order aggressor, Order initiator, long qty) {
+        unlockMoney(aggressor, qty);
+        unlockMoney(initiator, qty);
+        ExecutionReport executionReport = new ExecutionReport(currencyPair, aggressor.getSide(), qty, initiator.getPrice(),
+                aggressor.getOwnerAddress(), initiator.getOwnerAddress());
+        finalRouter.executionReportEvent(new ExecutionReportEvent(address, timeProvider.currentTimeMicros(), executionReport));
+    }
 
     @Override
     public void cancelOrderCommand(CancelOrderCommand cancelOrderCommand) {
-        exchangeMarket.cancelOrder(cancelOrderCommand.sourceAddress(), cancelOrderCommand.getOrderTime(), this::publishUserCancel);
+        exchangeMarket.cancelOrder(cancelOrderCommand.sourceAddress(), cancelOrderCommand.getOrderTime());
     }
 
-    private void publishUserCancel(Order order) {
+
+    private void onCancel(Order order, OrderClosedEvent.REASON reason) {
+        unlockMoney(order, order.getQuantityLeft());
         finalRouter.orderClosedEvent(new OrderClosedEvent(address, timeProvider.currentTimeMicros(), order.getOwnerAddress(),
                 order.getOwnerOrderTime(), OrderClosedEvent.REASON.USER_REQUEST));
     }
 
-    private void publishExpired(Order order) {
-        finalRouter.orderClosedEvent(new OrderClosedEvent(address, timeProvider.currentTimeMicros(), order.getOwnerAddress(),
-                order.getOwnerOrderTime(), OrderClosedEvent.REASON.TIME_OUT));
+
+    private void unlockMoney(Order order, long qty) {
+        if (order.getSide() == BUY) {
+            Account quoteAccount = exchangeAccounts.getQuoteAccount(order.getOwnerAddress(), false);
+            assert quoteAccount != null;
+            quoteAccount.unlockMoney(qty * order.getPrice() * lotSize);
+        } else {
+            Account baseAccount = exchangeAccounts.getBaseAccount(order.getOwnerAddress(), false);
+            assert baseAccount != null;
+            baseAccount.unlockMoney(qty * lotSize);
+        }
     }
+
 
     @Override
     public void replyStarted() {
@@ -118,7 +158,7 @@ public class ExchangePostBlockChainProcessor extends LocalPostBlockChainProcesso
 
     @Override
     public void replyFinished() {
-        exchangeMarket.removeExpired(this::publishExpired);
+        exchangeMarket.removeExpired();
     }
 
 }

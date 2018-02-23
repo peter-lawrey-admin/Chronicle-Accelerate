@@ -2,6 +2,7 @@ package cash.xcl.server.exch;
 
 import java.util.Comparator;
 
+import cash.xcl.api.exch.Side;
 import net.openhft.chronicle.wire.AbstractMarshallable;
 
 class Order extends AbstractMarshallable {
@@ -12,10 +13,12 @@ class Order extends AbstractMarshallable {
     private final long expires;
     private final long quantity;
     private final double price;
+    private final Side side;
     private long filled = 0;
 
-    Order(long orderId, long quantity, double price, long expires, long ownerAddress, long ownerOrderTime) {
+    Order(long orderId, Side side, long quantity, double price, long expires, long ownerAddress, long ownerOrderTime) {
         this.orderId = orderId;
+        this.side = side;
         this.quantity = quantity;
         this.price = price;
         this.expires = expires;
@@ -55,6 +58,10 @@ class Order extends AbstractMarshallable {
 
     boolean matches(long address, long orderTime) {
         return (ownerAddress == address) && (ownerOrderTime == orderTime);
+    }
+
+    Side getSide() {
+        return side;
     }
 
     static Comparator<Order> getBuyComparator() {
