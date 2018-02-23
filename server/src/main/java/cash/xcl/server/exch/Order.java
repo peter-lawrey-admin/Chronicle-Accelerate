@@ -31,7 +31,12 @@ class Order extends AbstractMarshallable {
         return quantity - filled;
     }
 
+    long getQuantity() {
+        return quantity;
+    }
+
     long fill(long fillQty) {
+        assert fillQty < getQuantityLeft();
         filled += fillQty;
         return getQuantityLeft();
     }
@@ -65,11 +70,11 @@ class Order extends AbstractMarshallable {
     }
 
     static Comparator<Order> getBuyComparator() {
-        return new PriceComparator().thenComparing((o1, o2) -> Double.compare(o1.orderId, o2.orderId));
+        return new PriceComparator().reversed().thenComparing((o1, o2) -> Double.compare(o1.orderId, o2.orderId));
     }
 
     static Comparator<Order> getSellComparator() {
-        return new PriceComparator().reversed().thenComparing((o1, o2) -> Double.compare(o1.orderId, o2.orderId));
+        return new PriceComparator().thenComparing((o1, o2) -> Double.compare(o1.orderId, o2.orderId));
     }
 
     private static class PriceComparator implements Comparator<Order> {

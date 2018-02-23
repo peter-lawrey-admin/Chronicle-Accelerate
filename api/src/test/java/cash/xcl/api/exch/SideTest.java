@@ -41,40 +41,40 @@ public class SideTest {
                 PriceCompareResult result = translate(expectedResult[i], side);
                 assertTrue(side.compare(newPrices[i], refPrices[i], DELTA) == result);
                 switch (result) {
-                case BETTER:
-                    assertTrue(side.isBetter(newPrices[i], refPrices[i], DELTA));
-                    assertTrue(side.isBetterOrSame(newPrices[i], refPrices[i], DELTA));
-                    assertEquals(side.getBetter(newPrices[i], refPrices[i]), newPrices[i], DELTA);
-                    assertEquals(side.getBetter(newPrices[i], refPrices[i]), side.other().getWorse(refPrices[i], newPrices[i]), DELTA);
-                    assertFalse(side.isWorse(newPrices[i], refPrices[i], DELTA));
-                    assertFalse(side.isWorseOrSame(newPrices[i], refPrices[i], DELTA));
-                    assertEquals(side.getWorse(newPrices[i], refPrices[i]), refPrices[i], DELTA);
-                    assertFalse(side.isSame(newPrices[i], refPrices[i], DELTA));
-                    assertTrue(abs(newPrices[i] - refPrices[i]) > DELTA);
-                    break;
-                case SAME:
-                    assertFalse(side.isBetter(newPrices[i], refPrices[i], DELTA));
-                    assertTrue(side.isBetterOrSame(newPrices[i], refPrices[i], DELTA));
-                    assertEquals(side.getBetter(newPrices[i], refPrices[i]), refPrices[i], DELTA);
-                    assertFalse(side.isWorse(newPrices[i], refPrices[i], DELTA));
-                    assertTrue(side.isWorseOrSame(newPrices[i], refPrices[i], DELTA));
-                    assertEquals(side.getWorse(newPrices[i], refPrices[i]), newPrices[i], DELTA);
-                    assertTrue(side.isSame(newPrices[i], refPrices[i], DELTA));
-                    assertTrue(abs(newPrices[i] - refPrices[i]) <= DELTA);
-                    break;
-                case WORSE:
-                    assertFalse(side.isBetter(newPrices[i], refPrices[i], DELTA));
-                    assertFalse(side.isBetterOrSame(newPrices[i], refPrices[i], DELTA));
-                    assertEquals(side.getBetter(newPrices[i], refPrices[i]), refPrices[i], DELTA);
-                    assertEquals(side.getBetter(newPrices[i], refPrices[i]), side.other().getWorse(refPrices[i], newPrices[i]), DELTA);
-                    assertTrue(side.isWorse(newPrices[i], refPrices[i], DELTA));
-                    assertTrue(side.isWorseOrSame(newPrices[i], refPrices[i], DELTA));
-                    assertEquals(side.getWorse(newPrices[i], refPrices[i]), newPrices[i], DELTA);
-                    assertFalse(side.isSame(newPrices[i], refPrices[i], DELTA));
-                    assertTrue(abs(newPrices[i] - refPrices[i]) > DELTA);
-                    break;
-                default:
-                    throw new AssertionError();
+                    case BETTER:
+                        assertTrue(side.isBetter(newPrices[i], refPrices[i], DELTA));
+                        assertTrue(side.isBetterOrSame(newPrices[i], refPrices[i], DELTA));
+                        assertEquals(side.getBetter(newPrices[i], refPrices[i]), newPrices[i], DELTA);
+                        assertEquals(side.getBetter(newPrices[i], refPrices[i]), side.other().getWorse(refPrices[i], newPrices[i]), DELTA);
+                        assertFalse(side.isWorse(newPrices[i], refPrices[i], DELTA));
+                        assertFalse(side.isWorseOrSame(newPrices[i], refPrices[i], DELTA));
+                        assertEquals(side.getWorse(newPrices[i], refPrices[i]), refPrices[i], DELTA);
+                        assertFalse(side.isSame(newPrices[i], refPrices[i], DELTA));
+                        assertTrue(abs(newPrices[i] - refPrices[i]) > DELTA);
+                        break;
+                    case SAME:
+                        assertFalse(side.isBetter(newPrices[i], refPrices[i], DELTA));
+                        assertTrue(side.isBetterOrSame(newPrices[i], refPrices[i], DELTA));
+                        assertEquals(side.getBetter(newPrices[i], refPrices[i]), refPrices[i], DELTA);
+                        assertFalse(side.isWorse(newPrices[i], refPrices[i], DELTA));
+                        assertTrue(side.isWorseOrSame(newPrices[i], refPrices[i], DELTA));
+                        assertEquals(side.getWorse(newPrices[i], refPrices[i]), newPrices[i], DELTA);
+                        assertTrue(side.isSame(newPrices[i], refPrices[i], DELTA));
+                        assertTrue(abs(newPrices[i] - refPrices[i]) <= DELTA);
+                        break;
+                    case WORSE:
+                        assertFalse(side.isBetter(newPrices[i], refPrices[i], DELTA));
+                        assertFalse(side.isBetterOrSame(newPrices[i], refPrices[i], DELTA));
+                        assertEquals(side.getBetter(newPrices[i], refPrices[i]), refPrices[i], DELTA);
+                        assertEquals(side.getBetter(newPrices[i], refPrices[i]), side.other().getWorse(refPrices[i], newPrices[i]), DELTA);
+                        assertTrue(side.isWorse(newPrices[i], refPrices[i], DELTA));
+                        assertTrue(side.isWorseOrSame(newPrices[i], refPrices[i], DELTA));
+                        assertEquals(side.getWorse(newPrices[i], refPrices[i]), newPrices[i], DELTA);
+                        assertFalse(side.isSame(newPrices[i], refPrices[i], DELTA));
+                        assertTrue(abs(newPrices[i] - refPrices[i]) > DELTA);
+                        break;
+                    default:
+                        throw new AssertionError();
 
                 }
             }
@@ -260,4 +260,16 @@ public class SideTest {
         assertTrue(Side.ticksBetween(100, 100, 0.05) == 0);
     }
 
+    @Test
+    public void checkIds() {
+        assertEquals(Side.BUY, Side.fromId(0));
+        assertEquals(0, Side.BUY.ordinal());
+        assertEquals(Side.SELL, Side.fromId(1));
+        assertEquals(1, Side.SELL.ordinal());
+    }
+
+    @Test(expected = ArrayIndexOutOfBoundsException.class)
+    public void wrongIds() {
+        Side.fromId(10);
+    }
 }

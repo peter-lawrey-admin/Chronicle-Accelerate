@@ -2,6 +2,8 @@ package cash.xcl.server.exch;
 
 import static cash.xcl.api.dto.Validators.positive;
 import static cash.xcl.api.dto.Validators.validNumber;
+import static cash.xcl.api.exch.Side.BUY;
+import static cash.xcl.api.exch.Side.SELL;
 
 import java.io.Closeable;
 import java.util.Iterator;
@@ -83,12 +85,17 @@ class ExchangeMarket implements Closeable {
                     if (newOrder.getQuantityLeft() == 0) {
                         break;
                     }
+                } else {
+                    break;
                 }
             }
         }
-        if ((newLimitOrderCommand.getTimeToLive() > 0) && (newOrder.getQuantityLeft() > 0)) {
-            getMarket(orderSide).add(newOrder);
-            expirationOrder.add(newOrder);
+        if ((newOrder.getQuantityLeft() > 0)) {
+            assert newOrder.getExpirationTime() >= currentTime;
+            if ((newOrder.getExpirationTime() > currentTime)) {
+                getMarket(orderSide).add(newOrder);
+                expirationOrder.add(newOrder);
+            }
         }
     }
 
@@ -115,9 +122,12 @@ class ExchangeMarket implements Closeable {
     }
 
     void cancelOrder(long sourceAddress, long orderTime) {
-        Order order = Side.<Order>applyOnce((side) -> findOrder(side, sourceAddress, orderTime));
-        if (order != null) {
-            closedListener.onClosed(order, REASON.USER_REQUEST);
+        Order toCancel = findOrder(BUY, sourceAddress, orderTime);
+        if (toCancel == null) {
+            toCancel = findOrder(SELL, sourceAddress, orderTime);
+        }
+        if (toCancel != null) {
+            closedListener.onClosed(toCancel, REASON.USER_REQUEST);
         }
     }
 
