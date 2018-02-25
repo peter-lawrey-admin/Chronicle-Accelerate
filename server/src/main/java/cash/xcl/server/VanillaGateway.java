@@ -107,7 +107,8 @@ public class VanillaGateway extends AbstractAllMessages implements Gateway {
     public void createNewAddressEvent(CreateNewAddressEvent createNewAddressEvent) {
         // received as a weekly event
         checkTrusted(createNewAddressEvent);
-        publicKeyRegistery.register(createNewAddressEvent.address(), createNewAddressEvent.publicKey());
+        publicKeyRegistery.register(createNewAddressEvent.address(),
+                createNewAddressEvent.publicKey());
     }
 
     private void checkTrusted(SignedMessage message) {
@@ -117,6 +118,11 @@ public class VanillaGateway extends AbstractAllMessages implements Gateway {
     @Override
     public void subscriptionQuery(SubscriptionQuery subscriptionQuery) {
         // handled by the caller
+    }
+
+    @Override
+    public void transferValueCommand(TransferValueCommand transferValueCommand) {
+        super.transferValueCommand(transferValueCommand);
     }
 
     @Override

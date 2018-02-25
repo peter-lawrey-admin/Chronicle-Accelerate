@@ -19,6 +19,11 @@ public class AbstractAllMessages implements AllMessagesServer {
     }
 
     @Override
+    public void transferValueCommand(TransferValueCommand transferValueCommand) {
+        throw new UnsupportedOperationException(getClass().getName());
+    }
+
+    @Override
     public AllMessages to(long addressOrRegion) {
         if (addressOrRegion == address)
             return this;
@@ -92,11 +97,6 @@ public class AbstractAllMessages implements AllMessagesServer {
 
     @Override
     public void createNewAddressCommand(CreateNewAddressCommand createNewAddressCommand) {
-        throw new UnsupportedOperationException(getClass().getName());
-    }
-
-    @Override
-    public void transferValueCommand(TransferValueCommand transferValueCommand) {
         throw new UnsupportedOperationException(getClass().getName());
     }
 
