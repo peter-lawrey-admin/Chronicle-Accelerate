@@ -1,9 +1,11 @@
 package cash.xcl.api.dto;
 
+import cash.xcl.api.dto.MessageTypes;
+import cash.xcl.api.dto.SignedMessage;
 import net.openhft.chronicle.bytes.BytesIn;
 import net.openhft.chronicle.bytes.BytesOut;
 
-// FIXME needs reviewing/completing
+
 public class ExecutionReportEvent extends SignedMessage {
     private long clientAddress;
     private String clientOrderId;

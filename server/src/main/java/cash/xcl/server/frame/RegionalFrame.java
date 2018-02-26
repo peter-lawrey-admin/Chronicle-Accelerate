@@ -148,6 +148,11 @@ public class RegionalFrame implements AllMessages {
     }
 
     @Override
+    public void orderClosedEvent(OrderClosedEvent orderClosedEvent) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public void blockSubscriptionQuery(BlockSubscriptionQuery blockSubscriptionQuery) {
         throw new UnsupportedOperationException();
     }
@@ -223,4 +228,7 @@ public class RegionalFrame implements AllMessages {
         mainChain.close();
         localChain.close();
     }
+
+
+
 }

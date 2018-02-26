@@ -1,5 +1,9 @@
 package cash.xcl.api.dto;
 
+import java.nio.ByteBuffer;
+
+import org.jetbrains.annotations.NotNull;
+
 import net.openhft.chronicle.bytes.Bytes;
 import net.openhft.chronicle.bytes.BytesIn;
 import net.openhft.chronicle.bytes.BytesOut;
@@ -9,9 +13,6 @@ import net.openhft.chronicle.core.pool.ClassAliasPool;
 import net.openhft.chronicle.salt.Ed25519;
 import net.openhft.chronicle.wire.AbstractBytesMarshallable;
 import net.openhft.chronicle.wire.Marshallable;
-import org.jetbrains.annotations.NotNull;
-
-import java.nio.ByteBuffer;
 
 public abstract class SignedMessage extends AbstractBytesMarshallable {
     static {
@@ -79,9 +80,9 @@ public abstract class SignedMessage extends AbstractBytesMarshallable {
         sourceAddress = bytes.readLong();
         eventTime = bytes.readLong();
         int protocol = bytes.readUnsignedByte();
-        assert bytes.lenient() || protocol == 1;
+        assert bytes.lenient() || (protocol == 1);
         int messageType = bytes.readUnsignedByte();
-        assert bytes.lenient() || messageType == messageType();
+        assert bytes.lenient() || (messageType == messageType());
         int padding = bytes.readUnsignedShort();
         readMarshallable2(bytes);
     }
@@ -95,8 +96,9 @@ public abstract class SignedMessage extends AbstractBytesMarshallable {
             return;
         }
         // todo should never need to write without a signature in production.
-        for (int i = 0; i < Ed25519.SIGNATURE_LENGTH; i += 8)
+        for (int i = 0; i < Ed25519.SIGNATURE_LENGTH; i += 8) {
             bytes.writeLong(0L);
+        }
         bytes.writeLong(sourceAddress);
         bytes.writeLong(eventTime);
         bytes.writeUnsignedByte(1);
@@ -106,10 +108,11 @@ public abstract class SignedMessage extends AbstractBytesMarshallable {
     }
 
     public void sign(Bytes tempBytes, long sourceAddress, Bytes secretKey) {
-        if (this.sourceAddress == 0)
+        if (this.sourceAddress == 0) {
             this.sourceAddress = sourceAddress;
-        else if (this.sourceAddress != sourceAddress)
+        } else if (this.sourceAddress != sourceAddress) {
             throw new IllegalArgumentException("Cannot change the source address");
+        }
         tempBytes.clear();
         tempBytes.writeLong(sourceAddress);
         tempBytes.writeLong(eventTime);
@@ -117,10 +120,11 @@ public abstract class SignedMessage extends AbstractBytesMarshallable {
         tempBytes.writeUnsignedByte(messageType());
         tempBytes.writeUnsignedShort(0); // padding.
         writeMarshallable2(tempBytes);
-        if (sigAndMsg == null)
+        if (sigAndMsg == null) {
             sigAndMsg = Bytes.elasticByteBuffer();
-        else
+        } else {
             sigAndMsg.clear();
+        }
         Ed25519.sign(sigAndMsg, tempBytes, secretKey);
     }
 
@@ -128,11 +132,13 @@ public abstract class SignedMessage extends AbstractBytesMarshallable {
     public <T extends Marshallable> T copyTo(@NotNull T t) {
         SignedMessage sm = (SignedMessage) t;
         if (sigAndMsg == null) {
-            if (sm.sigAndMsg != null)
+            if (sm.sigAndMsg != null) {
                 sm.sigAndMsg.clear();
+            }
         } else {
-            if (sm.sigAndMsg == null)
+            if (sm.sigAndMsg == null) {
                 sm.sigAndMsg = Bytes.elasticByteBuffer((int) sigAndMsg.readRemaining());
+            }
             sm.sigAndMsg.clear().write(sigAndMsg);
         }
         sm.sourceAddress(sourceAddress);
@@ -152,7 +158,7 @@ public abstract class SignedMessage extends AbstractBytesMarshallable {
     }
 
     public boolean hasSignature() {
-        return sigAndMsg != null && sigAndMsg.readRemaining() >= Ed25519.SIGNATURE_LENGTH;
+        return (sigAndMsg != null) && (sigAndMsg.readRemaining() >= Ed25519.SIGNATURE_LENGTH);
     }
 
     public Bytes<ByteBuffer> sigAndMsg() {

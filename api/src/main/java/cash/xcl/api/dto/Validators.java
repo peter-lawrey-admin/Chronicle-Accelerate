@@ -82,4 +82,11 @@ public enum Validators {
         }
         return value;
     }
+
+    public static long positive(long value) {
+        if (value < 0) {
+            throw new IllegalArgumentException();
+        }
+        return value;
+    }
 }

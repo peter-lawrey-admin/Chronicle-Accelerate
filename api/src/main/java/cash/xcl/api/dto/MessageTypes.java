@@ -75,4 +75,5 @@ public interface MessageTypes {
     int WITHDRAW_VALUE_EVENT = 0x71;
 
     int EXECUTION_REPORT = 0x72;
+    int ORDER_CLOSED_EVENT = 0x73;
 }

@@ -183,6 +183,11 @@ public abstract class WritingAllMessages implements AllMessages {
     }
 
     @Override
+    public void orderClosedEvent(OrderClosedEvent orderClosedEvent) {
+        write(orderClosedEvent);
+    }
+
+    @Override
     public void newOrderCommand(NewOrderCommand newOrderCommand) {
         write(newOrderCommand);
     }

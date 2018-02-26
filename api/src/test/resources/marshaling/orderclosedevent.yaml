@@ -1,0 +1,21 @@
+Valid Order Closed Event: {
+ input: !cash.xcl.api.exch.OrderClosedEvent {
+    sourceAddress: 12345,
+    eventTime: 1234567,
+    orderSourceAddress: 2121,
+    orderEventTime: 123455,
+    reason: TIME_OUT
+  },
+  output: !!null ""
+}
+
+No reason Order Closed Event: {
+ input: !cash.xcl.api.exch.OrderClosedEvent {
+    sourceAddress: 12345,
+    eventTime: 1234567,
+    orderSourceAddress: 2121,
+    orderEventTime: 123455,
+    reason: !!null ""
+  },
+  output: !type java.lang.NullPointerException
+}

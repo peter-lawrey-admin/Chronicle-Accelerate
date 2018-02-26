@@ -1,0 +1,27 @@
+Valid ExecutionReportEvent: {
+  input: !cash.xcl.api.exch.ExecutionReportEvent {
+    sourceAddress: 123456,
+    eventTime: 123456789,
+    executionReport: {
+      pair: { 
+              base: XCL, 
+              quote: USD 
+            },
+      action: BUY,
+      quantity: 100,
+      price: 12.5,
+      initiator: 321,
+      aggressor: 123
+    }
+  },
+  output: !!null ""
+}
+
+Null ExecutionReportEvent: {
+  input: !cash.xcl.api.exch.ExecutionReportEvent {
+    sourceAddress: 123456,
+    eventTime: 123456789,
+    executionReport: !!null ""    
+  },
+  output: !type java.lang.NullPointerException
+}

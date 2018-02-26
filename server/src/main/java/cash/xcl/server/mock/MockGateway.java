@@ -91,12 +91,12 @@ public class MockGateway implements ClientOut {
 
         @Override
         public void clusterTransferStep2Command(ClusterTransferStep2Command clusterTransferStep2Command) {
-//            clientIn.clusterTransferStep2Command(clusterTransferStep2Command);
+            //            clientIn.clusterTransferStep2Command(clusterTransferStep2Command);
         }
 
         @Override
         public void clusterTransferStep3Command(ClusterTransferStep3Command clusterTransferStep3Command) {
-//            clientIn.clusterTransferStep3Command(clusterTransferStep3Command);
+            //            clientIn.clusterTransferStep3Command(clusterTransferStep3Command);
         }
 
         @Override

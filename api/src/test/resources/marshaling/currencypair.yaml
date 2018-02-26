@@ -1,0 +1,48 @@
+Valid Currrency Pair: {
+ input: !cash.xcl.api.exch.CurrencyPair {
+    base: XCL,
+    quote: USD
+  },
+  output: !!null ""
+}
+
+Same Quote and Base Currrency Pair: {
+ input: !cash.xcl.api.exch.CurrencyPair {
+    base: USD,
+    quote: USD
+  },
+ output: !type java.lang.IllegalArgumentException
+}
+
+Null Base Currrency Pair: {
+ input: !cash.xcl.api.exch.CurrencyPair {
+    base: !!null "",
+    quote: USD
+  },
+ output: !type java.lang.NullPointerException
+}
+
+Null Quote Currrency Pair: {
+ input: !cash.xcl.api.exch.CurrencyPair {
+    base: USD,
+    quote: !!null ""
+  },
+ output: !type java.lang.NullPointerException
+}
+
+Empty Base Currrency Pair: {
+ input: !cash.xcl.api.exch.CurrencyPair {
+    base: " ",
+    quote: USD
+  },
+ output: !type java.lang.IllegalArgumentException
+}
+
+Empty Quote Currrency Pair: {
+ input: !cash.xcl.api.exch.CurrencyPair {
+    base: USD,
+    quote: "   "
+  },
+ output: !type java.lang.IllegalArgumentException
+}
+
