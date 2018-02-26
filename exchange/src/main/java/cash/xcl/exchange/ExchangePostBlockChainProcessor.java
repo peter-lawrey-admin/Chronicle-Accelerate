@@ -2,21 +2,30 @@ package cash.xcl.exchange;
 
 import cash.xcl.api.AllMessages;
 import cash.xcl.api.dto.CancelOrderCommand;
+import cash.xcl.api.dto.ExchangeRateEvent;
 import cash.xcl.api.dto.ExecutionReportEvent;
 import cash.xcl.api.dto.NewOrderCommand;
 import cash.xcl.api.util.AbstractAllMessages;
 import cash.xcl.exchange.model.Order;
 import cash.xcl.exchange.model.OrderBook;
+import cash.xcl.exchange.model.PriceAverager;
 import cash.xcl.server.LocalPostBlockChainProcessor;
 
 public class ExchangePostBlockChainProcessor extends LocalPostBlockChainProcessor {
     private final AllMessages reportListener;
-    private OrderBook buyOrderBook;
-    private OrderBook sellOrderBook;
+    private final long regionAddress;
+    private final String symbol1symbol2;
+    private final OrderBook buyOrderBook;
+    private final OrderBook sellOrderBook;
+    private final PriceAverager midAverager = new PriceAverager();
+    private final PriceAverager spreadAverager = new PriceAverager();
+
     private long orderId = 0;
 
-    public ExchangePostBlockChainProcessor(long address, String symbol1symbol2) {
+    public ExchangePostBlockChainProcessor(long address, long regionAddress, String symbol1symbol2) {
         super(address);
+        this.regionAddress = regionAddress;
+        this.symbol1symbol2 = symbol1symbol2;
         reportListener = new EPBCPResponseMessages(address);
         buyOrderBook = new OrderBook(true, symbol1symbol2);
         sellOrderBook = new OrderBook(false, symbol1symbol2);
@@ -87,10 +96,11 @@ public class ExchangePostBlockChainProcessor extends LocalPostBlockChainProcesso
                     buyOrderBook.advanceNext();
                 }
             }
-            double midPrice, matchedQuantity;
+            double midPrice, midSpread = Double.NaN, matchedQuantity;
             if (buyQuantity > 0) {
                 if (sellQuantity > 0) {
                     midPrice = (buyPrice + sellPrice) / 2;
+                    midSpread = Math.abs(sellPrice - buyPrice) / 2;
                     matchedQuantity = Math.min(buyQuantity, sellQuantity);
                 } else {
                     midPrice = buyPrice;
@@ -105,17 +115,27 @@ public class ExchangePostBlockChainProcessor extends LocalPostBlockChainProcesso
                     return;
                 }
             }
-            buyOrderBook.matched(reportListener, midPrice, matchedQuantity);
-            sellOrderBook.matched(reportListener, midPrice, matchedQuantity);
+            if (matchedQuantity > 0) {
+                buyOrderBook.matched(reportListener, midPrice, matchedQuantity);
+                sellOrderBook.matched(reportListener, midPrice, matchedQuantity);
+                midAverager.sample(midPrice, matchedQuantity);
+                if (midSpread > 0)
+                    spreadAverager.sample(midSpread, matchedQuantity);
+
+                ExchangeRateEvent ere = new ExchangeRateEvent(
+                        address,
+                        timeProvider.currentTimeMicros(),
+                        symbol1symbol2,
+                        midAverager.ewmaPrice(),
+                        spreadAverager.ewmaPrice()
+                );
+                to(regionAddress).exchangeRateEvent(ere);
+            }
 
         } finally {
             buyOrderBook.cancelAllRestlessOrders(reportListener);
             sellOrderBook.cancelAllRestlessOrders(reportListener);
         }
-    }
-
-    private void cancelAllRestlessOrders() {
-
     }
 
     @Override

@@ -11,11 +11,13 @@ public class ExchangeRateResponse extends ExchangeRateEvent {
     // TODO: use this instead of inheritance
     //private ExchangeRateEvent exchangeRateEvent;
 
-    public ExchangeRateResponse(long sourceAddress, long eventTime,
-                                String symbol1, String symbol2,
-                                double buyPrice, double sellPrice,
+    public ExchangeRateResponse(long sourceAddress,
+                                long eventTime,
+                                String symbol1symbol2,
+                                double buyPrice,
+                                double sellPrice,
                                 ExchangeRateQuery exchangeRateQuery) {
-        super(sourceAddress, eventTime, symbol1, symbol2, buyPrice, sellPrice);
+        super(sourceAddress, eventTime, symbol1symbol2, buyPrice, sellPrice);
         this.exchangeRateQuery = exchangeRateQuery;
     }
 

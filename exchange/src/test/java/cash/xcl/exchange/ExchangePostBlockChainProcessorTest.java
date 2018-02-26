@@ -1,6 +1,7 @@
 package cash.xcl.exchange;
 
 import cash.xcl.api.AllMessagesServer;
+import cash.xcl.api.util.XCLBase32;
 import net.openhft.chronicle.core.io.IORuntimeException;
 import net.openhft.chronicle.wire.TextMethodTester;
 import org.junit.Test;
@@ -13,7 +14,10 @@ public class ExchangePostBlockChainProcessorTest {
     public static void test(String basename) {
         TextMethodTester<AllMessagesServer> tester = new TextMethodTester<>(basename + "/in.yaml",
                 (out) -> {
-                    ExchangePostBlockChainProcessor usdxch = new ExchangePostBlockChainProcessor(321321321321L, "USDXCH");
+                    ExchangePostBlockChainProcessor usdxch = new ExchangePostBlockChainProcessor(
+                            321321321321L,
+                            XCLBase32.decode("2-USD"),
+                            "USDXCH");
                     usdxch.allMessagesLookup(out);
                     return usdxch;
                 },
