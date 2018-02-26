@@ -6,14 +6,14 @@ import cash.xcl.api.dto.ClustersStatusResponse;
 import cash.xcl.api.dto.CommandFailedEvent;
 import cash.xcl.api.dto.CreateNewAddressEvent;
 import cash.xcl.api.dto.CurrentBalanceResponse;
-import cash.xcl.api.dto.DepositValueEvent;
 import cash.xcl.api.dto.ExchangeRateResponse;
 import cash.xcl.api.dto.QueryFailedResponse;
 import cash.xcl.api.dto.SubscriptionSuccessResponse;
 import cash.xcl.api.dto.TransferValueEvent;
-import cash.xcl.api.dto.WithdrawValueEvent;
+import cash.xcl.api.exch.DepositValueEvent;
 import cash.xcl.api.exch.ExecutionReportEvent;
 import cash.xcl.api.exch.OrderClosedEvent;
+import cash.xcl.api.exch.WithdrawValueEvent;
 
 /**
  * Any responses from the Server to the client needed, in addition to ServerOut.

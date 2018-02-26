@@ -1,0 +1,13 @@
+Valid Withdraw Value Command: {
+ input: !cash.xcl.api.exch.WithdrawValueCommand {
+    sourceAddress: 1,
+    eventTime: 45,
+    toAddress: 1,
+    amount: 100.0,
+    currency: USD,
+    reference: Cash,
+    description: Checking,
+    destination: Bank
+  },
+  output: !!null ""
+}

@@ -1,8 +1,6 @@
 package cash.xcl.api.exch;
 
 import cash.xcl.api.dto.CurrentBalanceQuery;
-import cash.xcl.api.dto.DepositValueCommand;
-import cash.xcl.api.dto.WithdrawValueCommand;
 
 
 public interface ExchangeCommands {

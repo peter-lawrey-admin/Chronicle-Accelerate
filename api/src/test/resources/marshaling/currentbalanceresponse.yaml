@@ -1,0 +1,13 @@
+Valid Current Balance Response: {
+ input: !cash.xcl.api.dto.CurrentBalanceResponse {
+   sourceAddress: 12345,
+   eventTime: 30,
+   address: 1,
+    balances: {
+      USD: 200.0,
+      EUR: 300.0,
+      XCL: 500.0
+    }
+  },
+  output: !!null ""
+}

@@ -1,0 +1,13 @@
+Valid Deposit Value Command: {
+ input: !cash.xcl.api.exch.DepositValueCommand {
+    sourceAddress: 12345,
+    eventTime: 0,
+    toAddress: 1,
+    amount: 100.0,
+    currency: USD,
+    reference: None,
+    description: Good for test  
+  },
+  output: !!null ""
+}
+

@@ -18,13 +18,18 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameter;
 import org.junit.runners.Parameterized.Parameters;
 
+import cash.xcl.api.dto.CurrentBalanceQuery;
+import cash.xcl.api.dto.CurrentBalanceResponse;
 import cash.xcl.api.exch.CancelOrderCommand;
 import cash.xcl.api.exch.CurrencyPair;
+import cash.xcl.api.exch.DepositValueCommand;
+import cash.xcl.api.exch.DepositValueEvent;
 import cash.xcl.api.exch.ExecutionReport;
 import cash.xcl.api.exch.ExecutionReportEvent;
 import cash.xcl.api.exch.NewLimitOrderCommand;
 import cash.xcl.api.exch.OrderClosedEvent;
-import cash.xcl.api.exch.Side;
+import cash.xcl.api.exch.WithdrawValueCommand;
+import cash.xcl.api.exch.WithdrawValueEvent;
 import net.openhft.chronicle.bytes.Bytes;
 import net.openhft.chronicle.bytes.BytesUtil;
 import net.openhft.chronicle.core.util.ObjectUtils;
@@ -50,9 +55,12 @@ public class MarshalingTest {
     @Parameters(name = "{0}")
     public static Collection<Object[]> data() throws IOException {
         String[] files = {"marshaling/currencypair.yaml", "marshaling/cancelordercommand.yaml", "marshaling/executionreport.yaml",
-                "marshaling/executionreportevent.yaml", "marshaling/orderclosedevent.yaml", "marshaling/newlimitordercommand.yaml"};
+                "marshaling/executionreportevent.yaml", "marshaling/orderclosedevent.yaml", "marshaling/newlimitordercommand.yaml",
+                "marshaling/depositvaluecommand.yaml", "marshaling/depositvalueevent.yaml", "marshaling/withdrawvaluecommand.yaml",
+                "marshaling/withdrawvalueevent.yaml", "marshaling/currentbalancequery.yaml", "marshaling/currentbalanceresponse.yaml" };
         Class<?>[] objClass = {CurrencyPair.class, CancelOrderCommand.class, ExecutionReport.class, ExecutionReportEvent.class,
-                OrderClosedEvent.class, NewLimitOrderCommand.class};
+                OrderClosedEvent.class, NewLimitOrderCommand.class, DepositValueCommand.class, DepositValueEvent.class,
+                WithdrawValueCommand.class, WithdrawValueEvent.class, CurrentBalanceQuery.class, CurrentBalanceResponse.class };
         ArrayList<Object[]> params = new ArrayList<>();
         for (int i = 0; i < files.length; i++) {
             TextWire textWire = new TextWire(BytesUtil.readFile(files[i]));
@@ -118,10 +126,5 @@ public class MarshalingTest {
         bytes.release();
     }
 
-    public static void main(String[] args) {
-        NewLimitOrderCommand oce = new NewLimitOrderCommand(123456L, 1234567L, Side.SELL, 1234, 123.0, new CurrencyPair("XCL", "USD"),
-                2323);
-        System.out.println(oce);
 
-    }
 }

@@ -27,7 +27,7 @@ public class CurrentBalanceQuery extends SignedMessage {
 
     @Override
     protected void readMarshallable2(BytesIn<?> bytes) {
-
+        this.address = bytes.readLong();
     }
 
     @Override
@@ -37,6 +37,6 @@ public class CurrentBalanceQuery extends SignedMessage {
 
     @Override
     protected void writeMarshallable2(BytesOut<?> bytes) {
-
+        bytes.writeLong(address);
     }
 }

@@ -16,8 +16,6 @@ import cash.xcl.api.dto.CreateNewAddressCommand;
 import cash.xcl.api.dto.CreateNewAddressEvent;
 import cash.xcl.api.dto.CurrentBalanceQuery;
 import cash.xcl.api.dto.CurrentBalanceResponse;
-import cash.xcl.api.dto.DepositValueCommand;
-import cash.xcl.api.dto.DepositValueEvent;
 import cash.xcl.api.dto.EndOfRoundBlockEvent;
 import cash.xcl.api.dto.ExchangeRateEvent;
 import cash.xcl.api.dto.ExchangeRateQuery;
@@ -34,14 +32,16 @@ import cash.xcl.api.dto.TransactionBlockGossipEvent;
 import cash.xcl.api.dto.TransactionBlockVoteEvent;
 import cash.xcl.api.dto.TransferValueCommand;
 import cash.xcl.api.dto.TransferValueEvent;
-import cash.xcl.api.dto.WithdrawValueCommand;
-import cash.xcl.api.dto.WithdrawValueEvent;
 import cash.xcl.api.exch.CancelOrderCommand;
+import cash.xcl.api.exch.DepositValueCommand;
+import cash.xcl.api.exch.DepositValueEvent;
 import cash.xcl.api.exch.ExecutionReportEvent;
 import cash.xcl.api.exch.NewLimitOrderCommand;
 import cash.xcl.api.exch.OrderClosedEvent;
 import cash.xcl.api.exch.TransferFromExchangeCommand;
 import cash.xcl.api.exch.TransferToExchangeCommand;
+import cash.xcl.api.exch.WithdrawValueCommand;
+import cash.xcl.api.exch.WithdrawValueEvent;
 
 public abstract class WritingAllMessages implements AllMessages {
     @Override

@@ -1,0 +1,9 @@
+Valid Current Balance Query: {
+ input: !cash.xcl.api.dto.CurrentBalanceQuery {
+    sourceAddress: 7273,
+    eventTime: 25,
+    address: 1
+  },
+  output: !!null ""
+}
+

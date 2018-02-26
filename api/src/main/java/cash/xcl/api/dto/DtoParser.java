@@ -45,11 +45,15 @@ import java.util.function.BiConsumer;
 
 import cash.xcl.api.AllMessages;
 import cash.xcl.api.exch.CancelOrderCommand;
+import cash.xcl.api.exch.DepositValueCommand;
+import cash.xcl.api.exch.DepositValueEvent;
 import cash.xcl.api.exch.ExecutionReportEvent;
 import cash.xcl.api.exch.NewLimitOrderCommand;
 import cash.xcl.api.exch.OrderClosedEvent;
 import cash.xcl.api.exch.TransferFromExchangeCommand;
 import cash.xcl.api.exch.TransferToExchangeCommand;
+import cash.xcl.api.exch.WithdrawValueCommand;
+import cash.xcl.api.exch.WithdrawValueEvent;
 import net.openhft.chronicle.bytes.Bytes;
 
 public class DtoParser {

@@ -47,12 +47,12 @@ public abstract class SignedMessage extends AbstractBytesMarshallable {
                 cash.xcl.api.dto.CurrentBalanceResponse.class,
                 cash.xcl.api.dto.ExchangeRateResponse.class,
                 cash.xcl.api.dto.ClusterStatusResponse.class,
-                cash.xcl.api.dto.DepositValueCommand.class,
-                cash.xcl.api.dto.WithdrawValueCommand.class,
+                cash.xcl.api.exch.DepositValueCommand.class,
+                cash.xcl.api.exch.WithdrawValueCommand.class,
                 cash.xcl.api.exch.NewLimitOrderCommand.class,
                 cash.xcl.api.exch.CancelOrderCommand.class,
-                cash.xcl.api.dto.DepositValueEvent.class,
-                cash.xcl.api.dto.WithdrawValueEvent.class,
+                cash.xcl.api.exch.DepositValueEvent.class,
+                cash.xcl.api.exch.WithdrawValueEvent.class,
                 cash.xcl.api.exch.ExecutionReportEvent.class
         );
     }
