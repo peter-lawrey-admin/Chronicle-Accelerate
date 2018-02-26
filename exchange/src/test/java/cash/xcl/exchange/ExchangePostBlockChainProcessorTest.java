@@ -37,4 +37,9 @@ public class ExchangePostBlockChainProcessorTest {
     public void newLimitOrder() {
         test("exchange/new-limit-order");
     }
+
+    @Test
+    public void newMarketOrder() {
+        test("exchange/new-market-order");
+    }
 }

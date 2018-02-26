@@ -60,12 +60,13 @@ public class OrderBook {
             advanceNext();
         }
 
-        order.filledQuantity(order.filledQuantity() + quantityMatched);
-        quantityRemaining -= quantityMatched;
-        ExecutionReportEvent ere = new ExecutionReportEvent(0, 0,
-                order.sourceAddress(), order.clientOrderId(), symbol1symbol2, order.isBuy(), price, quantityMatched, quantityRemaining);
-        lookup.executionReportEvent(ere);
-        removeOrder();
+        if (quantityMatched > 0) {
+            order.filledQuantity(order.filledQuantity() + quantityMatched);
+            quantityRemaining -= quantityMatched;
+            ExecutionReportEvent ere = new ExecutionReportEvent(0, 0,
+                    order.sourceAddress(), order.clientOrderId(), symbol1symbol2, order.isBuy(), price, quantityMatched, quantityRemaining);
+            lookup.executionReportEvent(ere);
+        }
     }
 
     public void cancelAllRestlessOrders(AllMessages lookup) {
@@ -109,9 +110,9 @@ public class OrderBook {
         return isBuy;
     }
 
-    public void addOrder(long startOfRoundTime, NewOrderCommand newOrderCommand) {
+    public void addOrder(long orderId, NewOrderCommand newOrderCommand) {
         // todo add recycling.
-        Order order = new Order(startOfRoundTime, newOrderCommand);
+        Order order = new Order(orderId, newOrderCommand);
         if (newOrderCommand.isMarket())
             marketOrders.add(order);
         else

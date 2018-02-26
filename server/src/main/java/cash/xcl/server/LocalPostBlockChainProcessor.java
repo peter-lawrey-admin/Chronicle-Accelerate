@@ -32,10 +32,6 @@ public class LocalPostBlockChainProcessor extends AbstractAllMessages implements
         super.transferValueCommand(transferValueCommand);
     }
 
-    public void notifyStartOfRound(long startOfRoundTime) {
-
-    }
-
     public void notifyEndOfRound() {
 
     }

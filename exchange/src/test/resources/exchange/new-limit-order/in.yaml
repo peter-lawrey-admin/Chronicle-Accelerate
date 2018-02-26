@@ -6,7 +6,7 @@ newOrderCommand: {
   isBuy: true,
   isResting: false,
   quantity: 100.0,
-  price: 3.5
+  price: 3.6
 }
 ---
 newOrderCommand: {
@@ -17,7 +17,7 @@ newOrderCommand: {
   isBuy: false,
   isResting: false,
   quantity: 100.0,
-  price: 3.5
+  price: 3.4
 }
 ---
 notifyEndOfRound: []

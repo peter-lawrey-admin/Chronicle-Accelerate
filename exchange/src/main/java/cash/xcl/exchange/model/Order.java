@@ -6,7 +6,7 @@ import net.openhft.chronicle.wire.AbstractMarshallable;
 // FIXME needs reviewing/completing
 public class Order extends AbstractMarshallable {
 
-    private long timeAdded;
+    private long orderId;
 
     private long sourceAddress;
 
@@ -24,12 +24,12 @@ public class Order extends AbstractMarshallable {
 
     private double filledQuantity;
 
-    public Order(long timeAdded, NewOrderCommand noc) {
-        init(timeAdded, noc);
+    public Order(long orderId, NewOrderCommand noc) {
+        init(orderId, noc);
     }
 
-    public void init(long timeAdded, NewOrderCommand noc) {
-        this.timeAdded = timeAdded;
+    public void init(long orderId, NewOrderCommand noc) {
+        this.orderId = orderId;
         sourceAddress = noc.sourceAddress();
         eventTime = noc.eventTime();
         clientOrderId = noc.clientOrderId();
@@ -41,11 +41,11 @@ public class Order extends AbstractMarshallable {
     }
 
     public long timeAdded() {
-        return timeAdded;
+        return orderId;
     }
 
     public Order timeAdded(long timeAdded) {
-        this.timeAdded = timeAdded;
+        this.orderId = timeAdded;
         return this;
     }
 

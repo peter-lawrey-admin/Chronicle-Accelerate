@@ -13,7 +13,7 @@ public class ExchangePostBlockChainProcessor extends LocalPostBlockChainProcesso
     private final AllMessages reportListener;
     private OrderBook buyOrderBook;
     private OrderBook sellOrderBook;
-    private long startOfRoundTime = 0;
+    private long orderId = 0;
 
     public ExchangePostBlockChainProcessor(long address, String symbol1symbol2) {
         super(address);
@@ -34,14 +34,9 @@ public class ExchangePostBlockChainProcessor extends LocalPostBlockChainProcesso
     public void newOrderCommand(NewOrderCommand newOrderCommand) {
         // todo check this is not a duplicate order.
         // todo check the address has enough balance and remove the balance.
-        long startOfRoundTime = this.startOfRoundTime++; // uniqueness by order added.
+        long orderId = ++this.orderId; // uniqueness by order added.
         (newOrderCommand.isBuy() ? buyOrderBook : sellOrderBook)
-                .addOrder(startOfRoundTime, newOrderCommand);
-    }
-
-    @Override
-    public void notifyStartOfRound(long startOfRoundTime) {
-        this.startOfRoundTime = startOfRoundTime;
+                .addOrder(orderId, newOrderCommand);
     }
 
     @Override
@@ -60,8 +55,26 @@ public class ExchangePostBlockChainProcessor extends LocalPostBlockChainProcesso
             while (buyOrderBook.hasMoreOrders() && sellOrderBook.hasMoreOrders()) {
                 Order buy = buyOrderBook.nextOrder();
                 Order sell = sellOrderBook.nextOrder();
-                if (buy.price() < sell.price()) // false is either is NaN
+                if (buy.price() < sell.price()) {
+                    int cmp = compare(buyQuantity, sellQuantity, 1e-6);
+                    if (cmp > 0) {
+                        sellQuantity += Math.min(buyQuantity - sellQuantity, sell.quantity());
+                        sellPrice = sell.price();
+                        continue;
+                    }
+                    if (cmp < 0) {
+                        buyQuantity += Math.min(sellQuantity - buyQuantity, buy.quantity());
+                        buyPrice = buy.price();
+                        continue;
+                    }
+
+                    // false is either is NaN
+                    if (Double.isNaN(buyPrice))
+                        buyPrice = buy.price();
+                    if (Double.isNaN(sellPrice))
+                        sellPrice = sell.price();
                     break;
+                }
                 int cmp = compare(buyQuantity, sellQuantity, 1e-6);
                 if (cmp >= 0) {
                     sellQuantity += sell.quantity();
@@ -70,13 +83,13 @@ public class ExchangePostBlockChainProcessor extends LocalPostBlockChainProcesso
                 }
                 if (cmp <= 0) {
                     buyQuantity += buy.quantity();
-                    buyPrice += buy.price();
+                    buyPrice = buy.price();
                     buyOrderBook.advanceNext();
                 }
             }
             double midPrice, matchedQuantity;
-            if (buyPrice > 0) {
-                if (sellPrice > 0) {
+            if (buyQuantity > 0) {
+                if (sellQuantity > 0) {
                     midPrice = (buyPrice + sellPrice) / 2;
                     matchedQuantity = Math.min(buyQuantity, sellQuantity);
                 } else {
@@ -84,7 +97,7 @@ public class ExchangePostBlockChainProcessor extends LocalPostBlockChainProcesso
                     matchedQuantity = buyQuantity;
                 }
             } else {
-                if (sellPrice > 0) {
+                if (sellQuantity > 0) {
                     midPrice = sellPrice;
                     matchedQuantity = sellQuantity;
                 } else {
