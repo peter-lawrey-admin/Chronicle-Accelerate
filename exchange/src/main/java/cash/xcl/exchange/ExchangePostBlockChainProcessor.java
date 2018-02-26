@@ -1,7 +1,6 @@
 package cash.xcl.exchange;
 
 import cash.xcl.api.AllMessages;
-import cash.xcl.api.AllMessagesServer;
 import cash.xcl.api.dto.CancelOrderCommand;
 import cash.xcl.api.dto.ExecutionReportEvent;
 import cash.xcl.api.dto.NewOrderCommand;
@@ -12,31 +11,15 @@ import cash.xcl.server.LocalPostBlockChainProcessor;
 
 public class ExchangePostBlockChainProcessor extends LocalPostBlockChainProcessor {
     private final AllMessages reportListener;
-    private OrderBook buyOrderBook = new OrderBook(true);
-    private OrderBook sellOrderBook = new OrderBook(false);
+    private OrderBook buyOrderBook;
+    private OrderBook sellOrderBook;
     private long startOfRoundTime = 0;
 
-    public ExchangePostBlockChainProcessor(long address) {
-        this(address, null);
-    }
-
-    // only for testing purposes.
-    public ExchangePostBlockChainProcessor(AllMessagesServer allMessagesServer) {
-        this(321321321321L, allMessagesServer);
-    }
-
-    private ExchangePostBlockChainProcessor(long address, AllMessagesServer allMessagesServer) {
+    public ExchangePostBlockChainProcessor(long address, String symbol1symbol2) {
         super(address);
-        allMessagesLookup(allMessagesServer);
-        reportListener = new AbstractAllMessages(address) {
-            @Override
-            public void executionReportEvent(ExecutionReportEvent executionReportEvent) {
-                executionReportEvent.sourceAddress(address);
-                executionReportEvent.eventTime(timeProvider.currentTimeMicros());
-                ExchangePostBlockChainProcessor.this.to(executionReportEvent.clientAddress())
-                        .executionReportEvent(executionReportEvent);
-            }
-        };
+        reportListener = new EPBCPResponseMessages(address);
+        buyOrderBook = new OrderBook(true, symbol1symbol2);
+        sellOrderBook = new OrderBook(false, symbol1symbol2);
     }
 
     // assumes a and b are non-negative.
@@ -125,5 +108,19 @@ public class ExchangePostBlockChainProcessor extends LocalPostBlockChainProcesso
     @Override
     public void cancelOrderCommand(CancelOrderCommand cancelOrderCommand) {
         super.cancelOrderCommand(cancelOrderCommand);
+    }
+
+    private class EPBCPResponseMessages extends AbstractAllMessages {
+        public EPBCPResponseMessages(long address) {
+            super(address);
+        }
+
+        @Override
+        public void executionReportEvent(ExecutionReportEvent executionReportEvent) {
+            executionReportEvent.sourceAddress(address);
+            executionReportEvent.eventTime(timeProvider.currentTimeMicros());
+            ExchangePostBlockChainProcessor.this.to(executionReportEvent.clientAddress())
+                    .executionReportEvent(executionReportEvent);
+        }
     }
 }

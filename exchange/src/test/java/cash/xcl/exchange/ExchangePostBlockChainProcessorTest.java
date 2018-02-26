@@ -13,7 +13,11 @@ import static org.junit.Assert.assertEquals;
 public class ExchangePostBlockChainProcessorTest {
     public static void test(String basename) {
         TextMethodTester<AllMessagesServer> tester = new TextMethodTester<>(basename + "/in.yaml",
-                ExchangePostBlockChainProcessor::new,
+                (out) -> {
+                    ExchangePostBlockChainProcessor usdxch = new ExchangePostBlockChainProcessor(321321321321L, "USDXCH");
+                    usdxch.allMessagesLookup(out);
+                    return usdxch;
+                },
                 AllMessagesServer.class, basename + "/out.yaml");
         tester.setup(basename + "/setup.yaml");
         try {
@@ -28,6 +32,7 @@ public class ExchangePostBlockChainProcessorTest {
         NewOrderCommand nloc = new NewOrderCommand(2, 0, "clientId", "USDXCH", true, false, 100.0, 3.5);
         System.out.println(nloc);
     }
+
     @Test
     public void newLimitOrder() {
         test("exchange/new-limit-order");

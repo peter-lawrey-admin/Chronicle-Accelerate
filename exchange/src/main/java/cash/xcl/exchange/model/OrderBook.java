@@ -14,11 +14,13 @@ public class OrderBook {
     private final List<Order> limitOrders = new ArrayList<>();
     private final List<Order> marketOrders = new ArrayList<>();
     private final Comparator<Order> comparator;
+    private final String symbol1symbol2;
     private int next = 0;
 
-    public OrderBook(boolean isBuy) {
+    public OrderBook(boolean isBuy, String symbol1symbol2) {
         this.isBuy = isBuy;
         comparator = isBuy ? OrderComparator.BUY : OrderComparator.SELL;
+        this.symbol1symbol2 = symbol1symbol2;
     }
 
     /**
@@ -51,7 +53,8 @@ public class OrderBook {
                 break;
             quantityMatched -= quantityRemaining;
             order.filledQuantity(order.quantity());
-            ExecutionReportEvent ere = new ExecutionReportEvent(0, 0, order.sourceAddress(), order.clientOrderId(), price, quantityRemaining, 0.0);
+            ExecutionReportEvent ere = new ExecutionReportEvent(0, 0,
+                    order.sourceAddress(), order.clientOrderId(), symbol1symbol2, order.isBuy(), price, quantityRemaining, 0.0);
             lookup.executionReportEvent(ere);
             removeOrder();
             advanceNext();
@@ -59,7 +62,8 @@ public class OrderBook {
 
         order.filledQuantity(order.filledQuantity() + quantityMatched);
         quantityRemaining -= quantityMatched;
-        ExecutionReportEvent ere = new ExecutionReportEvent(0, 0, order.sourceAddress(), order.clientOrderId(), price, quantityMatched, quantityRemaining);
+        ExecutionReportEvent ere = new ExecutionReportEvent(0, 0,
+                order.sourceAddress(), order.clientOrderId(), symbol1symbol2, order.isBuy(), price, quantityMatched, quantityRemaining);
         lookup.executionReportEvent(ere);
         removeOrder();
     }
@@ -90,7 +94,7 @@ public class OrderBook {
 
     private void sendCancelledER(AllMessages lookup, Order order) {
         removeOrder();
-        ExecutionReportEvent ere = new ExecutionReportEvent(0, 0, order.sourceAddress(), order.clientOrderId(), Double.NaN, 0.0, 0.0);
+        ExecutionReportEvent ere = new ExecutionReportEvent(0, 0, order.sourceAddress(), order.clientOrderId(), symbol1symbol2, isBuy, Double.NaN, 0.0, 0.0);
         lookup.executionReportEvent(ere);
     }
 

@@ -7,15 +7,27 @@ import net.openhft.chronicle.bytes.BytesOut;
 public class ExecutionReportEvent extends SignedMessage {
     private long clientAddress;
     private String clientOrderId;
+    private String symbol1symbol2;
+    private boolean isBuy;
     private double price;
     private double quantityFilled;
     private double quantityRemaining;
 
 
-    public ExecutionReportEvent(long sourceAddress, long eventTime, long clientAddress, String clientOrderId, double price, double quantityFilled, double quantityRemaining) {
+    public ExecutionReportEvent(long sourceAddress,
+                                long eventTime,
+                                long clientAddress,
+                                String clientOrderId,
+                                String symbol1symbol2,
+                                boolean isBuy,
+                                double price,
+                                double quantityFilled,
+                                double quantityRemaining) {
         super(sourceAddress, eventTime);
         this.clientAddress = clientAddress;
         this.clientOrderId = clientOrderId;
+        this.symbol1symbol2 = symbol1symbol2;
+        this.isBuy = isBuy;
         this.price = price;
         this.quantityFilled = quantityFilled;
         this.quantityRemaining = quantityRemaining;
@@ -28,6 +40,7 @@ public class ExecutionReportEvent extends SignedMessage {
     protected void readMarshallable2(BytesIn<?> bytes) {
         clientAddress = bytes.readLong();
         clientOrderId = bytes.readUtf8();
+        isBuy = bytes.readBoolean();
         price = bytes.readDouble();
         quantityFilled = bytes.readDouble();
         quantityRemaining = bytes.readDouble();
@@ -37,6 +50,7 @@ public class ExecutionReportEvent extends SignedMessage {
     protected void writeMarshallable2(BytesOut<?> bytes) {
         bytes.writeLong(clientAddress);
         bytes.writeUtf8(clientOrderId);
+        bytes.writeBoolean(isBuy);
         bytes.writeDouble(price);
         bytes.writeDouble(quantityFilled);
         bytes.writeDouble(quantityRemaining);
@@ -89,6 +103,24 @@ public class ExecutionReportEvent extends SignedMessage {
 
     public ExecutionReportEvent quantityRemaining(double quantityRemaining) {
         this.quantityRemaining = quantityRemaining;
+        return this;
+    }
+
+    public String symbol1symbol2() {
+        return symbol1symbol2;
+    }
+
+    public ExecutionReportEvent symbol1symbol2(String symbol1symbol2) {
+        this.symbol1symbol2 = symbol1symbol2;
+        return this;
+    }
+
+    public boolean isBuy() {
+        return isBuy;
+    }
+
+    public ExecutionReportEvent isBuy(boolean buy) {
+        this.isBuy = buy;
         return this;
     }
 }
