@@ -1,24 +1,24 @@
 package cash.xcl.server;
 
-import cash.xcl.api.AllMessages;
-import cash.xcl.api.dto.EndOfRoundBlockEvent;
-import cash.xcl.api.dto.SignedMessage;
-import cash.xcl.api.dto.TransactionBlockEvent;
-
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import cash.xcl.api.AllMessagesServer;
+import cash.xcl.api.dto.EndOfRoundBlockEvent;
+import cash.xcl.api.dto.SignedMessage;
+import cash.xcl.api.dto.TransactionBlockEvent;
+
 public class VanillaBlockReplayer implements BlockReplayer {
     private final long address;
-    private final AllMessages postBlockChainProcessor;
+    private final AllMessagesServer postBlockChainProcessor;
     private Map<Long, TransactionLog> transactionLogMap = new ConcurrentHashMap<>();
     private EndOfRoundBlockEvent lastEndOfRoundBlockEvent = null;
     private Map<Long, Long> replayedMap = new LinkedHashMap<>();
 
-    public VanillaBlockReplayer(long address, AllMessages postBlockChainProcessor) {
+    public VanillaBlockReplayer(long address, AllMessagesServer postBlockChainProcessor) {
         this.address = address;
         this.postBlockChainProcessor = postBlockChainProcessor;
     }
@@ -54,8 +54,9 @@ public class VanillaBlockReplayer implements BlockReplayer {
                 int size;
                 while (true) {
                     size = entry.getValue().messages.size();
-                    if (size >= upto)
+                    if (size >= upto) {
                         break;
+                    }
                     System.out.println(address + " Waiting ... " + size + " < " + upto);
                     wait(100);
                 }
@@ -66,9 +67,11 @@ public class VanillaBlockReplayer implements BlockReplayer {
                 }
             }
         }
+        postBlockChainProcessor.replyStarted();
         for (Runnable replayAction : replayActions) {
             replayAction.run();
         }
+        postBlockChainProcessor.replyFinished();
     }
 
     private void replay(TransactionLog messages, long fromIndex, long toIndex) {
@@ -94,12 +97,13 @@ public class VanillaBlockReplayer implements BlockReplayer {
         }
 
         synchronized void add(SignedMessage msg, int blockNumber) {
-            if (blockNumber < messages.size())
+            if (blockNumber < messages.size()) {
                 System.out.println("Duplicate message id: " + blockNumber + " " + msg.getClassName());
-            else if (blockNumber > messages.size())
+            } else if (blockNumber > messages.size()) {
                 System.out.println("Missing message id: " + blockNumber);
-            else
+            } else {
                 messages.add(msg.deepCopy());
+            }
         }
 
         synchronized SignedMessage get(int index) {

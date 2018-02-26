@@ -2,7 +2,27 @@ package cash.xcl.server.mock;
 
 import cash.xcl.api.ServerIn;
 import cash.xcl.api.ServerOut;
-import cash.xcl.api.dto.*;
+import cash.xcl.api.dto.BlockSubscriptionQuery;
+import cash.xcl.api.dto.ClusterTransferStep1Command;
+import cash.xcl.api.dto.ClusterTransferStep2Command;
+import cash.xcl.api.dto.ClusterTransferStep3Command;
+import cash.xcl.api.dto.CommandFailedEvent;
+import cash.xcl.api.dto.CreateNewAddressCommand;
+import cash.xcl.api.dto.CreateNewAddressEvent;
+import cash.xcl.api.dto.CurrentBalanceResponse;
+import cash.xcl.api.dto.DepositValueCommand;
+import cash.xcl.api.dto.EndOfRoundBlockEvent;
+import cash.xcl.api.dto.ExchangeRateEvent;
+import cash.xcl.api.dto.FeesEvent;
+import cash.xcl.api.dto.OpeningBalanceEvent;
+import cash.xcl.api.dto.ServiceNodesEvent;
+import cash.xcl.api.dto.TransactionBlockEvent;
+import cash.xcl.api.dto.TransactionBlockGossipEvent;
+import cash.xcl.api.dto.TransactionBlockVoteEvent;
+import cash.xcl.api.dto.TransferValueCommand;
+import cash.xcl.api.dto.WithdrawValueCommand;
+import cash.xcl.api.exch.CancelOrderCommand;
+import cash.xcl.api.exch.NewLimitOrderCommand;
 import cash.xcl.api.util.XCLBase32;
 import cash.xcl.server.AddressService;
 import net.openhft.chronicle.bytes.Bytes;
@@ -137,11 +157,6 @@ public class MockServer implements ServerIn {
 
     @Override
     public void newLimitOrderCommand(NewLimitOrderCommand newLimitOrderCommand) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void newMarketOrderCommand(NewMarketOrderCommand newMarketOrderCommand) {
         throw new UnsupportedOperationException();
     }
 

@@ -1,5 +1,7 @@
 package cash.xcl.api.dto;
 
+import org.jetbrains.annotations.NotNull;
+
 import cash.xcl.api.AllMessages;
 import cash.xcl.api.tcp.WritingAllMessages;
 import net.openhft.chronicle.bytes.Bytes;
@@ -10,7 +12,6 @@ import net.openhft.chronicle.core.io.IORuntimeException;
 import net.openhft.chronicle.wire.Marshallable;
 import net.openhft.chronicle.wire.WireIn;
 import net.openhft.chronicle.wire.WireOut;
-import org.jetbrains.annotations.NotNull;
 
 public class TransactionBlockEvent extends SignedMessage {
     private String region;
@@ -33,6 +34,7 @@ public class TransactionBlockEvent extends SignedMessage {
 
     }
 
+    @Override
     public void reset() {
         super.reset();
         transactions.clear();
@@ -46,10 +48,13 @@ public class TransactionBlockEvent extends SignedMessage {
     }
 
     public void replay(AllMessages allMessages) {
-        if (dtoParser == null) dtoParser = new DtoParser();
+        if (dtoParser == null) {
+            dtoParser = new DtoParser();
+        }
         transactions.readPosition(0);
-        while (!transactions.isEmpty())
+        while (!transactions.isEmpty()) {
             dtoParser.parseOne(transactions, allMessages);
+        }
         transactions.readPosition(0);
     }
 
@@ -58,13 +63,15 @@ public class TransactionBlockEvent extends SignedMessage {
         region = bytes.readUtf8();
         weekNumber = bytes.readUnsignedShort();
         blockNumber = bytes.readUnsignedInt();
-        if (transactions == null) transactions = Bytes.allocateElasticDirect();
+        if (transactions == null) {
+            transactions = Bytes.allocateElasticDirect();
+        }
         transactions.clear().write((BytesStore) bytes);
     }
 
     @Override
     protected void writeMarshallable2(BytesOut<?> bytes) {
-//        System.out.println("Write " + this);
+        //        System.out.println("Write " + this);
         bytes.writeUtf8(region);
         bytes.writeUnsignedShort(weekNumber);
         bytes.writeUnsignedInt(blockNumber);
@@ -76,10 +83,11 @@ public class TransactionBlockEvent extends SignedMessage {
         reset();
         super.readMarshallable(wire);
         wire.read("transactions").sequence(this, (tbe, in) -> {
-            while (in.hasNextSequenceItem())
+            while (in.hasNextSequenceItem()) {
                 tbe.addTransaction(in.object(SignedMessage.class));
+            }
         });
-//        System.out.println("Read " + this);
+        //        System.out.println("Read " + this);
     }
 
 

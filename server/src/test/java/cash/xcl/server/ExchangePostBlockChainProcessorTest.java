@@ -1,6 +1,7 @@
 package cash.xcl.server;
 
 import cash.xcl.api.AllMessagesServer;
+import cash.xcl.server.exch.ExchangePostBlockChainProcessor;
 import net.openhft.chronicle.core.io.IORuntimeException;
 import net.openhft.chronicle.wire.TextMethodTester;
 

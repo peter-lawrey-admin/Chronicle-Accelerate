@@ -3,7 +3,24 @@ package cash.xcl.server.mock;
 import cash.xcl.api.ClientIn;
 import cash.xcl.api.ClientOut;
 import cash.xcl.api.ServerOut;
-import cash.xcl.api.dto.*;
+import cash.xcl.api.dto.ApplicationMessageEvent;
+import cash.xcl.api.dto.ClusterStatusQuery;
+import cash.xcl.api.dto.ClusterTransferStep1Command;
+import cash.xcl.api.dto.ClusterTransferStep2Command;
+import cash.xcl.api.dto.ClusterTransferStep3Command;
+import cash.xcl.api.dto.ClusterTransferStep3Event;
+import cash.xcl.api.dto.ClustersStatusQuery;
+import cash.xcl.api.dto.CommandFailedEvent;
+import cash.xcl.api.dto.CreateNewAddressCommand;
+import cash.xcl.api.dto.CreateNewAddressEvent;
+import cash.xcl.api.dto.CurrentBalanceQuery;
+import cash.xcl.api.dto.ExchangeRateQuery;
+import cash.xcl.api.dto.SubscriptionQuery;
+import cash.xcl.api.dto.SubscriptionSuccessResponse;
+import cash.xcl.api.dto.TransferValueCommand;
+import cash.xcl.api.exch.CancelOrderCommand;
+import cash.xcl.api.exch.ExecutionReportEvent;
+import cash.xcl.api.exch.NewLimitOrderCommand;
 
 public class MockGateway implements ClientOut {
     private final MockServer mockServer = new MockServer(null);
@@ -42,10 +59,6 @@ public class MockGateway implements ClientOut {
         mockServer.newLimitOrderCommand(newLimitOrderCommand);
     }
 
-    @Override
-    public void newMarketOrderCommand(NewMarketOrderCommand newMarketOrderCommand) {
-        mockServer.newMarketOrderCommand(newMarketOrderCommand);
-    }
 
     @Override
     public void cancelOrderCommand(CancelOrderCommand cancelOrderCommand) {
@@ -96,12 +109,12 @@ public class MockGateway implements ClientOut {
 
         @Override
         public void clusterTransferStep2Command(ClusterTransferStep2Command clusterTransferStep2Command) {
-//            clientIn.clusterTransferStep2Command(clusterTransferStep2Command);
+            //            clientIn.clusterTransferStep2Command(clusterTransferStep2Command);
         }
 
         @Override
         public void clusterTransferStep3Command(ClusterTransferStep3Command clusterTransferStep3Command) {
-//            clientIn.clusterTransferStep3Command(clusterTransferStep3Command);
+            //            clientIn.clusterTransferStep3Command(clusterTransferStep3Command);
         }
 
         @Override

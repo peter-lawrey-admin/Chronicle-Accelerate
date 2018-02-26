@@ -1,13 +1,14 @@
 package cash.xcl.server;
 
 import cash.xcl.api.AllMessagesServer;
+import cash.xcl.api.PostBlockChainProcessor;
 import cash.xcl.api.dto.TransferValueCommand;
 import cash.xcl.api.util.AbstractAllMessages;
 import net.openhft.chronicle.core.time.SetTimeProvider;
 import net.openhft.chronicle.core.time.SystemTimeProvider;
 import net.openhft.chronicle.core.time.TimeProvider;
 
-public class LocalPostBlockChainProcessor extends AbstractAllMessages implements AllMessagesServer {
+public class LocalPostBlockChainProcessor extends AbstractAllMessages implements AllMessagesServer, PostBlockChainProcessor {
     public LocalPostBlockChainProcessor(long address) {
         super(address);
     }
@@ -22,8 +23,9 @@ public class LocalPostBlockChainProcessor extends AbstractAllMessages implements
 
     // For testing purposes only
     public void time(long time) {
-        if (timeProvider instanceof SystemTimeProvider)
+        if (timeProvider instanceof SystemTimeProvider) {
             timeProvider = new SetTimeProvider();
+        }
         ((SetTimeProvider) timeProvider).currentTimeMicros(time);
     }
 
@@ -31,4 +33,5 @@ public class LocalPostBlockChainProcessor extends AbstractAllMessages implements
     public void transferValueCommand(TransferValueCommand transferValueCommand) {
         super.transferValueCommand(transferValueCommand);
     }
+
 }

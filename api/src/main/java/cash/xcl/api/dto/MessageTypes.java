@@ -66,13 +66,13 @@ public interface MessageTypes {
     // Exchange service commands and queries
     int DEPOSIT_VALUE_COMMAND = 0x60;
     int WITHDRAW_VALUE_COMMAND = 0x61;
-    int NEW_MARKET_ORDER_COMMAND = 0x62;
+
     int NEW_LIMIT_ORDER_COMMAND = 0x63;
     int CANCEL_ORDER_COMMAND = 0x64;
 
     // Exchange service events and responses
     int DEPOSIT_VALUE_EVENT = 0x70;
     int WITHDRAW_VALUE_EVENT = 0x71;
-
     int EXECUTION_REPORT = 0x72;
+    int ORDER_CLOSED_EVENT = 0x73;
 }
