@@ -1,0 +1,36 @@
+newOrderCommand: {
+  sourceAddress: 2,
+  eventTime: 0,
+  clientOrderId: clientId,
+  symbol1symbol2: USDXCH,
+  isBuy: true,
+  isResting: true,
+  quantity: 100.0,
+  price: 3.5
+}
+---
+newOrderCommand: {
+  sourceAddress: 3,
+  eventTime: 0,
+  clientOrderId: clientId,
+  symbol1symbol2: USDXCH,
+  isBuy: false,
+  isResting: false,
+  quantity: 100.0,
+  price: 3.5
+}
+---
+# cancelled before the end of the round
+cancelOrderCommand: {
+  sourceAddress: 2,
+  clientOrderId: clientId,
+}
+---
+# cancelled before the end of the round
+cancelOrderCommand: {
+  sourceAddress: 3,
+  clientOrderId: clientId,
+}
+---
+# nothing to process now.
+notifyEndOfRound: []

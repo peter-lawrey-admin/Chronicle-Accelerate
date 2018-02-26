@@ -1,7 +1,6 @@
 package cash.xcl.exchange;
 
 import cash.xcl.api.AllMessagesServer;
-import cash.xcl.api.dto.NewOrderCommand;
 import net.openhft.chronicle.core.io.IORuntimeException;
 import net.openhft.chronicle.wire.TextMethodTester;
 import org.junit.Test;
@@ -28,10 +27,12 @@ public class ExchangePostBlockChainProcessorTest {
         assertEquals(tester.expected(), tester.actual());
     }
 
+/*
     public static void main(String[] args) {
         NewOrderCommand nloc = new NewOrderCommand(2, 0, "clientId", "USDXCH", true, false, 100.0, 3.5);
         System.out.println(nloc);
     }
+*/
 
     @Test
     public void newLimitOrder() {
@@ -41,5 +42,10 @@ public class ExchangePostBlockChainProcessorTest {
     @Test
     public void newMarketOrder() {
         test("exchange/new-market-order");
+    }
+
+    @Test
+    public void cancelOrders() {
+        test("exchange/cancel-orders");
     }
 }

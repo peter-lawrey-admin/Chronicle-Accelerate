@@ -120,11 +120,12 @@ public class ExchangePostBlockChainProcessor extends LocalPostBlockChainProcesso
 
     @Override
     public void cancelOrderCommand(CancelOrderCommand cancelOrderCommand) {
-        super.cancelOrderCommand(cancelOrderCommand);
+        buyOrderBook.cancelOrder(reportListener, cancelOrderCommand);
+        sellOrderBook.cancelOrder(reportListener, cancelOrderCommand);
     }
 
     private class EPBCPResponseMessages extends AbstractAllMessages {
-        public EPBCPResponseMessages(long address) {
+        EPBCPResponseMessages(long address) {
             super(address);
         }
 

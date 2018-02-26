@@ -10,7 +10,7 @@ import java.util.Comparator;
 import java.util.List;
 
 public class OrderBook {
-    private final boolean isBuy; // is ascending
+    private final boolean isBuy; // if buy is ascending, or descending by price for sell.
     private final List<Order> limitOrders = new ArrayList<>();
     private final List<Order> marketOrders = new ArrayList<>();
     private final Comparator<Order> comparator;
@@ -53,8 +53,12 @@ public class OrderBook {
                 break;
             quantityMatched -= quantityRemaining;
             order.filledQuantity(order.quantity());
-            ExecutionReportEvent ere = new ExecutionReportEvent(0, 0,
-                    order.sourceAddress(), order.clientOrderId(), symbol1symbol2, order.isBuy(), price, quantityRemaining, 0.0);
+            ExecutionReportEvent ere = new ExecutionReportEvent(
+                    0, 0,
+                    order.sourceAddress(), order.clientOrderId(),
+                    symbol1symbol2, order.isBuy(),
+                    price, quantityRemaining,
+                    0.0);
             lookup.executionReportEvent(ere);
             removeOrder();
             advanceNext();
@@ -63,8 +67,12 @@ public class OrderBook {
         if (quantityMatched > 0) {
             order.filledQuantity(order.filledQuantity() + quantityMatched);
             quantityRemaining -= quantityMatched;
-            ExecutionReportEvent ere = new ExecutionReportEvent(0, 0,
-                    order.sourceAddress(), order.clientOrderId(), symbol1symbol2, order.isBuy(), price, quantityMatched, quantityRemaining);
+            ExecutionReportEvent ere = new ExecutionReportEvent(
+                    0, 0,
+                    order.sourceAddress(), order.clientOrderId(),
+                    symbol1symbol2, order.isBuy(),
+                    price, quantityMatched,
+                    quantityRemaining);
             lookup.executionReportEvent(ere);
         }
     }
