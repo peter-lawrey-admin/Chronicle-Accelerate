@@ -11,7 +11,7 @@ import cash.xcl.exchange.model.OrderBook;
 import cash.xcl.exchange.model.PriceAverager;
 import cash.xcl.server.LocalPostBlockChainProcessor;
 
-public class ExchangePostBlockChainProcessor extends LocalPostBlockChainProcessor {
+public class AuctioningPostBlockChainProcessor extends LocalPostBlockChainProcessor {
     private final AllMessages reportListener;
     private final long regionAddress;
     private final String symbol1symbol2;
@@ -22,7 +22,7 @@ public class ExchangePostBlockChainProcessor extends LocalPostBlockChainProcesso
 
     private long orderId = 0;
 
-    public ExchangePostBlockChainProcessor(long address, long regionAddress, String symbol1symbol2) {
+    public AuctioningPostBlockChainProcessor(long address, long regionAddress, String symbol1symbol2) {
         super(address);
         this.regionAddress = regionAddress;
         this.symbol1symbol2 = symbol1symbol2;
@@ -153,7 +153,7 @@ public class ExchangePostBlockChainProcessor extends LocalPostBlockChainProcesso
         public void executionReportEvent(ExecutionReportEvent executionReportEvent) {
             executionReportEvent.sourceAddress(address);
             executionReportEvent.eventTime(timeProvider.currentTimeMicros());
-            ExchangePostBlockChainProcessor.this.to(executionReportEvent.clientAddress())
+            AuctioningPostBlockChainProcessor.this.to(executionReportEvent.clientAddress())
                     .executionReportEvent(executionReportEvent);
         }
     }

@@ -10,11 +10,11 @@ import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
 
-public class ExchangePostBlockChainProcessorTest {
+public class AuctioningPostBlockChainProcessorTest {
     public static void test(String basename) {
         TextMethodTester<AllMessagesServer> tester = new TextMethodTester<>(basename + "/in.yaml",
                 (out) -> {
-                    ExchangePostBlockChainProcessor usdxch = new ExchangePostBlockChainProcessor(
+                    AuctioningPostBlockChainProcessor usdxch = new AuctioningPostBlockChainProcessor(
                             321321321321L,
                             XCLBase32.decode("2-USD"),
                             "USDXCH");
