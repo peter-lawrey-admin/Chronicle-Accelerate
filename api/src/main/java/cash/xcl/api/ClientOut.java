@@ -16,9 +16,7 @@ public interface ClientOut extends Closeable {
     // client only.
     void subscriptionQuery(SubscriptionQuery subscriptionQuery);
 
-    void newLimitOrderCommand(NewLimitOrderCommand newLimitOrderCommand);
-
-    void newMarketOrderCommand(NewMarketOrderCommand newMarketOrderCommand);
+    void newOrderCommand(NewOrderCommand newOrderCommand);
 
     void cancelOrderCommand(CancelOrderCommand cancelOrderCommand);
 

@@ -6,8 +6,8 @@ import cash.xcl.api.AllMessagesServer;
 import cash.xcl.api.dto.*;
 
 public class AbstractAllMessages implements AllMessagesServer {
-    protected final long address;
-    private AllMessagesLookup lookup;
+    protected long address;
+    protected AllMessagesLookup lookup;
 
     public AbstractAllMessages(long address) {
         this.address = address;
@@ -97,7 +97,7 @@ public class AbstractAllMessages implements AllMessagesServer {
 
     @Override
     public void createNewAddressCommand(CreateNewAddressCommand createNewAddressCommand) {
-        throw new UnsupportedOperationException(getClass().getName());
+        // todo any further validation required?
     }
 
     @Override
@@ -111,12 +111,7 @@ public class AbstractAllMessages implements AllMessagesServer {
     }
 
     @Override
-    public void newLimitOrderCommand(NewLimitOrderCommand newLimitOrderCommand) {
-        throw new UnsupportedOperationException(getClass().getName());
-    }
-
-    @Override
-    public void newMarketOrderCommand(NewMarketOrderCommand newMarketOrderCommand) {
+    public void newOrderCommand(NewOrderCommand newOrderCommand) {
         throw new UnsupportedOperationException(getClass().getName());
     }
 

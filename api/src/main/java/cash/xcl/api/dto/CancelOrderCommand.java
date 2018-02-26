@@ -5,12 +5,12 @@ import net.openhft.chronicle.bytes.BytesOut;
 
 public class CancelOrderCommand extends SignedMessage {
 
-    private String orderId;
+    private String clientOrderId;
     //private Order order;
 
-    public CancelOrderCommand(long sourceAddress, long eventTime, String orderId) {
+    public CancelOrderCommand(long sourceAddress, long eventTime, String clientOrderId) {
         super(sourceAddress, eventTime);
-        this.orderId = orderId;
+        this.clientOrderId = clientOrderId;
     }
 
     public CancelOrderCommand() {
@@ -23,6 +23,15 @@ public class CancelOrderCommand extends SignedMessage {
 
     @Override
     protected void writeMarshallable2(BytesOut<?> bytes) {
+    }
+
+    public String clientOrderId() {
+        return clientOrderId;
+    }
+
+    public CancelOrderCommand clientOrderId(String clientOrderId) {
+        this.clientOrderId = clientOrderId;
+        return this;
     }
 
     @Override

@@ -27,9 +27,8 @@ public interface ServerIn extends WeeklyEvents, Closeable {
 
     void withdrawValueCommand(WithdrawValueCommand withdrawValueCommand);
 
-    void newLimitOrderCommand(NewLimitOrderCommand newLimitOrderCommand);
+    void newOrderCommand(NewOrderCommand newOrderCommand);
 
-    void newMarketOrderCommand(NewMarketOrderCommand newMarketOrderCommand);
 
     void cancelOrderCommand(CancelOrderCommand cancelOrderCommand);
 

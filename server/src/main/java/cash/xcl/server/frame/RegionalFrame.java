@@ -118,12 +118,7 @@ public class RegionalFrame implements AllMessages {
     }
 
     @Override
-    public void newLimitOrderCommand(NewLimitOrderCommand newLimitOrderCommand) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void newMarketOrderCommand(NewMarketOrderCommand newMarketOrderCommand) {
+    public void newOrderCommand(NewOrderCommand newOrderCommand) {
         throw new UnsupportedOperationException();
     }
 

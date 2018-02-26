@@ -58,8 +58,7 @@ public class DtoParser {
     final ExchangeRateEvent ere = new ExchangeRateEvent();
 
     // Orders
-    final NewLimitOrderCommand nloc = new NewLimitOrderCommand();
-    final NewMarketOrderCommand nmoc = new NewMarketOrderCommand();
+    final NewOrderCommand noc = new NewOrderCommand();
     final CancelOrderCommand coc = new CancelOrderCommand();
 
     // ExecutionReport
@@ -235,13 +234,8 @@ public class DtoParser {
                 parse(bytes, erq, messages, AllMessages::exchangeRateQuery);
                 break;
 
-            // Orders
-            case NEW_MARKET_ORDER_COMMAND:
-                parse(bytes, nmoc, messages, AllMessages::newMarketOrderCommand);
-                break;
-
-            case NEW_LIMIT_ORDER_COMMAND:
-                parse(bytes, nloc, messages, AllMessages::newLimitOrderCommand);
+            case NEW_ORDER_COMMAND:
+                parse(bytes, noc, messages, AllMessages::newOrderCommand);
                 break;
 
             case CANCEL_ORDER_COMMAND:

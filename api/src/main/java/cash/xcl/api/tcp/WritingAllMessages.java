@@ -183,13 +183,8 @@ public abstract class WritingAllMessages implements AllMessages {
     }
 
     @Override
-    public void newLimitOrderCommand(NewLimitOrderCommand newLimitOrderCommand) {
-        write(newLimitOrderCommand);
-    }
-
-    @Override
-    public void newMarketOrderCommand(NewMarketOrderCommand newMarketOrderCommand) {
-        write(newMarketOrderCommand);
+    public void newOrderCommand(NewOrderCommand newOrderCommand) {
+        write(newOrderCommand);
     }
 
     @Override
