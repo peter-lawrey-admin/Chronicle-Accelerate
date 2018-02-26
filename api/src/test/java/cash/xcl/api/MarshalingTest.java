@@ -57,10 +57,10 @@ public class MarshalingTest {
         String[] files = {"marshaling/currencypair.yaml", "marshaling/cancelordercommand.yaml", "marshaling/executionreport.yaml",
                 "marshaling/executionreportevent.yaml", "marshaling/orderclosedevent.yaml", "marshaling/newlimitordercommand.yaml",
                 "marshaling/depositvaluecommand.yaml", "marshaling/depositvalueevent.yaml", "marshaling/withdrawvaluecommand.yaml",
-                "marshaling/withdrawvalueevent.yaml", "marshaling/currentbalancequery.yaml", "marshaling/currentbalanceresponse.yaml" };
+                "marshaling/withdrawvalueevent.yaml", "marshaling/currentbalancequery.yaml", "marshaling/currentbalanceresponse.yaml"};
         Class<?>[] objClass = {CurrencyPair.class, CancelOrderCommand.class, ExecutionReport.class, ExecutionReportEvent.class,
                 OrderClosedEvent.class, NewLimitOrderCommand.class, DepositValueCommand.class, DepositValueEvent.class,
-                WithdrawValueCommand.class, WithdrawValueEvent.class, CurrentBalanceQuery.class, CurrentBalanceResponse.class };
+                WithdrawValueCommand.class, WithdrawValueEvent.class, CurrentBalanceQuery.class, CurrentBalanceResponse.class};
         ArrayList<Object[]> params = new ArrayList<>();
         for (int i = 0; i < files.length; i++) {
             TextWire textWire = new TextWire(BytesUtil.readFile(files[i]));
