@@ -1,0 +1,103 @@
+depositValueEvent: {
+  sourceAddress: 12345,
+  eventTime: 1,
+  depositValueCommand: {
+    sourceAddress: 12345,
+    eventTime: 0,
+    toAddress: 1,
+    amount: 100.0,
+    currency: USD,
+    reference: !!null "",
+    description: !!null ""
+  }
+}
+---
+---
+depositValueEvent: {
+  sourceAddress: 12345,
+  eventTime: 10,
+  depositValueCommand: {
+    sourceAddress: 12345,
+    eventTime: 5,
+    toAddress: 1,
+    amount: 100.0,
+    currency: USD,
+    reference: !!null "",
+    description: !!null ""
+  }
+}
+---
+---
+commandFailedEvent: {
+  sourceAddress: 12345,
+  eventTime: 20,
+  origSourceAddress: 12345,
+  origEventTime: 5,
+  origMessageType: 96,
+  reason: "No such currency quoted on the exchange "
+}
+---
+---
+currentBalanceResponse: {
+  sourceAddress: 12345,
+  eventTime: 30,
+  address: 1,
+  balances: {
+    USD: 200.0
+  }
+}
+---
+---
+---
+---
+withdrawValueEvent: {
+  sourceAddress: 12345,
+  eventTime: 50,
+  withdrawValueCommand: {
+    sourceAddress: 1,
+    eventTime: 45,
+    toAddress: 1,
+    amount: 100.0,
+    currency: USD,
+    reference: Cash,
+    description: Checking,
+    destination: Bank
+  }
+}
+---
+---
+commandFailedEvent: {
+  sourceAddress: 12345,
+  eventTime: 60,
+  origSourceAddress: 1,
+  origEventTime: 55,
+  origMessageType: 97,
+  reason: Unsufficient funds
+}
+---
+---
+withdrawValueEvent: {
+  sourceAddress: 12345,
+  eventTime: 70,
+  withdrawValueCommand: {
+    sourceAddress: 1,
+    eventTime: 65,
+    toAddress: 1,
+    amount: 100.0,
+    currency: USD,
+    reference: Cash,
+    description: Checking,
+    destination: Bank
+  }
+}
+---
+---
+commandFailedEvent: {
+  sourceAddress: 12345,
+  eventTime: 80,
+  origSourceAddress: 11,
+  origEventTime: 75,
+  origMessageType: 97,
+  reason: No such account on the exchange
+}
+---

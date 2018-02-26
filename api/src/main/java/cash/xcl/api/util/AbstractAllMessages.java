@@ -41,6 +41,8 @@ import cash.xcl.api.exch.CancelOrderCommand;
 import cash.xcl.api.exch.ExecutionReportEvent;
 import cash.xcl.api.exch.NewLimitOrderCommand;
 import cash.xcl.api.exch.OrderClosedEvent;
+import cash.xcl.api.exch.TransferFromExchangeCommand;
+import cash.xcl.api.exch.TransferToExchangeCommand;
 
 public class AbstractAllMessages implements AllMessagesServer {
     protected final long address;
@@ -260,8 +262,19 @@ public class AbstractAllMessages implements AllMessagesServer {
     }
 
     @Override
+    public void transferToExchangeCommand(TransferToExchangeCommand transferCommand) {
+        throw new UnsupportedOperationException(getClass().getName());
+    }
+
+    @Override
+    public void transferFromExchangeCommand(TransferFromExchangeCommand transferCommand) {
+        throw new UnsupportedOperationException(getClass().getName());
+    }
+
+    @Override
     public void close() {
         throw new UnsupportedOperationException(getClass().getName());
     }
+
 
 }

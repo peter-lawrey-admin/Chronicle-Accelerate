@@ -1,5 +1,20 @@
 package cash.xcl.server;
 
+import static org.junit.Assert.assertEquals;
+
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingQueue;
+
 import cash.xcl.api.AllMessages;
 import cash.xcl.api.dto.CreateNewAddressEvent;
 import cash.xcl.api.dto.SubscriptionQuery;
@@ -11,20 +26,11 @@ import net.openhft.chronicle.bytes.Bytes;
 import net.openhft.chronicle.core.Mocker;
 import net.openhft.chronicle.salt.Ed25519;
 
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.*;
-
-import static org.junit.Assert.assertEquals;
-
 public class RegionalServerBenchmarkMain {
 
     public static void main(String[] args) throws IOException, InterruptedException, ExecutionException {
-        Bytes publicKey = Ed25519.allocatePublicKey();
-        Bytes secretKey = Ed25519.allocateSecretKey();
+        Bytes publicKey = Bytes.allocateDirect(Ed25519.PUBLIC_KEY_LENGTH);// Ed25519.allocatePublicKey();
+        Bytes secretKey = Bytes.allocateDirect(Ed25519.SECRET_KEY_LENGTH);// Ed25519.allocateSecretKey();
         Ed25519.generatePublicAndSecretKey(publicKey, secretKey);
         String region = "gb1nd";
         long regionAddress = XCLBase32.decode(region);
@@ -51,10 +57,12 @@ public class RegionalServerBenchmarkMain {
                         AllMessages queuing = Mocker.queuing(AllMessages.class, "", queue);
                         XCLClient client = new XCLClient("client", addresses, address, secretKey, queuing);
                         client.subscriptionQuery(new SubscriptionQuery(address, 0));
-                        for (int i = 0; i < msgs; i += threads)
+                        for (int i = 0; i < msgs; i += threads) {
                             client.transferValueCommand(transferValueCommand);
-                        for (int i = 0; i < msgs * 2; i += threads)
+                        }
+                        for (int i = 0; i < (msgs * 2); i += threads) {
                             queue.take();
+                        }
                         client.close();
                         assertEquals(0, queue.size());
                     } catch (Throwable e) {
@@ -67,7 +75,7 @@ public class RegionalServerBenchmarkMain {
                 future.get();
             }
             long time = System.nanoTime() - start;
-            System.out.printf("Throughput: %,d / sec%n", (int) (msgs * 1e9 / time));
+            System.out.printf("Throughput: %,d / sec%n", (int) ((msgs * 1e9) / time));
             service.shutdown();
         }
 

@@ -3,7 +3,6 @@ package cash.xcl.api.dto;
 import net.openhft.chronicle.bytes.BytesIn;
 import net.openhft.chronicle.bytes.BytesOut;
 
-// FIXME needs reviewing/completing
 public class CurrentBalanceQuery extends SignedMessage {
 
     private long address;

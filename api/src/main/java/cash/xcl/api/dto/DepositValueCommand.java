@@ -6,6 +6,20 @@ import net.openhft.chronicle.bytes.BytesOut;
 public class DepositValueCommand extends TransferValueCommand {
     String description;
 
+    public DepositValueCommand() {
+        super();
+    }
+
+    public DepositValueCommand(long sourceAddress, long eventTime, long toAddress, double amount, String currency, String reference,
+                               String description) {
+        super(sourceAddress, eventTime, toAddress, amount, currency, reference);
+        this.description = description;
+    }
+
+    public DepositValueCommand(long sourceAddress, long eventTime, long toAddress, double amount, String currency) {
+        super(sourceAddress, eventTime, toAddress, amount, currency, null);
+    }
+
     @Override
     protected void readMarshallable2(BytesIn<?> bytes) {
         super.readMarshallable2(bytes);

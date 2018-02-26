@@ -1,0 +1,102 @@
+depositValueCommand: {
+    sourceAddress: 12345,
+    eventTime: 0,
+    toAddress: 1,
+    amount: 100.0,
+    currency: USD,
+    reference: !!null "",
+    description: !!null ""  
+}
+
+time: 10
+
+depositValueCommand: {
+    sourceAddress: 12345,
+    eventTime: 5,
+    toAddress: 1,
+    amount: 100.0,
+    currency: USD,
+    reference: !!null "",
+    description: !!null ""  
+}
+
+time: 20
+
+depositValueCommand: {
+    sourceAddress: 12345,
+    eventTime: 5,
+    toAddress: 1,
+    amount: 100.0,
+    currency: EUR,  ##Wrong currency
+    reference: !!null "",
+    description: !!null ""  
+}
+
+time: 30
+
+currentBalanceQuery: {
+  sourceAddress: 7273,
+  eventTime: 25,
+  address: 1
+}
+
+time: 40
+
+currentBalanceQuery: {
+  sourceAddress: 7273,
+  eventTime: 35,
+  address: 11 # no such address should be ignored
+}
+
+time: 50
+
+withdrawValueCommand: {
+    sourceAddress: 1,
+    eventTime: 45,
+    toAddress: 1,
+    amount: 100.0,
+    currency: USD,
+    reference: Cash,
+    description: Checking,
+    destination: Bank
+}
+
+
+time: 60
+
+withdrawValueCommand: {
+    sourceAddress: 1,
+    eventTime: 55,
+    toAddress: 1,
+    amount: 200.0, ##too much
+    currency: USD,
+    reference: Cash,
+    description: Checking,
+    destination: Bank
+}
+
+time: 70
+
+withdrawValueCommand: {
+    sourceAddress: 1,
+    eventTime: 65,
+    toAddress: 1,
+    amount: 100.0, ##Take all
+    currency: USD,
+    reference: Cash,
+    description: Checking,
+    destination: Bank
+}
+
+time: 80
+
+withdrawValueCommand: {
+    sourceAddress: 11,
+    eventTime: 75,
+    toAddress: 11, # no such address
+    amount: 100.0,
+    currency: USD,
+    reference: Cash,
+    description: Checking,
+    destination: Bank
+}

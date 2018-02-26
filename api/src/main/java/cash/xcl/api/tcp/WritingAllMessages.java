@@ -40,6 +40,8 @@ import cash.xcl.api.exch.CancelOrderCommand;
 import cash.xcl.api.exch.ExecutionReportEvent;
 import cash.xcl.api.exch.NewLimitOrderCommand;
 import cash.xcl.api.exch.OrderClosedEvent;
+import cash.xcl.api.exch.TransferFromExchangeCommand;
+import cash.xcl.api.exch.TransferToExchangeCommand;
 
 public abstract class WritingAllMessages implements AllMessages {
     @Override
@@ -239,6 +241,16 @@ public abstract class WritingAllMessages implements AllMessages {
     @Override
     public void serviceNodesEvent(ServiceNodesEvent serviceNodesEvent) {
         write(serviceNodesEvent);
+    }
+
+    @Override
+    public void transferToExchangeCommand(TransferToExchangeCommand transferCommand) {
+        write(transferCommand);
+    }
+
+    @Override
+    public void transferFromExchangeCommand(TransferFromExchangeCommand transferCommand) {
+        write(transferCommand);
     }
 
     protected abstract void write(SignedMessage message);

@@ -16,7 +16,7 @@ public class NewLimitOrderCommand extends SignedMessage {
     private long quantity;
     private double maxPrice;
     private CurrencyPair currencyPair;
-    private long timeToLive;
+    private long timeToLive; // in milliseconds
 
     public NewLimitOrderCommand() {
 

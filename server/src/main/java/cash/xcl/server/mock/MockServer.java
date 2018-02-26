@@ -9,6 +9,7 @@ import cash.xcl.api.dto.ClusterTransferStep3Command;
 import cash.xcl.api.dto.CommandFailedEvent;
 import cash.xcl.api.dto.CreateNewAddressCommand;
 import cash.xcl.api.dto.CreateNewAddressEvent;
+import cash.xcl.api.dto.CurrentBalanceQuery;
 import cash.xcl.api.dto.CurrentBalanceResponse;
 import cash.xcl.api.dto.DepositValueCommand;
 import cash.xcl.api.dto.EndOfRoundBlockEvent;
@@ -23,6 +24,8 @@ import cash.xcl.api.dto.TransferValueCommand;
 import cash.xcl.api.dto.WithdrawValueCommand;
 import cash.xcl.api.exch.CancelOrderCommand;
 import cash.xcl.api.exch.NewLimitOrderCommand;
+import cash.xcl.api.exch.TransferFromExchangeCommand;
+import cash.xcl.api.exch.TransferToExchangeCommand;
 import cash.xcl.api.util.XCLBase32;
 import cash.xcl.server.AddressService;
 import net.openhft.chronicle.bytes.Bytes;
@@ -166,7 +169,23 @@ public class MockServer implements ServerIn {
     }
 
     @Override
+    public void transferToExchangeCommand(TransferToExchangeCommand transferCommand) {
+        throw new UnsupportedOperationException(getClass().getName());
+    }
+
+    @Override
+    public void transferFromExchangeCommand(TransferFromExchangeCommand transferCommand) {
+        throw new UnsupportedOperationException(getClass().getName());
+    }
+
+    @Override
+    public void currentBalanceQuery(CurrentBalanceQuery currentBalanceQuery) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public void close() {
         throw new UnsupportedOperationException();
     }
+
 }
