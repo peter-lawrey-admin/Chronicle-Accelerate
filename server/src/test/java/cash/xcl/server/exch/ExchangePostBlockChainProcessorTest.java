@@ -9,9 +9,9 @@ import org.junit.Test;
 
 import cash.xcl.api.AllMessagesServer;
 import cash.xcl.api.dto.CurrentBalanceQuery;
-import cash.xcl.api.dto.DepositValueCommand;
-import cash.xcl.api.dto.WithdrawValueCommand;
 import cash.xcl.api.exch.CurrencyPair;
+import cash.xcl.api.exch.DepositValueCommand;
+import cash.xcl.api.exch.WithdrawValueCommand;
 import net.openhft.chronicle.core.Mocker;
 import net.openhft.chronicle.core.io.IORuntimeException;
 import net.openhft.chronicle.core.time.SetTimeProvider;
