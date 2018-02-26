@@ -1,25 +1,18 @@
 package cash.xcl.server.exch;
 
 
-import static cash.xcl.api.exch.Side.BUY;
-
 import cash.xcl.api.AllMessages;
 import cash.xcl.api.AllMessagesServer;
-import cash.xcl.api.dto.CommandFailedEvent;
-import cash.xcl.api.dto.DepositValueCommand;
-import cash.xcl.api.dto.DepositValueEvent;
-import cash.xcl.api.dto.WithdrawValueCommand;
-import cash.xcl.api.dto.WithdrawValueEvent;
-import cash.xcl.api.exch.CancelOrderCommand;
+import cash.xcl.api.dto.*;
 import cash.xcl.api.exch.CurrencyPair;
-import cash.xcl.api.exch.ExecutionReport;
-import cash.xcl.api.exch.ExecutionReportEvent;
 import cash.xcl.api.exch.NewLimitOrderCommand;
 import cash.xcl.api.exch.OrderClosedEvent;
 import cash.xcl.server.LocalPostBlockChainProcessor;
 import cash.xcl.server.VanillaFinalRouter;
 import net.openhft.chronicle.core.time.SystemTimeProvider;
 import net.openhft.chronicle.core.time.TimeProvider;
+
+import static cash.xcl.api.exch.Side.BUY;
 
 /**
  * I assume that class is always called from the same thread, so no synchronization is necessary This component does no address validation
@@ -94,8 +87,6 @@ public class ExchangePostBlockChainProcessor extends LocalPostBlockChainProcesso
         }
     }
 
-
-    @Override
     public void newLimitOrderCommand(NewLimitOrderCommand newLimitOrderCommand) {
         long accountAddress = newLimitOrderCommand.sourceAddress();
         if (newLimitOrderCommand.getAction() == BUY) {
@@ -120,9 +111,11 @@ public class ExchangePostBlockChainProcessor extends LocalPostBlockChainProcesso
     private void onTrade(Order aggressor, Order initiator, long qty) {
         unlockMoney(aggressor, qty);
         unlockMoney(initiator, qty);
+/*
         ExecutionReport executionReport = new ExecutionReport(currencyPair, aggressor.getSide(), qty, initiator.getPrice(),
                 aggressor.getOwnerAddress(), initiator.getOwnerAddress());
         finalRouter.executionReportEvent(new ExecutionReportEvent(address, timeProvider.currentTimeMicros(), executionReport));
+*/
     }
 
     @Override

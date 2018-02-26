@@ -1,11 +1,12 @@
 package cash.xcl.api.dto;
 
 import cash.xcl.api.AllMessages;
-import cash.xcl.api.exch.CancelOrderCommand;
-import cash.xcl.api.exch.ExecutionReportEvent;
-import cash.xcl.api.exch.NewLimitOrderCommand;
 import cash.xcl.api.exch.OrderClosedEvent;
 import net.openhft.chronicle.bytes.Bytes;
+
+import java.util.function.BiConsumer;
+
+import static cash.xcl.api.dto.MessageTypes.*;
 
 public class DtoParser {
     public static final int PROTOCOL_OFFSET = 80;
@@ -63,7 +64,7 @@ public class DtoParser {
     final OrderClosedEvent oce = new OrderClosedEvent();
 
     // ExecutionReport
-    final ExecutionReportEvent execre = new ExecutionReportEvent();
+    final cash.xcl.api.dto.ExecutionReportEvent execre = new cash.xcl.api.dto.ExecutionReportEvent();
 
     // Responses
     final SubscriptionSuccessResponse ss = new SubscriptionSuccessResponse();

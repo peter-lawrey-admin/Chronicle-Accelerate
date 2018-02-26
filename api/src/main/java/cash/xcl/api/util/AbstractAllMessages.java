@@ -3,43 +3,7 @@ package cash.xcl.api.util;
 import cash.xcl.api.AllMessages;
 import cash.xcl.api.AllMessagesLookup;
 import cash.xcl.api.AllMessagesServer;
-import cash.xcl.api.dto.ApplicationMessageEvent;
-import cash.xcl.api.dto.BlockSubscriptionQuery;
-import cash.xcl.api.dto.ClusterStatusQuery;
-import cash.xcl.api.dto.ClusterStatusResponse;
-import cash.xcl.api.dto.ClusterTransferStep1Command;
-import cash.xcl.api.dto.ClusterTransferStep2Command;
-import cash.xcl.api.dto.ClusterTransferStep3Command;
-import cash.xcl.api.dto.ClusterTransferStep3Event;
-import cash.xcl.api.dto.ClustersStatusQuery;
-import cash.xcl.api.dto.ClustersStatusResponse;
-import cash.xcl.api.dto.CommandFailedEvent;
-import cash.xcl.api.dto.CreateNewAddressCommand;
-import cash.xcl.api.dto.CreateNewAddressEvent;
-import cash.xcl.api.dto.CurrentBalanceQuery;
-import cash.xcl.api.dto.CurrentBalanceResponse;
-import cash.xcl.api.dto.DepositValueCommand;
-import cash.xcl.api.dto.DepositValueEvent;
-import cash.xcl.api.dto.EndOfRoundBlockEvent;
-import cash.xcl.api.dto.ExchangeRateEvent;
-import cash.xcl.api.dto.ExchangeRateQuery;
-import cash.xcl.api.dto.ExchangeRateResponse;
-import cash.xcl.api.dto.FeesEvent;
-import cash.xcl.api.dto.OpeningBalanceEvent;
-import cash.xcl.api.dto.QueryFailedResponse;
-import cash.xcl.api.dto.ServiceNodesEvent;
-import cash.xcl.api.dto.SubscriptionQuery;
-import cash.xcl.api.dto.SubscriptionSuccessResponse;
-import cash.xcl.api.dto.TransactionBlockEvent;
-import cash.xcl.api.dto.TransactionBlockGossipEvent;
-import cash.xcl.api.dto.TransactionBlockVoteEvent;
-import cash.xcl.api.dto.TransferValueCommand;
-import cash.xcl.api.dto.TransferValueEvent;
-import cash.xcl.api.dto.WithdrawValueCommand;
-import cash.xcl.api.dto.WithdrawValueEvent;
-import cash.xcl.api.exch.CancelOrderCommand;
-import cash.xcl.api.exch.ExecutionReportEvent;
-import cash.xcl.api.exch.NewLimitOrderCommand;
+import cash.xcl.api.dto.*;
 import cash.xcl.api.exch.OrderClosedEvent;
 
 public class AbstractAllMessages implements AllMessagesServer {
@@ -104,7 +68,7 @@ public class AbstractAllMessages implements AllMessagesServer {
     }
 
     @Override
-    public void executionReportEvent(ExecutionReportEvent executionReportEvent) {
+    public void executionReportEvent(cash.xcl.api.dto.ExecutionReportEvent executionReportEvent) {
         throw new UnsupportedOperationException(getClass().getName());
     }
 

@@ -1,18 +1,6 @@
 package cash.xcl.server.exch;
 
 
-import static cash.xcl.api.exch.Side.BUY;
-import static cash.xcl.api.exch.Side.SELL;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
-
-import java.util.ArrayDeque;
-import java.util.Queue;
-
-import org.junit.Test;
-
 import cash.xcl.api.exch.CurrencyPair;
 import cash.xcl.api.exch.NewLimitOrderCommand;
 import cash.xcl.api.exch.OrderClosedEvent.REASON;
@@ -20,6 +8,14 @@ import cash.xcl.api.exch.Side;
 import cash.xcl.server.exch.ExchangeMarket.OrderClosedListener;
 import cash.xcl.server.exch.ExchangeMarket.TradeListener;
 import net.openhft.chronicle.core.Mocker;
+import org.junit.Test;
+
+import java.util.ArrayDeque;
+import java.util.Queue;
+
+import static cash.xcl.api.exch.Side.BUY;
+import static cash.xcl.api.exch.Side.SELL;
+import static org.junit.Assert.*;
 
 public class ExchangeMarketTest {
 

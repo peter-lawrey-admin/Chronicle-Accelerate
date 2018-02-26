@@ -4,6 +4,7 @@ import cash.xcl.api.AllMessages;
 import cash.xcl.api.AllMessagesLookup;
 import cash.xcl.api.ServerIn;
 import cash.xcl.api.dto.*;
+import cash.xcl.api.exch.OrderClosedEvent;
 import cash.xcl.api.tcp.XCLServer;
 import cash.xcl.api.util.CountryRegion;
 

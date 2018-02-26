@@ -1,5 +1,5 @@
 Valid ExecutionReportEvent: {
-  input: !cash.xcl.api.exch.ExecutionReportEvent {
+  input: !ExecutionReportEvent {
     sourceAddress: 123456,
     eventTime: 123456789,
     executionReport: {
@@ -18,7 +18,7 @@ Valid ExecutionReportEvent: {
 }
 
 Null ExecutionReportEvent: {
-  input: !cash.xcl.api.exch.ExecutionReportEvent {
+  input: !ExecutionReportEvent {
     sourceAddress: 123456,
     eventTime: 123456789,
     executionReport: !!null ""    

@@ -2,6 +2,7 @@ package cash.xcl.api.tcp;
 
 import cash.xcl.api.AllMessages;
 import cash.xcl.api.dto.*;
+import cash.xcl.api.exch.OrderClosedEvent;
 
 public abstract class WritingAllMessages implements AllMessages {
     @Override
