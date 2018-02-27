@@ -1,10 +1,10 @@
 package cash.xcl.api.dto;
 
-import net.openhft.chronicle.bytes.BytesIn;
-import net.openhft.chronicle.bytes.BytesOut;
-
 import java.util.LinkedHashMap;
 import java.util.Map;
+
+import net.openhft.chronicle.bytes.BytesIn;
+import net.openhft.chronicle.bytes.BytesOut;
 
 public class CurrentBalanceResponse extends SignedMessage {
     long address;
@@ -24,9 +24,15 @@ public class CurrentBalanceResponse extends SignedMessage {
     protected void readMarshallable2(BytesIn<?> bytes) {
         address = bytes.readLong();
         int count = (int) bytes.readStopBit();
-        if (balances == null) balances = new LinkedHashMap<>();
-        for (int i = 0; i < count; i++)
-            balances.put(bytes.readUtf8(), bytes.readDouble());
+        if (balances == null) {
+            balances = new LinkedHashMap<>();
+        }
+        for (int i = 0; i < count; i++) {
+            String currency = bytes.readUtf8();
+            if (balances.put(currency, bytes.readDouble()) != null) {
+                throw new IllegalArgumentException("Invalid Balance. Duplicate currency " + currency);
+            }
+        }
     }
 
     @Override

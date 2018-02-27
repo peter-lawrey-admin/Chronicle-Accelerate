@@ -1,11 +1,24 @@
-package cash.xcl.api.dto;
+package cash.xcl.api.exch;
 
+import cash.xcl.api.dto.MessageTypes;
+import cash.xcl.api.dto.TransferValueCommand;
 import net.openhft.chronicle.bytes.BytesIn;
 import net.openhft.chronicle.bytes.BytesOut;
 
 public class WithdrawValueCommand extends TransferValueCommand {
-    String description;
-    String destination;
+    private String description;
+    private String destination;
+
+    public WithdrawValueCommand() {
+
+    }
+
+    public WithdrawValueCommand(long sourceAddress, long eventTime, long toAddress, double amount, String currency, String reference,
+                                String description, String destination) {
+        super(sourceAddress, eventTime, toAddress, amount, currency, reference);
+        this.description = description;
+        this.destination = destination;
+    }
 
     @Override
     protected void readMarshallable2(BytesIn<?> bytes) {

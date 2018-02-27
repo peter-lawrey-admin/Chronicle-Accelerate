@@ -4,6 +4,13 @@ import java.nio.ByteBuffer;
 
 import org.jetbrains.annotations.NotNull;
 
+import cash.xcl.api.exch.CancelOrderCommand;
+import cash.xcl.api.exch.DepositValueCommand;
+import cash.xcl.api.exch.DepositValueEvent;
+import cash.xcl.api.exch.ExecutionReportEvent;
+import cash.xcl.api.exch.NewOrderCommand;
+import cash.xcl.api.exch.WithdrawValueCommand;
+import cash.xcl.api.exch.WithdrawValueEvent;
 import net.openhft.chronicle.bytes.Bytes;
 import net.openhft.chronicle.bytes.BytesIn;
 import net.openhft.chronicle.bytes.BytesOut;
@@ -54,7 +61,7 @@ public abstract class SignedMessage extends AbstractBytesMarshallable {
                 DepositValueEvent.class,
                 WithdrawValueEvent.class,
                 ExecutionReportEvent.class
-        );
+                );
     }
 
     private transient Bytes<ByteBuffer> sigAndMsg;

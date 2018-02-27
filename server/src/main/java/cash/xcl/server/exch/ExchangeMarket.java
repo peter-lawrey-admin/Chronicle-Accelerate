@@ -1,6 +1,6 @@
 package cash.xcl.server.exch;
 
-import cash.xcl.api.exch.NewLimitOrderCommand;
+import cash.xcl.api.exch.NewOrderCommand;
 import cash.xcl.api.exch.OrderClosedEvent.REASON;
 import cash.xcl.api.exch.Side;
 import net.openhft.chronicle.core.annotation.SingleThreaded;
@@ -33,7 +33,7 @@ class ExchangeMarket implements Closeable {
     private final OrderClosedListener closedListener;
     private final TradeListener tradeListener;
 
-    private long currentTime = 0;
+    private long currentReferenceTimeinMillis = 0;
     private long idGen = 1;
 
     ExchangeMarket(double tickSize, TradeListener tradeListener, OrderClosedListener closedListener) {
@@ -53,20 +53,20 @@ class ExchangeMarket implements Closeable {
     }
 
     void setCurrentTime(long currentTime) {
-        this.currentTime = currentTime;
+        this.currentReferenceTimeinMillis = currentTime;
     }
 
-    void executeOrder(NewLimitOrderCommand newLimitOrderCommand) {
+    void executeOrder(NewOrderCommand newLimitOrderCommand) {
         long orderId = idGen++;
         Side orderSide = newLimitOrderCommand.getAction();
         double orderPrice = orderSide.roundWorse(newLimitOrderCommand.getMaxPrice(), tickSize);
         Order newOrder = new Order(orderId, orderSide, newLimitOrderCommand.getQuantity(), orderPrice,
-                newLimitOrderCommand.getTimeToLive() + currentTime, newLimitOrderCommand.sourceAddress(), newLimitOrderCommand.eventTime());
+                newLimitOrderCommand.getTimeToLive() + currentReferenceTimeinMillis, newLimitOrderCommand.sourceAddress(), newLimitOrderCommand.eventTime());
         TreeSet<Order> sideToMatch = getMarket(orderSide.other());
         Iterator<Order> it = sideToMatch.iterator();
         while (it.hasNext()) {
             Order topOrder = it.next();
-            if (topOrder.getExpirationTime() <= currentTime) {
+            if (topOrder.getExpirationTime() <= currentReferenceTimeinMillis) {
                 it.remove();
                 expirationOrder.remove(topOrder);
                 closedListener.onClosed(topOrder, REASON.TIME_OUT);
@@ -90,8 +90,8 @@ class ExchangeMarket implements Closeable {
             }
         }
         if ((newOrder.getQuantityLeft() > 0)) {
-            assert newOrder.getExpirationTime() >= currentTime;
-            if ((newOrder.getExpirationTime() > currentTime)) {
+            assert newOrder.getExpirationTime() >= currentReferenceTimeinMillis;
+            if ((newOrder.getExpirationTime() > currentReferenceTimeinMillis)) {
                 getMarket(orderSide).add(newOrder);
                 expirationOrder.add(newOrder);
             }
@@ -105,7 +105,7 @@ class ExchangeMarket implements Closeable {
         assert expirationOrder.size() == (buyOrders.size() + sellOrders.size());
         while (!expirationOrder.isEmpty()) {
             Order order = expirationOrder.peek();
-            if (order.getExpirationTime() <= currentTime) {
+            if (order.getExpirationTime() <= currentReferenceTimeinMillis) {
                 expirationOrder.poll();
                 // we don't know if is a buy or sell order, but we could figure out later
                 // either by having separate priority queues or, buy assigning odd order ids to buy and even to sell

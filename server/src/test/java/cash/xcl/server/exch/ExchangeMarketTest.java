@@ -2,7 +2,7 @@ package cash.xcl.server.exch;
 
 
 import cash.xcl.api.exch.CurrencyPair;
-import cash.xcl.api.exch.NewLimitOrderCommand;
+import cash.xcl.api.exch.NewOrderCommand;
 import cash.xcl.api.exch.OrderClosedEvent.REASON;
 import cash.xcl.api.exch.Side;
 import cash.xcl.server.exch.ExchangeMarket.OrderClosedListener;
@@ -31,17 +31,17 @@ public class ExchangeMarketTest {
         double precision = Side.getDefaultPrecision(tickSize);
         try (ExchangeMarket market = new ExchangeMarket(tickSize, tradeListener, closedListener)) {
             market.setCurrentTime(101);
-            market.executeOrder(new NewLimitOrderCommand(1, 100, BUY, 100, 200, currencyPair, 100000));
-            market.executeOrder(new NewLimitOrderCommand(1, 100, BUY, 100, 199, currencyPair, 100000));
-            market.executeOrder(new NewLimitOrderCommand(1, 101, BUY, 100, 180, currencyPair, 100000));
-            market.executeOrder(new NewLimitOrderCommand(1, 102, SELL, 100, 210, currencyPair, 100000));
-            market.executeOrder(new NewLimitOrderCommand(1, 103, SELL, 100, 230, currencyPair, 100000));
+            market.executeOrder(new NewOrderCommand(1, 100, BUY, 100, 200, currencyPair, 100000));
+            market.executeOrder(new NewOrderCommand(1, 100, BUY, 100, 199, currencyPair, 100000));
+            market.executeOrder(new NewOrderCommand(1, 101, BUY, 100, 180, currencyPair, 100000));
+            market.executeOrder(new NewOrderCommand(1, 102, SELL, 100, 210, currencyPair, 100000));
+            market.executeOrder(new NewOrderCommand(1, 103, SELL, 100, 230, currencyPair, 100000));
 
             assertEquals(3, market.getOrdersCount(BUY));
             assertEquals(2, market.getOrdersCount(SELL));
             assertTrue(resultsQueue.isEmpty());
             market.setCurrentTime(115);
-            market.executeOrder(new NewLimitOrderCommand(1, 120, BUY, 100, 210, currencyPair, 100000));
+            market.executeOrder(new NewOrderCommand(1, 120, BUY, 100, 210, currencyPair, 100000));
             assertFalse(resultsQueue.isEmpty());
             MethodCall call = resultsQueue.poll();
             Order aggressor = call.getParams(0);
@@ -62,7 +62,7 @@ public class ExchangeMarketTest {
             assertEquals(1, market.getOrdersCount(SELL));
 
             market.setCurrentTime(215);
-            market.executeOrder(new NewLimitOrderCommand(1, 300, SELL, 300, 190, currencyPair, 100000));
+            market.executeOrder(new NewOrderCommand(1, 300, SELL, 300, 190, currencyPair, 100000));
             assertEquals(2, resultsQueue.size());
             assertEquals(1, market.getOrdersCount(BUY));
             assertEquals(2, market.getOrdersCount(SELL));
@@ -100,23 +100,23 @@ public class ExchangeMarketTest {
         double precision = Side.getDefaultPrecision(tickSize);
         try (ExchangeMarket market = new ExchangeMarket(tickSize, tradeListener, closedListener)) {
             market.setCurrentTime(101);
-            market.executeOrder(new NewLimitOrderCommand(1, 100, BUY, 100, 200, currencyPair, 100000));
-            market.executeOrder(new NewLimitOrderCommand(1, 100, BUY, 100, 199, currencyPair, 100000));
-            market.executeOrder(new NewLimitOrderCommand(1, 101, BUY, 100, 180, currencyPair, 100000));
-            market.executeOrder(new NewLimitOrderCommand(1, 102, SELL, 100, 210, currencyPair, 100000));
-            market.executeOrder(new NewLimitOrderCommand(1, 103, SELL, 100, 230, currencyPair, 100000));
+            market.executeOrder(new NewOrderCommand(1, 100, BUY, 100, 200, currencyPair, 100000));
+            market.executeOrder(new NewOrderCommand(1, 100, BUY, 100, 199, currencyPair, 100000));
+            market.executeOrder(new NewOrderCommand(1, 101, BUY, 100, 180, currencyPair, 100000));
+            market.executeOrder(new NewOrderCommand(1, 102, SELL, 100, 210, currencyPair, 100000));
+            market.executeOrder(new NewOrderCommand(1, 103, SELL, 100, 230, currencyPair, 100000));
 
             assertEquals(3, market.getOrdersCount(BUY));
             assertEquals(2, market.getOrdersCount(SELL));
             market.setCurrentTime(115);
-            market.executeOrder(new NewLimitOrderCommand(1, 120, BUY, 100, 205, currencyPair, 0));
+            market.executeOrder(new NewOrderCommand(1, 120, BUY, 100, 205, currencyPair, 0));
             // no fills no new order
             assertTrue(resultsQueue.isEmpty());
             assertEquals(3, market.getOrdersCount(BUY));
             assertEquals(2, market.getOrdersCount(SELL));
 
             market.setCurrentTime(120);
-            market.executeOrder(new NewLimitOrderCommand(1, 120, SELL, 200, 200, currencyPair, 0));
+            market.executeOrder(new NewOrderCommand(1, 120, SELL, 200, 200, currencyPair, 0));
             // some fills but no new sell order on the market
             assertFalse(resultsQueue.isEmpty());
             MethodCall call = resultsQueue.poll();
@@ -146,7 +146,7 @@ public class ExchangeMarketTest {
                 (name, params) -> resultsQueue.add(new MethodCall(name, params)), null);
         try (ExchangeMarket market = new ExchangeMarket(1, tradeListener, closedListener)) {
             market.setCurrentTime(101);
-            market.executeOrder(new NewLimitOrderCommand(1, 100, BUY, 111, 200, currencyPair, 1000));
+            market.executeOrder(new NewOrderCommand(1, 100, BUY, 111, 200, currencyPair, 1000));
             assertEquals(1, market.getOrdersCount(BUY));
             market.setCurrentTime(105);
             market.cancelOrder(1, 100);
@@ -160,7 +160,7 @@ public class ExchangeMarketTest {
             assertEquals(0, market.getOrdersCount(BUY));
 
             market.setCurrentTime(205);
-            market.executeOrder(new NewLimitOrderCommand(1, 200, SELL, 111, 200, currencyPair, 1000));
+            market.executeOrder(new NewOrderCommand(1, 200, SELL, 111, 200, currencyPair, 1000));
             assertEquals(1, market.getOrdersCount(SELL));
             market.setCurrentTime(210);
             market.cancelOrder(1, 200);
@@ -185,8 +185,8 @@ public class ExchangeMarketTest {
                 (name, params) -> resultsQueue.add(new MethodCall(name, params)), null);
         try (ExchangeMarket market = new ExchangeMarket(1, tradeListener, closedListener)) {
             market.setCurrentTime(101);
-            market.executeOrder(new NewLimitOrderCommand(1, 100, BUY, 111, 200, currencyPair, 1000));
-            market.executeOrder(new NewLimitOrderCommand(1, 200, SELL, 111, 400, currencyPair, 1000));
+            market.executeOrder(new NewOrderCommand(1, 100, BUY, 111, 200, currencyPair, 1000));
+            market.executeOrder(new NewOrderCommand(1, 200, SELL, 111, 400, currencyPair, 1000));
             assertEquals(1, market.getOrdersCount(BUY));
             assertEquals(1, market.getOrdersCount(SELL));
 
@@ -209,13 +209,13 @@ public class ExchangeMarketTest {
                 (name, params) -> resultsQueue.add(new MethodCall(name, params)), null);
         try (ExchangeMarket market = new ExchangeMarket(1, tradeListener, closedListener)) {
             market.setCurrentTime(100);
-            market.executeOrder(new NewLimitOrderCommand(1, 100, BUY, 111, 200.0, currencyPair, 1400));
-            market.executeOrder(new NewLimitOrderCommand(1, 101, BUY, 111, 200.0, currencyPair, 1000));
-            market.executeOrder(new NewLimitOrderCommand(1, 102, BUY, 111, 200.0, currencyPair, 10000));
+            market.executeOrder(new NewOrderCommand(1, 100, BUY, 111, 200.0, currencyPair, 1400));
+            market.executeOrder(new NewOrderCommand(1, 101, BUY, 111, 200.0, currencyPair, 1000));
+            market.executeOrder(new NewOrderCommand(1, 102, BUY, 111, 200.0, currencyPair, 10000));
             market.setCurrentTime(200);
-            market.executeOrder(new NewLimitOrderCommand(1, 201, SELL, 111, 201.0, currencyPair, 1300));
-            market.executeOrder(new NewLimitOrderCommand(1, 202, SELL, 111, 201.0, currencyPair, 1000));
-            market.executeOrder(new NewLimitOrderCommand(1, 203, SELL, 111, 201.0, currencyPair, 10000));
+            market.executeOrder(new NewOrderCommand(1, 201, SELL, 111, 201.0, currencyPair, 1300));
+            market.executeOrder(new NewOrderCommand(1, 202, SELL, 111, 201.0, currencyPair, 1000));
+            market.executeOrder(new NewOrderCommand(1, 203, SELL, 111, 201.0, currencyPair, 10000));
             market.setCurrentTime(1500);
             assertEquals(3, market.getOrdersCount(BUY));
             assertEquals(3, market.getOrdersCount(SELL));
@@ -241,13 +241,13 @@ public class ExchangeMarketTest {
                 (name, params) -> resultsQueue.add(new MethodCall(name, params)), null);
         try (ExchangeMarket market = new ExchangeMarket(1, tradeListener, closedListener)) {
             market.setCurrentTime(100);
-            market.executeOrder(new NewLimitOrderCommand(1, 100, BUY, 111, 203.0, currencyPair, 1400));
-            market.executeOrder(new NewLimitOrderCommand(1, 101, BUY, 111, 202.0, currencyPair, 10000));
-            market.executeOrder(new NewLimitOrderCommand(1, 102, BUY, 111, 201.0, currencyPair, 10000));
+            market.executeOrder(new NewOrderCommand(1, 100, BUY, 111, 203.0, currencyPair, 1400));
+            market.executeOrder(new NewOrderCommand(1, 101, BUY, 111, 202.0, currencyPair, 10000));
+            market.executeOrder(new NewOrderCommand(1, 102, BUY, 111, 201.0, currencyPair, 10000));
             assertEquals(3, market.getOrdersCount(BUY));
             assertEquals(0, market.getOrdersCount(SELL));
             market.setCurrentTime(1500);
-            market.executeOrder(new NewLimitOrderCommand(1, 1000, SELL, 111, 220.0, currencyPair, 10000));
+            market.executeOrder(new NewOrderCommand(1, 1000, SELL, 111, 220.0, currencyPair, 10000));
 
             assertEquals(1, resultsQueue.size());
             MethodCall call = resultsQueue.poll();
@@ -270,11 +270,11 @@ public class ExchangeMarketTest {
         ExchangeMarket market = new ExchangeMarket(tickSize, tradeListener, closedListener);
         try {
             market.setCurrentTime(101);
-            market.executeOrder(new NewLimitOrderCommand(1, 100, BUY, 100, 200, currencyPair, 100000));
-            market.executeOrder(new NewLimitOrderCommand(1, 100, BUY, 100, 199, currencyPair, 100000));
-            market.executeOrder(new NewLimitOrderCommand(1, 101, BUY, 100, 180, currencyPair, 100000));
-            market.executeOrder(new NewLimitOrderCommand(1, 102, SELL, 100, 210, currencyPair, 100000));
-            market.executeOrder(new NewLimitOrderCommand(1, 103, SELL, 100, 230, currencyPair, 100000));
+            market.executeOrder(new NewOrderCommand(1, 100, BUY, 100, 200, currencyPair, 100000));
+            market.executeOrder(new NewOrderCommand(1, 100, BUY, 100, 199, currencyPair, 100000));
+            market.executeOrder(new NewOrderCommand(1, 101, BUY, 100, 180, currencyPair, 100000));
+            market.executeOrder(new NewOrderCommand(1, 102, SELL, 100, 210, currencyPair, 100000));
+            market.executeOrder(new NewOrderCommand(1, 103, SELL, 100, 230, currencyPair, 100000));
             market.setCurrentTime(1001);
         } finally {
             market.close();

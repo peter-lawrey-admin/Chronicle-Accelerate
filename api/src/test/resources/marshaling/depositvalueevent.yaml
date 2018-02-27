@@ -1,0 +1,28 @@
+Valid Deposit Value Event: {
+ input: !cash.xcl.api.exch.DepositValueEvent {
+  sourceAddress: 12345,
+  eventTime: 10,
+  depositValueCommand: {
+      sourceAddress: 12345,
+      eventTime: 5,
+      toAddress: 1,
+      amount: 100.0,
+      currency: USD,
+      reference: !!null "",
+      description: !!null ""
+    }
+  },
+  output: !!null ""
+}
+
+
+Null Command Deposit Value Event: {
+  input: !cash.xcl.api.exch.DepositValueEvent {
+    sourceAddress: 12345,
+    eventTime: 10,
+    depositValueCommand: !!null "" 
+  },
+  output: !type java.lang.NullPointerException
+}
+
+  

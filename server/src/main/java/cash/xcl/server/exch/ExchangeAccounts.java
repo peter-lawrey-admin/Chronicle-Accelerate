@@ -1,6 +1,7 @@
 package cash.xcl.server.exch;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import cash.xcl.api.exch.CurrencyPair;
 import net.openhft.chronicle.core.annotation.SingleThreaded;
@@ -54,5 +55,22 @@ class ExchangeAccounts {
         return currencyPair;
     }
 
+    Map<String, Double> getBalance(long accountAddress) {
+        UserAccounts userAccounts = accounts.get(accountAddress);
+        if (userAccounts == null) {
+            return null;
+        } else {
+            Map<String, Double> balances = new HashMap<>(); // we should create a simple 2 keys map class...
+            double baseAmount = userAccounts.getBaseCurrencyAccount().money();
+            if (baseAmount != 0) {
+                balances.put(currencyPair.getBaseCurrency(), baseAmount);
+            }
+            double quoteAmount = userAccounts.getQuoteCurrencyAccount().money();
+            if (quoteAmount != 0) {
+                balances.put(currencyPair.getQuoteCurrency(), quoteAmount);
+            }
+            return balances;
+        }
+    }
 
 }

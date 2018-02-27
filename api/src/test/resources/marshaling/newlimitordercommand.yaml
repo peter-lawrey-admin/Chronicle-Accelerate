@@ -1,5 +1,5 @@
-Valid NewLimitOrderCommand: {
-  input: !cash.xcl.api.exch.NewLimitOrderCommand {
+Valid NewOrderCommand: {
+  input: !cash.xcl.api.exch.NewOrderCommand {
     sourceAddress: 123456,
     eventTime: 1234567,
     action: SELL,
@@ -14,8 +14,8 @@ Valid NewLimitOrderCommand: {
   output: !!null ""
 }
 
-No currency pair NewLimitOrderCommand: {
-  input: !cash.xcl.api.exch.NewLimitOrderCommand {
+No currency pair NewOrderCommand: {
+  input: !cash.xcl.api.exch.NewOrderCommand {
     sourceAddress: 123456,
     eventTime: 1234567,
     action: !!null "",
@@ -30,8 +30,8 @@ No currency pair NewLimitOrderCommand: {
   output: !type java.lang.NullPointerException
 }
 
-No action NewLimitOrderCommand: {
-  input: !cash.xcl.api.exch.NewLimitOrderCommand {
+No action NewOrderCommand: {
+  input: !cash.xcl.api.exch.NewOrderCommand {
     sourceAddress: 123456,
     eventTime: 1234567,
     action: SELL,
@@ -44,8 +44,8 @@ No action NewLimitOrderCommand: {
 }
 
 
-Negative quantity NewLimitOrderCommand: {
-  input: !cash.xcl.api.exch.NewLimitOrderCommand {
+Negative quantity NewOrderCommand: {
+  input: !cash.xcl.api.exch.NewOrderCommand {
     sourceAddress: 123456,
     eventTime: 1234567,
     action: SELL,
@@ -60,8 +60,8 @@ Negative quantity NewLimitOrderCommand: {
   output: !type java.lang.IllegalArgumentException
 }
 
-Zero quantity NewLimitOrderCommand: {
-  input: !cash.xcl.api.exch.NewLimitOrderCommand {
+Zero quantity NewOrderCommand: {
+  input: !cash.xcl.api.exch.NewOrderCommand {
     sourceAddress: 123456,
     eventTime: 1234567,
     action: SELL,
@@ -76,8 +76,8 @@ Zero quantity NewLimitOrderCommand: {
   output: !type java.lang.IllegalArgumentException
 }
 
-NaN price NewLimitOrderCommand: {
-  input: !cash.xcl.api.exch.NewLimitOrderCommand {
+NaN price NewOrderCommand: {
+  input: !cash.xcl.api.exch.NewOrderCommand {
     sourceAddress: 123456,
     eventTime: 1234567,
     action: SELL,
@@ -93,8 +93,8 @@ NaN price NewLimitOrderCommand: {
 }
 
 
-Negative ttl NewLimitOrderCommand: {
-  input: !cash.xcl.api.exch.NewLimitOrderCommand {
+Negative ttl NewOrderCommand: {
+  input: !cash.xcl.api.exch.NewOrderCommand {
     sourceAddress: 123456,
     eventTime: 1234567,
     action: SELL,

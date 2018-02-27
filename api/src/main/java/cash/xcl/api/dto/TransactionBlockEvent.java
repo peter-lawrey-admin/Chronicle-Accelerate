@@ -107,8 +107,8 @@ public class TransactionBlockEvent extends SignedMessage {
         tbe.weekNumber(weekNumber);
         tbe.blockNumber(blockNumber);
         tbe.transactions()
-                .clear()
-                .write(transactions);
+        .clear()
+        .write(transactions);
         return t;
     }
 
@@ -130,6 +130,7 @@ public class TransactionBlockEvent extends SignedMessage {
             public void close() {
                 throw new UnsupportedOperationException();
             }
+
         }));
     }
 
