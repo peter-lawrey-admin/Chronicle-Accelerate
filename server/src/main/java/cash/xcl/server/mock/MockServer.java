@@ -22,30 +22,31 @@ import cash.xcl.api.dto.TransactionBlockVoteEvent;
 import cash.xcl.api.dto.TransferValueCommand;
 import cash.xcl.api.exch.CancelOrderCommand;
 import cash.xcl.api.exch.DepositValueCommand;
-import cash.xcl.api.exch.NewLimitOrderCommand;
+import cash.xcl.api.exch.NewOrderCommand;
 import cash.xcl.api.exch.TransferFromExchangeCommand;
 import cash.xcl.api.exch.TransferToExchangeCommand;
 import cash.xcl.api.exch.WithdrawValueCommand;
+import cash.xcl.api.util.AbstractAllMessages;
 import cash.xcl.api.util.XCLBase32;
 import cash.xcl.server.AddressService;
 import net.openhft.chronicle.bytes.Bytes;
 
-public class MockServer implements ServerIn {
+public class MockServer extends AbstractAllMessages implements ServerIn {
     private final AddressService addressService = new AddressService();
 
     private ServerOut serverOut;
-    private long sourceAddress = 0;
 
     public MockServer(ServerOut serverOut) {
+        super(0);
         this.serverOut = serverOut;
     }
 
     public long sourceAddress() {
-        return sourceAddress;
+        return address;
     }
 
     public MockServer sourceAddress(long sourceAddress) {
-        this.sourceAddress = sourceAddress;
+        this.address = sourceAddress;
         return this;
     }
 
@@ -159,7 +160,7 @@ public class MockServer implements ServerIn {
     }
 
     @Override
-    public void newLimitOrderCommand(NewLimitOrderCommand newLimitOrderCommand) {
+    public void newOrderCommand(NewOrderCommand newLimitOrderCommand) {
         throw new UnsupportedOperationException();
     }
 

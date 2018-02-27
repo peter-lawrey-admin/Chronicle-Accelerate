@@ -1,0 +1,51 @@
+---
+---
+---
+---
+---
+to: 4
+executionReportEvent: {
+  sourceAddress: 321321321321,
+  eventTime: 12345678920000,
+  clientAddress: 4,
+  clientOrderId: clientId,
+  symbol1symbol2: USDXCH,
+  isBuy: true,
+  price: 3.5,
+  quantityFilled: 30.0,
+  quantityRemaining: 0.0
+}
+to: 2
+executionReportEvent: {
+  sourceAddress: 321321321321,
+  eventTime: 12345678920000,
+  clientAddress: 2,
+  clientOrderId: clientId,
+  symbol1symbol2: USDXCH,
+  isBuy: true,
+  price: 3.5,
+  quantityFilled: 20.0,
+  quantityRemaining: 80.0
+}
+to: 5
+executionReportEvent: {
+  sourceAddress: 321321321321,
+  eventTime: 12345678920000,
+  clientAddress: 5,
+  clientOrderId: clientId,
+  symbol1symbol2: USDXCH,
+  isBuy: false,
+  price: 3.5,
+  quantityFilled: 50.0,
+  quantityRemaining: 0.0
+}
+to: 1152921504606846976
+, # 20060714T23:58:24.6068846976
+exchangeRateEvent: {
+  sourceAddress: 321321321321,
+  eventTime: 12345678920000,
+  symbol1symbol2: USDXCH,
+  midPrice: 3.5,
+  spreadPrice: 0.1
+}
+---

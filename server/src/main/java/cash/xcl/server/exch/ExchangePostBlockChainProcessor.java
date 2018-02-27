@@ -1,6 +1,7 @@
 package cash.xcl.server.exch;
 
 
+
 import static cash.xcl.api.dto.Validators.notNull;
 import static cash.xcl.api.exch.Side.BUY;
 
@@ -18,7 +19,7 @@ import cash.xcl.api.exch.DepositValueEvent;
 import cash.xcl.api.exch.ExchangeCommands;
 import cash.xcl.api.exch.ExecutionReport;
 import cash.xcl.api.exch.ExecutionReportEvent;
-import cash.xcl.api.exch.NewLimitOrderCommand;
+import cash.xcl.api.exch.NewOrderCommand;
 import cash.xcl.api.exch.OrderClosedEvent;
 import cash.xcl.api.exch.TransferFromExchangeCommand;
 import cash.xcl.api.exch.TransferToExchangeCommand;
@@ -44,8 +45,8 @@ public class ExchangePostBlockChainProcessor extends LocalPostBlockChainProcesso
 
 
     public ExchangePostBlockChainProcessor(long address, CurrencyPair currencyPair, double tickSize, int lotSize,
-                                           TimeProvider timeProvider,
-                                           AllMessages finalRouter) {
+            TimeProvider timeProvider,
+            AllMessages finalRouter) {
         super(address);
         this.currencyPair = notNull(currencyPair);
         if (!currencyPair.getBaseCurrency().equals("XCL")) {
@@ -100,9 +101,8 @@ public class ExchangePostBlockChainProcessor extends LocalPostBlockChainProcesso
         }
     }
 
-
     @Override
-    public void newLimitOrderCommand(NewLimitOrderCommand newLimitOrderCommand) {
+    public void newOrderCommand(NewOrderCommand newLimitOrderCommand) {
         long accountAddress = newLimitOrderCommand.sourceAddress();
         if (newLimitOrderCommand.getAction() == BUY) {
             Account quoteAccount = exchangeAccounts.getQuoteAccount(accountAddress, true);

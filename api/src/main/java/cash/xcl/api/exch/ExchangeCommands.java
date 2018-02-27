@@ -13,7 +13,7 @@ public interface ExchangeCommands {
 
     void withdrawValueCommand(WithdrawValueCommand withdrawValueCommand);
 
-    void newLimitOrderCommand(NewLimitOrderCommand newLimitOrderCommand);
+    void newOrderCommand(NewOrderCommand newLimitOrderCommand);
 
     void cancelOrderCommand(CancelOrderCommand cancelOrderCommand);
 

@@ -19,7 +19,7 @@ public class ExecutionReport extends AbstractBytesMarshallable {
     private long aggressor;
 
     ExecutionReport() {
-
+    
     }
 
     public ExecutionReport(CurrencyPair pair, Side action, long quantity, double price, long aggressor, long initiator) {
@@ -32,7 +32,7 @@ public class ExecutionReport extends AbstractBytesMarshallable {
         this.aggressor = aggressor;
     }
 
-    @SuppressWarnings({"rawtypes"})
+    @SuppressWarnings({ "rawtypes" })
     @Override
     public void readMarshallable(BytesIn bytes) throws IORuntimeException {
         if (pair == null) {
@@ -46,7 +46,7 @@ public class ExecutionReport extends AbstractBytesMarshallable {
         this.initiator = bytes.readLong();
     }
 
-    @SuppressWarnings({"rawtypes"})
+    @SuppressWarnings({ "rawtypes" })
     @Override
     public void writeMarshallable(BytesOut bytes) {
         pair.writeMarshallable(bytes);
@@ -97,6 +97,7 @@ public class ExecutionReport extends AbstractBytesMarshallable {
     public long getAggressor() {
         return aggressor;
     }
+
 
 
 }

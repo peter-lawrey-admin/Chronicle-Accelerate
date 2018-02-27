@@ -20,13 +20,14 @@ import org.junit.runners.Parameterized.Parameters;
 
 import cash.xcl.api.dto.CurrentBalanceQuery;
 import cash.xcl.api.dto.CurrentBalanceResponse;
+import cash.xcl.api.dto.SignedMessage;
 import cash.xcl.api.exch.CancelOrderCommand;
 import cash.xcl.api.exch.CurrencyPair;
 import cash.xcl.api.exch.DepositValueCommand;
 import cash.xcl.api.exch.DepositValueEvent;
 import cash.xcl.api.exch.ExecutionReport;
 import cash.xcl.api.exch.ExecutionReportEvent;
-import cash.xcl.api.exch.NewLimitOrderCommand;
+import cash.xcl.api.exch.NewOrderCommand;
 import cash.xcl.api.exch.OrderClosedEvent;
 import cash.xcl.api.exch.WithdrawValueCommand;
 import cash.xcl.api.exch.WithdrawValueEvent;
@@ -37,6 +38,7 @@ import net.openhft.chronicle.wire.AbstractMarshallable;
 import net.openhft.chronicle.wire.BinaryWire;
 import net.openhft.chronicle.wire.TextWire;
 import net.openhft.chronicle.wire.Wire;
+
 
 @RunWith(Parameterized.class)
 public class MarshalingTest {
@@ -59,8 +61,9 @@ public class MarshalingTest {
                 "marshaling/depositvaluecommand.yaml", "marshaling/depositvalueevent.yaml", "marshaling/withdrawvaluecommand.yaml",
                 "marshaling/withdrawvalueevent.yaml", "marshaling/currentbalancequery.yaml", "marshaling/currentbalanceresponse.yaml"};
         Class<?>[] objClass = {CurrencyPair.class, CancelOrderCommand.class, ExecutionReport.class, ExecutionReportEvent.class,
-                OrderClosedEvent.class, NewLimitOrderCommand.class, DepositValueCommand.class, DepositValueEvent.class,
+                OrderClosedEvent.class, NewOrderCommand.class, DepositValueCommand.class, DepositValueEvent.class,
                 WithdrawValueCommand.class, WithdrawValueEvent.class, CurrentBalanceQuery.class, CurrentBalanceResponse.class};
+        SignedMessage.addAliases();
         ArrayList<Object[]> params = new ArrayList<>();
         for (int i = 0; i < files.length; i++) {
             TextWire textWire = new TextWire(BytesUtil.readFile(files[i]));
@@ -70,7 +73,9 @@ public class MarshalingTest {
             System.out.println("Found " + allTestData.size() + " test scenarios");
             allTestData.forEach((k, v) -> {
                 Map<?, ?> testData = v;
-                AbstractMarshallable obj = (AbstractMarshallable) testData.get("input");
+                Object input = testData.get("input");
+                System.out.println(input);
+                AbstractMarshallable obj = (AbstractMarshallable) input;
                 Class<?> resultClass = (Class<?>) testData.get("output");
                 // testMarshall(resultClass, k, obj, resultClass);
                 Object[] allParams = new Object[4];
@@ -125,6 +130,5 @@ public class MarshalingTest {
     public void cleanup() {
         bytes.release();
     }
-
 
 }

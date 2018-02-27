@@ -37,7 +37,7 @@ import cash.xcl.api.exch.CancelOrderCommand;
 import cash.xcl.api.exch.DepositValueCommand;
 import cash.xcl.api.exch.DepositValueEvent;
 import cash.xcl.api.exch.ExecutionReportEvent;
-import cash.xcl.api.exch.NewLimitOrderCommand;
+import cash.xcl.api.exch.NewOrderCommand;
 import cash.xcl.api.exch.OrderClosedEvent;
 import cash.xcl.api.exch.TransferFromExchangeCommand;
 import cash.xcl.api.exch.TransferToExchangeCommand;
@@ -45,8 +45,8 @@ import cash.xcl.api.exch.WithdrawValueCommand;
 import cash.xcl.api.exch.WithdrawValueEvent;
 
 public class AbstractAllMessages implements AllMessagesServer {
-    protected final long address;
-    private AllMessagesLookup lookup;
+    protected long address;
+    protected AllMessagesLookup lookup;
 
     public AbstractAllMessages(long address) {
         this.address = address;
@@ -142,7 +142,7 @@ public class AbstractAllMessages implements AllMessagesServer {
 
     @Override
     public void createNewAddressCommand(CreateNewAddressCommand createNewAddressCommand) {
-        throw new UnsupportedOperationException(getClass().getName());
+        // todo any further validation required?
     }
 
     @Override
@@ -156,10 +156,9 @@ public class AbstractAllMessages implements AllMessagesServer {
     }
 
     @Override
-    public void newLimitOrderCommand(NewLimitOrderCommand newLimitOrderCommand) {
+    public void newOrderCommand(NewOrderCommand newOrderCommand) {
         throw new UnsupportedOperationException(getClass().getName());
     }
-
 
     @Override
     public void cancelOrderCommand(CancelOrderCommand cancelOrderCommand) {

@@ -23,6 +23,7 @@ public class ExecutionReportEvent extends SignedMessage {
         if (executionReport == null) {
             executionReport = new ExecutionReport();
         }
+
         executionReport.readMarshallable(bytes);
     }
 

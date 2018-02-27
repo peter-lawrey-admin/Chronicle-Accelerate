@@ -1,16 +1,13 @@
 package cash.xcl.api.exch;
 
-import static cash.xcl.api.dto.Validators.notNaN;
-import static cash.xcl.api.dto.Validators.notNull;
-import static cash.xcl.api.dto.Validators.positive;
-import static cash.xcl.api.dto.Validators.strictPositive;
-
 import cash.xcl.api.dto.MessageTypes;
 import cash.xcl.api.dto.SignedMessage;
 import net.openhft.chronicle.bytes.BytesIn;
 import net.openhft.chronicle.bytes.BytesOut;
 
-public class NewLimitOrderCommand extends SignedMessage {
+import static cash.xcl.api.dto.Validators.*;
+
+public class NewOrderCommand extends SignedMessage {
 
     private Side action;
     private long quantity;
@@ -18,11 +15,11 @@ public class NewLimitOrderCommand extends SignedMessage {
     private CurrencyPair currencyPair;
     private long timeToLive; // in milliseconds
 
-    public NewLimitOrderCommand() {
+    public NewOrderCommand() {
 
     }
 
-    public NewLimitOrderCommand(long sourceAddress, long eventTime, Side action, long qty, double maxPrice, CurrencyPair currencyPair,
+    public NewOrderCommand(long sourceAddress, long eventTime, Side action, long qty, double maxPrice, CurrencyPair currencyPair,
                                 long timeToLive) {
         super(sourceAddress, eventTime);
         this.action = action;
@@ -56,7 +53,7 @@ public class NewLimitOrderCommand extends SignedMessage {
 
     @Override
     public int messageType() {
-        return MessageTypes.NEW_LIMIT_ORDER_COMMAND;
+        return MessageTypes.NEW_ORDER_COMMAND;
     }
 
 

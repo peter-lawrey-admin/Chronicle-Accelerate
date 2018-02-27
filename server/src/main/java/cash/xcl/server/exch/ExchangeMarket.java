@@ -1,21 +1,20 @@
 package cash.xcl.server.exch;
 
-import static cash.xcl.api.dto.Validators.positive;
-import static cash.xcl.api.dto.Validators.validNumber;
-import static cash.xcl.api.exch.Side.BUY;
-import static cash.xcl.api.exch.Side.SELL;
+import cash.xcl.api.exch.NewOrderCommand;
+import cash.xcl.api.exch.OrderClosedEvent.REASON;
+import cash.xcl.api.exch.Side;
+import net.openhft.chronicle.core.annotation.SingleThreaded;
 
 import java.io.Closeable;
 import java.util.Iterator;
 import java.util.PriorityQueue;
 import java.util.TreeSet;
 
+import static cash.xcl.api.dto.Validators.positive;
+import static cash.xcl.api.dto.Validators.validNumber;
+import static cash.xcl.api.exch.Side.BUY;
+import static cash.xcl.api.exch.Side.SELL;
 import static java.lang.Math.min;
-
-import cash.xcl.api.exch.NewLimitOrderCommand;
-import cash.xcl.api.exch.OrderClosedEvent.REASON;
-import cash.xcl.api.exch.Side;
-import net.openhft.chronicle.core.annotation.SingleThreaded;
 
 @SingleThreaded
 class ExchangeMarket implements Closeable {
@@ -57,7 +56,7 @@ class ExchangeMarket implements Closeable {
         this.currentReferenceTimeinMillis = currentTime;
     }
 
-    void executeOrder(NewLimitOrderCommand newLimitOrderCommand) {
+    void executeOrder(NewOrderCommand newLimitOrderCommand) {
         long orderId = idGen++;
         Side orderSide = newLimitOrderCommand.getAction();
         double orderPrice = orderSide.roundWorse(newLimitOrderCommand.getMaxPrice(), tickSize);

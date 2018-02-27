@@ -4,15 +4,14 @@ import net.openhft.chronicle.bytes.BytesIn;
 import net.openhft.chronicle.bytes.BytesOut;
 
 public class ExchangeRateEvent extends SignedMessage {
-    private String symbol1, symbol2;
-    private double buyPrice, sellPrice;
+    private String symbol1symbol2;
+    private double midPrice, spreadPrice;
 
-    public ExchangeRateEvent(long sourceAddress, long eventTime, String symbol1, String symbol2, double buyPrice, double sellPrice) {
+    public ExchangeRateEvent(long sourceAddress, long eventTime, String symbol1symbol2, double midPrice, double spreadPrice) {
         super(sourceAddress, eventTime);
-        this.symbol1 = symbol1;
-        this.symbol2 = symbol2;
-        this.buyPrice = buyPrice;
-        this.sellPrice = sellPrice;
+        this.symbol1symbol2 = symbol1symbol2;
+        this.midPrice = midPrice;
+        this.spreadPrice = spreadPrice;
     }
 
     public ExchangeRateEvent() {
@@ -21,18 +20,16 @@ public class ExchangeRateEvent extends SignedMessage {
 
     @Override
     protected void readMarshallable2(BytesIn<?> bytes) {
-        symbol1 = bytes.readUtf8();
-        symbol2 = bytes.readUtf8();
-        buyPrice = bytes.readDouble();
-        sellPrice = bytes.readDouble();
+        symbol1symbol2 = bytes.readUtf8();
+        midPrice = bytes.readDouble();
+        spreadPrice = bytes.readDouble();
     }
 
     @Override
     protected void writeMarshallable2(BytesOut<?> bytes) {
-        bytes.writeUtf8(symbol1);
-        bytes.writeUtf8(symbol2);
-        bytes.writeDouble(buyPrice);
-        bytes.writeDouble(sellPrice);
+        bytes.writeUtf8(symbol1symbol2);
+        bytes.writeDouble(midPrice);
+        bytes.writeDouble(spreadPrice);
     }
 
     @Override
@@ -40,39 +37,30 @@ public class ExchangeRateEvent extends SignedMessage {
         return MessageTypes.EXCHANGE_RATE_EVENT;
     }
 
-    public String symbol1() {
-        return symbol1;
+    public String symbol1symbol2() {
+        return symbol1symbol2;
     }
 
-    public ExchangeRateEvent symbol1(String symbol1) {
-        this.symbol1 = symbol1;
+    public ExchangeRateEvent symbol1symbol2(String symbol1symbol2) {
+        this.symbol1symbol2 = symbol1symbol2;
         return this;
     }
 
-    public String symbol2() {
-        return symbol2;
+    public double midPrice() {
+        return midPrice;
     }
 
-    public ExchangeRateEvent symbol2(String symbol2) {
-        this.symbol2 = symbol2;
+    public ExchangeRateEvent midPrice(double midPrice) {
+        this.midPrice = midPrice;
         return this;
     }
 
-    public double buyPrice() {
-        return buyPrice;
+    public double spreadPrice() {
+        return spreadPrice;
     }
 
-    public ExchangeRateEvent buyPrice(double buyPrice) {
-        this.buyPrice = buyPrice;
-        return this;
-    }
-
-    public double sellPrice() {
-        return sellPrice;
-    }
-
-    public ExchangeRateEvent sellPrice(double sellPrice) {
-        this.sellPrice = sellPrice;
+    public ExchangeRateEvent spreadPrice(double spreadPrice) {
+        this.spreadPrice = spreadPrice;
         return this;
     }
 }

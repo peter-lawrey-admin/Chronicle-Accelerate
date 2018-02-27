@@ -20,7 +20,7 @@ import cash.xcl.api.dto.SubscriptionSuccessResponse;
 import cash.xcl.api.dto.TransferValueCommand;
 import cash.xcl.api.exch.CancelOrderCommand;
 import cash.xcl.api.exch.ExecutionReportEvent;
-import cash.xcl.api.exch.NewLimitOrderCommand;
+import cash.xcl.api.exch.NewOrderCommand;
 
 public class MockGateway implements ClientOut {
     private final MockServer mockServer = new MockServer(null);
@@ -55,10 +55,9 @@ public class MockGateway implements ClientOut {
     }
 
     @Override
-    public void newLimitOrderCommand(NewLimitOrderCommand newLimitOrderCommand) {
-        mockServer.newLimitOrderCommand(newLimitOrderCommand);
+    public void newOrderCommand(NewOrderCommand newOrderCommand) {
+        mockServer.newOrderCommand(newOrderCommand);
     }
-
 
     @Override
     public void cancelOrderCommand(CancelOrderCommand cancelOrderCommand) {

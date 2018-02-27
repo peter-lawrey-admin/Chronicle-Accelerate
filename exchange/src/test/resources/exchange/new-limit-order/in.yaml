@@ -1,0 +1,23 @@
+newOrderCommand: {
+  sourceAddress: 2,
+  eventTime: 0,
+  clientOrderId: clientId,
+  symbol1symbol2: USDXCH,
+  isBuy: true,
+  isResting: false,
+  quantity: 100.0,
+  price: 3.6
+}
+---
+newOrderCommand: {
+  sourceAddress: 3,
+  eventTime: 0,
+  clientOrderId: clientId,
+  symbol1symbol2: USDXCH,
+  isBuy: false,
+  isResting: false,
+  quantity: 100.0,
+  price: 3.4
+}
+---
+notifyEndOfRound: []

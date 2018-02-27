@@ -1,14 +1,11 @@
 package cash.xcl.api.exch;
 
-import static cash.xcl.api.dto.Validators.notNaN;
+import net.openhft.chronicle.core.annotation.NotNull;
 
 import java.util.function.Consumer;
 
-import static java.lang.Math.abs;
-import static java.lang.Math.nextUp;
-import static java.lang.Math.round;
-
-import net.openhft.chronicle.core.annotation.NotNull;
+import static cash.xcl.api.dto.Validators.notNaN;
+import static java.lang.Math.*;
 
 public enum Side {
     BUY {

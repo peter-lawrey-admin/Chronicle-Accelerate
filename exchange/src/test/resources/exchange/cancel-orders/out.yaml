@@ -1,0 +1,29 @@
+---
+---
+to: 2
+executionReportEvent: {
+  sourceAddress: 321321321321,
+  eventTime: 12345678920000,
+  clientAddress: 2,
+  clientOrderId: clientId,
+  symbol1symbol2: USDXCH,
+  isBuy: true,
+  price: NaN,
+  quantityFilled: 0.0,
+  quantityRemaining: 0.0
+}
+---
+to: 3
+executionReportEvent: {
+  sourceAddress: 321321321321,
+  eventTime: 12345678920000,
+  clientAddress: 3,
+  clientOrderId: clientId,
+  symbol1symbol2: USDXCH,
+  isBuy: false,
+  price: NaN,
+  quantityFilled: 0.0,
+  quantityRemaining: 0.0
+}
+---
+---

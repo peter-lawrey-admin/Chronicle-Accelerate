@@ -37,7 +37,7 @@ import cash.xcl.api.exch.CancelOrderCommand;
 import cash.xcl.api.exch.DepositValueCommand;
 import cash.xcl.api.exch.DepositValueEvent;
 import cash.xcl.api.exch.ExecutionReportEvent;
-import cash.xcl.api.exch.NewLimitOrderCommand;
+import cash.xcl.api.exch.NewOrderCommand;
 import cash.xcl.api.exch.OrderClosedEvent;
 import cash.xcl.api.exch.TransferFromExchangeCommand;
 import cash.xcl.api.exch.TransferToExchangeCommand;
@@ -157,10 +157,9 @@ public class RegionalFrame implements AllMessages {
     }
 
     @Override
-    public void newLimitOrderCommand(NewLimitOrderCommand newLimitOrderCommand) {
+    public void newOrderCommand(NewOrderCommand newOrderCommand) {
         throw new UnsupportedOperationException();
     }
-
 
     @Override
     public void cancelOrderCommand(CancelOrderCommand cancelOrderCommand) {

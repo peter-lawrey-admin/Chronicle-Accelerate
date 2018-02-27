@@ -36,7 +36,7 @@ import cash.xcl.api.exch.CancelOrderCommand;
 import cash.xcl.api.exch.DepositValueCommand;
 import cash.xcl.api.exch.DepositValueEvent;
 import cash.xcl.api.exch.ExecutionReportEvent;
-import cash.xcl.api.exch.NewLimitOrderCommand;
+import cash.xcl.api.exch.NewOrderCommand;
 import cash.xcl.api.exch.OrderClosedEvent;
 import cash.xcl.api.exch.TransferFromExchangeCommand;
 import cash.xcl.api.exch.TransferToExchangeCommand;
@@ -228,8 +228,8 @@ public abstract class WritingAllMessages implements AllMessages {
     }
 
     @Override
-    public void newLimitOrderCommand(NewLimitOrderCommand newLimitOrderCommand) {
-        write(newLimitOrderCommand);
+    public void newOrderCommand(NewOrderCommand newOrderCommand) {
+        write(newOrderCommand);
     }
 
 

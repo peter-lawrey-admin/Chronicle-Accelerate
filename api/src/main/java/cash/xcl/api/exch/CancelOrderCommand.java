@@ -17,7 +17,7 @@ public class CancelOrderCommand extends SignedMessage {
     public CancelOrderCommand() {
 
     }
-
+    
     public long getOrderTime() {
         return orderTime;
     }

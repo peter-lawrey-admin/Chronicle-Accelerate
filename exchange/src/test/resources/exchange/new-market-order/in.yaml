@@ -1,0 +1,47 @@
+newOrderCommand: {
+  sourceAddress: 2,
+  eventTime: 0,
+  clientOrderId: clientId,
+  symbol1symbol2: USDXCH,
+  isBuy: true,
+  isResting: true,
+  quantity: 100.0,
+  price: 3.4
+}
+---
+newOrderCommand: {
+  sourceAddress: 3,
+  eventTime: 0,
+  clientOrderId: clientId,
+  symbol1symbol2: USDXCH,
+  isBuy: false,
+  isResting: true,
+  quantity: 100.0,
+  price: 3.6
+}
+---
+notifyEndOfRound: []
+---
+newOrderCommand: {
+  sourceAddress: 4,
+  eventTime: 0,
+  clientOrderId: clientId,
+  symbol1symbol2: USDXCH,
+  isBuy: true,
+  isResting: false,
+  quantity: 30.0,
+  price: NaN
+}
+---
+newOrderCommand: {
+  sourceAddress: 5,
+  eventTime: 0,
+  clientOrderId: clientId,
+  symbol1symbol2: USDXCH,
+  isBuy: false,
+  isResting: false,
+  quantity: 50.0,
+  price: NaN
+}
+---
+notifyEndOfRound: []
