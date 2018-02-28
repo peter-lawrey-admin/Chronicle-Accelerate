@@ -1,0 +1,4 @@
+[width="80%",cols="1,4,3",options="header"]
+|===
+| Byte offset | Field | Field Type
+| 0 - 81 | Message header | See header structure
