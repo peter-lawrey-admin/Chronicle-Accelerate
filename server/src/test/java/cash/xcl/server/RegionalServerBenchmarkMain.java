@@ -1,32 +1,22 @@
 package cash.xcl.server;
 
-import static org.junit.Assert.assertEquals;
-
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.LinkedBlockingQueue;
-
 import cash.xcl.api.AllMessages;
-import cash.xcl.api.dto.CreateNewAddressEvent;
-import cash.xcl.api.dto.OpeningBalanceEvent;
-import cash.xcl.api.dto.SubscriptionQuery;
-import cash.xcl.api.dto.TransferValueCommand;
+import cash.xcl.api.dto.*;
+import cash.xcl.api.tcp.WritingAllMessages;
 import cash.xcl.api.tcp.XCLClient;
 import cash.xcl.api.tcp.XCLServer;
-import cash.xcl.api.util.XCLBase32;
 import net.openhft.chronicle.bytes.Bytes;
-import net.openhft.chronicle.core.Mocker;
+import net.openhft.chronicle.core.Jvm;
 import net.openhft.chronicle.core.io.Closeable;
 import net.openhft.chronicle.salt.Ed25519;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import static org.junit.Assert.assertEquals;
 
 public class RegionalServerBenchmarkMain {
 
@@ -36,35 +26,6 @@ public class RegionalServerBenchmarkMain {
 
     private Bytes publicKey = Bytes.allocateDirect(Ed25519.PUBLIC_KEY_LENGTH);
     private Bytes secretKey = Bytes.allocateDirect(Ed25519.SECRET_KEY_LENGTH);
-
-
-
-    // Not using JUnit at the moment because
-    // on Windows, using JUnit and the native encryption library will crash the JVM.
-    public static void main(String[] args) throws IOException, InterruptedException, ExecutionException {
-        RegionalServerBenchmarkMain benchmarkMain = null;
-        try {
-            int iterations = 10;
-            int transfersPerThread = 10_000;
-            int total = iterations * transfersPerThread;
-            benchmarkMain = new RegionalServerBenchmarkMain(1000, 50, 10, 4);
-            int oneThread = benchmarkMain.benchmark(iterations, 1, transfersPerThread);
-            int twoThreads = benchmarkMain.benchmark(iterations, 2, transfersPerThread);
-            int threeThreads = benchmarkMain.benchmark(iterations, 3, transfersPerThread);
-            int fourThreads = benchmarkMain.benchmark(iterations, 4, transfersPerThread);
-            System.out.println("Total number of messages per benchmark = " + total );
-            System.out.println("benchmark - oneThread = " + oneThread + " messages per second");
-            System.out.println("benchmark - twoThreads = " + twoThreads + " messages per second");
-            System.out.println("benchmark - threeThread = " + threeThreads + " messages per second");
-            System.out.println("benchmark - fourThreads = " + fourThreads + " messages per second");
-        } catch(Exception e) {
-            e.printStackTrace();
-        } finally {
-            //Jvm.pause(1000);
-            //benchmarkMain.close();
-            System.exit(0);
-        }
-    }
 
 
     public RegionalServerBenchmarkMain(int mainBlockPeriodMS,
@@ -79,7 +40,7 @@ public class RegionalServerBenchmarkMain {
 
 
         long[] clusterAddresses = {serverAddress};
-        this.gateway = VanillaGateway.newGateway(serverAddress, "gb1dn", clusterAddresses,  mainBlockPeriodMS, localBlockPeriodMS);
+        this.gateway = VanillaGateway.newGateway(serverAddress, "gb1dn", clusterAddresses, mainBlockPeriodMS, localBlockPeriodMS);
         this.server = new XCLServer("one", serverAddress, serverAddress, secretKey, gateway);
         gateway.start();
         // register the address - otherwise, verify will fail
@@ -107,9 +68,9 @@ public class RegionalServerBenchmarkMain {
                         destinationAddress,
                         "USD",
                         1000);
-                BlockingQueue<String> queue = new LinkedBlockingQueue<>();
+                AtomicInteger count = new AtomicInteger();
                 XCLClient client = new XCLClient("client", "localhost", serverAddress, sourceAddress, secretKey,
-                        Mocker.queuing(AllMessages.class, "client ", queue));
+                        new MyWritingAllMessages(count));
                 client.openingBalanceEvent(obe1);
                 client.openingBalanceEvent(obe2);
                 // how do we know if the openingBalanceEvent msg was a success or a failure?
@@ -117,7 +78,32 @@ public class RegionalServerBenchmarkMain {
         }
     }
 
-
+    // Not using JUnit at the moment because
+    // on Windows, using JUnit and the native encryption library will crash the JVM.
+    public static void main(String[] args) {
+        RegionalServerBenchmarkMain benchmarkMain = null;
+        try {
+            int iterations = 5;
+            int transfersPerThread = 100_000;
+            int total = iterations * transfersPerThread;
+            benchmarkMain = new RegionalServerBenchmarkMain(1000, 10, 10, 4);
+            int oneThread = benchmarkMain.benchmark(iterations, 1, transfersPerThread);
+            int twoThreads = benchmarkMain.benchmark(iterations, 2, transfersPerThread);
+            int threeThreads = benchmarkMain.benchmark(iterations, 3, transfersPerThread);
+            int fourThreads = benchmarkMain.benchmark(iterations, 4, transfersPerThread);
+            System.out.println("Total number of messages per benchmark = " + total);
+            System.out.println("benchmark - oneThread = " + oneThread + " messages per second");
+            System.out.println("benchmark - twoThreads = " + twoThreads + " messages per second");
+            System.out.println("benchmark - threeThread = " + threeThreads + " messages per second");
+            System.out.println("benchmark - fourThreads = " + fourThreads + " messages per second");
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            //Jvm.pause(1000);
+            //benchmarkMain.close();
+            System.exit(0);
+        }
+    }
 
     private int benchmark(int iterations, int clientThreads, int transfersPerThread) throws IOException, InterruptedException, ExecutionException {
 
@@ -136,21 +122,26 @@ public class RegionalServerBenchmarkMain {
                 final int destinationAddress = sourceAddress + 1000000;
                 futures.add(service.submit((Callable<Void>) () -> {
                     try {
-                        BlockingQueue<String> queue = new LinkedBlockingQueue<>();
-                        AllMessages queuing = Mocker.queuing(AllMessages.class, "one ", queue);
+                        AtomicInteger count = new AtomicInteger();
+                        AllMessages queuing = new MyWritingAllMessages(count);
                         XCLClient client = new XCLClient("client", "localhost", this.serverAddress, sourceAddress, secretKey, queuing);
                         client.subscriptionQuery(new SubscriptionQuery(sourceAddress, 0));
-                        TransferValueCommand transferValueCommand = new TransferValueCommand(sourceAddress, 0, destinationAddress, 0, "USD", "");
+                        TransferValueCommand tvc1 = new TransferValueCommand(sourceAddress, 0, destinationAddress, 1e-9, "USD", "");
                         for (int i = 0; i < transfersPerThread; i += clientThreads) {
-                            transferValueCommand.amount(i+1);
-                            client.transferValueCommand(transferValueCommand);
+                            client.transferValueCommand(tvc1);
+//                            if (i % 20 == 0)
+//                                Jvm.pause(1);
                         }
                         for (int i = 0; i < transfersPerThread; i += clientThreads) {
-                            queue.take();
+                            while (count.get() <= 0) {
+                                System.out.println("pause " + i);
+                                Jvm.pause(1);
+                            }
+                            count.decrementAndGet();
                         }
                         //client.close();
                         Closeable.closeQuietly(client);
-                        assertEquals(0, queue.size());
+                        assertEquals(0, count.get());
                     } catch (Throwable e) {
                         e.printStackTrace();
                     }
@@ -163,12 +154,12 @@ public class RegionalServerBenchmarkMain {
             long time = System.nanoTime() - start;
 
             double timeInSeconds = (time / 1e9);
-            System.out.printf("Iteration %d - Throughput: %,d messages per sec%n", iterationNumber,  (int) (transfersPerThread / timeInSeconds) );
+            System.out.printf("Iteration %d - Throughput: %,d messages per sec%n", iterationNumber, (int) (transfersPerThread / timeInSeconds));
             allIterationsTotalTime += timeInSeconds;
             service.shutdown();
         }
 
-        int average = (int) (transfersPerThread  / (allIterationsTotalTime / iterations));
+        int average = (int) (transfersPerThread / (allIterationsTotalTime / iterations));
 
         System.out.printf("Average Throughput after sending %d messages (%d messages * %d times) using %d client threads = %,d / sec%n",
                 transfersPerThread * iterations,
@@ -177,12 +168,35 @@ public class RegionalServerBenchmarkMain {
                 clientThreads,
                 average);
 
-        ((VanillaGateway)gateway).printBalances();
+        ((VanillaGateway) gateway).printBalances();
 
         return average;
     }
 
     public void close() {
         Closeable.closeQuietly(server);
+    }
+
+    private static class MyWritingAllMessages extends WritingAllMessages {
+        private final AtomicInteger count;
+
+        public MyWritingAllMessages(AtomicInteger count) {
+            this.count = count;
+        }
+
+        @Override
+        public AllMessages to(long addressOrRegion) {
+            return this;
+        }
+
+        @Override
+        protected void write(SignedMessage message) {
+            count.incrementAndGet();
+        }
+
+        @Override
+        public void close() {
+
+        }
     }
 }

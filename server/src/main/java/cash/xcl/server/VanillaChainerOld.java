@@ -5,7 +5,7 @@ import cash.xcl.api.dto.SignedMessage;
 import cash.xcl.api.dto.TransactionBlockEvent;
 import cash.xcl.api.tcp.WritingAllMessages;
 
-public class VanillaChainerOld extends WritingAllMessages {
+public class VanillaChainerOld extends WritingAllMessages implements Chainer {
     private final Object transactionLock = new Object();
     private TransactionBlockEvent tbe = new TransactionBlockEvent();
     private TransactionBlockEvent tbe2 = new TransactionBlockEvent();

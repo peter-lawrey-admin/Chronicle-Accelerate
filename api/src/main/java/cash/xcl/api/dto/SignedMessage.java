@@ -1,16 +1,6 @@
 package cash.xcl.api.dto;
 
-import java.nio.ByteBuffer;
-
-import org.jetbrains.annotations.NotNull;
-
-import cash.xcl.api.exch.CancelOrderCommand;
-import cash.xcl.api.exch.DepositValueCommand;
-import cash.xcl.api.exch.DepositValueEvent;
-import cash.xcl.api.exch.ExecutionReportEvent;
-import cash.xcl.api.exch.NewOrderCommand;
-import cash.xcl.api.exch.WithdrawValueCommand;
-import cash.xcl.api.exch.WithdrawValueEvent;
+import cash.xcl.api.exch.*;
 import net.openhft.chronicle.bytes.Bytes;
 import net.openhft.chronicle.bytes.BytesIn;
 import net.openhft.chronicle.bytes.BytesOut;
@@ -20,6 +10,9 @@ import net.openhft.chronicle.core.pool.ClassAliasPool;
 import net.openhft.chronicle.salt.Ed25519;
 import net.openhft.chronicle.wire.AbstractBytesMarshallable;
 import net.openhft.chronicle.wire.Marshallable;
+import org.jetbrains.annotations.NotNull;
+
+import java.nio.ByteBuffer;
 
 public abstract class SignedMessage extends AbstractBytesMarshallable {
     static {
@@ -132,7 +125,8 @@ public abstract class SignedMessage extends AbstractBytesMarshallable {
         } else {
             sigAndMsg.clear();
         }
-        Ed25519.sign(sigAndMsg, tempBytes, secretKey);
+//        Ed25519.sign(sigAndMsg, tempBytes, secretKey);
+        sigAndMsg.clear().writeSkip(Ed25519.SIGNATURE_LENGTH).write(tempBytes);
     }
 
     @Override

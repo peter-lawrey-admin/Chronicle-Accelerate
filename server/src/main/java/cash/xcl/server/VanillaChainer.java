@@ -8,7 +8,7 @@ import cash.xcl.api.tcp.WritingAllMessages;
 import java.util.LinkedList;
 import java.util.Queue;
 
-public class VanillaChainer extends WritingAllMessages {
+public class VanillaChainer extends WritingAllMessages implements Chainer {
     private final Object transactionLock = new Object();
     private TransactionBlockEvent tbe = new TransactionBlockEvent();
     private TransactionBlockEvent tbe2 = new TransactionBlockEvent();

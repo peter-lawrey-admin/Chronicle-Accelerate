@@ -68,4 +68,14 @@ public class TransactionBlockEventTest {
                 "]\n", out.toString().replaceAll("\r", ""));
 
     }
+
+    @Test
+    public void testAdding10Kmessages() {
+        TransactionBlockEvent tbe = new TransactionBlockEvent();
+        tbe.region("gb1nd");
+        TransferValueCommand tvc = new TransferValueCommand(0, 3, 1, 1.23, "XCL", "init");
+        for (int i = 0; i < 1_000_000; i++) {
+            tbe.addTransaction(tvc);
+        }
+    }
 }

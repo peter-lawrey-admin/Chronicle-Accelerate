@@ -1,7 +1,5 @@
 package cash.xcl.api.dto;
 
-import org.jetbrains.annotations.NotNull;
-
 import cash.xcl.api.AllMessages;
 import cash.xcl.api.tcp.WritingAllMessages;
 import net.openhft.chronicle.bytes.Bytes;
@@ -12,6 +10,7 @@ import net.openhft.chronicle.core.io.IORuntimeException;
 import net.openhft.chronicle.wire.Marshallable;
 import net.openhft.chronicle.wire.WireIn;
 import net.openhft.chronicle.wire.WireOut;
+import org.jetbrains.annotations.NotNull;
 
 
 public class TransactionBlockEvent extends SignedMessage {
@@ -24,8 +23,6 @@ public class TransactionBlockEvent extends SignedMessage {
 
     private transient int count;
     private transient DtoParser dtoParser;
-    //private transient volatile boolean isBufferFull = false;
-    private transient boolean isBufferFull = false;
 
     public TransactionBlockEvent(long sourceAddress, long eventTime, String region, int weekNumber, long blockNumber) {
         super(sourceAddress, eventTime);
@@ -46,15 +43,9 @@ public class TransactionBlockEvent extends SignedMessage {
     }
 
     public TransactionBlockEvent addTransaction(SignedMessage message) {
-        if( isBufferFull ) {
-            throw new IllegalStateException("TransactionBlockEvent byte buffer is full: " + transactions.writePosition() + " bytes and " + count + " messages");
-        }
         count++;
-        message.writeMarshallable(transactions);
+        transactions.writeMarshallableLength16(message);
         //System.out.println("transactions writePosition " + transactions.writePosition() );
-        if(transactions.writePosition() > MAX_16_BIT_NUMBER  ) {
-            isBufferFull = true;
-        }
         return this;
     }
 
@@ -63,9 +54,16 @@ public class TransactionBlockEvent extends SignedMessage {
             dtoParser = new DtoParser();
         }
         transactions.readPosition(0);
+        long limit = transactions.readLimit();
         while (!transactions.isEmpty()) {
-            //System.out.println(Thread.currentThread().getName() + " " + transactions);
-            dtoParser.parseOne(transactions, allMessages);
+            try {
+                int length = transactions.readUnsignedShort();
+                transactions.readLimit(transactions.readPosition() + length);
+                dtoParser.parseOne(transactions, allMessages);
+            } finally {
+                transactions.readPosition(transactions.readLimit());
+                transactions.readLimit(limit);
+            }
         }
         transactions.readPosition(0);
     }
@@ -187,6 +185,6 @@ public class TransactionBlockEvent extends SignedMessage {
     }
 
     public boolean isBufferFull() {
-        return isBufferFull;
+        return transactions.writePosition() > MAX_16_BIT_NUMBER;
     }
 }

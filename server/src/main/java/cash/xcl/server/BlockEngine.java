@@ -1,26 +1,24 @@
 package cash.xcl.server;
 
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-
 import cash.xcl.api.AllMessagesLookup;
 import cash.xcl.api.AllMessagesServer;
 import cash.xcl.api.dto.*;
 import cash.xcl.api.util.AbstractAllMessages;
 import cash.xcl.api.util.CountryRegion;
-import cash.xcl.server.accounts.AccountService;
-import cash.xcl.server.accounts.VanillaAccountService;
 import net.openhft.chronicle.core.Jvm;
 import net.openhft.chronicle.core.time.SystemTimeProvider;
 import net.openhft.chronicle.threads.NamedThreadFactory;
+
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class BlockEngine extends AbstractAllMessages {
     private final String region;
     private final int periodMS;
 
     private final AllMessagesServer fastPath;
-    private final VanillaChainer chainer;
+    private final Chainer chainer;
     private final Gossiper gossiper;
     private final Voter voter;
     private final VoteTaker voteTaker;
@@ -38,7 +36,7 @@ public class BlockEngine extends AbstractAllMessages {
                        String region,
                        int periodMS,
                        AllMessagesServer fastPath,
-                       VanillaChainer chainer,
+                       Chainer chainer,
                        AllMessagesServer postBlockChainProcessor,
                        long[] clusterAddresses) {
         super(address);
@@ -61,7 +59,7 @@ public class BlockEngine extends AbstractAllMessages {
     public static BlockEngine newMain(long address, int periodMS, long[] clusterAddresses) {
         final AddressService addressService = new AddressService();
 
-        VanillaChainer chainer = new VanillaChainer(CountryRegion.MAIN_NAME);
+        Chainer chainer = new VanillaChainer(CountryRegion.MAIN_NAME);
         AllMessagesServer fastPath = new MainFastPath(address, chainer, addressService);
 
         AllMessagesServer postBlockChainProcessor = new MainPostBlockChainProcessor(address, addressService);
@@ -69,7 +67,7 @@ public class BlockEngine extends AbstractAllMessages {
     }
 
     public static BlockEngine newLocal(long address, String region, int periodMS, long[] clusterAddresses) {
-        VanillaChainer chainer = new VanillaChainer(region);
+        Chainer chainer = new VanillaChainerOld(region);
         AllMessagesServer fastPath = new MainFastPath(address, chainer, null);
 
         AllMessagesServer postBlockChainProcessor = new LocalPostBlockChainProcessor(address);

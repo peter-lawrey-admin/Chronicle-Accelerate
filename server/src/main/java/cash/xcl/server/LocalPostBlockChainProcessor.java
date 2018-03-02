@@ -3,7 +3,10 @@ package cash.xcl.server;
 import cash.xcl.api.AllMessages;
 import cash.xcl.api.AllMessagesServer;
 import cash.xcl.api.PostBlockChainProcessor;
-import cash.xcl.api.dto.*;
+import cash.xcl.api.dto.CommandFailedEvent;
+import cash.xcl.api.dto.OpeningBalanceEvent;
+import cash.xcl.api.dto.TransferValueCommand;
+import cash.xcl.api.dto.TransferValueEvent;
 import cash.xcl.api.util.AbstractAllMessages;
 import cash.xcl.server.accounts.AccountService;
 import cash.xcl.server.accounts.VanillaAccountService;
@@ -52,7 +55,7 @@ public class LocalPostBlockChainProcessor extends AbstractAllMessages implements
         try {
             accountService.setOpeningBalancesForAccount(openingBalanceEvent);
             numberOfOpeningBalanceEventsSent++;
-            System.out.println( "PostProcessor - numberOfOpeningBalanceEventsSent = " + numberOfOpeningBalanceEventsSent);
+//            System.out.println( "PostProcessor - numberOfOpeningBalanceEventsSent = " + numberOfOpeningBalanceEventsSent);
         } catch (Exception e) {
             CommandFailedEvent cfe = new CommandFailedEvent(address, eventTime, openingBalanceEvent, e.toString());
             AllMessages allMessages = to(sourceAddress);
@@ -62,6 +65,7 @@ public class LocalPostBlockChainProcessor extends AbstractAllMessages implements
 
     @Override
     public void transferValueCommand(TransferValueCommand transferValueCommand) {
+//        System.out.println(transferValueCommand.sigAndMsg().readRemaining());
         long eventTime = timeProvider.currentTimeMicros();
         long sourceAddress = transferValueCommand.sourceAddress();
         //long toAddress = transferValueCommand.toAddress();
