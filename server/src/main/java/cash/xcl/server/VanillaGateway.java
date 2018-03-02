@@ -7,6 +7,7 @@ import cash.xcl.api.util.AbstractAllMessages;
 import cash.xcl.api.util.CountryRegion;
 import cash.xcl.api.util.PublicKeyRegistry;
 import cash.xcl.api.util.XCLBase32;
+import cash.xcl.server.accounts.AccountService;
 
 /**
  * This accepts message from the XCLServer and passes them to the appropriate downstream component
@@ -26,14 +27,14 @@ public class VanillaGateway extends AbstractAllMessages implements Gateway {
         this.local = local;
     }
 
-    public static VanillaGateway newGateway(long address, String region, long[] clusterAddresses) {
+    public static VanillaGateway newGateway(long address, String region, long[] clusterAddresses, int mainPeriodMS, int localPeriodMS) {
         long regionAddress = XCLBase32.decode(region);
         String region2 = XCLBase32.encode(regionAddress);
         return new VanillaGateway(address,
                 regionAddress,
                 region2,
-                BlockEngine.newMain(address, 1000, clusterAddresses),
-                BlockEngine.newLocal(address, region2, 500, clusterAddresses)
+                BlockEngine.newMain(address, mainPeriodMS, clusterAddresses),
+                BlockEngine.newLocal(address, region2, localPeriodMS, clusterAddresses)
         );
     }
 
@@ -122,8 +123,23 @@ public class VanillaGateway extends AbstractAllMessages implements Gateway {
 
     @Override
     public void transferValueCommand(TransferValueCommand transferValueCommand) {
-        super.transferValueCommand(transferValueCommand);
+        local.transferValueCommand(transferValueCommand);
     }
+
+    // todo ?
+    @Override
+    public void transferValueEvent(TransferValueEvent transferValueEvent) {
+        // received as a weekly event
+        checkTrusted(transferValueEvent);
+    }
+
+
+    @Override
+    public void openingBalanceEvent(OpeningBalanceEvent openingBalanceEvent) {
+        // TODO: local or main?
+        local.openingBalanceEvent(openingBalanceEvent);
+    }
+
 
     @Override
     public void start() {
@@ -136,4 +152,10 @@ public class VanillaGateway extends AbstractAllMessages implements Gateway {
         main.close();
         local.close();
     }
+
+    // only for testing purposes
+    public void printBalances() {
+        this.local.printBalances();
+    }
+
 }

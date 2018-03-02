@@ -1,7 +1,5 @@
 package cash.xcl.api.dto;
 
-import org.jetbrains.annotations.NotNull;
-
 import cash.xcl.api.AllMessages;
 import cash.xcl.api.tcp.WritingAllMessages;
 import net.openhft.chronicle.bytes.Bytes;
@@ -12,29 +10,26 @@ import net.openhft.chronicle.core.io.IORuntimeException;
 import net.openhft.chronicle.wire.Marshallable;
 import net.openhft.chronicle.wire.WireIn;
 import net.openhft.chronicle.wire.WireOut;
+import org.jetbrains.annotations.NotNull;
 
-
-public class TransactionBlockEvent extends SignedMessage {
+public class TransactionBlockEventOld extends SignedMessage {
     private String region;
     private int weekNumber;
     private long blockNumber; // unsigned int
-    static public int MAX_16_BIT_NUMBER = 65536 - 1000;
 
     private transient Bytes transactions = Bytes.allocateElasticDirect();
 
     private transient int count;
     private transient DtoParser dtoParser;
-    //private transient volatile boolean isBufferFull = false;
-    private transient boolean isBufferFull = false;
 
-    public TransactionBlockEvent(long sourceAddress, long eventTime, String region, int weekNumber, long blockNumber) {
+    public TransactionBlockEventOld(long sourceAddress, long eventTime, String region, int weekNumber, long blockNumber) {
         super(sourceAddress, eventTime);
         this.region = region;
         this.weekNumber = weekNumber;
         this.blockNumber = blockNumber;
     }
 
-    public TransactionBlockEvent() {
+    public TransactionBlockEventOld() {
 
     }
 
@@ -45,16 +40,13 @@ public class TransactionBlockEvent extends SignedMessage {
         count = 0;
     }
 
-    public TransactionBlockEvent addTransaction(SignedMessage message) {
-        if( isBufferFull ) {
-            throw new IllegalStateException("TransactionBlockEvent byte buffer is full: " + transactions.writePosition() + " bytes and " + count + " messages");
-        }
+    public TransactionBlockEventOld addTransaction(SignedMessage message) {
         count++;
         message.writeMarshallable(transactions);
-        //System.out.println("transactions writePosition " + transactions.writePosition() );
-        if(transactions.writePosition() > MAX_16_BIT_NUMBER  ) {
-            isBufferFull = true;
-        }
+        System.out.println("transactions writePosition " + transactions.writePosition() );
+//        if(transactions.writePosition() > 65000  ) {
+//            throw new IllegalStateException("transactions writePosition overflow");
+//        }
         return this;
     }
 
@@ -64,7 +56,6 @@ public class TransactionBlockEvent extends SignedMessage {
         }
         transactions.readPosition(0);
         while (!transactions.isEmpty()) {
-            //System.out.println(Thread.currentThread().getName() + " " + transactions);
             dtoParser.parseOne(transactions, allMessages);
         }
         transactions.readPosition(0);
@@ -106,21 +97,21 @@ public class TransactionBlockEvent extends SignedMessage {
     @NotNull
     @Override
     public <T> T deepCopy() {
-        TransactionBlockEvent tbe = new TransactionBlockEvent();
+        TransactionBlockEventOld tbe = new TransactionBlockEventOld();
         this.copyTo(tbe);
         return (T) tbe;
     }
 
     @Override
     public <T extends Marshallable> T copyTo(@NotNull T t) {
-        TransactionBlockEvent tbe = (TransactionBlockEvent) t;
+        TransactionBlockEventOld tbe = (TransactionBlockEventOld) t;
         super.copyTo(t);
         tbe.region(region);
         tbe.weekNumber(weekNumber);
         tbe.blockNumber(blockNumber);
         tbe.transactions()
-                .clear()
-                .write(transactions);
+        .clear()
+        .write(transactions);
         return t;
     }
 
@@ -142,6 +133,7 @@ public class TransactionBlockEvent extends SignedMessage {
             public void close() {
                 throw new UnsupportedOperationException();
             }
+
         }));
     }
 
@@ -159,7 +151,7 @@ public class TransactionBlockEvent extends SignedMessage {
         return weekNumber;
     }
 
-    public TransactionBlockEvent weekNumber(int weekNumber) {
+    public TransactionBlockEventOld weekNumber(int weekNumber) {
         this.weekNumber = weekNumber;
         return this;
     }
@@ -168,7 +160,7 @@ public class TransactionBlockEvent extends SignedMessage {
         return blockNumber;
     }
 
-    public TransactionBlockEvent blockNumber(long blockNumber) {
+    public TransactionBlockEventOld blockNumber(long blockNumber) {
         this.blockNumber = blockNumber;
         return this;
     }
@@ -177,16 +169,12 @@ public class TransactionBlockEvent extends SignedMessage {
         return region;
     }
 
-    public TransactionBlockEvent region(String region) {
+    public TransactionBlockEventOld region(String region) {
         this.region = region;
         return this;
     }
 
     public int count() {
         return count;
-    }
-
-    public boolean isBufferFull() {
-        return isBufferFull;
     }
 }

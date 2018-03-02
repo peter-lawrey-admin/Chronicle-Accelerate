@@ -35,7 +35,7 @@ public class VanillaGossiper implements Gossiper {
 
     @Override
     public synchronized void transactionBlockEvent(TransactionBlockEvent transactionBlockEvent) {
-        System.out.println(address + " " + transactionBlockEvent);
+        //System.out.println(address + " " + transactionBlockEvent);
         Long sourceAddress = transactionBlockEvent.sourceAddress();
         if (sourceAddress == 0) {
             System.err.println("Missing sourceAddress " + transactionBlockEvent);

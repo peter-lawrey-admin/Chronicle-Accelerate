@@ -6,13 +6,11 @@ import java.util.concurrent.TimeUnit;
 
 import cash.xcl.api.AllMessagesLookup;
 import cash.xcl.api.AllMessagesServer;
-import cash.xcl.api.dto.CreateNewAddressCommand;
-import cash.xcl.api.dto.EndOfRoundBlockEvent;
-import cash.xcl.api.dto.TransactionBlockEvent;
-import cash.xcl.api.dto.TransactionBlockGossipEvent;
-import cash.xcl.api.dto.TransactionBlockVoteEvent;
+import cash.xcl.api.dto.*;
 import cash.xcl.api.util.AbstractAllMessages;
 import cash.xcl.api.util.CountryRegion;
+import cash.xcl.server.accounts.AccountService;
+import cash.xcl.server.accounts.VanillaAccountService;
 import net.openhft.chronicle.core.Jvm;
 import net.openhft.chronicle.core.time.SystemTimeProvider;
 import net.openhft.chronicle.threads.NamedThreadFactory;
@@ -31,7 +29,7 @@ public class BlockEngine extends AbstractAllMessages {
     private final AllMessagesServer finalRouter;
 
     private final TransactionBlockGossipEvent tbge;
-    private final ScheduledExecutorService ses = Executors.newSingleThreadScheduledExecutor(new NamedThreadFactory("chain", true));
+    private final ScheduledExecutorService ses;
     private final long[] clusterAddresses;
     long blockNumber = 0;
     private long nextSend;
@@ -57,6 +55,7 @@ public class BlockEngine extends AbstractAllMessages {
         voter = new VanillaVoter(address, region, clusterAddresses);
         voteTaker = new VanillaVoteTaker(address, region, clusterAddresses);
         blockReplayer = new VanillaBlockReplayer(address, postBlockChainProcessor);
+        ses = Executors.newSingleThreadScheduledExecutor(new NamedThreadFactory(region, true));
     }
 
     public static BlockEngine newMain(long address, int periodMS, long[] clusterAddresses) {
@@ -98,6 +97,22 @@ public class BlockEngine extends AbstractAllMessages {
     }
 
     @Override
+    public void openingBalanceEvent(OpeningBalanceEvent openingBalanceEvent) {
+        fastPath.openingBalanceEvent(openingBalanceEvent);
+    }
+
+    @Override
+    public void transferValueCommand(TransferValueCommand transferValueCommand) {
+        fastPath.transferValueCommand(transferValueCommand);
+    }
+
+    @Override
+    public void clusterTransferStep1Command(ClusterTransferStep1Command clusterTransferStep1Command) {
+        fastPath.clusterTransferStep1Command(clusterTransferStep1Command);
+    }
+
+
+    @Override
     public void transactionBlockEvent(TransactionBlockEvent transactionBlockEvent) {
         blockReplayer.transactionBlockEvent(transactionBlockEvent);
         gossiper.transactionBlockEvent(transactionBlockEvent);
@@ -119,9 +134,10 @@ public class BlockEngine extends AbstractAllMessages {
     }
 
     void run() {
+        //System.out.println("BlockEngine " + Thread.currentThread().getName());
         try {
             TransactionBlockEvent tbe = chainer.nextTransactionBlockEvent();
-            //            System.out.println("TBE "+tbe);
+            // tg System.out.println("TBE "+tbe);
             if (tbe != null) {
                 tbe.sourceAddress(address);
                 tbe.blockNumber(blockNumber++);
@@ -136,7 +152,7 @@ public class BlockEngine extends AbstractAllMessages {
             Jvm.pause(subRound);
             voter.sendVote(blockNumber);
             Jvm.pause(subRound);
-            //            System.out.println(address + " " + blockNumber);
+            //System.out.println(address + " " + blockNumber);
             if (voteTaker.hasMajority()) {
                 voteTaker.sendEndOfRoundBlock(blockNumber++);
             }
@@ -146,7 +162,6 @@ public class BlockEngine extends AbstractAllMessages {
 
         } catch (Throwable t) {
             t.printStackTrace();
-
         } finally {
             nextSend += periodMS;
             long delay = nextSend - SystemTimeProvider.INSTANCE.currentTimeMillis();
@@ -160,4 +175,10 @@ public class BlockEngine extends AbstractAllMessages {
         ses.shutdownNow();
     }
 
+    // only for testing purposes
+    public void printBalances() {
+        if( postBlockChainProcessor instanceof LocalPostBlockChainProcessor ) {
+            ((LocalPostBlockChainProcessor)postBlockChainProcessor).printBalances();
+        }
+    }
 }

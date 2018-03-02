@@ -44,15 +44,15 @@ public class ThreeServerContainer {
         Ed25519.generatePublicAndSecretKey(publicKey, secretKey);
 
         long[] clusterAddresses = {10001, 10002, 10003};
-        Gateway gateway1 = VanillaGateway.newGateway(10001, "gb1dn", clusterAddresses);
+        Gateway gateway1 = VanillaGateway.newGateway(10001, "gb1dn", clusterAddresses, 1000, 500);
         one = new XCLServer("one", 10001, 10001, secretKey1, gateway1);
         weeklySetup(gateway1);
 
-        Gateway gateway2 = VanillaGateway.newGateway(10002, "gb1dn", clusterAddresses);
+        Gateway gateway2 = VanillaGateway.newGateway(10002, "gb1dn", clusterAddresses, 1000, 500);
         two = new XCLServer("two", 10002, 10002, secretKey2, gateway2);
         weeklySetup(gateway2);
 
-        Gateway gateway3 = VanillaGateway.newGateway(10003, "gb1dn", clusterAddresses);
+        Gateway gateway3 = VanillaGateway.newGateway(10003, "gb1dn", clusterAddresses, 1000, 500);
         three = new XCLServer("two", 10003, 10003, secretKey3, gateway3);
         weeklySetup(gateway3);
 
@@ -104,8 +104,12 @@ public class ThreeServerContainer {
                     "  publicKey: !!binary AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=\n" +
                     "}\n" +
                     "]", poll.replaceAll("eventTime: \\d+", "eventTime: 0"));
+
+            tsc.toTwo.subscriptionQuery(new SubscriptionQuery(1, 0));
             tsc.toTwo.createNewAddressCommand(
                     new CreateNewAddressCommand(1, 2, publicKey, "gb1nd"));
+
+            tsc.toThree.subscriptionQuery(new SubscriptionQuery(1, 0));
             tsc.toThree.createNewAddressCommand(
                     new CreateNewAddressCommand(1, 3, publicKey, "gb1nd"));
             poll = tsc.oneQ.poll(10, TimeUnit.SECONDS);

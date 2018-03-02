@@ -37,7 +37,7 @@ public class VanillaVoteTaker implements VoteTaker {
 
     @Override
     public void transactionBlockVoteEvent(TransactionBlockVoteEvent transactionBlockVoteEvent) {
-        System.out.println(address + " " + transactionBlockVoteEvent);
+        //System.out.println(address + " " + transactionBlockVoteEvent);
         Map<Long, Long> addressToBlockNumberMap = transactionBlockVoteEvent.gossipEvent().addressToBlockNumberMap();
         assert !addressToBlockNumberMap.containsKey(0L);
         this.addressToBlockNumberMap.putAll(addressToBlockNumberMap);

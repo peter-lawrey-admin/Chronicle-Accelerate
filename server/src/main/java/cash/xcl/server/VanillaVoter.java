@@ -37,7 +37,7 @@ public class VanillaVoter implements Voter {
 
     @Override
     public synchronized void transactionBlockGossipEvent(TransactionBlockGossipEvent transactionBlockGossipEvent) {
-        System.out.println(address + " " + transactionBlockGossipEvent);
+        //System.out.println(address + " " + transactionBlockGossipEvent);
         transactionBlockGossipEvent.copyTo(this.gossip);
     }
 

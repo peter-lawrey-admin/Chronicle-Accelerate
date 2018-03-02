@@ -16,6 +16,13 @@ public class OpeningBalanceEvent extends SignedMessage {
         this.balances = balances;
     }
 
+    public OpeningBalanceEvent(long sourceAddress, long eventTime, long address, String symbol, double balance) {
+        super(sourceAddress, eventTime);
+        this.address = address;
+        this.balances.put(symbol, balance);
+    }
+
+
     public OpeningBalanceEvent() {
 
     }
@@ -61,4 +68,9 @@ public class OpeningBalanceEvent extends SignedMessage {
         this.balances = balances;
         return this;
     }
+
+
+
+
+
 }
