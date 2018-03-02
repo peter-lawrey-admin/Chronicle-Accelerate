@@ -80,7 +80,7 @@ public class RegionalServerBenchmarkMain {
 
     // Not using JUnit at the moment because
     // on Windows, using JUnit and the native encryption library will crash the JVM.
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         RegionalServerBenchmarkMain benchmarkMain = null;
         try {
             int iterations = 5;
@@ -96,8 +96,7 @@ public class RegionalServerBenchmarkMain {
             System.out.println("benchmark - twoThreads = " + twoThreads + " messages per second");
             System.out.println("benchmark - threeThread = " + threeThreads + " messages per second");
             System.out.println("benchmark - fourThreads = " + fourThreads + " messages per second");
-        } catch (Exception e) {
-            e.printStackTrace();
+
         } finally {
             //Jvm.pause(1000);
             //benchmarkMain.close();
