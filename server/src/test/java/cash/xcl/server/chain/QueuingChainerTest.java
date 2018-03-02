@@ -2,11 +2,11 @@ package cash.xcl.server.chain;
 
 import org.junit.Test;
 
-public class VanillaChainerTest {
+public class QueuingChainerTest {
     @Test
     public void testTransactions() {
       /*  // todo turn this into a real test.
-        VanillaChainer chainer = new VanillaChainer("gb1dn", 10, new long[1], tbe -> {
+        QueuingChainer chainer = new QueuingChainer("gb1dn", 10, new long[1], tbe -> {
         });
         StringWriter out = new StringWriter();
         chainer.allMessagesLookup(addressOrRegion -> Mocker.logging(AllMessages.class, "to " + addressOrRegion + " ", out));

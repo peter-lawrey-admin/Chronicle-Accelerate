@@ -59,7 +59,7 @@ public class BlockEngine extends AbstractAllMessages {
     public static BlockEngine newMain(long address, int periodMS, long[] clusterAddresses) {
         final AddressService addressService = new AddressService();
 
-        Chainer chainer = new VanillaChainer(CountryRegion.MAIN_NAME);
+        Chainer chainer = new QueuingChainer(CountryRegion.MAIN_NAME);
         AllMessagesServer fastPath = new MainFastPath(address, chainer, addressService);
 
         AllMessagesServer postBlockChainProcessor = new MainPostBlockChainProcessor(address, addressService);
@@ -67,7 +67,7 @@ public class BlockEngine extends AbstractAllMessages {
     }
 
     public static BlockEngine newLocal(long address, String region, int periodMS, long[] clusterAddresses) {
-        Chainer chainer = new VanillaChainerOld(region);
+        Chainer chainer = new VanillaChainer(region);
         AllMessagesServer fastPath = new MainFastPath(address, chainer, null);
 
         AllMessagesServer postBlockChainProcessor = new LocalPostBlockChainProcessor(address);
