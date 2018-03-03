@@ -39,7 +39,7 @@ public class TransactionBlockVoteEvent extends SignedMessage {
         return this;
     }
 
-    public String region() {
+    public int region() {
         return gossipEvent.region();
     }
 

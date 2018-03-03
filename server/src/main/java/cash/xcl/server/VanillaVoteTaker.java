@@ -11,12 +11,12 @@ import cash.xcl.util.XCLLongLongMap;
 public class VanillaVoteTaker implements VoteTaker {
     private final long address;
     private final long[] clusterAddresses;
-    private final String region;
+    private final int region;
     private AllMessagesLookup lookup;
     private XCLLongLongMap addressToBlockNumberMap = XCLLongLongMap.withExpectedSize(16);
     private EndOfRoundBlockEvent endOfRoundBlockEvent = new EndOfRoundBlockEvent();
 
-    public VanillaVoteTaker(long address, String region, long[] clusterAddresses) {
+    public VanillaVoteTaker(long address, int region, long[] clusterAddresses) {
         this.address = address;
         this.clusterAddresses = clusterAddresses;
         this.region = region;

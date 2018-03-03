@@ -14,7 +14,7 @@ public class VanillaGossiper implements Gossiper {
     private final TransactionBlockGossipEvent gossip;
     private AllMessagesLookup lookup;
 
-    public VanillaGossiper(long address, String region, long[] clusterAddresses) {
+    public VanillaGossiper(long address, int region, long[] clusterAddresses) {
         this.address = address;
         this.clusterAddresses = clusterAddresses;
         lastVoteMap = XCLLongLongMap.withExpectedSize(16);

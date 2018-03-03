@@ -1,19 +1,22 @@
 package cash.xcl.api.dto;
 
+import cash.xcl.api.util.RegionIntConverter;
 import cash.xcl.util.XCLLongLongMap;
 import net.openhft.chronicle.bytes.BytesIn;
 import net.openhft.chronicle.bytes.BytesOut;
+import net.openhft.chronicle.wire.IntConversion;
 import net.openhft.chronicle.wire.Marshallable;
 import org.jetbrains.annotations.NotNull;
 
 public class EndOfRoundBlockEvent extends SignedMessage {
-    private String region;
+    @IntConversion(RegionIntConverter.class)
+    private int region;
     private int weekNumber;
     private long blockNumber;
     private XCLLongLongMap blockRecords = XCLLongLongMap.withExpectedSize(16);
     private LongU32Writer longU32Writer;
 
-    public EndOfRoundBlockEvent(long sourceAddress, long eventTime, String region, int weekNumber, long blockNumber, XCLLongLongMap blockRecords) {
+    public EndOfRoundBlockEvent(long sourceAddress, long eventTime, int region, int weekNumber, long blockNumber, XCLLongLongMap blockRecords) {
         super(sourceAddress, eventTime);
         this.region = region;
         this.weekNumber = weekNumber;
@@ -47,7 +50,7 @@ public class EndOfRoundBlockEvent extends SignedMessage {
 
     @Override
     protected void readMarshallable2(BytesIn<?> bytes) {
-        region = bytes.readUtf8();
+        region = bytes.readInt();
         weekNumber = bytes.readUnsignedShort();
         blockNumber = bytes.readUnsignedInt();
         blockRecords.clear();
@@ -63,7 +66,7 @@ public class EndOfRoundBlockEvent extends SignedMessage {
     protected void writeMarshallable2(BytesOut<?> bytes) {
         assert !blockRecords.containsKey(0L);
 //        System.out.println("Write "+this);
-        bytes.writeUtf8(region);
+        bytes.writeInt(region);
         bytes.writeUnsignedShort(weekNumber);
         bytes.writeUnsignedInt(blockNumber);
         bytes.writeStopBit(blockRecords.size());
@@ -77,11 +80,11 @@ public class EndOfRoundBlockEvent extends SignedMessage {
         return MessageTypes.TREE_BLOCK_EVENT;
     }
 
-    public String region() {
+    public int region() {
         return region;
     }
 
-    public EndOfRoundBlockEvent region(String region) {
+    public EndOfRoundBlockEvent region(int region) {
         this.region = region;
         return this;
     }

@@ -11,7 +11,8 @@ import static cash.xcl.api.dto.Validators.notNullOrEmpty;
 
 public class CountryRegion extends AbstractMarshallable {
 
-    public static final String MAIN_NAME = "0000";
+    public static final String MAIN_CODE = "0000";
+    public static final int MAIN_CHAIN = -1;
     static final String[] NO_STRINGS = new String[0];
     private final String countryName;
     private final String regionCode;

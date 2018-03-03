@@ -39,7 +39,7 @@ public class MockGatewayTest {
                 "  origSourceAddress: 1,\n" +
                 "  origEventTime: 0,\n" +
                 "  origMessageType: 32,\n" +
-                "  reason: Unknown region code iea\n" +
+                "  reason: Unknown region code IEA\n" +
                 "}\n" +
                 "]\n" +
                 "createNewAddressEvent[!CreateNewAddressEvent {\n" +

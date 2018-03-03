@@ -1,32 +1,19 @@
 package cash.xcl.server.exch;
 
 
-
-import static cash.xcl.api.dto.Validators.notNull;
-import static cash.xcl.api.exch.Side.BUY;
-
-import java.util.Map;
-
 import cash.xcl.api.AllMessages;
 import cash.xcl.api.dto.CommandFailedEvent;
 import cash.xcl.api.dto.CurrentBalanceQuery;
 import cash.xcl.api.dto.CurrentBalanceResponse;
 import cash.xcl.api.dto.TransferValueEvent;
-import cash.xcl.api.exch.CancelOrderCommand;
-import cash.xcl.api.exch.CurrencyPair;
-import cash.xcl.api.exch.DepositValueCommand;
-import cash.xcl.api.exch.DepositValueEvent;
-import cash.xcl.api.exch.ExchangeCommands;
-import cash.xcl.api.exch.ExecutionReport;
-import cash.xcl.api.exch.ExecutionReportEvent;
-import cash.xcl.api.exch.NewOrderCommand;
-import cash.xcl.api.exch.OrderClosedEvent;
-import cash.xcl.api.exch.TransferFromExchangeCommand;
-import cash.xcl.api.exch.TransferToExchangeCommand;
-import cash.xcl.api.exch.WithdrawValueCommand;
-import cash.xcl.api.exch.WithdrawValueEvent;
+import cash.xcl.api.exch.*;
 import cash.xcl.server.LocalPostBlockChainProcessor;
 import net.openhft.chronicle.core.time.TimeProvider;
+
+import java.util.Map;
+
+import static cash.xcl.api.dto.Validators.notNull;
+import static cash.xcl.api.exch.Side.BUY;
 
 /**
  * I assume that class is always called from the same thread, so no synchronization is necessary This component does no address validation
@@ -67,7 +54,9 @@ public class ExchangePostBlockChainProcessor extends LocalPostBlockChainProcesso
     @Override
     public void depositValueCommand(DepositValueCommand depositValueCommand) {
         try {
-            if (depositValueCommand.currency().equals(currencyPair.getQuoteCurrency())) {
+            String currency = depositValueCommand.currencyStr();
+            String quoteCurrency = currencyPair.getQuoteCurrency();
+            if (currency.equalsIgnoreCase(quoteCurrency)) {
                 Account account = exchangeAccounts.getQuoteAccount(depositValueCommand.toAddress(), true);
                 account.deposit(depositValueCommand.amount());
                 finalRouter.depositValueEvent(new DepositValueEvent(address, microsTimeStamp(), depositValueCommand));
@@ -84,7 +73,9 @@ public class ExchangePostBlockChainProcessor extends LocalPostBlockChainProcesso
     @Override
     public void withdrawValueCommand(WithdrawValueCommand withdrawValueCommand) {
         try {
-            if (withdrawValueCommand.currency().equals(currencyPair.getQuoteCurrency())) {
+            String currency = withdrawValueCommand.currencyStr();
+            String quoteCurrency = currencyPair.getQuoteCurrency();
+            if (currency.equalsIgnoreCase(quoteCurrency)) {
                 Account account = exchangeAccounts.getQuoteAccount(withdrawValueCommand.sourceAddress(), false);
                 if (account != null) {
                     account.withdraw(withdrawValueCommand.amount());
@@ -126,7 +117,7 @@ public class ExchangePostBlockChainProcessor extends LocalPostBlockChainProcesso
     @Override
     public void transferToExchangeCommand(TransferToExchangeCommand transferCommand) {
         long accountAddress = transferCommand.sourceAddress();
-        String currency = transferCommand.currency();
+        String currency = transferCommand.currencyStr();
         if (currency.equals(currencyPair.getBaseCurrency())) {
             Account account = exchangeAccounts.getBaseAccount(accountAddress, true);
             account.deposit(transferCommand.amount());
@@ -148,7 +139,7 @@ public class ExchangePostBlockChainProcessor extends LocalPostBlockChainProcesso
     @Override
     public void transferFromExchangeCommand(TransferFromExchangeCommand transferCommand) {
         long accountAddress = transferCommand.sourceAddress();
-        String currency = transferCommand.currency();
+        String currency = transferCommand.currencyStr();
         if (currency.equals(currencyPair.getBaseCurrency())) {
             Account account = exchangeAccounts.getBaseAccount(accountAddress, false);
             if (account != null) {

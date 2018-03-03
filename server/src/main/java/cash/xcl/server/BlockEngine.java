@@ -6,6 +6,7 @@ import cash.xcl.api.dto.*;
 import cash.xcl.api.tcp.XCLServer;
 import cash.xcl.api.util.AbstractAllMessages;
 import cash.xcl.api.util.CountryRegion;
+import cash.xcl.api.util.XCLBase32;
 import net.openhft.chronicle.core.Jvm;
 import net.openhft.chronicle.core.time.SystemTimeProvider;
 import net.openhft.chronicle.threads.NamedThreadFactory;
@@ -15,7 +16,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.locks.LockSupport;
 
 public class BlockEngine extends AbstractAllMessages {
-    private final String region;
+    private final int region;
     private final int periodMS;
 
     private final AllMessagesServer fastPath;
@@ -35,7 +36,7 @@ public class BlockEngine extends AbstractAllMessages {
     private MessageWriter messageWriter;
 
     public BlockEngine(long address,
-                       String region,
+                       int region,
                        int periodMS,
                        AllMessagesServer fastPath,
                        Chainer chainer,
@@ -54,21 +55,22 @@ public class BlockEngine extends AbstractAllMessages {
         voter = new VanillaVoter(address, region, clusterAddresses);
         voteTaker = new VanillaVoteTaker(address, region, clusterAddresses);
         blockReplayer = new VanillaBlockReplayer(address, postBlockChainProcessor);
-        ses = Executors.newSingleThreadExecutor(new NamedThreadFactory(region, true));
-        writerSes = Executors.newSingleThreadExecutor(new NamedThreadFactory(region + "-writer", true));
+        String regionStr = XCLBase32.encodeIntUpper(region);
+        ses = Executors.newSingleThreadExecutor(new NamedThreadFactory(regionStr, true));
+        writerSes = Executors.newSingleThreadExecutor(new NamedThreadFactory(regionStr + "-writer", true));
     }
 
     public static BlockEngine newMain(long address, int periodMS, long[] clusterAddresses) {
         final AddressService addressService = new AddressService();
 
-        Chainer chainer = new QueuingChainer(CountryRegion.MAIN_NAME);
+        Chainer chainer = new QueuingChainer(CountryRegion.MAIN_CHAIN);
         AllMessagesServer fastPath = new MainFastPath(address, chainer, addressService);
 
         AllMessagesServer postBlockChainProcessor = new MainPostBlockChainProcessor(address, addressService);
-        return new BlockEngine(address, CountryRegion.MAIN_NAME, periodMS, fastPath, chainer, postBlockChainProcessor, clusterAddresses);
+        return new BlockEngine(address, CountryRegion.MAIN_CHAIN, periodMS, fastPath, chainer, postBlockChainProcessor, clusterAddresses);
     }
 
-    public static BlockEngine newLocal(long address, String region, int periodMS, long[] clusterAddresses) {
+    public static BlockEngine newLocal(long address, int region, int periodMS, long[] clusterAddresses) {
         Chainer chainer = new VanillaChainer(region);
         AllMessagesServer fastPath = new MainFastPath(address, chainer, null);
 

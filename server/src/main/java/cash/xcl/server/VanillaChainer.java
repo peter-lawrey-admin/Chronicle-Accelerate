@@ -9,7 +9,7 @@ public class VanillaChainer extends WritingAllMessages implements Chainer {
     private TransactionBlockEvent tbe = new TransactionBlockEvent();
     private TransactionBlockEvent tbe2 = new TransactionBlockEvent();
 
-    public VanillaChainer(String region) {
+    public VanillaChainer(int region) {
         tbe.region(region);
         tbe2.region(region);
     }

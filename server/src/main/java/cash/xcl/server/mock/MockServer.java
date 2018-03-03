@@ -2,32 +2,9 @@ package cash.xcl.server.mock;
 
 import cash.xcl.api.ServerIn;
 import cash.xcl.api.ServerOut;
-import cash.xcl.api.dto.BlockSubscriptionQuery;
-import cash.xcl.api.dto.ClusterTransferStep1Command;
-import cash.xcl.api.dto.ClusterTransferStep2Command;
-import cash.xcl.api.dto.ClusterTransferStep3Command;
-import cash.xcl.api.dto.CommandFailedEvent;
-import cash.xcl.api.dto.CreateNewAddressCommand;
-import cash.xcl.api.dto.CreateNewAddressEvent;
-import cash.xcl.api.dto.CurrentBalanceQuery;
-import cash.xcl.api.dto.CurrentBalanceResponse;
-import cash.xcl.api.dto.EndOfRoundBlockEvent;
-import cash.xcl.api.dto.ExchangeRateEvent;
-import cash.xcl.api.dto.FeesEvent;
-import cash.xcl.api.dto.OpeningBalanceEvent;
-import cash.xcl.api.dto.ServiceNodesEvent;
-import cash.xcl.api.dto.TransactionBlockEvent;
-import cash.xcl.api.dto.TransactionBlockGossipEvent;
-import cash.xcl.api.dto.TransactionBlockVoteEvent;
-import cash.xcl.api.dto.TransferValueCommand;
-import cash.xcl.api.exch.CancelOrderCommand;
-import cash.xcl.api.exch.DepositValueCommand;
-import cash.xcl.api.exch.NewOrderCommand;
-import cash.xcl.api.exch.TransferFromExchangeCommand;
-import cash.xcl.api.exch.TransferToExchangeCommand;
-import cash.xcl.api.exch.WithdrawValueCommand;
+import cash.xcl.api.dto.*;
+import cash.xcl.api.exch.*;
 import cash.xcl.api.util.AbstractAllMessages;
-import cash.xcl.api.util.XCLBase32;
 import cash.xcl.server.AddressService;
 import net.openhft.chronicle.bytes.Bytes;
 
@@ -61,7 +38,7 @@ public class MockServer extends AbstractAllMessages implements ServerIn {
 
     @Override
     public void createNewAddressCommand(CreateNewAddressCommand createNewAddressCommand) {
-        String region = XCLBase32.normalize(createNewAddressCommand.region());
+        String region = createNewAddressCommand.regionStr();
         try {
             Bytes publicKey = createNewAddressCommand.publicKey();
             long address = addressService.createAddress(region, publicKey);

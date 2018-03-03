@@ -1,19 +1,22 @@
 package cash.xcl.api.dto;
 
+import cash.xcl.api.util.RegionIntConverter;
 import cash.xcl.util.XCLLongLongMap;
 import net.openhft.chronicle.bytes.BytesIn;
 import net.openhft.chronicle.bytes.BytesOut;
+import net.openhft.chronicle.wire.IntConversion;
 import net.openhft.chronicle.wire.Marshallable;
 import org.jetbrains.annotations.NotNull;
 
 public class TransactionBlockGossipEvent extends SignedMessage {
-    private String region;
+    @IntConversion(RegionIntConverter.class)
+    private int region;
     private int weekNumber;
     private long blockNumber; // unsigned int
     private XCLLongLongMap addressToBlockNumberMap;
     private LongU32Writer longU32Writer = new LongU32Writer();
 
-    public TransactionBlockGossipEvent(long sourceAddress, long eventTime, String region, int weekNumber, long blockNumber, XCLLongLongMap addressToBlockNumberMap) {
+    public TransactionBlockGossipEvent(long sourceAddress, long eventTime, int region, int weekNumber, long blockNumber, XCLLongLongMap addressToBlockNumberMap) {
         super(sourceAddress, eventTime);
         this.weekNumber = weekNumber;
         this.blockNumber = blockNumber;
@@ -27,7 +30,7 @@ public class TransactionBlockGossipEvent extends SignedMessage {
 
     @Override
     protected void readMarshallable2(BytesIn<?> bytes) {
-        region = bytes.readUtf8();
+        region = bytes.readInt();
         weekNumber = bytes.readUnsignedShort();
         blockNumber = bytes.readUnsignedInt();
         int entries = (int) bytes.readStopBit();
@@ -41,7 +44,7 @@ public class TransactionBlockGossipEvent extends SignedMessage {
     protected void writeMarshallable2(BytesOut<?> bytes) {
         assert sourceAddress() != 0;
         assert !addressToBlockNumberMap.containsKey(0L);
-        bytes.writeUtf8(region);
+        bytes.writeInt(region);
         bytes.writeUnsignedShort(weekNumber);
         bytes.writeUnsignedInt(blockNumber);
         bytes.writeStopBit(addressToBlockNumberMap.size());
@@ -81,12 +84,12 @@ public class TransactionBlockGossipEvent extends SignedMessage {
         return this;
     }
 
-    public TransactionBlockGossipEvent region(String region) {
+    public TransactionBlockGossipEvent region(int region) {
         this.region = region;
         return this;
     }
 
-    public String region() {
+    public int region() {
         return region;
     }
 

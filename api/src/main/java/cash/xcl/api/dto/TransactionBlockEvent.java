@@ -2,11 +2,13 @@ package cash.xcl.api.dto;
 
 import cash.xcl.api.AllMessages;
 import cash.xcl.api.tcp.WritingAllMessages;
+import cash.xcl.api.util.RegionIntConverter;
 import net.openhft.chronicle.bytes.Bytes;
 import net.openhft.chronicle.bytes.BytesIn;
 import net.openhft.chronicle.bytes.BytesOut;
 import net.openhft.chronicle.bytes.BytesStore;
 import net.openhft.chronicle.core.io.IORuntimeException;
+import net.openhft.chronicle.wire.IntConversion;
 import net.openhft.chronicle.wire.Marshallable;
 import net.openhft.chronicle.wire.WireIn;
 import net.openhft.chronicle.wire.WireOut;
@@ -14,7 +16,8 @@ import org.jetbrains.annotations.NotNull;
 
 
 public class TransactionBlockEvent extends SignedMessage {
-    private String region;
+    @IntConversion(RegionIntConverter.class)
+    private int region;
     private int weekNumber;
     private long blockNumber; // unsigned int
     static public int MAX_16_BIT_NUMBER = 65536 - 1000;
@@ -35,6 +38,10 @@ public class TransactionBlockEvent extends SignedMessage {
     private transient DtoParser dtoParser;
 
     public TransactionBlockEvent(long sourceAddress, long eventTime, String region, int weekNumber, long blockNumber) {
+        this(sourceAddress, eventTime, RegionIntConverter.INSTANCE.parse(region), weekNumber, blockNumber);
+    }
+
+    public TransactionBlockEvent(long sourceAddress, long eventTime, int region, int weekNumber, long blockNumber) {
         super(sourceAddress, eventTime);
         this.region = region;
         this.weekNumber = weekNumber;
@@ -80,7 +87,7 @@ public class TransactionBlockEvent extends SignedMessage {
 
     @Override
     protected void readMarshallable2(BytesIn<?> bytes) {
-        region = bytes.readUtf8();
+        region = bytes.readInt();
         weekNumber = bytes.readUnsignedShort();
         blockNumber = bytes.readUnsignedInt();
         if (transactions == null) {
@@ -92,7 +99,7 @@ public class TransactionBlockEvent extends SignedMessage {
     @Override
     protected void writeMarshallable2(BytesOut<?> bytes) {
         //        System.out.println("Write " + this);
-        bytes.writeUtf8(region);
+        bytes.writeInt(region);
         bytes.writeUnsignedShort(weekNumber);
         bytes.writeUnsignedInt(blockNumber);
         bytes.write(transactions);
@@ -182,12 +189,17 @@ public class TransactionBlockEvent extends SignedMessage {
         return this;
     }
 
-    public String region() {
+    public int region() {
         return region;
     }
 
-    public TransactionBlockEvent region(String region) {
+    public TransactionBlockEvent region(int region) {
         this.region = region;
+        return this;
+    }
+
+    public TransactionBlockEvent region(String region) {
+        this.region = RegionIntConverter.INSTANCE.parse(region);
         return this;
     }
 

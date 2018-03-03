@@ -70,7 +70,7 @@ public class VanillaAccountService extends AbstractAllMessages implements Accoun
             } else {
                 double sourceAccountBalance = sourceBalanceByCurrency.getBalance(tvc.currency());
                 if (tvc.amount() > sourceAccountBalance) {
-                    errorMsg = "trying to transfer " + tvc.currency() + tvc.amount() + " from account: " + sourceAddress + " but balance is only: " + sourceAccountBalance;
+                    errorMsg = "trying to transfer " + tvc.currencyStr() + tvc.amount() + " from account: " + sourceAddress + " but balance is only: " + sourceAccountBalance;
                 } else if (tvc.amount() <= 0) {
                     errorMsg = "amount is negative or zero : " + tvc.amount();
                 } else {
@@ -91,7 +91,7 @@ public class VanillaAccountService extends AbstractAllMessages implements Accoun
     @Override
     public void print() {
         SortedMap<Long, BalanceByCurrency> map = new TreeMap<>();
-        balances.forEach((k, v) -> map.put(k, v));
+        balances.forEach(map::put);
         for (Map.Entry<Long, BalanceByCurrency> entry : map.entrySet()) {
             System.out.print("Account Number = " + entry.getKey() + " ");
             BalanceByCurrency balanceByCurrency = entry.getValue();

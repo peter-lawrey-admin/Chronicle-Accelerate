@@ -1,16 +1,23 @@
 package cash.xcl.api.dto;
 
+import cash.xcl.api.util.RegionIntConverter;
 import net.openhft.chronicle.bytes.Bytes;
 import net.openhft.chronicle.bytes.BytesIn;
 import net.openhft.chronicle.bytes.BytesOut;
 import net.openhft.chronicle.salt.Ed25519;
+import net.openhft.chronicle.wire.IntConversion;
 
 public class CreateNewAddressCommand extends SignedMessage {
     private Bytes publicKey;
-    private String region;
+    @IntConversion(RegionIntConverter.class)
+    private int region;
     private long newAddressSeed;
 
     public CreateNewAddressCommand(long sourceAddress, long eventTime, Bytes publicKey, String region) {
+        this(sourceAddress, eventTime, publicKey, RegionIntConverter.INSTANCE.parse(region));
+    }
+
+    public CreateNewAddressCommand(long sourceAddress, long eventTime, Bytes publicKey, int region) {
         super(sourceAddress, eventTime);
         this.publicKey = publicKey;
         this.region = region;
@@ -26,7 +33,7 @@ public class CreateNewAddressCommand extends SignedMessage {
         publicKey.clear();
         bytes.read(publicKey, Ed25519.PUBLIC_KEY_LENGTH);
 
-        region = bytes.readUtf8();
+        region = bytes.readInt();
         newAddressSeed = bytes.readLong();
     }
 
@@ -34,7 +41,7 @@ public class CreateNewAddressCommand extends SignedMessage {
     protected void writeMarshallable2(BytesOut<?> bytes) {
         bytes.write(publicKey);
 
-        bytes.writeUtf8(region);
+        bytes.writeInt(region);
 
         bytes.writeLong(newAddressSeed);
     }
@@ -53,12 +60,21 @@ public class CreateNewAddressCommand extends SignedMessage {
         return this;
     }
 
-    public String region() {
+    public String regionStr() {
+        return RegionIntConverter.INSTANCE.asString(region);
+    }
+
+    public int region() {
         return region;
     }
 
-    public CreateNewAddressCommand region(String region) {
+    public CreateNewAddressCommand region(int region) {
         this.region = region;
+        return this;
+    }
+
+    public CreateNewAddressCommand region(String region) {
+        this.region = RegionIntConverter.INSTANCE.parse(region);
         return this;
     }
 

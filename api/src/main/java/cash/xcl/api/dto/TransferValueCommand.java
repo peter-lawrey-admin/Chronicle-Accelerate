@@ -1,15 +1,23 @@
 package cash.xcl.api.dto;
 
+import cash.xcl.api.util.XCLBase32;
+import cash.xcl.api.util.XCLBase32UpperIntConverter;
 import net.openhft.chronicle.bytes.BytesIn;
 import net.openhft.chronicle.bytes.BytesOut;
+import net.openhft.chronicle.wire.IntConversion;
 
 public class TransferValueCommand extends SignedMessage {
     long toAddress;
     double amount;
-    String currency;
+    @IntConversion(XCLBase32UpperIntConverter.class)
+    int currency;
     String reference;
 
     public TransferValueCommand(long sourceAddress, long eventTime, long toAddress, double amount, String currency, String reference) {
+        this(sourceAddress, eventTime, toAddress, amount, XCLBase32.decodeInt(currency), reference);
+    }
+
+    public TransferValueCommand(long sourceAddress, long eventTime, long toAddress, double amount, int currency, String reference) {
         super(sourceAddress, eventTime);
         this.toAddress = toAddress;
         this.amount = amount;
@@ -25,7 +33,7 @@ public class TransferValueCommand extends SignedMessage {
     protected void readMarshallable2(BytesIn<?> bytes) {
         toAddress = bytes.readLong();
         amount = bytes.readDouble();
-        currency = bytes.readUtf8();
+        currency = bytes.readInt();
         reference = bytes.readUtf8();
     }
 
@@ -33,7 +41,7 @@ public class TransferValueCommand extends SignedMessage {
     protected void writeMarshallable2(BytesOut<?> bytes) {
         bytes.writeLong(toAddress);
         bytes.writeDouble(amount);
-        bytes.writeUtf8(currency);
+        bytes.writeInt(currency);
         bytes.writeUtf8(reference);
     }
 
@@ -60,11 +68,15 @@ public class TransferValueCommand extends SignedMessage {
         return this;
     }
 
-    public String currency() {
+    public String currencyStr() {
+        return XCLBase32.encodeIntUpper(currency);
+    }
+
+    public int currency() {
         return currency;
     }
 
-    public TransferValueCommand currency(String currency) {
+    public TransferValueCommand currency(int currency) {
         this.currency = currency;
         return this;
     }

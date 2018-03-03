@@ -13,9 +13,9 @@ public class QueuingChainer extends WritingAllMessages implements Chainer {
     private TransactionBlockEvent tbe2 = new TransactionBlockEvent();
     private Queue<TransactionBlockEvent> queue = new LinkedList<>();
 
-    private String region;
+    private int region;
 
-    public QueuingChainer(String region) {
+    public QueuingChainer(int region) {
         tbe.region(region);
         tbe2.region(region);
         this.region = region;

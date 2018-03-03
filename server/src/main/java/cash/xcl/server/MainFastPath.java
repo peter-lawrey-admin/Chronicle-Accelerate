@@ -17,7 +17,7 @@ public class MainFastPath extends AbstractAllMessages {
 
     @Override
     public void createNewAddressCommand(CreateNewAddressCommand createNewAddressCommand) {
-        createNewAddressCommand.newAddressSeed(addressService.generateAddress(createNewAddressCommand.region()));
+        createNewAddressCommand.newAddressSeed(addressService.generateAddress(createNewAddressCommand.regionStr()));
         // TODO validate
         chainer.createNewAddressCommand(createNewAddressCommand);
     }
