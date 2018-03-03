@@ -1,13 +1,12 @@
 package cash.xcl.server.accounts;
 
 
+import cash.xcl.util.XCLStringDoubleMap;
 import net.openhft.chronicle.bytes.BytesIn;
 import net.openhft.chronicle.bytes.BytesOut;
 import net.openhft.chronicle.core.io.IORuntimeException;
 import net.openhft.chronicle.wire.AbstractBytesMarshallable;
 
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 
 import static cash.xcl.api.dto.Validators.notNullOrEmpty;
@@ -15,11 +14,9 @@ import static cash.xcl.api.dto.Validators.validNumber;
 
 
 public class BalanceByCurrency extends AbstractBytesMarshallable {
-    private static final Double ZERO = 0D;
-
     private long address;
 
-    private Map<String, Double> balances = new HashMap<>();
+    private XCLStringDoubleMap balances = XCLStringDoubleMap.withExpectedSize(16);
 
     public BalanceByCurrency(long address) {
         setAddress(address);
@@ -30,7 +27,7 @@ public class BalanceByCurrency extends AbstractBytesMarshallable {
         setAddress(bytes.readStopBit());
         int balancesCount = bytes.readInt();
         if (balances == null) {
-            balances = new HashMap<>();
+            balances = XCLStringDoubleMap.withExpectedSize(16);
         } else {
             balances.clear();
         }
@@ -42,9 +39,7 @@ public class BalanceByCurrency extends AbstractBytesMarshallable {
 
     }
 
-    // todo: make private
-    public void setBalance(String symbol, double amount) {
-
+    void setBalance(String symbol, double amount) {
         balances.put(notNullOrEmpty(symbol), validNumber(amount));
     }
 
@@ -63,12 +58,7 @@ public class BalanceByCurrency extends AbstractBytesMarshallable {
     }
 
     public double getBalance(String symbol) {
-        Double balance = balances.getOrDefault(symbol, ZERO);
-        return balance.doubleValue();
-    }
-
-    public Iterable<String> getCurrencies() {
-        return Collections.unmodifiableSet(balances.keySet());
+        return balances.getDouble(symbol);
     }
 
     public long getAddress() {
@@ -80,7 +70,15 @@ public class BalanceByCurrency extends AbstractBytesMarshallable {
     }
 
     public BalanceByCurrency setBalances(Map<String, Double> newBalances) {
-        if( !this.balances.isEmpty() ) {
+        if (!this.balances.isEmpty()) {
+            throw new IllegalArgumentException("opening balances can only be set once");
+        }
+        newBalances.forEach((k, v) -> balances.put(k, v));
+        return this;
+    }
+
+    public BalanceByCurrency setBalances(XCLStringDoubleMap newBalances) {
+        if (!this.balances.isEmpty()) {
             throw new IllegalArgumentException("opening balances can only be set once");
         }
         this.balances.putAll(newBalances);
@@ -88,12 +86,7 @@ public class BalanceByCurrency extends AbstractBytesMarshallable {
     }
 
     public void print() {
-        //System.out.println( "    " + address);
-        for (Map.Entry entry : balances.entrySet()) {
-            String symbol = (String) entry.getKey();
-            Double balance = (Double) entry.getValue();
-            System.out.println( "    " + symbol + " = " + balance );
-        }
+        balances.forEach((k, v) -> System.out.print(" " + k + " = " + v));
     }
 
 }

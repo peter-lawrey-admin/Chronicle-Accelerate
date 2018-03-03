@@ -4,17 +4,19 @@ import cash.xcl.api.dto.CreateNewAddressEvent;
 import cash.xcl.api.dto.OpeningBalanceEvent;
 import cash.xcl.api.dto.TransferValueCommand;
 import cash.xcl.api.util.AbstractAllMessages;
+import cash.xcl.util.XCLLongObjMap;
 import net.openhft.chronicle.core.annotation.NotNull;
 import net.openhft.chronicle.core.annotation.Nullable;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 
 public class VanillaAccountService extends AbstractAllMessages implements AccountService {
 
     // TODO Use LongKey to be more GC friendly.
-    private final Map<Long, BalanceByCurrency> balances = new LinkedHashMap<>();
+    private final XCLLongObjMap<BalanceByCurrency> balances = XCLLongObjMap.withExpectedSize(BalanceByCurrency.class, 16);
 
 
     public VanillaAccountService() {
@@ -32,7 +34,7 @@ public class VanillaAccountService extends AbstractAllMessages implements Accoun
 
     @Override
     public BalanceByCurrency registerNewAccount(CreateNewAddressEvent createNewAddressEvent) {
-        if( balances.get(createNewAddressEvent.address()) != null ) {
+        if (balances.get(createNewAddressEvent.address()) != null) {
             throw new IllegalArgumentException("Duplicate NewAccount for " + createNewAddressEvent.address());
         }
         return balances.computeIfAbsent(createNewAddressEvent.address(), BalanceByCurrency::new);
@@ -42,12 +44,12 @@ public class VanillaAccountService extends AbstractAllMessages implements Accoun
     @Override
     public BalanceByCurrency setOpeningBalancesForAccount(OpeningBalanceEvent openingBalanceEvent) throws Exception {
         // the opening balance of an account can only be set once
-        if( balances(openingBalanceEvent.address()) == null ) {
+        if (balances(openingBalanceEvent.address()) == null) {
             BalanceByCurrency balanceByCurrency = balances.computeIfAbsent(openingBalanceEvent.address(), BalanceByCurrency::new);
             balanceByCurrency.setBalances(openingBalanceEvent.balances());
             return balanceByCurrency;
         } else {
-            throw new IllegalArgumentException("Unable to set opening balance. Balance is already set for address " + openingBalanceEvent.address() );
+            throw new IllegalArgumentException("Unable to set opening balance. Balance is already set for address " + openingBalanceEvent.address());
         }
     }
 
@@ -67,32 +69,34 @@ public class VanillaAccountService extends AbstractAllMessages implements Accoun
                 errorMsg = "no balance records for destination address " + destAddress;
             } else {
                 double sourceAccountBalance = sourceBalanceByCurrency.getBalance(tvc.currency());
-                if ( tvc.amount() > sourceAccountBalance ) {
-                    errorMsg = "trying to transfer " + tvc.currency() + tvc.amount() + " from account: " + sourceAddress + " but balance is only: " + sourceAccountBalance ;
+                if (tvc.amount() > sourceAccountBalance) {
+                    errorMsg = "trying to transfer " + tvc.currency() + tvc.amount() + " from account: " + sourceAddress + " but balance is only: " + sourceAccountBalance;
                 } else if (tvc.amount() <= 0) {
                     errorMsg = "amount is negative or zero : " + tvc.amount();
                 } else {
                     // NOTE: this code is not thread-safe, but we are only running in 1 thread, so it's ok.
-                    sourceBalanceByCurrency.setBalance(     tvc.currency(),
-                                                    sourceAccountBalance - tvc.amount() );
+                    sourceBalanceByCurrency.setBalance(tvc.currency(),
+                            sourceAccountBalance - tvc.amount());
                     double destinationAccountBalance = destinationBalanceByCurrency.getBalance(tvc.currency());
-                    destinationBalanceByCurrency.setBalance(     tvc.currency(),
-                                                                destinationAccountBalance + tvc.amount() );
+                    destinationBalanceByCurrency.setBalance(tvc.currency(),
+                            destinationAccountBalance + tvc.amount());
                 }
             }
         }
-        if( errorMsg != null )
+        if (errorMsg != null)
             throw new IllegalArgumentException("Invalid transfer: " + errorMsg);
     }
 
     // only for testing purposes
     @Override
     public void print() {
-        for (Map.Entry entry : balances.entrySet()) {
-            Long address = (Long) entry.getKey();
-            System.out.println("Account Number = " + address);
-            BalanceByCurrency balanceByCurrency = (BalanceByCurrency) entry.getValue();
+        SortedMap<Long, BalanceByCurrency> map = new TreeMap<>();
+        balances.forEach((k, v) -> map.put(k, v));
+        for (Map.Entry<Long, BalanceByCurrency> entry : map.entrySet()) {
+            System.out.print("Account Number = " + entry.getKey() + " ");
+            BalanceByCurrency balanceByCurrency = entry.getValue();
             balanceByCurrency.print();
+            System.out.println();
         }
     }
 

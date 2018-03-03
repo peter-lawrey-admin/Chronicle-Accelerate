@@ -19,9 +19,19 @@ public class TransactionBlockEvent extends SignedMessage {
     private long blockNumber; // unsigned int
     static public int MAX_16_BIT_NUMBER = 65536 - 1000;
 
-    private transient Bytes transactions = Bytes.allocateElasticDirect();
+    private transient Bytes transactions = Bytes.allocateElasticDirect(32 << 20);
 
     private transient int count;
+
+    public DtoParser dtoParser() {
+        return dtoParser;
+    }
+
+    public TransactionBlockEvent dtoParser(DtoParser dtoParser) {
+        this.dtoParser = dtoParser;
+        return this;
+    }
+
     private transient DtoParser dtoParser;
 
     public TransactionBlockEvent(long sourceAddress, long eventTime, String region, int weekNumber, long blockNumber) {
@@ -74,7 +84,7 @@ public class TransactionBlockEvent extends SignedMessage {
         weekNumber = bytes.readUnsignedShort();
         blockNumber = bytes.readUnsignedInt();
         if (transactions == null) {
-            transactions = Bytes.allocateElasticDirect();
+            transactions = Bytes.allocateElasticDirect(bytes.readRemaining());
         }
         transactions.clear().write((BytesStore) bytes);
     }
@@ -116,6 +126,7 @@ public class TransactionBlockEvent extends SignedMessage {
         tbe.region(region);
         tbe.weekNumber(weekNumber);
         tbe.blockNumber(blockNumber);
+        tbe.transactions().ensureCapacity(transactions.readRemaining());
         tbe.transactions()
                 .clear()
                 .write(transactions);
@@ -127,12 +138,12 @@ public class TransactionBlockEvent extends SignedMessage {
         super.writeMarshallable(wire);
         wire.write("transactions").sequence(out -> replay(new WritingAllMessages() {
             @Override
-            public AllMessages to(long addressOrRegion) {
+            public WritingAllMessages to(long addressOrRegion) {
                 throw new UnsupportedOperationException();
             }
 
             @Override
-            protected void write(SignedMessage message) {
+            public void write(SignedMessage message) {
                 out.object(message);
             }
 

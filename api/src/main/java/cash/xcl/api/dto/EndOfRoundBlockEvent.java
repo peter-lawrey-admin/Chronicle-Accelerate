@@ -1,20 +1,19 @@
 package cash.xcl.api.dto;
 
+import cash.xcl.util.XCLLongLongMap;
 import net.openhft.chronicle.bytes.BytesIn;
 import net.openhft.chronicle.bytes.BytesOut;
 import net.openhft.chronicle.wire.Marshallable;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-
 public class EndOfRoundBlockEvent extends SignedMessage {
     private String region;
     private int weekNumber;
     private long blockNumber;
-    private Map<Long, Long> blockRecords = new LinkedHashMap<>();
+    private XCLLongLongMap blockRecords = XCLLongLongMap.withExpectedSize(16);
+    private LongU32Writer longU32Writer;
 
-    public EndOfRoundBlockEvent(long sourceAddress, long eventTime, String region, int weekNumber, long blockNumber, Map<Long, Long> blockRecords) {
+    public EndOfRoundBlockEvent(long sourceAddress, long eventTime, String region, int weekNumber, long blockNumber, XCLLongLongMap blockRecords) {
         super(sourceAddress, eventTime);
         this.region = region;
         this.weekNumber = weekNumber;
@@ -54,7 +53,7 @@ public class EndOfRoundBlockEvent extends SignedMessage {
         blockRecords.clear();
         int blocks = (int) bytes.readStopBit();
         for (int i = 0; i < blocks; i++)
-            blockRecords.put(bytes.readLong(), bytes.readLong());
+            blockRecords.put(bytes.readLong(), bytes.readUnsignedInt());
 //        System.out.println("Read "+this);
         assert !blockRecords.containsKey(0L);
     }
@@ -68,9 +67,9 @@ public class EndOfRoundBlockEvent extends SignedMessage {
         bytes.writeUnsignedShort(weekNumber);
         bytes.writeUnsignedInt(blockNumber);
         bytes.writeStopBit(blockRecords.size());
-        for (Map.Entry<Long, Long> entry : blockRecords.entrySet()) {
-            bytes.writeLong(entry.getKey()).writeLong(entry.getValue());
-        }
+        if (longU32Writer == null) longU32Writer = new LongU32Writer();
+        longU32Writer.bytes = bytes;
+        blockRecords.forEach(longU32Writer);
     }
 
     @Override
@@ -105,9 +104,9 @@ public class EndOfRoundBlockEvent extends SignedMessage {
         return this;
     }
 
-    public Map<Long, Long> blockRecords() {
+    public XCLLongLongMap blockRecords() {
         if (blockRecords == null)
-            blockRecords = new LinkedHashMap<>();
+            blockRecords = XCLLongLongMap.withExpectedSize(16);
         return blockRecords;
     }
 }

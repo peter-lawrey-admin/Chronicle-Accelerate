@@ -10,6 +10,7 @@ import cash.xcl.api.dto.TransferValueEvent;
 import cash.xcl.api.util.AbstractAllMessages;
 import cash.xcl.server.accounts.AccountService;
 import cash.xcl.server.accounts.VanillaAccountService;
+import net.openhft.chronicle.core.Jvm;
 import net.openhft.chronicle.core.time.SetTimeProvider;
 import net.openhft.chronicle.core.time.SystemTimeProvider;
 import net.openhft.chronicle.core.time.TimeProvider;
@@ -21,6 +22,7 @@ public class LocalPostBlockChainProcessor extends AbstractAllMessages implements
     private AccountService accountService; // todo review
     private int numberOfTransferEventsSent = 0;
     private int numberOfOpeningBalanceEventsSent = 0;
+    private TransferValueEvent tve = new TransferValueEvent();
 
     public LocalPostBlockChainProcessor(long address) {
         super(address);
@@ -57,6 +59,7 @@ public class LocalPostBlockChainProcessor extends AbstractAllMessages implements
             numberOfOpeningBalanceEventsSent++;
 //            System.out.println( "PostProcessor - numberOfOpeningBalanceEventsSent = " + numberOfOpeningBalanceEventsSent);
         } catch (Exception e) {
+            Jvm.warn().on(getClass(), e.toString());
             CommandFailedEvent cfe = new CommandFailedEvent(address, eventTime, openingBalanceEvent, e.toString());
             AllMessages allMessages = to(sourceAddress);
             allMessages.commandFailedEvent(cfe);
@@ -73,7 +76,7 @@ public class LocalPostBlockChainProcessor extends AbstractAllMessages implements
             //accountService.print();
             accountService.transfer(transferValueCommand);
             //accountService.print();
-            TransferValueEvent tve = new TransferValueEvent(this.address, eventTime, transferValueCommand);
+            tve.init(this.address, eventTime, transferValueCommand);
 
             // source account Client:
             AllMessages sourceAccount = to(sourceAddress);
@@ -85,9 +88,11 @@ public class LocalPostBlockChainProcessor extends AbstractAllMessages implements
             // toAccount.transferValueEvent(tve);
 
             numberOfTransferEventsSent++;
-            if( numberOfTransferEventsSent % 1000 == 0 )
+            if (numberOfTransferEventsSent % 100000 == 0)
                 System.out.println("PostProcessor - number of transfers = " + numberOfTransferEventsSent);
+
         } catch (Exception e) {
+            e.printStackTrace();
             CommandFailedEvent cfe = new CommandFailedEvent(address, eventTime, transferValueCommand, e.toString());
             AllMessages allMessages = to(sourceAddress);
             allMessages.commandFailedEvent(cfe);

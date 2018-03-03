@@ -1,6 +1,5 @@
 package cash.xcl.server;
 
-import cash.xcl.api.AllMessages;
 import cash.xcl.api.dto.SignedMessage;
 import cash.xcl.api.dto.TransactionBlockEvent;
 import cash.xcl.api.tcp.WritingAllMessages;
@@ -23,12 +22,12 @@ public class QueuingChainer extends WritingAllMessages implements Chainer {
     }
 
     @Override
-    public AllMessages to(long addressOrRegion) {
+    public WritingAllMessages to(long addressOrRegion) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    protected void write(SignedMessage message) {
+    public void write(SignedMessage message) {
         synchronized (transactionLock) {
             if (tbe.isBufferFull()) {
                 System.out.println("buffer is full - creating new block");

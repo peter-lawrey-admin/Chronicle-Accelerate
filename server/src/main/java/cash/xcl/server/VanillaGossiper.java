@@ -3,15 +3,13 @@ package cash.xcl.server;
 import cash.xcl.api.AllMessagesLookup;
 import cash.xcl.api.dto.TransactionBlockEvent;
 import cash.xcl.api.dto.TransactionBlockGossipEvent;
-
-import java.util.LinkedHashMap;
-import java.util.Map;
+import cash.xcl.util.XCLLongLongMap;
 
 public class VanillaGossiper implements Gossiper {
     private static final Long NO_BLOCK = -1L;
     private final long address;
-    private final Map<Long, Long> lastBlockMap = new LinkedHashMap<>();
-    private final Map<Long, Long> lastVoteMap;
+    private final XCLLongLongMap lastBlockMap = XCLLongLongMap.withExpectedSize(16);
+    private final XCLLongLongMap lastVoteMap;
     private final long[] clusterAddresses;
     private final TransactionBlockGossipEvent gossip;
     private AllMessagesLookup lookup;
@@ -19,7 +17,7 @@ public class VanillaGossiper implements Gossiper {
     public VanillaGossiper(long address, String region, long[] clusterAddresses) {
         this.address = address;
         this.clusterAddresses = clusterAddresses;
-        lastVoteMap = new LinkedHashMap<>();
+        lastVoteMap = XCLLongLongMap.withExpectedSize(16);
         gossip = new TransactionBlockGossipEvent(0, 0, region, 0, 0, lastVoteMap);
     }
 

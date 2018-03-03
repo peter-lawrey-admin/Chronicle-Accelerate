@@ -1,20 +1,19 @@
 package cash.xcl.api.dto;
 
+import cash.xcl.util.XCLLongLongMap;
 import net.openhft.chronicle.bytes.BytesIn;
 import net.openhft.chronicle.bytes.BytesOut;
 import net.openhft.chronicle.wire.Marshallable;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-
 public class TransactionBlockGossipEvent extends SignedMessage {
     private String region;
     private int weekNumber;
     private long blockNumber; // unsigned int
-    private Map<Long, Long> addressToBlockNumberMap;
+    private XCLLongLongMap addressToBlockNumberMap;
+    private LongU32Writer longU32Writer = new LongU32Writer();
 
-    public TransactionBlockGossipEvent(long sourceAddress, long eventTime, String region, int weekNumber, long blockNumber, Map<Long, Long> addressToBlockNumberMap) {
+    public TransactionBlockGossipEvent(long sourceAddress, long eventTime, String region, int weekNumber, long blockNumber, XCLLongLongMap addressToBlockNumberMap) {
         super(sourceAddress, eventTime);
         this.weekNumber = weekNumber;
         this.blockNumber = blockNumber;
@@ -23,7 +22,7 @@ public class TransactionBlockGossipEvent extends SignedMessage {
     }
 
     public TransactionBlockGossipEvent() {
-        addressToBlockNumberMap = new LinkedHashMap<>();
+        addressToBlockNumberMap = XCLLongLongMap.withExpectedSize(16);
     }
 
     @Override
@@ -32,7 +31,7 @@ public class TransactionBlockGossipEvent extends SignedMessage {
         weekNumber = bytes.readUnsignedShort();
         blockNumber = bytes.readUnsignedInt();
         int entries = (int) bytes.readStopBit();
-        if (addressToBlockNumberMap == null) addressToBlockNumberMap = new LinkedHashMap<>();
+        if (addressToBlockNumberMap == null) addressToBlockNumberMap = XCLLongLongMap.withExpectedSize(16);
         for (int i = 0; i < entries; i++)
             addressToBlockNumberMap.put(bytes.readLong(), bytes.readUnsignedInt());
         assert !addressToBlockNumberMap.containsKey(0L);
@@ -46,8 +45,8 @@ public class TransactionBlockGossipEvent extends SignedMessage {
         bytes.writeUnsignedShort(weekNumber);
         bytes.writeUnsignedInt(blockNumber);
         bytes.writeStopBit(addressToBlockNumberMap.size());
-        for (Map.Entry<Long, Long> entry : addressToBlockNumberMap.entrySet())
-            bytes.writeLong(entry.getKey()).writeUnsignedInt(entry.getValue());
+        longU32Writer.bytes = bytes;
+        addressToBlockNumberMap.forEach(longU32Writer);
     }
 
     @Override
@@ -73,11 +72,11 @@ public class TransactionBlockGossipEvent extends SignedMessage {
         return this;
     }
 
-    public Map<Long, Long> addressToBlockNumberMap() {
+    public XCLLongLongMap addressToBlockNumberMap() {
         return addressToBlockNumberMap;
     }
 
-    public TransactionBlockGossipEvent addressToBlockNumberMap(Map<Long, Long> addressToBlockNumberMap) {
+    public TransactionBlockGossipEvent addressToBlockNumberMap(XCLLongLongMap addressToBlockNumberMap) {
         this.addressToBlockNumberMap = addressToBlockNumberMap;
         return this;
     }
@@ -98,8 +97,9 @@ public class TransactionBlockGossipEvent extends SignedMessage {
         tbge.weekNumber(weekNumber)
                 .blockNumber(blockNumber)
                 .region(region);
-        Map<Long, Long> map = tbge.addressToBlockNumberMap();
+        XCLLongLongMap map = tbge.addressToBlockNumberMap();
         map.putAll(addressToBlockNumberMap);
         return t;
     }
+
 }

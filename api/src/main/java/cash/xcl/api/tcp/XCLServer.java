@@ -1,6 +1,5 @@
 package cash.xcl.api.tcp;
 
-import cash.xcl.api.AllMessages;
 import cash.xcl.api.AllMessagesLookup;
 import cash.xcl.api.AllMessagesServer;
 import cash.xcl.api.ClientException;
@@ -35,7 +34,7 @@ public class XCLServer implements AllMessagesLookup, PublicKeyRegistry, Closeabl
     private final AllMessagesServer serverComponent;
     private final Map<Long, TCPConnection> connections = new ConcurrentHashMap<>();
     private final Map<Long, TCPConnection> remoteMap = new ConcurrentHashMap<>();
-    private final Map<Long, AllMessages> allMessagesMap = new ConcurrentHashMap<>();
+    private final Map<Long, WritingAllMessages> allMessagesMap = new ConcurrentHashMap<>();
     private final PublicKeyRegistry publicKeyRegistry = new VanillaPublicKeyRegistry();
 
     public XCLServer(String name, int port, long address, Bytes secretKey, AllMessagesServer serverComponent) throws IOException {
@@ -59,7 +58,7 @@ public class XCLServer implements AllMessagesLookup, PublicKeyRegistry, Closeabl
     }
 
     @Override
-    public AllMessages to(long addressOrRegion) {
+    public WritingAllMessages to(long addressOrRegion) {
         return allMessagesMap.computeIfAbsent(addressOrRegion, OneWritingAllMessages::new);
     }
 
@@ -174,12 +173,17 @@ public class XCLServer implements AllMessagesLookup, PublicKeyRegistry, Closeabl
         }
 
         @Override
-        public AllMessages to(long addressOrRegion) {
+        public WritingAllMessages to(long addressOrRegion) {
             throw new UnsupportedOperationException();
         }
 
         @Override
-        protected void write(SignedMessage message) {
+        public void write(SignedMessage message) {
+            XCLServer.this.write(address, message);
+        }
+
+        @Override
+        public void write(long address, SignedMessage message) {
             XCLServer.this.write(address, message);
         }
 

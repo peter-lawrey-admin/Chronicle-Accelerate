@@ -1,22 +1,24 @@
 package cash.xcl.server;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 import cash.xcl.api.AllMessagesServer;
+import cash.xcl.api.dto.DtoParser;
 import cash.xcl.api.dto.EndOfRoundBlockEvent;
 import cash.xcl.api.dto.SignedMessage;
 import cash.xcl.api.dto.TransactionBlockEvent;
+import cash.xcl.util.XCLLongLongMap;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class VanillaBlockReplayer implements BlockReplayer {
     private final long address;
     private final AllMessagesServer postBlockChainProcessor;
     private Map<Long, TransactionLog> transactionLogMap = new ConcurrentHashMap<>();
     private EndOfRoundBlockEvent lastEndOfRoundBlockEvent = null;
-    private Map<Long, Long> replayedMap = new LinkedHashMap<>();
+    private XCLLongLongMap replayedMap = XCLLongLongMap.withExpectedSize(16);
+    private DtoParser dtoParser = new DtoParser();
 
     public VanillaBlockReplayer(long address, AllMessagesServer postBlockChainProcessor) {
         this.address = address;
@@ -79,6 +81,7 @@ public class VanillaBlockReplayer implements BlockReplayer {
             SignedMessage message = messages.get((int) i);
             if (message instanceof TransactionBlockEvent) {
                 TransactionBlockEvent tbe = (TransactionBlockEvent) message;
+                tbe.dtoParser(dtoParser);
                 tbe.replay(postBlockChainProcessor);
             }
         }

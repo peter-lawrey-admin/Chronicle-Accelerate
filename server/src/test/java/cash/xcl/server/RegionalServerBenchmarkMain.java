@@ -33,9 +33,6 @@ public class RegionalServerBenchmarkMain {
                                        int iterations,
                                        int clientThreads) throws IOException {
 
-        // TODO PETERS NEW CODE HERE
-
-
         Ed25519.generatePublicAndSecretKey(publicKey, secretKey);
 
 
@@ -57,25 +54,24 @@ public class RegionalServerBenchmarkMain {
                 gateway.createNewAddressEvent(new CreateNewAddressEvent(0, 0, 0, 0,
                         destinationAddress, publicKey));
 
-                final OpeningBalanceEvent obe1 = new OpeningBalanceEvent(sourceAddress,
-                        1,
-                        sourceAddress,
-                        "USD",
-                        1000);
 
-                final OpeningBalanceEvent obe2 = new OpeningBalanceEvent(sourceAddress,
-                        1,
-                        destinationAddress,
-                        "USD",
-                        1000);
                 AtomicInteger count = new AtomicInteger();
                 XCLClient client = new XCLClient("client", "localhost", serverAddress, sourceAddress, secretKey,
                         new MyWritingAllMessages(count));
-                client.openingBalanceEvent(obe1);
-                client.openingBalanceEvent(obe2);
+                sendOpenningBalance(client, sourceAddress, sourceAddress);
+                sendOpenningBalance(client, sourceAddress, destinationAddress);
                 // how do we know if the openingBalanceEvent msg was a success or a failure?
             }
         }
+    }
+
+    static void sendOpenningBalance(XCLClient client, int sourceAddress, int destinationAddress) {
+        final OpeningBalanceEvent obe1 = new OpeningBalanceEvent(sourceAddress,
+                1,
+                destinationAddress,
+                "USD",
+                1000);
+        client.openingBalanceEvent(obe1);
     }
 
     // Not using JUnit at the moment because
@@ -83,10 +79,10 @@ public class RegionalServerBenchmarkMain {
     public static void main(String[] args) throws Exception {
         RegionalServerBenchmarkMain benchmarkMain = null;
         try {
-            int iterations = 5;
-            int transfersPerThread = 100_000;
+            int iterations = 3;
+            int transfersPerThread = 1_000_000;
             int total = iterations * transfersPerThread;
-            benchmarkMain = new RegionalServerBenchmarkMain(1000, 10, 10, 4);
+            benchmarkMain = new RegionalServerBenchmarkMain(1000, 4, 10, 4);
             int oneThread = benchmarkMain.benchmark(iterations, 1, transfersPerThread);
             int twoThreads = benchmarkMain.benchmark(iterations, 2, transfersPerThread);
             int threeThreads = benchmarkMain.benchmark(iterations, 3, transfersPerThread);
@@ -96,6 +92,8 @@ public class RegionalServerBenchmarkMain {
             System.out.println("benchmark - twoThreads = " + twoThreads + " messages per second");
             System.out.println("benchmark - threeThread = " + threeThreads + " messages per second");
             System.out.println("benchmark - fourThreads = " + fourThreads + " messages per second");
+        } catch (Throwable t) {
+            t.printStackTrace();
 
         } finally {
             //Jvm.pause(1000);
@@ -124,23 +122,31 @@ public class RegionalServerBenchmarkMain {
                         AtomicInteger count = new AtomicInteger();
                         AllMessages queuing = new MyWritingAllMessages(count);
                         XCLClient client = new XCLClient("client", "localhost", this.serverAddress, sourceAddress, secretKey, queuing);
+                        sendOpenningBalance(client, sourceAddress, sourceAddress);
+                        sendOpenningBalance(client, sourceAddress, destinationAddress);
                         client.subscriptionQuery(new SubscriptionQuery(sourceAddress, 0));
                         TransferValueCommand tvc1 = new TransferValueCommand(sourceAddress, 0, destinationAddress, 1e-9, "USD", "");
+                        int x = 0;
                         for (int i = 0; i < transfersPerThread; i += clientThreads) {
                             client.transferValueCommand(tvc1);
-//                            if (i % 20 == 0)
-//                                Jvm.pause(1);
+                            if (++x > 100000 && x % 5000 == 0)
+                                Jvm.pause(1);
                         }
+                        long last = System.currentTimeMillis() + 1000;
                         for (int i = 0; i < transfersPerThread; i += clientThreads) {
                             while (count.get() <= 0) {
-                                System.out.println("pause " + i);
-                                Jvm.pause(1);
+                                if (System.currentTimeMillis() > last + 1000) {
+                                    System.out.println("pause " + i);
+                                    last = System.currentTimeMillis();
+                                }
+                                Jvm.pause(10);
                             }
                             count.decrementAndGet();
                         }
                         //client.close();
                         Closeable.closeQuietly(client);
-                        assertEquals(0, count.get());
+                        // +2 for the opening balances.
+                        assertEquals(1, count.get(), 1);
                     } catch (Throwable e) {
                         e.printStackTrace();
                     }
@@ -184,12 +190,12 @@ public class RegionalServerBenchmarkMain {
         }
 
         @Override
-        public AllMessages to(long addressOrRegion) {
+        public WritingAllMessages to(long addressOrRegion) {
             return this;
         }
 
         @Override
-        protected void write(SignedMessage message) {
+        public void write(SignedMessage message) {
             count.incrementAndGet();
         }
 

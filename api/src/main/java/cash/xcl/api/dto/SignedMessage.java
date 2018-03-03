@@ -65,6 +65,11 @@ public abstract class SignedMessage extends AbstractBytesMarshallable {
     }
 
     protected SignedMessage(long sourceAddress, long eventTime) {
+        init(sourceAddress, eventTime);
+    }
+
+    public void init(long sourceAddress, long eventTime) {
+        if (sigAndMsg != null) sigAndMsg.clear();
         this.sourceAddress = sourceAddress;
         this.eventTime = eventTime;
     }

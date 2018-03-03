@@ -120,12 +120,12 @@ public class TransactionBlockEventOld extends SignedMessage {
         super.writeMarshallable(wire);
         wire.write("transactions").sequence(out -> replay(new WritingAllMessages() {
             @Override
-            public AllMessages to(long addressOrRegion) {
+            public WritingAllMessages to(long addressOrRegion) {
                 throw new UnsupportedOperationException();
             }
 
             @Override
-            protected void write(SignedMessage message) {
+            public void write(SignedMessage message) {
                 out.object(message);
             }
 

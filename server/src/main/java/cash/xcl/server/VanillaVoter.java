@@ -3,14 +3,12 @@ package cash.xcl.server;
 import cash.xcl.api.AllMessagesLookup;
 import cash.xcl.api.dto.TransactionBlockGossipEvent;
 import cash.xcl.api.dto.TransactionBlockVoteEvent;
-
-import java.util.LinkedHashMap;
-import java.util.Map;
+import cash.xcl.util.XCLLongLongMap;
 
 public class VanillaVoter implements Voter {
     static final Long NO_BLOCK = -1L;
-    private final Map<Long, Long> lastBlockMap = new LinkedHashMap<>();
-    private final Map<Long, Long> lastVoteMap;
+    private final XCLLongLongMap lastBlockMap = XCLLongLongMap.withExpectedSize(16);
+    private final XCLLongLongMap lastVoteMap;
     private final long address;
     private final String region;
     private final long[] clusterAddresses;
@@ -22,7 +20,7 @@ public class VanillaVoter implements Voter {
         this.address = address;
         this.region = region;
         this.clusterAddresses = clusterAddresses;
-        lastVoteMap = new LinkedHashMap<>();
+        lastVoteMap = XCLLongLongMap.withExpectedSize(16);
     }
 
     @Override

@@ -7,7 +7,6 @@ import cash.xcl.api.util.AbstractAllMessages;
 import cash.xcl.api.util.CountryRegion;
 import cash.xcl.api.util.PublicKeyRegistry;
 import cash.xcl.api.util.XCLBase32;
-import cash.xcl.server.accounts.AccountService;
 
 /**
  * This accepts message from the XCLServer and passes them to the appropriate downstream component
