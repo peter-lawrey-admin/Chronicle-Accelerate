@@ -16,6 +16,8 @@ public abstract class XCLIntObjMap<V> extends AbstractMarshallable {
     Class<V> vClass;
 
     public static <V> XCLIntObjMap<V> withExpectedSize(Class<V> vClass, int expectedSize) {
+        if (expectedSize < 8)
+            return new SmallIntObjMap<>(expectedSize + 1);
         KolobokeXCLIntObjMap<V> map = new KolobokeXCLIntObjMap<>(expectedSize);
         map.vClass = vClass;
         return map;

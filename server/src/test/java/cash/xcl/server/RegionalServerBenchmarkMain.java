@@ -24,6 +24,12 @@ import static org.junit.Assert.assertEquals;
 -XX:+UnlockDiagnosticVMOptions
 -XX:+DebugNonSafepoints
 -XX:StartFlightRecording=name=test,filename=test.jfr,dumponexit=true,settings=profile
+
+Intel(R) Core(TM) i7-7820X CPU @ 3.60GHz, Centos 7 with linux 4.12
+benchmark - oneThread = 173060 messages per second
+benchmark - twoThreads = 178308 messages per second
+benchmark - threeThread = 192333 messages per second
+benchmark - fourThreads = 200645 messages per second
  */
 public class RegionalServerBenchmarkMain {
 
@@ -83,7 +89,7 @@ public class RegionalServerBenchmarkMain {
 
     // Not using JUnit at the moment because
     // on Windows, using JUnit and the native encryption library will crash the JVM.
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         RegionalServerBenchmarkMain benchmarkMain = null;
         try {
             int iterations = 3;

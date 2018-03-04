@@ -17,7 +17,7 @@ import javax.annotation.Nonnull;
 public abstract class XCLIntDoubleMap extends AbstractMarshallable {
 
     public static XCLIntDoubleMap withExpectedSize(int expectedSize) {
-        return new KolobokeXCLIntDoubleMap(expectedSize);
+        return expectedSize < 8 ? new SmallIntDoubleMap(expectedSize + 1) : new KolobokeXCLIntDoubleMap(expectedSize);
     }
 
     public abstract double put(int key, double value);
