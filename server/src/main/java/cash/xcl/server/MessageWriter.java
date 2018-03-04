@@ -17,8 +17,8 @@ public class MessageWriter extends WritingAllMessages implements Runnable {
     private final XCLServer xclServer;
     private final GenericSignedMessage signedMessage = new GenericSignedMessage();
     private long addressOrRegion;
-    private Bytes bytes1 = Bytes.allocateElasticDirect(32 << 20);
-    private Bytes bytes2 = Bytes.allocateElasticDirect(32 << 20);
+    private Bytes bytes1 = Bytes.allocateElasticDirect(32 << 20).unchecked(true);
+    private Bytes bytes2 = Bytes.allocateElasticDirect(32 << 20).unchecked(true);
 
     public MessageWriter(XCLServer xclServer) {
         this.xclServer = xclServer;
@@ -34,6 +34,7 @@ public class MessageWriter extends WritingAllMessages implements Runnable {
     public void write(SignedMessage message) {
         synchronized (lock) {
             long position = bytes1.writePosition();
+            bytes1.ensureCapacity(position + (1 << 16));
             bytes1.writeInt(0);
             bytes1.writeLong(addressOrRegion);
             message.writeMarshallable(bytes1);

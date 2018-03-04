@@ -86,7 +86,7 @@ public class BalanceByCurrency extends AbstractBytesMarshallable {
     }
 
     public void print() {
-        balances.forEach((k, v) -> System.out.print(" " + k + " = " + v));
+        balances.forEach((k, v) -> System.out.print(" " + XCLBase32.encodeIntUpper(k) + " = " + v));
     }
 
 }

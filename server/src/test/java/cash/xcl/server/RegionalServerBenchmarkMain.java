@@ -82,7 +82,7 @@ public class RegionalServerBenchmarkMain {
             int iterations = 3;
             int transfersPerThread = 1_000_000;
             int total = iterations * transfersPerThread;
-            benchmarkMain = new RegionalServerBenchmarkMain(1000, 4, 10, 4);
+            benchmarkMain = new RegionalServerBenchmarkMain(1000, 5, 10, 4);
             int oneThread = benchmarkMain.benchmark(iterations, 1, transfersPerThread);
             int twoThreads = benchmarkMain.benchmark(iterations, 2, transfersPerThread);
             int threeThreads = benchmarkMain.benchmark(iterations, 3, transfersPerThread);

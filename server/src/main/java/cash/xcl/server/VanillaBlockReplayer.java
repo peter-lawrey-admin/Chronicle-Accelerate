@@ -6,6 +6,7 @@ import cash.xcl.api.dto.EndOfRoundBlockEvent;
 import cash.xcl.api.dto.SignedMessage;
 import cash.xcl.api.dto.TransactionBlockEvent;
 import cash.xcl.util.XCLLongLongMap;
+import net.openhft.chronicle.core.Jvm;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,31 +43,36 @@ public class VanillaBlockReplayer implements BlockReplayer {
 
     // TODO Ideally blocks should be replayed in order, though it doesn't matter much esp if they are all up to date.
     @Override
-    public void replayBlocks() throws InterruptedException {
+    public void replayBlocks() {
         List<Runnable> replayActions = new ArrayList<>();
         synchronized (this) {
-            for (Map.Entry<Long, TransactionLog> entry : transactionLogMap.entrySet()) {
-                Long upto = lastEndOfRoundBlockEvent.blockRecords().get(entry.getKey());
-                if (upto == null) {
-                    continue;
-                }
-
-                long last = replayedMap.getOrDefault(entry.getKey(), -1L);
-
-                int size;
-                while (true) {
-                    size = entry.getValue().messages.size();
-                    if (size >= upto) {
-                        break;
+            try {
+                for (Map.Entry<Long, TransactionLog> entry : transactionLogMap.entrySet()) {
+                    Long upto = lastEndOfRoundBlockEvent.blockRecords().get(entry.getKey());
+                    if (upto == null) {
+                        continue;
                     }
-                    System.out.println(address + " Waiting ... " + size + " < " + upto);
-                    wait(100);
-                }
 
-                if (last < size) {
-                    replayActions.add(() -> replay(entry.getValue(), last + 1, upto));
-                    replayedMap.put(entry.getKey(), upto);
+                    long last = replayedMap.getOrDefault(entry.getKey(), -1L);
+
+                    int size;
+                    while (true) {
+                        size = entry.getValue().messages.size();
+                        if (size >= upto) {
+                            break;
+                        }
+                        System.out.println(address + " Waiting ... " + size + " < " + upto);
+                        wait(100);
+                    }
+
+                    if (last < size) {
+                        replayActions.add(() -> replay(entry.getValue(), last + 1, upto));
+                        replayedMap.put(entry.getKey(), upto);
+                    }
                 }
+            } catch (InterruptedException ie) {
+                Jvm.warn().on(getClass(), "Giving up waiting - interrupted");
+                Thread.currentThread().interrupt();
             }
         }
         postBlockChainProcessor.replyStarted();

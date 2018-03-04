@@ -13,7 +13,7 @@ public class EndOfRoundBlockEvent extends SignedMessage {
     private int region;
     private int weekNumber;
     private long blockNumber;
-    private XCLLongLongMap blockRecords = XCLLongLongMap.withExpectedSize(16);
+    private XCLLongLongMap blockRecords;
     private LongU32Writer longU32Writer;
 
     public EndOfRoundBlockEvent(long sourceAddress, long eventTime, int region, int weekNumber, long blockNumber, XCLLongLongMap blockRecords) {
@@ -21,11 +21,12 @@ public class EndOfRoundBlockEvent extends SignedMessage {
         this.region = region;
         this.weekNumber = weekNumber;
         this.blockNumber = blockNumber;
+        this.blockRecords = XCLLongLongMap.withExpectedSize(16);
         this.blockRecords = blockRecords;
     }
 
     public EndOfRoundBlockEvent() {
-
+        blockRecords = null;
     }
 
     @NotNull
@@ -44,6 +45,7 @@ public class EndOfRoundBlockEvent extends SignedMessage {
         tbe.weekNumber(weekNumber);
         tbe.blockNumber(blockNumber);
         assert !blockRecords.containsKey(0L);
+        tbe.blockRecords = XCLLongLongMap.withExpectedSize(blockRecords.size());
         tbe.blockRecords().putAll(blockRecords);
         return t;
     }
@@ -53,8 +55,12 @@ public class EndOfRoundBlockEvent extends SignedMessage {
         region = bytes.readInt();
         weekNumber = bytes.readUnsignedShort();
         blockNumber = bytes.readUnsignedInt();
-        blockRecords.clear();
         int blocks = (int) bytes.readStopBit();
+        if (blockRecords == null)
+            blockRecords = XCLLongLongMap.withExpectedSize(blocks);
+        else
+            blockRecords.clear();
+
         for (int i = 0; i < blocks; i++)
             blockRecords.put(bytes.readLong(), bytes.readUnsignedInt());
 //        System.out.println("Read "+this);
@@ -69,10 +75,15 @@ public class EndOfRoundBlockEvent extends SignedMessage {
         bytes.writeInt(region);
         bytes.writeUnsignedShort(weekNumber);
         bytes.writeUnsignedInt(blockNumber);
-        bytes.writeStopBit(blockRecords.size());
-        if (longU32Writer == null) longU32Writer = new LongU32Writer();
-        longU32Writer.bytes = bytes;
-        blockRecords.forEach(longU32Writer);
+
+        if (blockRecords == null || blockRecords.size() == 0) {
+            bytes.writeStopBit(0);
+        } else {
+            bytes.writeStopBit(blockRecords.size());
+            if (longU32Writer == null) longU32Writer = new LongU32Writer();
+            longU32Writer.bytes = bytes;
+            blockRecords.forEach(longU32Writer);
+        }
     }
 
     @Override

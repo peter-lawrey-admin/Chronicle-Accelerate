@@ -13,7 +13,6 @@ import net.openhft.chronicle.threads.NamedThreadFactory;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.locks.LockSupport;
 
 public class BlockEngine extends AbstractAllMessages {
     private final int region;
@@ -28,7 +27,8 @@ public class BlockEngine extends AbstractAllMessages {
     private final AllMessagesServer postBlockChainProcessor;
 
     private final TransactionBlockGossipEvent tbge;
-    private final ExecutorService ses;
+    private final ExecutorService votingSes;
+    private final ExecutorService processingSes;
     private final ExecutorService writerSes;
     private final long[] clusterAddresses;
     long blockNumber = 0;
@@ -56,7 +56,8 @@ public class BlockEngine extends AbstractAllMessages {
         voteTaker = new VanillaVoteTaker(address, region, clusterAddresses);
         blockReplayer = new VanillaBlockReplayer(address, postBlockChainProcessor);
         String regionStr = XCLBase32.encodeIntUpper(region);
-        ses = Executors.newSingleThreadExecutor(new NamedThreadFactory(regionStr, true));
+        votingSes = Executors.newSingleThreadExecutor(new NamedThreadFactory(regionStr + "-voter", true));
+        processingSes = Executors.newSingleThreadExecutor(new NamedThreadFactory(regionStr + "-processor", true));
         writerSes = Executors.newSingleThreadExecutor(new NamedThreadFactory(regionStr + "-writer", true));
     }
 
@@ -79,7 +80,7 @@ public class BlockEngine extends AbstractAllMessages {
     }
 
     public void start() {
-        ses.submit(this::run);
+        votingSes.submit(this::runVoter);
         writerSes.submit(messageWriter);
     }
 
@@ -136,7 +137,7 @@ public class BlockEngine extends AbstractAllMessages {
         blockReplayer.treeBlockEvent(endOfRoundBlockEvent);
     }
 
-    void run() {
+    void runVoter() {
         try {
             while (!Thread.currentThread().isInterrupted()) {
                 TransactionBlockEvent tbe = chainer.nextTransactionBlockEvent();
@@ -150,19 +151,17 @@ public class BlockEngine extends AbstractAllMessages {
                 }
 
                 int subRound = 1; //Math.max(1, periodMS / 10);
-                int nanos = 300_000;
-                LockSupport.parkNanos(nanos);
+                Jvm.pause(subRound);
                 gossiper.sendGossip(blockNumber);
-                LockSupport.parkNanos(nanos);
+                Jvm.pause(subRound);
                 voter.sendVote(blockNumber);
-                LockSupport.parkNanos(nanos);
+                Jvm.pause(subRound);
                 //System.out.println(address + " " + blockNumber);
                 if (voteTaker.hasMajority()) {
                     voteTaker.sendEndOfRoundBlock(blockNumber++);
                 }
 
-                // TODO might be triggered asynchronously to improve performance.
-                blockReplayer.replayBlocks();
+                processingSes.submit(blockReplayer::replayBlocks);
                 nextSend += periodMS;
                 long delay = nextSend - SystemTimeProvider.INSTANCE.currentTimeMillis();
                 if (delay > 1)
@@ -176,7 +175,7 @@ public class BlockEngine extends AbstractAllMessages {
 
     @Override
     public void close() {
-        ses.shutdownNow();
+        votingSes.shutdownNow();
     }
 
     // only for testing purposes
