@@ -18,6 +18,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.Assert.assertEquals;
 
+/*
+-XX:+UnlockCommercialFeatures
+-XX:+FlightRecorder
+-XX:+UnlockDiagnosticVMOptions
+-XX:+DebugNonSafepoints
+-XX:StartFlightRecording=name=test,filename=test.jfr,dumponexit=true,settings=profile
+ */
 public class RegionalServerBenchmarkMain {
 
     private XCLServer server;
