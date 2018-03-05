@@ -1,27 +1,26 @@
 package cash.xcl.server;
 
-import cash.xcl.api.AllMessages;
 import cash.xcl.api.dto.SignedMessage;
 import cash.xcl.api.dto.TransactionBlockEvent;
 import cash.xcl.api.tcp.WritingAllMessages;
 
-public class VanillaChainer extends WritingAllMessages {
+public class VanillaChainer extends WritingAllMessages implements Chainer {
     private final Object transactionLock = new Object();
     private TransactionBlockEvent tbe = new TransactionBlockEvent();
     private TransactionBlockEvent tbe2 = new TransactionBlockEvent();
 
-    public VanillaChainer(String region) {
+    public VanillaChainer(int region) {
         tbe.region(region);
         tbe2.region(region);
     }
 
     @Override
-    public AllMessages to(long addressOrRegion) {
+    public WritingAllMessages to(long addressOrRegion) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    protected void write(SignedMessage message) {
+    public void write(SignedMessage message) {
         synchronized (transactionLock) {
 //            System.out.println("Add "+message);
             tbe.addTransaction(message);

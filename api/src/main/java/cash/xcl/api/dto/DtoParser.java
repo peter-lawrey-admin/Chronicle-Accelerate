@@ -1,12 +1,61 @@
 package cash.xcl.api.dto;
 
-import cash.xcl.api.AllMessages;
-import cash.xcl.api.exch.OrderClosedEvent;
-import net.openhft.chronicle.bytes.Bytes;
+
+import static cash.xcl.api.dto.MessageTypes.APPLICATION_MESSAGE_EVENT;
+import static cash.xcl.api.dto.MessageTypes.BLOCK_SUBSCRIPTION_QUERY;
+import static cash.xcl.api.dto.MessageTypes.CANCEL_ORDER_COMMAND;
+import static cash.xcl.api.dto.MessageTypes.CLUSTERS_STATUS_QUERY;
+import static cash.xcl.api.dto.MessageTypes.CLUSTERS_STATUS_RESPONSE;
+import static cash.xcl.api.dto.MessageTypes.CLUSTER_STATUS_QUERY;
+import static cash.xcl.api.dto.MessageTypes.CLUSTER_STATUS_RESPONSE;
+import static cash.xcl.api.dto.MessageTypes.CLUSTER_TRANSFER_STEP1_COMMAND;
+import static cash.xcl.api.dto.MessageTypes.CLUSTER_TRANSFER_STEP2_COMMAND;
+import static cash.xcl.api.dto.MessageTypes.CLUSTER_TRANSFER_STEP3_COMMAND;
+import static cash.xcl.api.dto.MessageTypes.CLUSTER_TRANSFER_STEP3_EVENT;
+import static cash.xcl.api.dto.MessageTypes.COMMAND_FAILED_EVENT;
+import static cash.xcl.api.dto.MessageTypes.CREATE_NEW_ADDRESS_COMMAND;
+import static cash.xcl.api.dto.MessageTypes.CREATE_NEW_ADDRESS_EVENT;
+import static cash.xcl.api.dto.MessageTypes.CURRENT_BALANCE_QUERY;
+import static cash.xcl.api.dto.MessageTypes.CURRENT_BALANCE_RESPONSE;
+import static cash.xcl.api.dto.MessageTypes.DEPOSIT_VALUE_COMMAND;
+import static cash.xcl.api.dto.MessageTypes.DEPOSIT_VALUE_EVENT;
+import static cash.xcl.api.dto.MessageTypes.EXCHANGE_RATE_EVENT;
+import static cash.xcl.api.dto.MessageTypes.EXCHANGE_RATE_QUERY;
+import static cash.xcl.api.dto.MessageTypes.EXCHANGE_RATE_RESPONSE;
+import static cash.xcl.api.dto.MessageTypes.EXECUTION_REPORT;
+import static cash.xcl.api.dto.MessageTypes.FEES_EVENT;
+import static cash.xcl.api.dto.MessageTypes.NEW_ORDER_COMMAND;
+import static cash.xcl.api.dto.MessageTypes.OPENING_BALANCE_EVENT;
+import static cash.xcl.api.dto.MessageTypes.ORDER_CLOSED_EVENT;
+import static cash.xcl.api.dto.MessageTypes.QUERY_FAILED_RESPONSE;
+import static cash.xcl.api.dto.MessageTypes.SERVICE_NODES_EVENT;
+import static cash.xcl.api.dto.MessageTypes.SUBSCRIPTION_QUERY;
+import static cash.xcl.api.dto.MessageTypes.SUBSCRIPTION_SUCCESS_RESPONSE;
+import static cash.xcl.api.dto.MessageTypes.TRANSACTION_BLOCK_EVENT;
+import static cash.xcl.api.dto.MessageTypes.TRANSACTION_BLOCK_GOSSIP_EVENT;
+import static cash.xcl.api.dto.MessageTypes.TRANSACTION_BLOCK_VOTE_EVENT;
+import static cash.xcl.api.dto.MessageTypes.TRANSFER_FROM_EXCHANGE_COMMAND;
+import static cash.xcl.api.dto.MessageTypes.TRANSFER_TO_EXCHANGE_COMMAND;
+import static cash.xcl.api.dto.MessageTypes.TRANSFER_VALUE_COMMAND;
+import static cash.xcl.api.dto.MessageTypes.TRANSFER_VALUE_EVENT;
+import static cash.xcl.api.dto.MessageTypes.TREE_BLOCK_EVENT;
+import static cash.xcl.api.dto.MessageTypes.WITHDRAW_VALUE_COMMAND;
+import static cash.xcl.api.dto.MessageTypes.WITHDRAW_VALUE_EVENT;
 
 import java.util.function.BiConsumer;
 
-import static cash.xcl.api.dto.MessageTypes.*;
+import cash.xcl.api.AllMessages;
+import cash.xcl.api.exch.CancelOrderCommand;
+import cash.xcl.api.exch.DepositValueCommand;
+import cash.xcl.api.exch.DepositValueEvent;
+import cash.xcl.api.exch.ExecutionReportEvent;
+import cash.xcl.api.exch.NewOrderCommand;
+import cash.xcl.api.exch.OrderClosedEvent;
+import cash.xcl.api.exch.TransferFromExchangeCommand;
+import cash.xcl.api.exch.TransferToExchangeCommand;
+import cash.xcl.api.exch.WithdrawValueCommand;
+import cash.xcl.api.exch.WithdrawValueEvent;
+import net.openhft.chronicle.bytes.Bytes;
 
 public class DtoParser {
     public static final int PROTOCOL_OFFSET = 80;
@@ -36,6 +85,9 @@ public class DtoParser {
     final ClusterTransferStep3Command cts3c = new ClusterTransferStep3Command();
     final ClusterTransferStep3Event cts3e = new ClusterTransferStep3Event();
 
+    final TransferFromExchangeCommand tfe = new TransferFromExchangeCommand();
+    final TransferToExchangeCommand tte = new TransferToExchangeCommand();
+
     final DepositValueCommand dvc = new DepositValueCommand();
     final DepositValueEvent dve = new DepositValueEvent();
 
@@ -64,7 +116,7 @@ public class DtoParser {
     final OrderClosedEvent oce = new OrderClosedEvent();
 
     // ExecutionReport
-    final cash.xcl.api.dto.ExecutionReportEvent execre = new cash.xcl.api.dto.ExecutionReportEvent();
+    final ExecutionReportEvent execre = new ExecutionReportEvent();
 
     // Responses
     final SubscriptionSuccessResponse ss = new SubscriptionSuccessResponse();
@@ -170,6 +222,14 @@ public class DtoParser {
             parse(bytes, tvc, messages, AllMessages::transferValueCommand);
             break;
 
+        case TRANSFER_FROM_EXCHANGE_COMMAND:
+            parse(bytes, tfe, messages, AllMessages::transferFromExchangeCommand);
+            break;
+
+        case TRANSFER_TO_EXCHANGE_COMMAND:
+            parse(bytes, tte, messages, AllMessages::transferToExchangeCommand);
+            break;
+
         case SUBSCRIPTION_QUERY:
             parse(bytes, sq, messages, AllMessages::subscriptionQuery);
             break;
@@ -237,9 +297,9 @@ public class DtoParser {
             parse(bytes, erq, messages, AllMessages::exchangeRateQuery);
             break;
 
-            case NEW_ORDER_COMMAND:
-                parse(bytes, noc, messages, AllMessages::newOrderCommand);
-                break;
+        case NEW_ORDER_COMMAND:
+            parse(bytes, noc, messages, AllMessages::newOrderCommand);
+            break;
 
         case CANCEL_ORDER_COMMAND:
             parse(bytes, coc, messages, AllMessages::cancelOrderCommand);

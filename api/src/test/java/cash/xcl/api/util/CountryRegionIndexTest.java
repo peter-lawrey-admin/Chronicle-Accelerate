@@ -38,20 +38,20 @@ public class CountryRegionIndexTest {
 
         assertTrue(index.getRegion("GB-LND").getOverlappedSuffixes().length == 0);
         assertTrue(index.getRegion("RO-AB").getOverlappedSuffixes().length == 0);
-        assertEquals("[d, e]", Arrays.toString(index.getRegion("EC-S").getOverlappedSuffixes()));
-        assertEquals("[f]", Arrays.toString(index.getRegion("EG-MN").getOverlappedSuffixes()));
-        assertEquals("[z]", Arrays.toString(index.getRegion("EG-SU").getOverlappedSuffixes()));
+        assertEquals("[D, E]", Arrays.toString(index.getRegion("EC-S").getOverlappedSuffixes()));
+        assertEquals("[F]", Arrays.toString(index.getRegion("EG-MN").getOverlappedSuffixes()));
+        assertEquals("[Z]", Arrays.toString(index.getRegion("EG-SU").getOverlappedSuffixes()));
         assertEquals("[3, 7]", Arrays.toString(index.getRegion("GR-L").getOverlappedSuffixes()));
         assertEquals("[1]", Arrays.toString(index.getRegion("IE-D").getOverlappedSuffixes()));
-        assertEquals("[c, h, n, r, t, v, z]", Arrays.toString(index.getRegion("RO-B").getOverlappedSuffixes()));
-        assertEquals("[t]", Arrays.toString(index.getRegion("RU-AL").getOverlappedSuffixes()));
-        assertEquals("[u]", Arrays.toString(index.getRegion("RU-KL").getOverlappedSuffixes()));
-        assertEquals("[s]", Arrays.toString(index.getRegion("RU-KO").getOverlappedSuffixes()));
-        assertEquals("[s]", Arrays.toString(index.getRegion("RU-KR").getOverlappedSuffixes()));
-        assertEquals("[s, w]", Arrays.toString(index.getRegion("RU-MO").getOverlappedSuffixes()));
-        assertEquals("[k, m, r]", Arrays.toString(index.getRegion("RU-SA").getOverlappedSuffixes()));
-        assertEquals("[m]", Arrays.toString(index.getRegion("RU-TA").getOverlappedSuffixes()));
-        assertEquals("[u]", Arrays.toString(index.getRegion("RU-TY").getOverlappedSuffixes()));
+        assertEquals("[C, H, N, R, T, V, Z]", Arrays.toString(index.getRegion("RO-B").getOverlappedSuffixes()));
+        assertEquals("[T]", Arrays.toString(index.getRegion("RU-AL").getOverlappedSuffixes()));
+        assertEquals("[U]", Arrays.toString(index.getRegion("RU-KL").getOverlappedSuffixes()));
+        assertEquals("[S]", Arrays.toString(index.getRegion("RU-KO").getOverlappedSuffixes()));
+        assertEquals("[S]", Arrays.toString(index.getRegion("RU-KR").getOverlappedSuffixes()));
+        assertEquals("[S, W]", Arrays.toString(index.getRegion("RU-MO").getOverlappedSuffixes()));
+        assertEquals("[K, M, R]", Arrays.toString(index.getRegion("RU-SA").getOverlappedSuffixes()));
+        assertEquals("[M]", Arrays.toString(index.getRegion("RU-TA").getOverlappedSuffixes()));
+        assertEquals("[U]", Arrays.toString(index.getRegion("RU-TY").getOverlappedSuffixes()));
     }
 
     @Test

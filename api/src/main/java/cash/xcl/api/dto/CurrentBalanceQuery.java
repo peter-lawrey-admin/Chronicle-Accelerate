@@ -3,7 +3,6 @@ package cash.xcl.api.dto;
 import net.openhft.chronicle.bytes.BytesIn;
 import net.openhft.chronicle.bytes.BytesOut;
 
-// FIXME needs reviewing/completing
 public class CurrentBalanceQuery extends SignedMessage {
 
     private long address;
@@ -28,7 +27,7 @@ public class CurrentBalanceQuery extends SignedMessage {
 
     @Override
     protected void readMarshallable2(BytesIn<?> bytes) {
-
+        this.address = bytes.readLong();
     }
 
     @Override
@@ -38,6 +37,6 @@ public class CurrentBalanceQuery extends SignedMessage {
 
     @Override
     protected void writeMarshallable2(BytesOut<?> bytes) {
-
+        bytes.writeLong(address);
     }
 }

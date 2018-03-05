@@ -2,11 +2,11 @@ package cash.xcl.api.tcp;
 
 import cash.xcl.api.AllMessages;
 import cash.xcl.api.dto.*;
-import cash.xcl.api.exch.OrderClosedEvent;
+import cash.xcl.api.exch.*;
 
 public abstract class WritingAllMessages implements AllMessages {
     @Override
-    public abstract AllMessages to(long addressOrRegion);
+    public abstract WritingAllMessages to(long addressOrRegion);
 
     @Override
     public void applicationMessageEvent(ApplicationMessageEvent applicationMessageEvent) {
@@ -193,6 +193,7 @@ public abstract class WritingAllMessages implements AllMessages {
         write(newOrderCommand);
     }
 
+
     @Override
     public void cancelOrderCommand(CancelOrderCommand cancelOrderCommand) {
         write(cancelOrderCommand);
@@ -203,5 +204,19 @@ public abstract class WritingAllMessages implements AllMessages {
         write(serviceNodesEvent);
     }
 
-    protected abstract void write(SignedMessage message);
+    @Override
+    public void transferToExchangeCommand(TransferToExchangeCommand transferCommand) {
+        write(transferCommand);
+    }
+
+    @Override
+    public void transferFromExchangeCommand(TransferFromExchangeCommand transferCommand) {
+        write(transferCommand);
+    }
+
+    public abstract void write(SignedMessage message);
+
+    public void write(long address, SignedMessage message) {
+        to(address).write(message);
+    }
 }

@@ -4,6 +4,7 @@ import cash.xcl.api.util.AddressUtil;
 import cash.xcl.api.util.CountryRegion;
 import cash.xcl.api.util.CountryRegionIndex;
 import cash.xcl.api.util.RegionAddressGenerator;
+import cash.xcl.util.XCLLongObjMap;
 import net.openhft.chronicle.bytes.BytesStore;
 
 import java.util.LinkedHashMap;
@@ -12,7 +13,7 @@ import java.util.Map;
 public class AddressService {
     private final CountryRegionIndex countryRegionIndex;
 
-    private final Map<Long, BytesStore<?, ?>> addresses = new LinkedHashMap<>();
+    private final XCLLongObjMap<BytesStore> addresses = XCLLongObjMap.withExpectedSize(BytesStore.class, 1000);
     private final Map<CountryRegion, RegionAddressGenerator> generator = new LinkedHashMap<>();
 
     public AddressService() {

@@ -4,7 +4,7 @@ import cash.xcl.api.AllMessages;
 import cash.xcl.api.AllMessagesLookup;
 import cash.xcl.api.ServerIn;
 import cash.xcl.api.dto.*;
-import cash.xcl.api.exch.OrderClosedEvent;
+import cash.xcl.api.exch.*;
 import cash.xcl.api.tcp.XCLServer;
 import cash.xcl.api.util.CountryRegion;
 
@@ -219,6 +219,17 @@ public class RegionalFrame implements AllMessages {
     }
 
     @Override
+    public void transferToExchangeCommand(TransferToExchangeCommand transferCommand) {
+        throw new UnsupportedOperationException(getClass().getName());
+    }
+
+    @Override
+    public void transferFromExchangeCommand(TransferFromExchangeCommand transferCommand) {
+        throw new UnsupportedOperationException(getClass().getName());
+    }
+
+
+    @Override
     public void serviceNodesEvent(ServiceNodesEvent serviceNodesEvent) {
         mainChain.serviceNodesEvent(serviceNodesEvent);
         localChain.serviceNodesEvent(serviceNodesEvent);
@@ -229,7 +240,6 @@ public class RegionalFrame implements AllMessages {
         mainChain.close();
         localChain.close();
     }
-
 
 
 }

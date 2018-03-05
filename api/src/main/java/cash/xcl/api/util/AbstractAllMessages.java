@@ -4,7 +4,7 @@ import cash.xcl.api.AllMessages;
 import cash.xcl.api.AllMessagesLookup;
 import cash.xcl.api.AllMessagesServer;
 import cash.xcl.api.dto.*;
-import cash.xcl.api.exch.OrderClosedEvent;
+import cash.xcl.api.exch.*;
 
 public class AbstractAllMessages implements AllMessagesServer {
     protected long address;
@@ -68,7 +68,7 @@ public class AbstractAllMessages implements AllMessagesServer {
     }
 
     @Override
-    public void executionReportEvent(cash.xcl.api.dto.ExecutionReportEvent executionReportEvent) {
+    public void executionReportEvent(ExecutionReportEvent executionReportEvent) {
         throw new UnsupportedOperationException(getClass().getName());
     }
 
@@ -223,8 +223,19 @@ public class AbstractAllMessages implements AllMessagesServer {
     }
 
     @Override
+    public void transferToExchangeCommand(TransferToExchangeCommand transferCommand) {
+        throw new UnsupportedOperationException(getClass().getName());
+    }
+
+    @Override
+    public void transferFromExchangeCommand(TransferFromExchangeCommand transferCommand) {
+        throw new UnsupportedOperationException(getClass().getName());
+    }
+
+    @Override
     public void close() {
         throw new UnsupportedOperationException(getClass().getName());
     }
+
 
 }

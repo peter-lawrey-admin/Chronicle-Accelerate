@@ -7,19 +7,19 @@ import net.openhft.chronicle.bytes.BytesOut;
 
 import static cash.xcl.api.dto.Validators.*;
 
-public class NewLimitOrderCommand extends SignedMessage {
+public class NewOrderCommand extends SignedMessage {
 
     private Side action;
     private long quantity;
     private double maxPrice;
     private CurrencyPair currencyPair;
-    private long timeToLive;
+    private long timeToLive; // in milliseconds
 
-    public NewLimitOrderCommand() {
+    public NewOrderCommand() {
 
     }
 
-    public NewLimitOrderCommand(long sourceAddress, long eventTime, Side action, long qty, double maxPrice, CurrencyPair currencyPair,
+    public NewOrderCommand(long sourceAddress, long eventTime, Side action, long qty, double maxPrice, CurrencyPair currencyPair,
                                 long timeToLive) {
         super(sourceAddress, eventTime);
         this.action = action;

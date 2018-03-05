@@ -1,16 +1,5 @@
 package cash.xcl.api;
 
-import static junit.framework.TestCase.assertTrue;
-import static org.junit.Assert.assertEquals;
-
-import java.io.IOException;
-import java.io.StringWriter;
-import java.net.InetSocketAddress;
-import java.util.Arrays;
-import java.util.List;
-
-import org.junit.Test;
-
 import cash.xcl.api.dto.CreateNewAddressCommand;
 import cash.xcl.api.tcp.XCLClient;
 import cash.xcl.api.tcp.XCLServer;
@@ -18,6 +7,16 @@ import net.openhft.chronicle.bytes.Bytes;
 import net.openhft.chronicle.core.Jvm;
 import net.openhft.chronicle.core.Mocker;
 import net.openhft.chronicle.salt.Ed25519;
+import org.junit.Test;
+
+import java.io.IOException;
+import java.io.StringWriter;
+import java.net.InetSocketAddress;
+import java.util.Arrays;
+import java.util.List;
+
+import static junit.framework.TestCase.assertTrue;
+import static org.junit.Assert.assertEquals;
 
 public class XCLClientServerTest {
     @Test
@@ -51,7 +50,7 @@ public class XCLClientServerTest {
         assertEquals(
                 "allMessagesLookup[cash.xcl.api.tcp.XCLServer@xxxxxxxx]\n" + "createNewAddressCommand[!CreateNewAddressCommand {\n"
                         + "  sourceAddress: 2,\n" + "  eventTime: 1,\n" + "  publicKey: !!binary O2onvM62pC1io6jQKm8Nc2UyFXcd4kOmOsBIoYtZ2ik=,\n"
-                        + "  region: usny,\n" + "  newAddressSeed: 0\n" + "}\n" + "]\n",
+                        + "  region: USNY,\n" + "  newAddressSeed: 0\n" + "}\n" + "]\n",
                 out.toString().replaceAll("\r", "").replaceAll("XCLServer@\\w+", "XCLServer@xxxxxxxx"));
 
         client.close();

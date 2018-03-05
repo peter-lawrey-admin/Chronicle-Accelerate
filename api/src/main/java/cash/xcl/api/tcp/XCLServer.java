@@ -1,6 +1,5 @@
 package cash.xcl.api.tcp;
 
-import cash.xcl.api.AllMessages;
 import cash.xcl.api.AllMessagesLookup;
 import cash.xcl.api.AllMessagesServer;
 import cash.xcl.api.ClientException;
@@ -35,7 +34,7 @@ public class XCLServer implements AllMessagesLookup, PublicKeyRegistry, Closeabl
     private final AllMessagesServer serverComponent;
     private final Map<Long, TCPConnection> connections = new ConcurrentHashMap<>();
     private final Map<Long, TCPConnection> remoteMap = new ConcurrentHashMap<>();
-    private final Map<Long, AllMessages> allMessagesMap = new ConcurrentHashMap<>();
+    private final Map<Long, WritingAllMessages> allMessagesMap = new ConcurrentHashMap<>();
     private final PublicKeyRegistry publicKeyRegistry = new VanillaPublicKeyRegistry();
 
     public XCLServer(String name, int port, long address, Bytes secretKey, AllMessagesServer serverComponent) throws IOException {
@@ -59,7 +58,7 @@ public class XCLServer implements AllMessagesLookup, PublicKeyRegistry, Closeabl
     }
 
     @Override
-    public AllMessages to(long addressOrRegion) {
+    public WritingAllMessages to(long addressOrRegion) {
         return allMessagesMap.computeIfAbsent(addressOrRegion, OneWritingAllMessages::new);
     }
 
@@ -83,12 +82,18 @@ public class XCLServer implements AllMessagesLookup, PublicKeyRegistry, Closeabl
                 message.sign(bytes, address(), secretKey);
             }
             tcpConnection.write(message.sigAndMsg());
-
+        } catch (IllegalStateException e2) {
+            e2.printStackTrace();
+            System.err.println("Failed to marshall object " + e2.toString());
+            // we should never get IllegalStateException exceptions, but if we do,
+            // rethrow the exception so that the LocalPostBlockChainProcessor can send a CommandFailedEvent back to the Client
+            throw e2;
         } catch (Exception e) {
+            e.printStackTrace();
             // assume it's dead.
             Closeable.closeQuietly(tcpConnection);
             connections.remove(toAddress);
-            Jvm.warn().on(getClass(), "Unable to write to " + toAddress + " " + message, e);
+            Jvm.warn().on(getClass(), "Exception while sending message to: " + toAddress + ", message: " + message, e);
         }
     }
 
@@ -126,7 +131,7 @@ public class XCLServer implements AllMessagesLookup, PublicKeyRegistry, Closeabl
                 long messageType = bytes.readUnsignedByte(bytes.readPosition() + MESSAGE_OFFSET);
                 Boolean verify = publicKeyRegistry.verify(address, bytes);
                 if (verify == null || !verify) {
-                    System.err.println("Verify: " + verify);
+                    System.err.println("Verify: " + verify + " for address " + address + " and  object of message type " + messageType);
                     return;
                 }
                 if (messageType == SUBSCRIPTION_QUERY ||
@@ -168,12 +173,17 @@ public class XCLServer implements AllMessagesLookup, PublicKeyRegistry, Closeabl
         }
 
         @Override
-        public AllMessages to(long addressOrRegion) {
+        public WritingAllMessages to(long addressOrRegion) {
             throw new UnsupportedOperationException();
         }
 
         @Override
-        protected void write(SignedMessage message) {
+        public void write(SignedMessage message) {
+            XCLServer.this.write(address, message);
+        }
+
+        @Override
+        public void write(long address, SignedMessage message) {
             XCLServer.this.write(address, message);
         }
 

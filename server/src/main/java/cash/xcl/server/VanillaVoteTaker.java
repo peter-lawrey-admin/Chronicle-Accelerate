@@ -3,9 +3,7 @@ package cash.xcl.server;
 import cash.xcl.api.AllMessagesLookup;
 import cash.xcl.api.dto.EndOfRoundBlockEvent;
 import cash.xcl.api.dto.TransactionBlockVoteEvent;
-
-import java.util.LinkedHashMap;
-import java.util.Map;
+import cash.xcl.util.XCLLongLongMap;
 
 // TODO only take a majority view rather than last one wins.
 // TODO might need a stage before this where the servers announce a proposed EndOfRoundBlock.
@@ -13,12 +11,12 @@ import java.util.Map;
 public class VanillaVoteTaker implements VoteTaker {
     private final long address;
     private final long[] clusterAddresses;
-    private final String region;
+    private final int region;
     private AllMessagesLookup lookup;
-    private Map<Long, Long> addressToBlockNumberMap = new LinkedHashMap<>();
+    private XCLLongLongMap addressToBlockNumberMap = XCLLongLongMap.withExpectedSize(16);
     private EndOfRoundBlockEvent endOfRoundBlockEvent = new EndOfRoundBlockEvent();
 
-    public VanillaVoteTaker(long address, String region, long[] clusterAddresses) {
+    public VanillaVoteTaker(long address, int region, long[] clusterAddresses) {
         this.address = address;
         this.clusterAddresses = clusterAddresses;
         this.region = region;
@@ -37,8 +35,8 @@ public class VanillaVoteTaker implements VoteTaker {
 
     @Override
     public void transactionBlockVoteEvent(TransactionBlockVoteEvent transactionBlockVoteEvent) {
-        System.out.println(address + " " + transactionBlockVoteEvent);
-        Map<Long, Long> addressToBlockNumberMap = transactionBlockVoteEvent.gossipEvent().addressToBlockNumberMap();
+        //System.out.println(address + " " + transactionBlockVoteEvent);
+        XCLLongLongMap addressToBlockNumberMap = transactionBlockVoteEvent.gossipEvent().addressToBlockNumberMap();
         assert !addressToBlockNumberMap.containsKey(0L);
         this.addressToBlockNumberMap.putAll(addressToBlockNumberMap);
     }

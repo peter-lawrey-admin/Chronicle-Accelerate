@@ -50,6 +50,9 @@ public interface MessageTypes {
     // Regional commands and queries
     int TRANSFER_VALUE_COMMAND = 0x40;
 
+    int TRANSFER_TO_EXCHANGE_COMMAND = 0x41;
+    int TRANSFER_FROM_EXCHANGE_COMMAND = 0x42;
+
     int SUBSCRIPTION_QUERY = 0x4c;
     int CURRENT_BALANCE_QUERY = 0x4d;
     int EXCHANGE_RATE_QUERY = 0x4e;
@@ -57,6 +60,7 @@ public interface MessageTypes {
 
     // Regional events and responses
     int TRANSFER_VALUE_EVENT = 0x50;
+
 
     int SUBSCRIPTION_SUCCESS_RESPONSE = 0x5c;
     int CURRENT_BALANCE_RESPONSE = 0x5d;
@@ -76,4 +80,5 @@ public interface MessageTypes {
 
     int EXECUTION_REPORT = 0x72;
     int ORDER_CLOSED_EVENT = 0x73;
+
 }

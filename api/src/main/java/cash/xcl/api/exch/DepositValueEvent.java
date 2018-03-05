@@ -1,6 +1,9 @@
-package cash.xcl.api.dto;
+package cash.xcl.api.exch;
 
-import net.openhft.chronicle.bytes.Bytes;
+import static cash.xcl.api.dto.Validators.notNull;
+
+import cash.xcl.api.dto.MessageTypes;
+import cash.xcl.api.dto.SignedMessage;
 import net.openhft.chronicle.bytes.BytesIn;
 import net.openhft.chronicle.bytes.BytesOut;
 
@@ -10,7 +13,7 @@ public class DepositValueEvent extends SignedMessage {
 
     public DepositValueEvent(long sourceAddress, long eventTime, DepositValueCommand depositValueCommand) {
         super(sourceAddress, eventTime);
-        this.depositValueCommand = depositValueCommand;
+        this.depositValueCommand = notNull(depositValueCommand);
     }
 
     public DepositValueEvent() {
@@ -19,12 +22,18 @@ public class DepositValueEvent extends SignedMessage {
 
     @Override
     protected void readMarshallable2(BytesIn<?> bytes) {
-        depositValueCommand = ((Bytes<?>) bytes).readMarshallableLength16(DepositValueCommand.class, depositValueCommand);
+        if (depositValueCommand == null) {
+            depositValueCommand = new DepositValueCommand();
+        }
+        depositValueCommand.readMarshallable(bytes);
     }
 
     @Override
     protected void writeMarshallable2(BytesOut<?> bytes) {
-        bytes.writeMarshallableLength16(depositValueCommand);
+        if (depositValueCommand == null) {
+            throw new NullPointerException();
+        }
+        depositValueCommand.writeMarshallable(bytes);
     }
 
     @Override
@@ -37,7 +46,7 @@ public class DepositValueEvent extends SignedMessage {
     }
 
     public DepositValueEvent depositValueCommand(DepositValueCommand depositValueCommand) {
-        this.depositValueCommand = depositValueCommand;
+        this.depositValueCommand = notNull(depositValueCommand);
         return this;
     }
 }

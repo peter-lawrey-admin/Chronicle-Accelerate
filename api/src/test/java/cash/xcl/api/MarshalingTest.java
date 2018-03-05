@@ -1,25 +1,8 @@
 package cash.xcl.api;
 
-import cash.xcl.api.dto.CancelOrderCommand;
-import cash.xcl.api.dto.ExecutionReportEvent;
-import cash.xcl.api.dto.NewOrderCommand;
-import cash.xcl.api.dto.SignedMessage;
-import cash.xcl.api.exch.CurrencyPair;
-import cash.xcl.api.exch.OrderClosedEvent;
-import net.openhft.chronicle.bytes.Bytes;
-import net.openhft.chronicle.bytes.BytesUtil;
-import net.openhft.chronicle.core.util.ObjectUtils;
-import net.openhft.chronicle.wire.AbstractMarshallable;
-import net.openhft.chronicle.wire.BinaryWire;
-import net.openhft.chronicle.wire.TextWire;
-import net.openhft.chronicle.wire.Wire;
-import org.junit.After;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameter;
-import org.junit.runners.Parameterized.Parameters;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -28,9 +11,35 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.*;
+import org.junit.After;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameter;
+import org.junit.runners.Parameterized.Parameters;
 
-@Ignore("TODO FIX")
+import cash.xcl.api.dto.CurrentBalanceQuery;
+import cash.xcl.api.dto.CurrentBalanceResponse;
+import cash.xcl.api.dto.SignedMessage;
+import cash.xcl.api.exch.CancelOrderCommand;
+import cash.xcl.api.exch.CurrencyPair;
+import cash.xcl.api.exch.DepositValueCommand;
+import cash.xcl.api.exch.DepositValueEvent;
+import cash.xcl.api.exch.ExecutionReport;
+import cash.xcl.api.exch.ExecutionReportEvent;
+import cash.xcl.api.exch.NewOrderCommand;
+import cash.xcl.api.exch.OrderClosedEvent;
+import cash.xcl.api.exch.WithdrawValueCommand;
+import cash.xcl.api.exch.WithdrawValueEvent;
+import net.openhft.chronicle.bytes.Bytes;
+import net.openhft.chronicle.bytes.BytesUtil;
+import net.openhft.chronicle.core.util.ObjectUtils;
+import net.openhft.chronicle.wire.AbstractMarshallable;
+import net.openhft.chronicle.wire.BinaryWire;
+import net.openhft.chronicle.wire.TextWire;
+import net.openhft.chronicle.wire.Wire;
+
+
 @RunWith(Parameterized.class)
 public class MarshalingTest {
     private final Bytes<ByteBuffer> bytes = Bytes.elasticByteBuffer();
@@ -47,11 +56,14 @@ public class MarshalingTest {
     @SuppressWarnings("rawtypes")
     @Parameters(name = "{0}")
     public static Collection<Object[]> data() throws IOException {
+        String[] files = {"marshaling/currencypair.yaml", "marshaling/cancelordercommand.yaml", "marshaling/executionreport.yaml",
+                "marshaling/executionreportevent.yaml", "marshaling/orderclosedevent.yaml", "marshaling/newlimitordercommand.yaml",
+                "marshaling/depositvaluecommand.yaml", "marshaling/depositvalueevent.yaml", "marshaling/withdrawvaluecommand.yaml",
+                "marshaling/withdrawvalueevent.yaml", "marshaling/currentbalancequery.yaml", "marshaling/currentbalanceresponse.yaml"};
+        Class<?>[] objClass = {CurrencyPair.class, CancelOrderCommand.class, ExecutionReport.class, ExecutionReportEvent.class,
+                OrderClosedEvent.class, NewOrderCommand.class, DepositValueCommand.class, DepositValueEvent.class,
+                WithdrawValueCommand.class, WithdrawValueEvent.class, CurrentBalanceQuery.class, CurrentBalanceResponse.class};
         SignedMessage.addAliases();
-        String[] files = {"marshaling/currencypair.yaml", "marshaling/cancelordercommand.yaml",
-                "marshaling/executionreportevent.yaml", "marshaling/orderclosedevent.yaml", "marshaling/newlimitordercommand.yaml"};
-        Class<?>[] objClass = {CurrencyPair.class, CancelOrderCommand.class, ExecutionReportEvent.class,
-                OrderClosedEvent.class, NewOrderCommand.class};
         ArrayList<Object[]> params = new ArrayList<>();
         for (int i = 0; i < files.length; i++) {
             TextWire textWire = new TextWire(BytesUtil.readFile(files[i]));
@@ -118,4 +130,5 @@ public class MarshalingTest {
     public void cleanup() {
         bytes.release();
     }
+
 }

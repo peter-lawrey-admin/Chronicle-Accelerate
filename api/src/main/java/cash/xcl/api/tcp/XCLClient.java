@@ -46,14 +46,14 @@ public class XCLClient extends WritingAllMessages implements Closeable, TCPConne
     }
 
     @Override
-    public AllMessages to(long addressOrRegion) {
+    public WritingAllMessages to(long addressOrRegion) {
         if (addressOrRegion != address)
             throw new IllegalArgumentException("Address " + XCLBase32.encode(addressOrRegion) + " needs to be " + XCLBase32.encode(address));
         return this;
     }
 
     @Override
-    protected void write(SignedMessage message) {
+    public void write(SignedMessage message) {
         try {
             if (!message.hasSignature()) {
                 if (message.eventTime() == 0)

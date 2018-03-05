@@ -6,34 +6,30 @@ import cash.xcl.api.dto.*;
 import cash.xcl.api.util.AbstractAllMessages;
 import cash.xcl.api.util.CountryRegion;
 import cash.xcl.api.util.PublicKeyRegistry;
-import cash.xcl.api.util.XCLBase32;
+import cash.xcl.api.util.RegionIntConverter;
 
 /**
  * This accepts message from the XCLServer and passes them to the appropriate downstream component
  */
 public class VanillaGateway extends AbstractAllMessages implements Gateway {
-    private final long regionAddress;
-    private final String region;
+    private final int region;
     private final BlockEngine main;
     private final BlockEngine local;
     private PublicKeyRegistry publicKeyRegistery;
 
-    public VanillaGateway(long address, long regionAddress, String region, BlockEngine main, BlockEngine local) {
+    public VanillaGateway(long address, int region, BlockEngine main, BlockEngine local) {
         super(address);
-        this.regionAddress = regionAddress;
         this.region = region;
         this.main = main;
         this.local = local;
     }
 
-    public static VanillaGateway newGateway(long address, String region, long[] clusterAddresses) {
-        long regionAddress = XCLBase32.decode(region);
-        String region2 = XCLBase32.encode(regionAddress);
+    public static VanillaGateway newGateway(long address, String region, long[] clusterAddresses, int mainPeriodMS, int localPeriodMS) {
+        int regionInt = RegionIntConverter.INSTANCE.parse(region);
         return new VanillaGateway(address,
-                regionAddress,
-                region2,
-                BlockEngine.newMain(address, 1000, clusterAddresses),
-                BlockEngine.newLocal(address, region2, 500, clusterAddresses)
+                regionInt,
+                BlockEngine.newMain(address, mainPeriodMS, clusterAddresses),
+                BlockEngine.newLocal(address, regionInt, localPeriodMS, clusterAddresses)
         );
     }
 
@@ -49,17 +45,17 @@ public class VanillaGateway extends AbstractAllMessages implements Gateway {
     public AllMessages to(long addressOrRegion) {
         if (addressOrRegion == 0)
             return main;
-        if (addressOrRegion == regionAddress)
+        if (addressOrRegion == (long) region << 32)
             return local;
         return super.to(addressOrRegion);
     }
 
     @Override
     public void transactionBlockEvent(TransactionBlockEvent transactionBlockEvent) {
-        String region = transactionBlockEvent.region();
-        if (CountryRegion.MAIN_NAME.equals(region))
+        int region = transactionBlockEvent.region();
+        if (CountryRegion.MAIN_CHAIN == region)
             main.transactionBlockEvent(transactionBlockEvent);
-        else if (this.region.equals(region))
+        else if (this.region == region)
             local.transactionBlockEvent(transactionBlockEvent);
         else
             System.err.println("Unknown region " + region);
@@ -67,10 +63,10 @@ public class VanillaGateway extends AbstractAllMessages implements Gateway {
 
     @Override
     public void transactionBlockGossipEvent(TransactionBlockGossipEvent transactionBlockGossipEvent) {
-        String region = transactionBlockGossipEvent.region();
-        if (CountryRegion.MAIN_NAME.equals(region))
+        int region = transactionBlockGossipEvent.region();
+        if (CountryRegion.MAIN_CHAIN == region)
             main.transactionBlockGossipEvent(transactionBlockGossipEvent);
-        else if (this.region.equals(region))
+        else if (this.region == region)
             local.transactionBlockGossipEvent(transactionBlockGossipEvent);
         else
             System.err.println("Unknown region " + region);
@@ -78,10 +74,10 @@ public class VanillaGateway extends AbstractAllMessages implements Gateway {
 
     @Override
     public void transactionBlockVoteEvent(TransactionBlockVoteEvent transactionBlockVoteEvent) {
-        String region = transactionBlockVoteEvent.region();
-        if (CountryRegion.MAIN_NAME.equals(region))
+        int region = transactionBlockVoteEvent.region();
+        if (CountryRegion.MAIN_CHAIN == region)
             main.transactionBlockVoteEvent(transactionBlockVoteEvent);
-        else if (this.region.equals(region))
+        else if (this.region == region)
             local.transactionBlockVoteEvent(transactionBlockVoteEvent);
         else
             System.err.println("Unknown region " + region);
@@ -89,10 +85,10 @@ public class VanillaGateway extends AbstractAllMessages implements Gateway {
 
     @Override
     public void endOfRoundBlockEvent(EndOfRoundBlockEvent endOfRoundBlockEvent) {
-        String region = endOfRoundBlockEvent.region();
-        if (CountryRegion.MAIN_NAME.equals(region))
+        int region = endOfRoundBlockEvent.region();
+        if (CountryRegion.MAIN_CHAIN == region)
             main.endOfRoundBlockEvent(endOfRoundBlockEvent);
-        else if (this.region.equals(region))
+        else if (this.region == region)
             local.endOfRoundBlockEvent(endOfRoundBlockEvent);
         else
             System.err.println("Unknown region " + region);
@@ -122,8 +118,23 @@ public class VanillaGateway extends AbstractAllMessages implements Gateway {
 
     @Override
     public void transferValueCommand(TransferValueCommand transferValueCommand) {
-        super.transferValueCommand(transferValueCommand);
+        local.transferValueCommand(transferValueCommand);
     }
+
+    // todo ?
+    @Override
+    public void transferValueEvent(TransferValueEvent transferValueEvent) {
+        // received as a weekly event
+        checkTrusted(transferValueEvent);
+    }
+
+
+    @Override
+    public void openingBalanceEvent(OpeningBalanceEvent openingBalanceEvent) {
+        // TODO: local or main?
+        local.openingBalanceEvent(openingBalanceEvent);
+    }
+
 
     @Override
     public void start() {
@@ -136,4 +147,10 @@ public class VanillaGateway extends AbstractAllMessages implements Gateway {
         main.close();
         local.close();
     }
+
+    // only for testing purposes
+    public void printBalances() {
+        this.local.printBalances();
+    }
+
 }

@@ -6,12 +6,13 @@ import net.openhft.chronicle.core.io.IORuntimeException;
 import net.openhft.chronicle.core.util.ObjectUtils;
 import net.openhft.chronicle.wire.CSVWire;
 import net.openhft.chronicle.wire.Marshallable;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.util.*;
 
 public class CountryRegionIndex {
-    private final Map<String, CountryRegion> indexByBase32 = new LinkedHashMap<>();
+    private final Map<String, CountryRegion> indexByBase32 = new LinkedHashMap<>(8192);
     private final Collection<CountryRegion> countryRegions = Collections.unmodifiableCollection(indexByBase32.values());
 
     public CountryRegionIndex() {
@@ -39,7 +40,7 @@ public class CountryRegionIndex {
                 if (excluded.contains(cr.getRegionCode()))
                     continue;
 //                System.out.println(cr);
-                String key = cr.regionCodeBase32();
+                String key = cr.regionCodeBase32().toUpperCase();
                 if (indexByBase32.containsKey(key))
                     Jvm.warn().on(getClass(), "duplicate key: " + key + " for " + indexByBase32.get(key) + " and " + cr);
                 indexByBase32.put(key, cr);
@@ -65,18 +66,24 @@ public class CountryRegionIndex {
     }
 
     public boolean isValidRegion(String regionCode) {
-        return regionCode != null && indexByBase32.containsKey(XCLBase32.normalize(regionCode));
+        return regionCode != null && indexByBase32.containsKey(normalize(regionCode));
+    }
+
+    @NotNull
+    private String normalize(String regionCode) {
+        return XCLBase32.normalize(regionCode).toUpperCase();
     }
 
     public CountryRegion getRegion(String regionCode) {
-        return indexByBase32.get(XCLBase32.normalize(regionCode));
+        return indexByBase32.get(normalize(regionCode));
     }
 
     public CountryRegion getFromBase32(String regionCodeBase32NoDash) {
-        return indexByBase32.get(regionCodeBase32NoDash);
+        return indexByBase32.get(normalize(regionCodeBase32NoDash));
     }
 
     public CountryRegion matchCountryRegion(String encodedAddress) {
+        encodedAddress = normalize(encodedAddress);
         String possibleCode = encodedAddress.substring(0, Math.min(6, encodedAddress.length()));
         while (possibleCode.length() > 2) {
             CountryRegion countryRegion = indexByBase32.get(possibleCode);

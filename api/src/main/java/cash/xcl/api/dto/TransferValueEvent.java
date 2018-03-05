@@ -13,6 +13,12 @@ public class TransferValueEvent extends SignedMessage {
         this.transferValueCommand = transferValueCommand;
     }
 
+    public TransferValueEvent init(long sourceAddress, long eventTime, TransferValueCommand transferValueCommand) {
+        super.init(sourceAddress, eventTime);
+        this.transferValueCommand = transferValueCommand;
+        return this;
+    }
+
     public TransferValueEvent() {
         super();
     }

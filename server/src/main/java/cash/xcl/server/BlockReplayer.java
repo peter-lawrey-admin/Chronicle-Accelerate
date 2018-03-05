@@ -8,5 +8,5 @@ public interface BlockReplayer {
 
     void treeBlockEvent(EndOfRoundBlockEvent endOfRoundBlockEvent);
 
-    void replayBlocks() throws InterruptedException;
+    void replayBlocks();
 }

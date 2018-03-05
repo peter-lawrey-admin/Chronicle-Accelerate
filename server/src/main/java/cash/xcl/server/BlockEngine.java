@@ -1,46 +1,45 @@
 package cash.xcl.server;
 
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-
 import cash.xcl.api.AllMessagesLookup;
 import cash.xcl.api.AllMessagesServer;
-import cash.xcl.api.dto.CreateNewAddressCommand;
-import cash.xcl.api.dto.EndOfRoundBlockEvent;
-import cash.xcl.api.dto.TransactionBlockEvent;
-import cash.xcl.api.dto.TransactionBlockGossipEvent;
-import cash.xcl.api.dto.TransactionBlockVoteEvent;
+import cash.xcl.api.dto.*;
+import cash.xcl.api.tcp.XCLServer;
 import cash.xcl.api.util.AbstractAllMessages;
 import cash.xcl.api.util.CountryRegion;
+import cash.xcl.api.util.XCLBase32;
 import net.openhft.chronicle.core.Jvm;
 import net.openhft.chronicle.core.time.SystemTimeProvider;
 import net.openhft.chronicle.threads.NamedThreadFactory;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 public class BlockEngine extends AbstractAllMessages {
-    private final String region;
+    private final int region;
     private final int periodMS;
 
     private final AllMessagesServer fastPath;
-    private final VanillaChainer chainer;
+    private final Chainer chainer;
     private final Gossiper gossiper;
     private final Voter voter;
     private final VoteTaker voteTaker;
     private final BlockReplayer blockReplayer;
     private final AllMessagesServer postBlockChainProcessor;
-    private final AllMessagesServer finalRouter;
 
     private final TransactionBlockGossipEvent tbge;
-    private final ScheduledExecutorService ses = Executors.newSingleThreadScheduledExecutor(new NamedThreadFactory("chain", true));
+    private final ExecutorService votingSes;
+    private final ExecutorService processingSes;
+    private final ExecutorService writerSes;
     private final long[] clusterAddresses;
     long blockNumber = 0;
     private long nextSend;
+    private MessageWriter messageWriter;
 
     public BlockEngine(long address,
-                       String region,
+                       int region,
                        int periodMS,
                        AllMessagesServer fastPath,
-                       VanillaChainer chainer,
+                       Chainer chainer,
                        AllMessagesServer postBlockChainProcessor,
                        long[] clusterAddresses) {
         super(address);
@@ -49,7 +48,6 @@ public class BlockEngine extends AbstractAllMessages {
         this.fastPath = fastPath;
         this.chainer = chainer;
         this.postBlockChainProcessor = postBlockChainProcessor;
-        finalRouter = new VanillaFinalRouter(address);
         tbge = new TransactionBlockGossipEvent();
         nextSend = ((System.currentTimeMillis() / periodMS) * periodMS) + periodMS;
         this.clusterAddresses = clusterAddresses;
@@ -57,20 +55,24 @@ public class BlockEngine extends AbstractAllMessages {
         voter = new VanillaVoter(address, region, clusterAddresses);
         voteTaker = new VanillaVoteTaker(address, region, clusterAddresses);
         blockReplayer = new VanillaBlockReplayer(address, postBlockChainProcessor);
+        String regionStr = XCLBase32.encodeIntUpper(region);
+        votingSes = Executors.newSingleThreadExecutor(new NamedThreadFactory(regionStr + "-voter", true));
+        processingSes = Executors.newSingleThreadExecutor(new NamedThreadFactory(regionStr + "-processor", true));
+        writerSes = Executors.newSingleThreadExecutor(new NamedThreadFactory(regionStr + "-writer", true));
     }
 
     public static BlockEngine newMain(long address, int periodMS, long[] clusterAddresses) {
         final AddressService addressService = new AddressService();
 
-        VanillaChainer chainer = new VanillaChainer(CountryRegion.MAIN_NAME);
+        Chainer chainer = new QueuingChainer(CountryRegion.MAIN_CHAIN);
         AllMessagesServer fastPath = new MainFastPath(address, chainer, addressService);
 
         AllMessagesServer postBlockChainProcessor = new MainPostBlockChainProcessor(address, addressService);
-        return new BlockEngine(address, CountryRegion.MAIN_NAME, periodMS, fastPath, chainer, postBlockChainProcessor, clusterAddresses);
+        return new BlockEngine(address, CountryRegion.MAIN_CHAIN, periodMS, fastPath, chainer, postBlockChainProcessor, clusterAddresses);
     }
 
-    public static BlockEngine newLocal(long address, String region, int periodMS, long[] clusterAddresses) {
-        VanillaChainer chainer = new VanillaChainer(region);
+    public static BlockEngine newLocal(long address, int region, int periodMS, long[] clusterAddresses) {
+        Chainer chainer = new VanillaChainer(region);
         AllMessagesServer fastPath = new MainFastPath(address, chainer, null);
 
         AllMessagesServer postBlockChainProcessor = new LocalPostBlockChainProcessor(address);
@@ -78,7 +80,8 @@ public class BlockEngine extends AbstractAllMessages {
     }
 
     public void start() {
-        ses.submit(this::run);
+        votingSes.submit(this::runVoter);
+        writerSes.submit(messageWriter);
     }
 
     @Override
@@ -88,14 +91,30 @@ public class BlockEngine extends AbstractAllMessages {
         gossiper.allMessagesLookup(this);
         voter.allMessagesLookup(this);
         voteTaker.allMessagesLookup(this);
-        postBlockChainProcessor.allMessagesLookup(this);
-        finalRouter.allMessagesLookup(this);
+        messageWriter = new MessageWriter((XCLServer) lookup);
+        postBlockChainProcessor.allMessagesLookup(messageWriter);
     }
 
     @Override
     public void createNewAddressCommand(CreateNewAddressCommand createNewAddressCommand) {
         fastPath.createNewAddressCommand(createNewAddressCommand);
     }
+
+    @Override
+    public void openingBalanceEvent(OpeningBalanceEvent openingBalanceEvent) {
+        fastPath.openingBalanceEvent(openingBalanceEvent);
+    }
+
+    @Override
+    public void transferValueCommand(TransferValueCommand transferValueCommand) {
+        fastPath.transferValueCommand(transferValueCommand);
+    }
+
+    @Override
+    public void clusterTransferStep1Command(ClusterTransferStep1Command clusterTransferStep1Command) {
+        fastPath.clusterTransferStep1Command(clusterTransferStep1Command);
+    }
+
 
     @Override
     public void transactionBlockEvent(TransactionBlockEvent transactionBlockEvent) {
@@ -118,46 +137,51 @@ public class BlockEngine extends AbstractAllMessages {
         blockReplayer.treeBlockEvent(endOfRoundBlockEvent);
     }
 
-    void run() {
+    void runVoter() {
         try {
-            TransactionBlockEvent tbe = chainer.nextTransactionBlockEvent();
-            //            System.out.println("TBE "+tbe);
-            if (tbe != null) {
-                tbe.sourceAddress(address);
-                tbe.blockNumber(blockNumber++);
-                for (long clusterAddress : clusterAddresses) {
-                    to(clusterAddress).transactionBlockEvent(tbe);
+            while (!Thread.currentThread().isInterrupted()) {
+                TransactionBlockEvent tbe = chainer.nextTransactionBlockEvent();
+                // tg System.out.println("TBE "+tbe);
+                if (tbe != null) {
+                    tbe.sourceAddress(address);
+                    tbe.blockNumber(blockNumber++);
+                    for (long clusterAddress : clusterAddresses) {
+                        to(clusterAddress).transactionBlockEvent(tbe);
+                    }
                 }
-            }
 
-            int subRound = Math.max(1, periodMS / 10);
-            Jvm.pause(subRound);
-            gossiper.sendGossip(blockNumber);
-            Jvm.pause(subRound);
-            voter.sendVote(blockNumber);
-            Jvm.pause(subRound);
-            //            System.out.println(address + " " + blockNumber);
-            if (voteTaker.hasMajority()) {
-                voteTaker.sendEndOfRoundBlock(blockNumber++);
-            }
+                int subRound = 1; //Math.max(1, periodMS / 10);
+                Jvm.pause(subRound);
+                gossiper.sendGossip(blockNumber);
+                Jvm.pause(subRound);
+                voter.sendVote(blockNumber);
+                Jvm.pause(subRound);
+                //System.out.println(address + " " + blockNumber);
+                if (voteTaker.hasMajority()) {
+                    voteTaker.sendEndOfRoundBlock(blockNumber++);
+                }
 
-            // TODO might be triggered asynchronously to improve performance.
-            blockReplayer.replayBlocks();
+                processingSes.submit(blockReplayer::replayBlocks);
+                nextSend += periodMS;
+                long delay = nextSend - SystemTimeProvider.INSTANCE.currentTimeMillis();
+                if (delay > 1)
+                    Jvm.pause(delay);
+            }
 
         } catch (Throwable t) {
             t.printStackTrace();
-
-        } finally {
-            nextSend += periodMS;
-            long delay = nextSend - SystemTimeProvider.INSTANCE.currentTimeMillis();
-            //            System.out.println("Delay "+delay);
-            ses.schedule(this::run, delay, TimeUnit.MILLISECONDS);
         }
     }
 
     @Override
     public void close() {
-        ses.shutdownNow();
+        votingSes.shutdownNow();
     }
 
+    // only for testing purposes
+    public void printBalances() {
+        if (postBlockChainProcessor instanceof LocalPostBlockChainProcessor) {
+            ((LocalPostBlockChainProcessor) postBlockChainProcessor).printBalances();
+        }
+    }
 }

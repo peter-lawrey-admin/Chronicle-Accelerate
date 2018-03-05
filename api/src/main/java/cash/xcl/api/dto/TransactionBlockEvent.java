@@ -1,29 +1,47 @@
 package cash.xcl.api.dto;
 
-import org.jetbrains.annotations.NotNull;
-
 import cash.xcl.api.AllMessages;
 import cash.xcl.api.tcp.WritingAllMessages;
+import cash.xcl.api.util.RegionIntConverter;
 import net.openhft.chronicle.bytes.Bytes;
 import net.openhft.chronicle.bytes.BytesIn;
 import net.openhft.chronicle.bytes.BytesOut;
 import net.openhft.chronicle.bytes.BytesStore;
 import net.openhft.chronicle.core.io.IORuntimeException;
+import net.openhft.chronicle.wire.IntConversion;
 import net.openhft.chronicle.wire.Marshallable;
 import net.openhft.chronicle.wire.WireIn;
 import net.openhft.chronicle.wire.WireOut;
+import org.jetbrains.annotations.NotNull;
+
 
 public class TransactionBlockEvent extends SignedMessage {
-    private String region;
+    @IntConversion(RegionIntConverter.class)
+    private int region;
     private int weekNumber;
     private long blockNumber; // unsigned int
+    static public int MAX_16_BIT_NUMBER = 65536 - 1000;
 
-    private transient Bytes transactions = Bytes.allocateElasticDirect();
+    private transient Bytes transactions = Bytes.allocateElasticDirect(32 << 20);
 
     private transient int count;
+
+    public DtoParser dtoParser() {
+        return dtoParser;
+    }
+
+    public TransactionBlockEvent dtoParser(DtoParser dtoParser) {
+        this.dtoParser = dtoParser;
+        return this;
+    }
+
     private transient DtoParser dtoParser;
 
     public TransactionBlockEvent(long sourceAddress, long eventTime, String region, int weekNumber, long blockNumber) {
+        this(sourceAddress, eventTime, RegionIntConverter.INSTANCE.parse(region), weekNumber, blockNumber);
+    }
+
+    public TransactionBlockEvent(long sourceAddress, long eventTime, int region, int weekNumber, long blockNumber) {
         super(sourceAddress, eventTime);
         this.region = region;
         this.weekNumber = weekNumber;
@@ -43,7 +61,8 @@ public class TransactionBlockEvent extends SignedMessage {
 
     public TransactionBlockEvent addTransaction(SignedMessage message) {
         count++;
-        message.writeMarshallable(transactions);
+        transactions.writeMarshallableLength16(message);
+        //System.out.println("transactions writePosition " + transactions.writePosition() );
         return this;
     }
 
@@ -52,19 +71,27 @@ public class TransactionBlockEvent extends SignedMessage {
             dtoParser = new DtoParser();
         }
         transactions.readPosition(0);
+        long limit = transactions.readLimit();
         while (!transactions.isEmpty()) {
-            dtoParser.parseOne(transactions, allMessages);
+            try {
+                int length = transactions.readUnsignedShort();
+                transactions.readLimit(transactions.readPosition() + length);
+                dtoParser.parseOne(transactions, allMessages);
+            } finally {
+                transactions.readPosition(transactions.readLimit());
+                transactions.readLimit(limit);
+            }
         }
         transactions.readPosition(0);
     }
 
     @Override
     protected void readMarshallable2(BytesIn<?> bytes) {
-        region = bytes.readUtf8();
+        region = bytes.readInt();
         weekNumber = bytes.readUnsignedShort();
         blockNumber = bytes.readUnsignedInt();
         if (transactions == null) {
-            transactions = Bytes.allocateElasticDirect();
+            transactions = Bytes.allocateElasticDirect(bytes.readRemaining());
         }
         transactions.clear().write((BytesStore) bytes);
     }
@@ -72,7 +99,7 @@ public class TransactionBlockEvent extends SignedMessage {
     @Override
     protected void writeMarshallable2(BytesOut<?> bytes) {
         //        System.out.println("Write " + this);
-        bytes.writeUtf8(region);
+        bytes.writeInt(region);
         bytes.writeUnsignedShort(weekNumber);
         bytes.writeUnsignedInt(blockNumber);
         bytes.write(transactions);
@@ -106,6 +133,7 @@ public class TransactionBlockEvent extends SignedMessage {
         tbe.region(region);
         tbe.weekNumber(weekNumber);
         tbe.blockNumber(blockNumber);
+        tbe.transactions().ensureCapacity(transactions.readRemaining());
         tbe.transactions()
                 .clear()
                 .write(transactions);
@@ -117,12 +145,12 @@ public class TransactionBlockEvent extends SignedMessage {
         super.writeMarshallable(wire);
         wire.write("transactions").sequence(out -> replay(new WritingAllMessages() {
             @Override
-            public AllMessages to(long addressOrRegion) {
+            public WritingAllMessages to(long addressOrRegion) {
                 throw new UnsupportedOperationException();
             }
 
             @Override
-            protected void write(SignedMessage message) {
+            public void write(SignedMessage message) {
                 out.object(message);
             }
 
@@ -161,16 +189,25 @@ public class TransactionBlockEvent extends SignedMessage {
         return this;
     }
 
-    public String region() {
+    public int region() {
         return region;
     }
 
-    public TransactionBlockEvent region(String region) {
+    public TransactionBlockEvent region(int region) {
         this.region = region;
+        return this;
+    }
+
+    public TransactionBlockEvent region(String region) {
+        this.region = RegionIntConverter.INSTANCE.parse(region);
         return this;
     }
 
     public int count() {
         return count;
+    }
+
+    public boolean isBufferFull() {
+        return transactions.writePosition() > MAX_16_BIT_NUMBER;
     }
 }

@@ -4,25 +4,14 @@ import cash.xcl.api.AllMessagesLookup;
 import cash.xcl.api.dto.TransactionBlockGossipEvent;
 import cash.xcl.api.dto.TransactionBlockVoteEvent;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-
 public class VanillaVoter implements Voter {
-    static final Long NO_BLOCK = -1L;
-    private final Map<Long, Long> lastBlockMap = new LinkedHashMap<>();
-    private final Map<Long, Long> lastVoteMap;
-    private final long address;
-    private final String region;
     private final long[] clusterAddresses;
     private AllMessagesLookup lookup;
     private TransactionBlockGossipEvent gossip = new TransactionBlockGossipEvent();
     private TransactionBlockVoteEvent vote = new TransactionBlockVoteEvent();
 
-    public VanillaVoter(long address, String region, long[] clusterAddresses) {
-        this.address = address;
-        this.region = region;
+    public VanillaVoter(long address, int region, long[] clusterAddresses) {
         this.clusterAddresses = clusterAddresses;
-        lastVoteMap = new LinkedHashMap<>();
     }
 
     @Override
@@ -37,7 +26,7 @@ public class VanillaVoter implements Voter {
 
     @Override
     public synchronized void transactionBlockGossipEvent(TransactionBlockGossipEvent transactionBlockGossipEvent) {
-        System.out.println(address + " " + transactionBlockGossipEvent);
+        //System.out.println(address + " " + transactionBlockGossipEvent);
         transactionBlockGossipEvent.copyTo(this.gossip);
     }
 

@@ -1,12 +1,18 @@
 package cash.xcl.api;
 
-import cash.xcl.api.dto.*;
+import cash.xcl.api.dto.BlockSubscriptionQuery;
+import cash.xcl.api.dto.ClusterTransferStep1Command;
+import cash.xcl.api.dto.ClusterTransferStep2Command;
+import cash.xcl.api.dto.ClusterTransferStep3Command;
+import cash.xcl.api.dto.CreateNewAddressCommand;
+import cash.xcl.api.dto.TransferValueCommand;
+import cash.xcl.api.exch.ExchangeCommands;
 import net.openhft.chronicle.core.io.Closeable;
 
 /**
  * This should be only Commands (no Query/Response) and weekly Events or Events from other clusters.
  */
-public interface ServerIn extends WeeklyEvents, Closeable {
+public interface ServerIn extends WeeklyEvents, ExchangeCommands, Closeable {
     // from client
     void createNewAddressCommand(CreateNewAddressCommand createNewAddressCommand);
 
@@ -23,12 +29,5 @@ public interface ServerIn extends WeeklyEvents, Closeable {
     void clusterTransferStep3Command(ClusterTransferStep3Command clusterTransferStep3Command);
 
     // request to deposit funds from an external gateway
-    void depositValueCommand(DepositValueCommand depositValueCommand);
-
-    void withdrawValueCommand(WithdrawValueCommand withdrawValueCommand);
-
-    void newOrderCommand(NewOrderCommand newOrderCommand);
-
-    void cancelOrderCommand(CancelOrderCommand cancelOrderCommand);
 
 }

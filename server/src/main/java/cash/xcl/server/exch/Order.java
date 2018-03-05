@@ -10,7 +10,7 @@ class Order extends AbstractMarshallable {
     private final long ownerAddress;
     private final long ownerOrderTime;
     private final long orderId;
-    private final long expires;
+    private final long expires; // millis
     private final long quantity;
     private final double price;
     private final Side side;
