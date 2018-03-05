@@ -8,6 +8,7 @@ openingBalanceEvent: {
       USD: 1000.0
     }
 }
+---
 openingBalanceEvent: {
     sourceAddress: 2,
     eventTime: 12345678900000,
@@ -18,6 +19,7 @@ openingBalanceEvent: {
       USD: 0.0
     }
 }
+---
 transferValueCommand: {
   sourceAddress: 4444,
   eventTime: 12345678920000,

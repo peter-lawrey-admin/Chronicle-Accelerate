@@ -1,10 +1,12 @@
 package cash.xcl.server;
 
+import cash.xcl.api.AllMessages;
 import cash.xcl.api.AllMessagesServer;
 import cash.xcl.api.dto.CommandFailedEvent;
 import cash.xcl.api.dto.CreateNewAddressCommand;
 import cash.xcl.api.dto.CreateNewAddressEvent;
 import net.openhft.chronicle.bytes.Bytes;
+import net.openhft.chronicle.core.Jvm;
 
 public class MainPostBlockChainProcessor extends LocalPostBlockChainProcessor {
     private final AddressService addressService;
@@ -30,13 +32,13 @@ public class MainPostBlockChainProcessor extends LocalPostBlockChainProcessor {
             Bytes publicKey = createNewAddressCommand.publicKey();
             addressService.addAddress(newAddress, publicKey);
             CreateNewAddressEvent createNewAddressEvent = new CreateNewAddressEvent(address, eventTime, createNewAddressCommand, newAddress, publicKey);
-            to(sourceAddress)
-                    .createNewAddressEvent(
-                            createNewAddressEvent);
+            AllMessages messageWriter = to(sourceAddress);
+            messageWriter.createNewAddressEvent(createNewAddressEvent);
         } catch (Exception e) {
-            to(sourceAddress)
-                    .commandFailedEvent(
-                            new CommandFailedEvent(address, eventTime, createNewAddressCommand, e.toString()));
+            Jvm.warn().on(getClass(), e.toString());
+            CommandFailedEvent cfe = new CommandFailedEvent(address, eventTime, createNewAddressCommand, e.toString());
+            AllMessages messageWriter = to(sourceAddress);
+            messageWriter.commandFailedEvent(cfe);
         }
     }
 }

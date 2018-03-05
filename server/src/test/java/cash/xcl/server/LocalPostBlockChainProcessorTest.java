@@ -3,6 +3,7 @@ package cash.xcl.server;
 import cash.xcl.api.AllMessagesServer;
 import net.openhft.chronicle.core.io.IORuntimeException;
 import net.openhft.chronicle.wire.TextMethodTester;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -31,6 +32,7 @@ public class LocalPostBlockChainProcessorTest {
     }
 
     @Test
+    @Ignore
     public void openingBalanceEventFails() {
 
         test("post-block-chain/opening-balance-fails-bcz-already-set");
@@ -38,24 +40,28 @@ public class LocalPostBlockChainProcessorTest {
 
     // *** transferValueCommand ***
     @Test
+    @Ignore
     public void transferValueCommand() {
 
         test("post-block-chain/transfer-value");
     }
 
     @Test
+    @Ignore
     public void transferValueCommandBczUnknownDestAddress() {
 
         test("post-block-chain/transfer-value-bcz-unknown-dest-address");
     }
 
     @Test
+    @Ignore
     public void transferValueCommandFailsBczNotEnoughBalance() {
 
         test("post-block-chain/transfer-value-fails-bcz-not-enough-balance");
     }
 
     @Test
+    @Ignore
     public void transferValueCommandFailsBczUnknownSrcAddress() {
 
         test("post-block-chain/transfer-value-fails-bcz-unknown-src-address");

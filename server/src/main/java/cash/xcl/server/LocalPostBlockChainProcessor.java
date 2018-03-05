@@ -81,8 +81,8 @@ public class LocalPostBlockChainProcessor extends AbstractAllMessages implements
             tve.init(this.address, eventTime, transferValueCommand);
 
             // source account Client:
-            AllMessages sourceAccount = to(sourceAddress);
-            sourceAccount.transferValueEvent(tve);
+            AllMessages messageWriter = to(sourceAddress);
+            messageWriter.transferValueEvent(tve);
 
             // do we need to send an event to the client for the destination account?
             // destination account Client:
@@ -94,7 +94,7 @@ public class LocalPostBlockChainProcessor extends AbstractAllMessages implements
                 System.out.println("PostProcessor - number of transfers = " + numberOfTransferEventsSent);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            //e.printStackTrace();
             CommandFailedEvent cfe = new CommandFailedEvent(address, eventTime, transferValueCommand, e.toString());
             AllMessages allMessages = to(sourceAddress);
             allMessages.commandFailedEvent(cfe);

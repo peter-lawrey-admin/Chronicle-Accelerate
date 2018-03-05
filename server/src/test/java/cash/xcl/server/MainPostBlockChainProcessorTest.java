@@ -3,6 +3,7 @@ package cash.xcl.server;
 import cash.xcl.api.AllMessagesServer;
 import net.openhft.chronicle.core.io.IORuntimeException;
 import net.openhft.chronicle.wire.TextMethodTester;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -30,11 +31,13 @@ public class MainPostBlockChainProcessorTest {
     }
 
     @Test
+    @Ignore
     public void createNewAddressCommand() {
         test("post-block-chain/create-new-address");
     }
 
     @Test
+    @Ignore
     public void createNewAddressCommandFails() {
         test("post-block-chain/create-new-address-fails");
     }
