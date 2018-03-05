@@ -1,0 +1,12 @@
+---
+---
+to: 4444
+commandFailedEvent: {
+  sourceAddress: 1,
+  eventTime: 12345678910000,
+  origSourceAddress: 4444,
+  origEventTime: 12345678920000,
+  origMessageType: 64,
+  reason: "java.lang.IllegalArgumentException: Invalid transfer: trying to transfer XCL100000.0 from account: 4444 but balance is only: 1000.0"
+}
+---

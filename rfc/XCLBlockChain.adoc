@@ -488,6 +488,9 @@ After placing a Limit Order, a trade might be executed immediately or at some po
 
 The result of placing a Limit Order is a `Execution Report Event (0x72)` but only, if and when, a trade takes place at the requested Limit Price.
 
+WE are able to cancel
+expiry time
+
 [width="50%",options="header"]
 |===
 | Success | Error
@@ -547,6 +550,7 @@ The Withdraw Value Event contains confirmation of the withdrawal details includi
 
 An Execution Report message is a message which is sent as a confirmation message of a trade executed in the Accelerate market. The Execution Report Event message contains:
 
+* the issuing address account
 * the amount bought or sold
 * the currency pair
 * the price of the trade

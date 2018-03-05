@@ -1,0 +1,19 @@
+openingBalanceEvent: {
+    sourceAddress: 2,
+    eventTime: 12345678900000,
+    address: 5555,
+    balances: {
+      XCL: 8888.0,
+      EUR: 8888.0,
+      USD: 8888.0
+    }
+}
+---
+transferValueCommand: {
+  sourceAddress: 4444,
+  eventTime: 12345678920000,
+  toAddress: 5555,
+  amount: 999.0,
+  currency: XCL,
+  reference: ref1
+}

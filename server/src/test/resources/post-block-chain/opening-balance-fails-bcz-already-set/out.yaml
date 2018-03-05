@@ -1,0 +1,11 @@
+---
+to: 2
+commandFailedEvent: {
+  sourceAddress: 1,
+  eventTime: 12345678920000,
+  origSourceAddress: 2,
+  origEventTime: 12345678900000,
+  origMessageType: 5,
+  reason: "java.lang.IllegalArgumentException: Unable to set opening balance. Balance is already set for address 4444"
+}
+---

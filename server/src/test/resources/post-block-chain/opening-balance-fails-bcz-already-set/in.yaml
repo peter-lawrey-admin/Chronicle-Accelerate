@@ -1,0 +1,21 @@
+openingBalanceEvent: {
+    sourceAddress: 2,
+    eventTime: 12345678900000,
+    address: 4444,
+    balances: {
+      XCL: 1000.0,
+      EUR: 2000.0,
+      USD: 3000.0
+    }
+}
+---
+openingBalanceEvent: {
+    sourceAddress: 2,
+    eventTime: 12345678900000,
+    address: 4444,
+    balances: {
+      XCL: 1000.0,
+      EUR: 2000.0,
+      USD: 3000.0
+    }
+}
