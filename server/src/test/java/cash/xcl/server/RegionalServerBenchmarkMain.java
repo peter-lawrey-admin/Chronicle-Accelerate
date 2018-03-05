@@ -135,8 +135,8 @@ public class RegionalServerBenchmarkMain {
                         AtomicInteger count = new AtomicInteger();
                         AllMessages queuing = new MyWritingAllMessages(count);
                         XCLClient client = new XCLClient("client", "localhost", this.serverAddress, sourceAddress, secretKey, queuing);
-                        sendOpenningBalance(client, sourceAddress, sourceAddress);
-                        sendOpenningBalance(client, sourceAddress, destinationAddress);
+//                        sendOpenningBalance(client, sourceAddress, sourceAddress);
+//                        sendOpenningBalance(client, sourceAddress, destinationAddress);
                         client.subscriptionQuery(new SubscriptionQuery(sourceAddress, 0));
                         TransferValueCommand tvc1 = new TransferValueCommand(sourceAddress, 0, destinationAddress, 1e-9, "USD", "");
                         int x = 0;
