@@ -21,7 +21,7 @@ public class LocalPostBlockChainProcessor extends AbstractAllMessages implements
 
     private AccountService accountService; // todo review
     private int numberOfTransferEventsSent = 0;
-    private int numberOfOpeningBalanceEventsSent = 0;
+//    private int numberOfOpeningBalanceEventsSent = 0;
     private TransferValueEvent tve = new TransferValueEvent();
 
     public LocalPostBlockChainProcessor(long address) {
@@ -36,6 +36,7 @@ public class LocalPostBlockChainProcessor extends AbstractAllMessages implements
     public LocalPostBlockChainProcessor(AllMessagesServer allMessagesServer) {
         super(123123123123L);
         allMessagesLookup(allMessagesServer);
+        this.accountService = new VanillaAccountService();
     }
 
     // For testing purposes only
@@ -56,9 +57,10 @@ public class LocalPostBlockChainProcessor extends AbstractAllMessages implements
         long sourceAddress = openingBalanceEvent.sourceAddress();
         try {
             accountService.setOpeningBalancesForAccount(openingBalanceEvent);
-            numberOfOpeningBalanceEventsSent++;
+//            numberOfOpeningBalanceEventsSent++;
 //            System.out.println( "PostProcessor - numberOfOpeningBalanceEventsSent = " + numberOfOpeningBalanceEventsSent);
         } catch (Exception e) {
+            e.printStackTrace();
             Jvm.warn().on(getClass(), e.toString());
             CommandFailedEvent cfe = new CommandFailedEvent(address, eventTime, openingBalanceEvent, e.toString());
             AllMessages allMessages = to(sourceAddress);
