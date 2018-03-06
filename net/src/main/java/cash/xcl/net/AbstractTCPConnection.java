@@ -30,6 +30,7 @@ public abstract class AbstractTCPConnection implements TCPConnection {
             this.channel = channel;
             iSocketChannel = null;
         } else {
+            assert channel != null;
             iSocketChannel = ISocketChannel.wrap(channel);
             this.channel = channel;
         }

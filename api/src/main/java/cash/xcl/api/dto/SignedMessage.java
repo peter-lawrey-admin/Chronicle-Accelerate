@@ -54,7 +54,7 @@ public abstract class SignedMessage extends AbstractBytesMarshallable {
                 DepositValueEvent.class,
                 WithdrawValueEvent.class,
                 ExecutionReportEvent.class
-                );
+        );
     }
 
     private transient Bytes<ByteBuffer> sigAndMsg;
@@ -158,7 +158,8 @@ public abstract class SignedMessage extends AbstractBytesMarshallable {
 
     @Override
     public void reset() {
-        sigAndMsg().clear();
+        if (sigAndMsg != null)
+            sigAndMsg().clear();
         sourceAddress = 0;
         eventTime = 0;
     }
@@ -168,7 +169,9 @@ public abstract class SignedMessage extends AbstractBytesMarshallable {
     }
 
     public Bytes<ByteBuffer> sigAndMsg() {
-        return sigAndMsg == null ? sigAndMsg = Bytes.elasticByteBuffer() : sigAndMsg;
+        if (sigAndMsg == null)
+            sigAndMsg = Bytes.elasticByteBuffer();
+        return sigAndMsg;
     }
 
     public SignedMessage sigAndMsg(Bytes<ByteBuffer> sigAndMsg) {

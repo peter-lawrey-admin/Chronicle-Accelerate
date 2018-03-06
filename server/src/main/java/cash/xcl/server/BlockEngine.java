@@ -58,7 +58,7 @@ public class BlockEngine extends AbstractAllMessages {
         String regionStr = XCLBase32.encodeIntUpper(region);
         votingSes = Executors.newSingleThreadExecutor(new NamedThreadFactory(regionStr + "-voter", true, Thread.MAX_PRIORITY));
         processingSes = Executors.newSingleThreadExecutor(new NamedThreadFactory(regionStr + "-processor", true, Thread.MAX_PRIORITY));
-        writerSes = Executors.newSingleThreadExecutor(new NamedThreadFactory(regionStr + "-writer", true, Thread.MIN_PRIORITY));
+        writerSes = Executors.newCachedThreadPool(new NamedThreadFactory(regionStr + "-writer", true, Thread.MIN_PRIORITY));
     }
 
     public static BlockEngine newMain(long address, int periodMS, long[] clusterAddresses) {
@@ -81,7 +81,9 @@ public class BlockEngine extends AbstractAllMessages {
 
     public void start() {
         votingSes.submit(this::runVoter);
-        writerSes.submit(messageWriter);
+        for (Runnable runnable : messageWriter.runnables()) {
+            writerSes.submit(runnable);
+        }
     }
 
     @Override
@@ -91,7 +93,8 @@ public class BlockEngine extends AbstractAllMessages {
         gossiper.allMessagesLookup(this);
         voter.allMessagesLookup(this);
         voteTaker.allMessagesLookup(this);
-        messageWriter = new MessageWriter((XCLServer) lookup);
+        messageWriter = new MultiMessageWriter(2, (XCLServer) lookup);
+//        messageWriter = new SingleMessageWriter((XCLServer) lookup);
         postBlockChainProcessor.allMessagesLookup(messageWriter);
     }
 

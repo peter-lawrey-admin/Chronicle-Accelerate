@@ -33,11 +33,12 @@ benchmark - threeThread = 192333 messages per second
 benchmark - fourThreads = 200645 messages per second
 
 Intel i7-7700 CPU, Windows 10, 32 GB memory.
-benchmark - oneThread = 444960 sustained, 454065 burst messages per second
-benchmark - twoThreads = 192948 sustained, 703572 burst messages per second
-benchmark - fourThreads = 164141 sustained, 961426 burst messages per second
-benchmark - eightThreads = 153254 sustained, 770635 burst messages per second
- */
+benchmark - oneThread = 331318 sustained, 416312 burst messages per second
+benchmark - twoThreads = 464425 sustained, 755085 burst messages per second
+benchmark - fourThreads = 465087 sustained, 994536 burst messages per second
+benchmark - eightThreads = 431039 sustained, 808222 burst messages per second
+*/
+
 public class RegionalServerBenchmarkMain {
 
     private XCLServer server;
