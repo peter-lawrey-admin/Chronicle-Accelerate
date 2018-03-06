@@ -24,12 +24,19 @@ import static org.junit.Assert.assertEquals;
 -XX:+UnlockDiagnosticVMOptions
 -XX:+DebugNonSafepoints
 -XX:StartFlightRecording=name=test,filename=test.jfr,dumponexit=true,settings=profile
+-DfastJava8IO=true
 
 Intel(R) Core(TM) i7-7820X CPU @ 3.60GHz, Centos 7 with linux 4.12
 benchmark - oneThread = 173060 messages per second
 benchmark - twoThreads = 178308 messages per second
 benchmark - threeThread = 192333 messages per second
 benchmark - fourThreads = 200645 messages per second
+
+Intel i7-7700 CPU, Windows 10, 32 GB memory.
+benchmark - oneThread = 444960 sustained, 454065 burst messages per second
+benchmark - twoThreads = 192948 sustained, 703572 burst messages per second
+benchmark - fourThreads = 164141 sustained, 961426 burst messages per second
+benchmark - eightThreads = 153254 sustained, 770635 burst messages per second
  */
 public class RegionalServerBenchmarkMain {
 
@@ -93,18 +100,19 @@ public class RegionalServerBenchmarkMain {
         RegionalServerBenchmarkMain benchmarkMain = null;
         try {
             int iterations = 3;
-            int transfersPerThread = 1_000_000;
-            int total = iterations * transfersPerThread;
-            benchmarkMain = new RegionalServerBenchmarkMain(1000, 5, 10, 4);
-            int oneThread = benchmarkMain.benchmark(iterations, 1, transfersPerThread);
-            int twoThreads = benchmarkMain.benchmark(iterations, 2, transfersPerThread);
-            int threeThreads = benchmarkMain.benchmark(iterations, 3, transfersPerThread);
-            int fourThreads = benchmarkMain.benchmark(iterations, 4, transfersPerThread);
+            int transfers = 1_000_000;
+            int total = iterations * transfers;
+            benchmarkMain = new RegionalServerBenchmarkMain(1000, 10, 10, 8);
+            String oneThread = benchmarkMain.benchmark(iterations, 1, transfers);
+            String twoThreads = benchmarkMain.benchmark(iterations, 2, transfers);
+            String fourThreads = benchmarkMain.benchmark(iterations, 4, transfers);
+            String eightThreads = benchmarkMain.benchmark(iterations, 8, transfers);
             System.out.println("Total number of messages per benchmark = " + total);
             System.out.println("benchmark - oneThread = " + oneThread + " messages per second");
             System.out.println("benchmark - twoThreads = " + twoThreads + " messages per second");
-            System.out.println("benchmark - threeThread = " + threeThreads + " messages per second");
             System.out.println("benchmark - fourThreads = " + fourThreads + " messages per second");
+            System.out.println("benchmark - eightThreads = " + eightThreads + " messages per second");
+
         } catch (Throwable t) {
             t.printStackTrace();
 
@@ -115,38 +123,41 @@ public class RegionalServerBenchmarkMain {
         }
     }
 
-    private int benchmark(int iterations, int clientThreads, int transfersPerThread) throws IOException, InterruptedException, ExecutionException {
+    private String benchmark(int iterations, int clientThreads, int transfers) throws InterruptedException, ExecutionException {
 
-        Thread.sleep(1000);
+        Thread.sleep(2000);
 
         System.out.println(" STARTING BENCHMARK TEST **********************************************");
         // number of messages = msgs * number of iterations
         // number of messages = 10000 * 10 = 100,000
-        double allIterationsTotalTime = 0;
+        double allIterationsTotalTimeSecs = 0;
+        double totalSentTime = 0;
         for (int iterationNumber = 0; iterationNumber < iterations; iterationNumber++) {
             long start = System.nanoTime();
             ExecutorService service = Executors.newFixedThreadPool(clientThreads);
+            BlockingQueue<String> sent = new LinkedBlockingQueue<>(4);
             List<Future> futures = new ArrayList<>();
+            long sentStart = System.nanoTime();
             for (int s = 0; s < clientThreads; s++) {
                 final int sourceAddress = (iterationNumber * 100) + s + 1;
                 final int destinationAddress = sourceAddress + 1000000;
+
                 futures.add(service.submit((Callable<Void>) () -> {
                     try {
                         AtomicInteger count = new AtomicInteger();
                         AllMessages queuing = new MyWritingAllMessages(count);
                         XCLClient client = new XCLClient("client", "localhost", this.serverAddress, sourceAddress, secretKey, queuing);
-//                        sendOpenningBalance(client, sourceAddress, sourceAddress);
-//                        sendOpenningBalance(client, sourceAddress, destinationAddress);
                         client.subscriptionQuery(new SubscriptionQuery(sourceAddress, 0));
                         TransferValueCommand tvc1 = new TransferValueCommand(sourceAddress, 0, destinationAddress, 1e-9, "USD", "");
-                        int x = 0;
-                        for (int i = 0; i < transfersPerThread; i += clientThreads) {
+                        int c = 0;
+                        for (int i = 0; i < transfers; i += clientThreads) {
                             client.transferValueCommand(tvc1);
-                            if (++x > 100000 && x % 5000 == 0)
+                            if (++c > 10000 && c % 1000 == 0)
                                 Jvm.pause(1);
                         }
+                        sent.add("DONE");
                         long last = System.currentTimeMillis() + 1000;
-                        for (int i = 0; i < transfersPerThread; i += clientThreads) {
+                        for (int i = 0; i < transfers; i += clientThreads) {
                             while (count.get() <= 0) {
                                 if (System.currentTimeMillis() > last + 1000) {
                                     System.out.println("pause " + i);
@@ -166,29 +177,35 @@ public class RegionalServerBenchmarkMain {
                     return null;
                 }));
             }
-            for (Future future : futures) {
+            for (Future future : futures)
+                sent.take();
+            double sentTime = (System.nanoTime() - sentStart) / 1e9;
+            totalSentTime += sentTime;
+            for (Future future : futures)
                 future.get();
-            }
-            long time = System.nanoTime() - start;
 
-            double timeInSeconds = (time / 1e9);
-            System.out.printf("Iteration %d - Throughput: %,d messages per sec%n", iterationNumber, (int) (transfersPerThread / timeInSeconds));
-            allIterationsTotalTime += timeInSeconds;
+            double time = (System.nanoTime() - start) / 1e9;
+
+            System.out.printf("Iteration %d - Throughput: %,d sustained, %,d burst messages per sec%n",
+                    iterationNumber, (int) (transfers / time), (int) (transfers / sentTime));
+            allIterationsTotalTimeSecs += time;
             service.shutdown();
         }
 
-        int average = (int) (transfersPerThread / (allIterationsTotalTime / iterations));
+        int sentAverage = (int) (transfers * iterations / totalSentTime);
+        int average = (int) (transfers * iterations / allIterationsTotalTimeSecs);
 
-        System.out.printf("Average Throughput after sending %d messages (%d messages * %d times) using %d client threads = %,d / sec%n",
-                transfersPerThread * iterations,
-                transfersPerThread,
+        System.out.printf("Average Throughput after sending %d messages (%d messages * %d times) using %d client threads = %,d / sec, %,d /sec burst%n",
+                transfers * iterations,
+                transfers,
                 iterations,
                 clientThreads,
-                average);
+                average,
+                sentAverage);
 
         ((VanillaGateway) gateway).printBalances();
 
-        return average;
+        return average + " sustained, " + sentAverage + " burst";
     }
 
     public void close() {

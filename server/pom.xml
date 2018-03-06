@@ -10,17 +10,8 @@
     <artifactId>server</artifactId>
     <name>Chronicle-Accelerate/Server</name>
     <description>Chronicle-Accelerate Server</description>
+
     <dependencies>
-        <dependency>
-            <groupId>net.openhft</groupId>
-            <artifactId>chronicle-bytes</artifactId>
-            <version>1.11.2-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>net.openhft</groupId>
-            <artifactId>chronicle-wire</artifactId>
-            <version>1.11.3-SNAPSHOT</version>
-        </dependency>
         <dependency>
             <groupId>cash.xcl</groupId>
             <artifactId>api</artifactId>

@@ -51,4 +51,6 @@ public abstract class XCLLongObjMap<V> extends AbstractMarshallable {
     }
 
     public abstract V computeIfAbsent(long key, LongFunction<? extends V> supplier);
+
+    public abstract V remove(long key);
 }

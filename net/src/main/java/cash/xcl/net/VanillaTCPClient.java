@@ -81,13 +81,14 @@ public class VanillaTCPClient extends AbstractTCPConnection {
             nextChannel = 0;
         InetSocketAddress socketAddress = socketAddresses.get(nextChannel);
         try {
-            channel = SocketChannel.open(socketAddress);
+            channel(SocketChannel.open(socketAddress));
             Socket socket = channel.socket();
-            socket.setTcpNoDelay(true);
+            socket.setReceiveBufferSize(1 << 20);
+//            socket.setTcpNoDelay(true);
 
         } catch (IOException ioe) {
             ioe.printStackTrace();
-            channel = null;
+            channel(null);
             Jvm.pause(500);
         }
     }

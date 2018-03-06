@@ -16,7 +16,9 @@ public class VanillaTCPServerConnection extends AbstractTCPConnection {
     public VanillaTCPServerConnection(TCPServer tcpServer, SocketChannel channel) throws SocketException {
         super(channel);
         this.tcpServer = tcpServer;
-        channel.socket().setTcpNoDelay(true);
+        channel.socket().setSendBufferSize(1 << 20);
+        channel.socket().setReceiveBufferSize(2 << 20);
+//        channel.socket().setTcpNoDelay(true);
     }
 
     private static ByteBuffer[] createHeaderArray() {

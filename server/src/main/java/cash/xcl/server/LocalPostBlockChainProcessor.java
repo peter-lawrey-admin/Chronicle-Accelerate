@@ -94,7 +94,7 @@ public class LocalPostBlockChainProcessor extends AbstractAllMessages implements
                 System.out.println("PostProcessor - number of transfers = " + numberOfTransferEventsSent);
 
         } catch (Exception e) {
-            //e.printStackTrace();
+            e.printStackTrace();
             CommandFailedEvent cfe = new CommandFailedEvent(address, eventTime, transferValueCommand, e.toString());
             AllMessages allMessages = to(sourceAddress);
             allMessages.commandFailedEvent(cfe);

@@ -3,10 +3,7 @@ package cash.xcl.api.dto;
 import cash.xcl.api.AllMessages;
 import cash.xcl.api.tcp.WritingAllMessages;
 import cash.xcl.api.util.RegionIntConverter;
-import net.openhft.chronicle.bytes.Bytes;
-import net.openhft.chronicle.bytes.BytesIn;
-import net.openhft.chronicle.bytes.BytesOut;
-import net.openhft.chronicle.bytes.BytesStore;
+import net.openhft.chronicle.bytes.*;
 import net.openhft.chronicle.core.io.IORuntimeException;
 import net.openhft.chronicle.wire.IntConversion;
 import net.openhft.chronicle.wire.Marshallable;
@@ -22,7 +19,7 @@ public class TransactionBlockEvent extends SignedMessage {
     private long blockNumber; // unsigned int
     static public int MAX_16_BIT_NUMBER = 65536 - 1000;
 
-    private transient Bytes transactions = Bytes.allocateElasticDirect(32 << 20);
+    private transient Bytes transactions;
 
     private transient int count;
 
@@ -46,10 +43,17 @@ public class TransactionBlockEvent extends SignedMessage {
         this.region = region;
         this.weekNumber = weekNumber;
         this.blockNumber = blockNumber;
+        transactions = Bytes.allocateElasticDirect(32 << 20);
     }
 
     public TransactionBlockEvent() {
+        transactions = Bytes.allocateElasticDirect(32 << 20);
+    }
 
+    TransactionBlockEvent(long capacity) {
+        transactions = NativeBytesStore
+                .lazyNativeBytesStoreWithFixedCapacity(capacity)
+                .bytesForWrite();
     }
 
     @Override
@@ -121,7 +125,7 @@ public class TransactionBlockEvent extends SignedMessage {
     @NotNull
     @Override
     public <T> T deepCopy() {
-        TransactionBlockEvent tbe = new TransactionBlockEvent();
+        TransactionBlockEvent tbe = new TransactionBlockEvent(transactions.realCapacity());
         this.copyTo(tbe);
         return (T) tbe;
     }

@@ -24,7 +24,7 @@ public class VanillaTCPServer implements TCPServer {
         this.connectionListener = connectionListener;
         this.serverChannel = ServerSocketChannel.open();
         serverChannel.bind(new InetSocketAddress(port));
-        pool = Executors.newCachedThreadPool(new NamedThreadFactory(name, false));
+        pool = Executors.newCachedThreadPool(new NamedThreadFactory(name, false, Thread.MIN_PRIORITY));
         pool.submit(this::run);
     }
 

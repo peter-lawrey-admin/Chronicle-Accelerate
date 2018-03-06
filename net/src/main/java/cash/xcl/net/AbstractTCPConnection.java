@@ -2,6 +2,7 @@ package cash.xcl.net;
 
 import net.openhft.chronicle.bytes.Bytes;
 import net.openhft.chronicle.core.io.Closeable;
+import net.openhft.chronicle.core.tcp.ISocketChannel;
 
 import java.io.EOFException;
 import java.io.IOException;
@@ -12,14 +13,27 @@ import java.nio.channels.SocketChannel;
 
 public abstract class AbstractTCPConnection implements TCPConnection {
     final ThreadLocal<ByteBuffer[]> headerBytesTL = ThreadLocal.withInitial(AbstractTCPConnection::createHeaderArray);
-    protected SocketChannel channel;
+
+    protected volatile SocketChannel channel;
+    protected ISocketChannel iSocketChannel;
+
+    protected AbstractTCPConnection(SocketChannel channel) {
+        channel(channel);
+    }
     volatile boolean running = true;
 
     protected AbstractTCPConnection() {
     }
 
-    protected AbstractTCPConnection(SocketChannel channel) {
-        this.channel = channel;
+    public AbstractTCPConnection channel(SocketChannel channel) {
+        if (channel == null) {
+            this.channel = channel;
+            iSocketChannel = null;
+        } else {
+            iSocketChannel = ISocketChannel.wrap(channel);
+            this.channel = channel;
+        }
+        return this;
     }
 
     private static ByteBuffer[] createHeaderArray() {
@@ -52,7 +66,7 @@ public abstract class AbstractTCPConnection implements TCPConnection {
         headerBytes[1] = buffer;
 
         while (buffer.remaining() > 0 && running) {
-            if (channel.write(headerBytes) < 0) {
+            if (iSocketChannel.write(headerBytes) < 0) {
                 channel.close();
                 throw new EOFException("Failed to write");
             }
@@ -79,7 +93,7 @@ public abstract class AbstractTCPConnection implements TCPConnection {
         ByteBuffer buffer = bytes.underlyingObject();
         buffer.position(Math.toIntExact(bytes.writePosition()));
         buffer.limit(Math.toIntExact(bytes.realCapacity()));
-        if (channel.read(buffer) < 0)
+        if (iSocketChannel.read(buffer) < 0)
             throw new EOFException();
         bytes.readLimit(buffer.position());
     }

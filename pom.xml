@@ -47,9 +47,7 @@
         <dependencies>
             <dependency>
                 <groupId>net.openhft</groupId>
-                <artifactId>third-party-bom
-                </artifactId>
-                <!-- PLEASE DON'T LEAVE THIS ON A SNAPSHOT because they get missed in a release  -->
+                <artifactId>third-party-bom</artifactId>
                 <type>pom</type>
                 <version>3.6.2</version>
                 <scope>import</scope>
@@ -57,7 +55,7 @@
             <dependency>
                 <groupId>net.openhft</groupId>
                 <artifactId>chronicle-bom</artifactId>
-                <version>1.15.76</version>
+                <version>1.15.122-SNAPSHOT</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -66,8 +64,7 @@
     <dependencies>
         <dependency>
             <groupId>net.openhft</groupId>
-            <artifactId>chronicle-bytes</artifactId>
-            <version>1.10.14-SNAPSHOT</version>
+            <artifactId>chronicle-wire</artifactId>
         </dependency>
         <dependency>
             <groupId>net.openhft</groupId>

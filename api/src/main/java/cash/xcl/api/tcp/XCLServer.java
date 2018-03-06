@@ -11,6 +11,7 @@ import cash.xcl.net.TCPConnection;
 import cash.xcl.net.TCPServer;
 import cash.xcl.net.TCPServerConnectionListener;
 import cash.xcl.net.VanillaTCPServer;
+import cash.xcl.util.XCLLongObjMap;
 import net.openhft.chronicle.bytes.Bytes;
 import net.openhft.chronicle.core.Jvm;
 import net.openhft.chronicle.core.io.Closeable;
@@ -32,8 +33,8 @@ public class XCLServer implements AllMessagesLookup, PublicKeyRegistry, Closeabl
     private final long address;
     private final Bytes secretKey;
     private final AllMessagesServer serverComponent;
-    private final Map<Long, TCPConnection> connections = new ConcurrentHashMap<>();
-    private final Map<Long, TCPConnection> remoteMap = new ConcurrentHashMap<>();
+    private final XCLLongObjMap<TCPConnection> connections = XCLLongObjMap.withExpectedSize(TCPConnection.class, 128);
+    private final XCLLongObjMap<TCPConnection> remoteMap = XCLLongObjMap.withExpectedSize(TCPConnection.class, 128);
     private final Map<Long, WritingAllMessages> allMessagesMap = new ConcurrentHashMap<>();
     private final PublicKeyRegistry publicKeyRegistry = new VanillaPublicKeyRegistry();
 
@@ -54,7 +55,9 @@ public class XCLServer implements AllMessagesLookup, PublicKeyRegistry, Closeabl
      * @param tcpConnection   to connect to.
      */
     public void addTCPConnection(long addressOrRegion, TCPConnection tcpConnection) {
-        remoteMap.put(addressOrRegion, tcpConnection);
+        synchronized (remoteMap) {
+            remoteMap.put(addressOrRegion, tcpConnection);
+        }
     }
 
     @Override
@@ -63,13 +66,18 @@ public class XCLServer implements AllMessagesLookup, PublicKeyRegistry, Closeabl
     }
 
     public void write(long toAddress, SignedMessage message) {
-        Long addressLong = toAddress;
-        TCPConnection tcpConnection = connections.get(addressLong);
-        if (tcpConnection == null)
-            tcpConnection = remoteMap.get(addressLong);
+        TCPConnection tcpConnection;
+        synchronized (connections) {
+            tcpConnection = connections.get(toAddress);
+        }
+        if (tcpConnection == null) {
+            synchronized (remoteMap) {
+                tcpConnection = remoteMap.get(toAddress);
+            }
+        }
 
         if (tcpConnection == null) {
-            System.out.println(address + " - No connection to address " + addressLong + " to send " + message);
+            System.out.println(address + " - No connection to address " + toAddress + " to send " + message);
             return;
         }
 
@@ -92,7 +100,9 @@ public class XCLServer implements AllMessagesLookup, PublicKeyRegistry, Closeabl
             e.printStackTrace();
             // assume it's dead.
             Closeable.closeQuietly(tcpConnection);
-            connections.remove(toAddress);
+            synchronized (connections) {
+                connections.remove(toAddress);
+            }
             Jvm.warn().on(getClass(), "Exception while sending message to: " + toAddress + ", message: " + message, e);
         }
     }
@@ -103,11 +113,17 @@ public class XCLServer implements AllMessagesLookup, PublicKeyRegistry, Closeabl
 
     @Override
     public void close() {
-        for (TCPConnection connection : remoteMap.values()) {
-            Closeable.closeQuietly(connection);
+        synchronized (connections) {
+            connections.forEach((k, connection) ->
+                    Closeable.closeQuietly(connection));
+            connections.clear();
+        }
+        synchronized (remoteMap) {
+            remoteMap.forEach((k, connection) ->
+                    Closeable.closeQuietly(connection));
+            remoteMap.clear();
         }
         Closeable.closeQuietly(serverComponent);
-        remoteMap.clear();
         tcpServer.close();
     }
 
@@ -139,7 +155,9 @@ public class XCLServer implements AllMessagesLookup, PublicKeyRegistry, Closeabl
                         messageType == EXCHANGE_RATE_QUERY ||
                         messageType == CLUSTER_STATUS_QUERY ||
                         messageType == CLUSTERS_STATUS_QUERY) {
-                    connections.put(address, channel);
+                    synchronized (connections) {
+                        connections.put(address, channel);
+                    }
                 }
 
                 parserTL.get().parseOne(bytes, serverComponent);

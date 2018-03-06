@@ -7,16 +7,16 @@ import cash.xcl.api.tcp.XCLServer;
 import cash.xcl.api.util.AbstractAllMessages;
 import cash.xcl.api.util.CountryRegion;
 import cash.xcl.api.util.XCLBase32;
-import net.openhft.chronicle.core.Jvm;
 import net.openhft.chronicle.core.time.SystemTimeProvider;
 import net.openhft.chronicle.threads.NamedThreadFactory;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.locks.LockSupport;
 
 public class BlockEngine extends AbstractAllMessages {
     private final int region;
-    private final int periodMS;
+    private final int periodUS;
 
     private final AllMessagesServer fastPath;
     private final Chainer chainer;
@@ -32,7 +32,7 @@ public class BlockEngine extends AbstractAllMessages {
     private final ExecutorService writerSes;
     private final long[] clusterAddresses;
     long blockNumber = 0;
-    private long nextSend;
+    private long nextSendUS;
     private MessageWriter messageWriter;
 
     public BlockEngine(long address,
@@ -44,21 +44,21 @@ public class BlockEngine extends AbstractAllMessages {
                        long[] clusterAddresses) {
         super(address);
         this.region = region;
-        this.periodMS = periodMS;
+        this.periodUS = periodMS * 1000;
         this.fastPath = fastPath;
         this.chainer = chainer;
         this.postBlockChainProcessor = postBlockChainProcessor;
         tbge = new TransactionBlockGossipEvent();
-        nextSend = ((System.currentTimeMillis() / periodMS) * periodMS) + periodMS;
+        nextSendUS = (SystemTimeProvider.INSTANCE.currentTimeMicros() / periodUS + 1) * periodUS;
         this.clusterAddresses = clusterAddresses;
         gossiper = new VanillaGossiper(address, region, clusterAddresses);
         voter = new VanillaVoter(address, region, clusterAddresses);
         voteTaker = new VanillaVoteTaker(address, region, clusterAddresses);
         blockReplayer = new VanillaBlockReplayer(address, postBlockChainProcessor);
         String regionStr = XCLBase32.encodeIntUpper(region);
-        votingSes = Executors.newSingleThreadExecutor(new NamedThreadFactory(regionStr + "-voter", true));
-        processingSes = Executors.newSingleThreadExecutor(new NamedThreadFactory(regionStr + "-processor", true));
-        writerSes = Executors.newSingleThreadExecutor(new NamedThreadFactory(regionStr + "-writer", true));
+        votingSes = Executors.newSingleThreadExecutor(new NamedThreadFactory(regionStr + "-voter", true, Thread.MAX_PRIORITY));
+        processingSes = Executors.newSingleThreadExecutor(new NamedThreadFactory(regionStr + "-processor", true, Thread.MAX_PRIORITY));
+        writerSes = Executors.newSingleThreadExecutor(new NamedThreadFactory(regionStr + "-writer", true, Thread.MIN_PRIORITY));
     }
 
     public static BlockEngine newMain(long address, int periodMS, long[] clusterAddresses) {
@@ -150,22 +150,22 @@ public class BlockEngine extends AbstractAllMessages {
                     }
                 }
 
-                int subRound = 1; //Math.max(1, periodMS / 10);
-                Jvm.pause(subRound);
+                int subRound = Math.max(100_000, periodUS * 100);
+                LockSupport.parkNanos(subRound);
                 gossiper.sendGossip(blockNumber);
-                Jvm.pause(subRound);
+                LockSupport.parkNanos(subRound);
                 voter.sendVote(blockNumber);
-                Jvm.pause(subRound);
+                LockSupport.parkNanos(subRound);
                 //System.out.println(address + " " + blockNumber);
                 if (voteTaker.hasMajority()) {
                     voteTaker.sendEndOfRoundBlock(blockNumber++);
                 }
 
                 processingSes.submit(blockReplayer::replayBlocks);
-                nextSend += periodMS;
-                long delay = nextSend - SystemTimeProvider.INSTANCE.currentTimeMillis();
-                if (delay > 1)
-                    Jvm.pause(delay);
+                nextSendUS += periodUS;
+                long delay = nextSendUS - SystemTimeProvider.INSTANCE.currentTimeMicros();
+                if (delay > 10) // minimum delay
+                    LockSupport.parkNanos(delay * 1000);
             }
 
         } catch (Throwable t) {
