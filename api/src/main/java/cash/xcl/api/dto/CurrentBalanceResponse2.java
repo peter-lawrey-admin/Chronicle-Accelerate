@@ -1,10 +1,14 @@
 package cash.xcl.api.dto;
 
 import cash.xcl.api.util.XCLBase32;
+import cash.xcl.api.util.XCLBase32IntConverter;
 import cash.xcl.util.XCLIntDoubleMap;
 import net.openhft.chronicle.bytes.BytesIn;
 import net.openhft.chronicle.bytes.BytesOut;
 import net.openhft.chronicle.core.io.IORuntimeException;
+import net.openhft.chronicle.wire.WireIn;
+import net.openhft.chronicle.wire.WireOut;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 
@@ -68,7 +72,6 @@ public class CurrentBalanceResponse2 extends SignedMessage {
     }
 
 
-
     void balance(int symbol, double amount) {
         balances.put(symbol, validNumber(amount));
     }
@@ -87,8 +90,31 @@ public class CurrentBalanceResponse2 extends SignedMessage {
         }
     }
 
+    @Override
+    public void readMarshallable(@NotNull WireIn wire) throws IORuntimeException {
+        sourceAddress(wire.read("sourceAddress").int64());
+        eventTime(wire.read("eventTime").int64());
+        address(wire.read("address").int64());
+        if (balances == null) balances = XCLIntDoubleMap.withExpectedSize(8);
+        wire.read("balances").marshallable(m -> {
+            while (m.hasMore()) {
+                int currencyId = XCLBase32IntConverter.INSTANCE.parse(m.readEvent(String.class));
+                balances.put(currencyId, m.getValueIn().float64());
+            }
+        });
+    }
 
-
+    @Override
+    public void writeMarshallable(@NotNull WireOut wire) {
+        wire.write("sourceAddress").int64(sourceAddress());
+        wire.write("eventTime").int64(eventTime());
+        wire.write("address").int64(address());
+        wire.write("balance").marshallable(m -> {
+            balances.forEach((c, v) -> {
+                wire.write(XCLBase32IntConverter.asString(c)).float64(v);
+            });
+        });
+    }
 
     public double balance(int symbol) {
         return balances.get(symbol);
@@ -120,7 +146,6 @@ public class CurrentBalanceResponse2 extends SignedMessage {
     public int messageType() {
         return MessageTypes.CURRENT_BALANCE_RESPONSE;
     }
-
 
 
 }
