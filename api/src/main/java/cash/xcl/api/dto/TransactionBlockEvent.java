@@ -125,7 +125,7 @@ public class TransactionBlockEvent extends SignedMessage {
     @NotNull
     @Override
     public <T> T deepCopy() {
-        TransactionBlockEvent tbe = new TransactionBlockEvent(transactions.realCapacity());
+        TransactionBlockEvent tbe = new TransactionBlockEvent(transactions.readRemaining());
         this.copyTo(tbe);
         return (T) tbe;
     }
