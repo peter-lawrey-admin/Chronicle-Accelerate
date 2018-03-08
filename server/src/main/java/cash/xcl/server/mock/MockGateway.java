@@ -76,12 +76,12 @@ public class MockGateway implements ClientOut {
 
     @Override
     public void currentBalanceQuery(CurrentBalanceQuery currentBalanceQuery) {
-        throw new UnsupportedOperationException();
+        mockServer.currentBalanceQuery(currentBalanceQuery);
     }
 
     @Override
     public void exchangeRateQuery(ExchangeRateQuery exchangeRateQuery) {
-        throw new UnsupportedOperationException();
+        mockServer.exchangeRateQuery(exchangeRateQuery);
     }
 
     @Override

@@ -4,6 +4,7 @@ import cash.xcl.api.AllMessages;
 import cash.xcl.api.dto.CreateNewAddressCommand;
 import cash.xcl.api.dto.CreateNewAddressEvent;
 import cash.xcl.api.dto.SubscriptionQuery;
+import cash.xcl.api.dto.TransactionBlockEvent;
 import cash.xcl.api.tcp.XCLClient;
 import cash.xcl.api.tcp.XCLServer;
 import net.openhft.chronicle.bytes.Bytes;
@@ -43,16 +44,18 @@ public class ThreeServerContainer {
         Ed25519.generatePublicAndSecretKey(publicKey3, secretKey3);
         Ed25519.generatePublicAndSecretKey(publicKey, secretKey);
 
+        long tbeInitialCapacity = TransactionBlockEvent._32_MB;
+
         long[] clusterAddresses = {10001, 10002, 10003};
-        Gateway gateway1 = VanillaGateway.newGateway(10001, "gb1dn", clusterAddresses, 1000, 500);
+        Gateway gateway1 = VanillaGateway.newGateway(10001, "gb1dn", clusterAddresses, 1000, 500, tbeInitialCapacity);
         one = new XCLServer("one", 10001, 10001, secretKey1, gateway1);
         weeklySetup(gateway1);
 
-        Gateway gateway2 = VanillaGateway.newGateway(10002, "gb1dn", clusterAddresses, 1000, 500);
+        Gateway gateway2 = VanillaGateway.newGateway(10002, "gb1dn", clusterAddresses, 1000, 500, tbeInitialCapacity);
         two = new XCLServer("two", 10002, 10002, secretKey2, gateway2);
         weeklySetup(gateway2);
 
-        Gateway gateway3 = VanillaGateway.newGateway(10003, "gb1dn", clusterAddresses, 1000, 500);
+        Gateway gateway3 = VanillaGateway.newGateway(10003, "gb1dn", clusterAddresses, 1000, 500, tbeInitialCapacity);
         three = new XCLServer("two", 10003, 10003, secretKey3, gateway3);
         weeklySetup(gateway3);
 

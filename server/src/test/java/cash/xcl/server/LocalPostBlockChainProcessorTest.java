@@ -3,14 +3,15 @@ package cash.xcl.server;
 import cash.xcl.api.AllMessagesServer;
 import net.openhft.chronicle.core.io.IORuntimeException;
 import net.openhft.chronicle.wire.TextMethodTester;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
 
+
 import static org.junit.Assert.assertEquals;
 
 public class LocalPostBlockChainProcessorTest {
+
     public static void test(String basename) {
         TextMethodTester<AllMessagesServer> tester = new TextMethodTester<>(basename + "/in.yaml",
                 LocalPostBlockChainProcessor::new,
@@ -24,6 +25,8 @@ public class LocalPostBlockChainProcessorTest {
         assertEquals(tester.expected(), tester.actual());
     }
 
+
+
     // *** openingBalanceEvent ***
     @Test
     public void openingBalanceEvent() {
@@ -32,7 +35,6 @@ public class LocalPostBlockChainProcessorTest {
     }
 
     @Test
-    @Ignore
     public void openingBalanceEventFails() {
 
         test("post-block-chain/opening-balance-fails-bcz-already-set");
@@ -40,28 +42,24 @@ public class LocalPostBlockChainProcessorTest {
 
     // *** transferValueCommand ***
     @Test
-    @Ignore
     public void transferValueCommand() {
 
         test("post-block-chain/transfer-value");
     }
 
     @Test
-    @Ignore
     public void transferValueCommandBczUnknownDestAddress() {
 
         test("post-block-chain/transfer-value-bcz-unknown-dest-address");
     }
 
     @Test
-    @Ignore
     public void transferValueCommandFailsBczNotEnoughBalance() {
 
         test("post-block-chain/transfer-value-fails-bcz-not-enough-balance");
     }
 
     @Test
-    @Ignore
     public void transferValueCommandFailsBczUnknownSrcAddress() {
 
         test("post-block-chain/transfer-value-fails-bcz-unknown-src-address");
@@ -69,16 +67,4 @@ public class LocalPostBlockChainProcessorTest {
 
 
 
-    /*
-
-    @Test
-    public void createNewAddressCommand() {
-        test("post-block-chain/create-new-address");
-    }
-
-    @Test
-    public void createNewAddressCommandFails() {
-        test("post-block-chain/create-new-address-fails");
-    }
-*/
 }

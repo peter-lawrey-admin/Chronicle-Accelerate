@@ -4,46 +4,59 @@ import net.openhft.chronicle.bytes.BytesIn;
 import net.openhft.chronicle.bytes.BytesOut;
 
 // FIXME needs reviewing/completing
-public class ExchangeRateResponse extends ExchangeRateEvent {
+public class ExchangeRateResponse extends SignedMessage {
 
-    private ExchangeRateQuery exchangeRateQuery;
-
-    // TODO: use this instead of inheritance
-    //private ExchangeRateEvent exchangeRateEvent;
+    private String symbol1symbol2;
+    private double midPrice;
+    private double spreadPrice;
 
     public ExchangeRateResponse(long sourceAddress,
                                 long eventTime,
                                 String symbol1symbol2,
-                                double buyPrice,
-                                double sellPrice,
-                                ExchangeRateQuery exchangeRateQuery) {
-        super(sourceAddress, eventTime, symbol1symbol2, buyPrice, sellPrice);
-        this.exchangeRateQuery = exchangeRateQuery;
+                                double midPrice,
+                                double spreadPrice) {
+        super(sourceAddress, eventTime);
+        this.symbol1symbol2 = symbol1symbol2;
+        this.midPrice = midPrice;
+        this.spreadPrice = spreadPrice;
     }
+
+    public ExchangeRateResponse init(   long sourceAddress,
+                                        long eventTime,
+                                        String symbol1symbol2,
+                                        double midPrice,
+                                        double spreadPrice) {
+        super.init(sourceAddress, eventTime);
+        this.symbol1symbol2 = symbol1symbol2;
+        this.midPrice = midPrice;
+        this.spreadPrice = spreadPrice;
+        return this;
+    }
+
 
     public ExchangeRateResponse() {
         super();
     }
 
-    public ExchangeRateQuery exchangeRateQuery() {
-        return exchangeRateQuery;
-    }
-
-    public ExchangeRateResponse exchangeRateQuery(ExchangeRateQuery exchangeRateQuery) {
-        this.exchangeRateQuery = exchangeRateQuery;
-        return this;
-    }
 
     @Override
     protected void readMarshallable2(BytesIn<?> bytes) {
+        symbol1symbol2 = bytes.readUtf8();
+        midPrice = bytes.readDouble();
+        spreadPrice = bytes.readDouble();
     }
 
     @Override
     protected void writeMarshallable2(BytesOut<?> bytes) {
+        bytes.writeUtf8(symbol1symbol2);
+        bytes.writeDouble(midPrice);
+        bytes.writeDouble(spreadPrice);
     }
+
 
     @Override
     public int messageType() {
+
         return MessageTypes.EXCHANGE_RATE_RESPONSE;
     }
 }

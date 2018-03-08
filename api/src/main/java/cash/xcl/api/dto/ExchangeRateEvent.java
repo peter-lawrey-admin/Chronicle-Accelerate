@@ -14,6 +14,15 @@ public class ExchangeRateEvent extends SignedMessage {
         this.spreadPrice = spreadPrice;
     }
 
+    public ExchangeRateEvent init(long sourceAddress, long eventTime, String symbol1symbol2, double midPrice, double spreadPrice) {
+        super.init(sourceAddress, eventTime);
+        this.symbol1symbol2 = symbol1symbol2;
+        this.midPrice = midPrice;
+        this.spreadPrice = spreadPrice;
+        return this;
+    }
+
+
     public ExchangeRateEvent() {
 
     }

@@ -69,7 +69,7 @@ public class MockClientAndServerForUI {
 
 
             long[] clusterAddresses = {serverAddress};
-            this.gateway = VanillaGateway.newGateway(serverAddress, "gb1dn", clusterAddresses, mainBlockPeriodMS, localBlockPeriodMS);
+            this.gateway = VanillaGateway.newGateway(serverAddress, "gb1dn", clusterAddresses, mainBlockPeriodMS, localBlockPeriodMS, TransactionBlockEvent._32_MB);
             this.server = new XCLServer("one", serverAddress, serverAddress, secretKey, gateway);
             gateway.start();
 
@@ -147,7 +147,7 @@ public class MockClientAndServerForUI {
         gateway.exchangeRateQuery(exchangeRateQuery);
     }
 
-    public void CurrentBalanceQuery(CurrentBalanceQuery currentBalanceQuery) {
+    public void currentBalanceQuery(CurrentBalanceQuery currentBalanceQuery) {
         gateway.currentBalanceQuery(currentBalanceQuery);
     }
 
