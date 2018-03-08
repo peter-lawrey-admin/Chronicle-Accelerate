@@ -49,7 +49,7 @@ public class TransactionBlockEvent extends SignedMessage {
                     transactions = Bytes.allocateElasticDirect();
                     System.out.printf("NEW TBE object - default: %,d bytes%n", transactions.realCapacity() );
                 } else {
-                    throw new IllegalStateException("bad capacity");
+                    throw new IllegalArgumentException("bad capacity");
                 }
             }
         }
