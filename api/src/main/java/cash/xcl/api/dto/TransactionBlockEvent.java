@@ -36,8 +36,8 @@ public class TransactionBlockEvent extends SignedMessage {
         this(0, false);
     }
 
-    public TransactionBlockEvent(long capacity, boolean allocateLazily) {
-        if( allocateLazily ) {
+    public TransactionBlockEvent(long capacity, boolean isFixedCapacity) {
+        if( isFixedCapacity ) {
             transactions = NativeBytesStore.lazyNativeBytesStoreWithFixedCapacity(capacity).bytesForWrite();
             System.out.printf("NEW TBE object - deep copying: %,d bytes%n", transactions.realCapacity() );
         } else {
