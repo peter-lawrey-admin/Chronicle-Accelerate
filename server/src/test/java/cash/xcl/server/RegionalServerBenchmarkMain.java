@@ -37,10 +37,10 @@ benchmark - eightThreads = 431039 sustained, 808222 burst messages per second
 
 Intel i7-7820X, Windows 10, 64 GB memory.
 as a core service
-benchmark - oneThread = 390034 sustained, 461002 burst messages per second
-benchmark - twoThreads = 419318 sustained, 653218 burst messages per second
-benchmark - fourThreads = 405181 sustained, 711742 burst messages per second
-benchmark - eightThreads = 359564 sustained, 606695 burst messages per second
+benchmark - oneThread = 372916 sustained, 476293 burst messages per second
+benchmark - twoThreads = 441794 sustained, 686253 burst messages per second
+benchmark - fourThreads = 421588 sustained, 743256 burst messages per second
+benchmark - eightThreads = 393173 sustained, 683544 burst messages per second
 
 with verify/sign
 benchmark - oneThread = 9652 sustained, 180129 burst messages per second
