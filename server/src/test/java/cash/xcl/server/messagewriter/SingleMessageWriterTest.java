@@ -74,8 +74,8 @@ public class SingleMessageWriterTest extends TestCase {
         long testMessageWriterAtomicBoolean = time1 - time0;
         long testMessageWriterAtomicReference = time2 - time1;
 
-        System.out.printf("old -> messageWriterAtomicBoolean   %,d%n" , testMessageWriterAtomicBoolean );
-        System.out.printf("new -> messageWriterAtomicReference %,d%n" , testMessageWriterAtomicReference );
+        System.out.printf("old -> messageWriterAtomicBoolean   %,f seconds%n" , (testMessageWriterAtomicBoolean / 1e9) );
+        System.out.printf("new -> messageWriterAtomicReference %,f seconds%n" , (testMessageWriterAtomicReference / 1e9) );
 
         //assert messageWriterAtomicReference < messageWriterAtomicBoolean;
     }
