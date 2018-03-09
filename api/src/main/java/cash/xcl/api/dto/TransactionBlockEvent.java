@@ -4,6 +4,7 @@ import cash.xcl.api.AllMessages;
 import cash.xcl.api.tcp.WritingAllMessages;
 import cash.xcl.api.util.RegionIntConverter;
 import net.openhft.chronicle.bytes.*;
+import net.openhft.chronicle.core.Jvm;
 import net.openhft.chronicle.core.io.IORuntimeException;
 import net.openhft.chronicle.wire.IntConversion;
 import net.openhft.chronicle.wire.Marshallable;
@@ -24,12 +25,11 @@ public class TransactionBlockEvent extends SignedMessage {
     private transient DtoParser dtoParser;
 
 
-    static public long _1_MB    = 1  << 20;
-    static public long _2_MB    = 2  << 20;
-    static public long _4_MB    = 4  << 20;
-    static public long _16_MB   = 16 << 20;
-    static public long _32_MB   = 32 << 20;
-
+    static public long _1_MB = 1 << 20;
+    static public long _2_MB = 2 << 20;
+    static public long _4_MB = 4 << 20;
+    static public long _16_MB = 16 << 20;
+    static public long _32_MB = 32 << 20;
 
 
     public TransactionBlockEvent() {
@@ -37,17 +37,24 @@ public class TransactionBlockEvent extends SignedMessage {
     }
 
     public TransactionBlockEvent(long capacity, boolean isFixedCapacity) {
-        if( isFixedCapacity ) {
+        if (isFixedCapacity) {
+            long start = System.nanoTime();
             transactions = NativeBytesStore.lazyNativeBytesStoreWithFixedCapacity(capacity).bytesForWrite();
-            System.out.printf("NEW TBE object - deep copying: %,d bytes%n", transactions.realCapacity() );
+            long time = System.nanoTime() - start;
+            if (time > 100e3)
+                System.out.printf("took %,d us to create %,d bytes%n", time / 1000, capacity);
+//            if (Jvm.isDebugEnabled(getClass()))
+//                System.out.printf("NEW TBE object - deep copying: %,d bytes%n", transactions.realCapacity());
         } else {
-            if( capacity > 0 ) {
+            if (capacity > 0) {
                 transactions = Bytes.allocateElasticDirect(capacity);
-                System.out.printf("NEW TBE object - explicit: %,d bytes%n", transactions.realCapacity() );
+                if (Jvm.isDebugEnabled(getClass()))
+                    System.out.printf("NEW TBE object - explicit: %,d bytes%n", transactions.realCapacity());
             } else {
-                if( capacity == 0 ) { // 0 means use default
+                if (capacity == 0) { // 0 means use default
                     transactions = Bytes.allocateElasticDirect();
-                    System.out.printf("NEW TBE object - default: %,d bytes%n", transactions.realCapacity() );
+                    if (Jvm.isDebugEnabled(getClass()))
+                        System.out.printf("NEW TBE object - default: %,d bytes%n", transactions.realCapacity());
                 } else {
                     throw new IllegalArgumentException("bad capacity");
                 }
@@ -55,11 +62,9 @@ public class TransactionBlockEvent extends SignedMessage {
         }
 
         numberOfObjects++;
-        if( numberOfObjects % 100 == 0)
+        if (numberOfObjects % 100 == 0)
             System.out.println("number of new TransactionBlockEvent objects: " + numberOfObjects);
     }
-
-
 
 
     public TransactionBlockEvent dtoParser(DtoParser dtoParser) {
@@ -137,7 +142,7 @@ public class TransactionBlockEvent extends SignedMessage {
     @NotNull
     @Override
     public <T> T deepCopy() {
-        TransactionBlockEvent tbe = new TransactionBlockEvent(transactions.realCapacity(), true);
+        TransactionBlockEvent tbe = new TransactionBlockEvent(transactions.readRemaining(), true);
         this.copyTo(tbe);
         return (T) tbe;
     }

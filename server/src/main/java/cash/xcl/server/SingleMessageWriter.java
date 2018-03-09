@@ -10,19 +10,20 @@ import net.openhft.chronicle.threads.LongPauser;
 import net.openhft.chronicle.threads.Pauser;
 
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class SingleMessageWriter extends WritingAllMessages implements Runnable, MessageWriter {
     final Pauser pauser = new LongPauser(0, 10, 1, 20, TimeUnit.MILLISECONDS);
-    private final AtomicBoolean spinLock = new AtomicBoolean();
     private final XCLServer xclServer;
     private final GenericSignedMessage signedMessage = new GenericSignedMessage();
+    private final AtomicReference<Bytes> writeLock = new AtomicReference<>();
     private long addressOrRegion;
-    private Bytes bytes1 = Bytes.allocateElasticDirect(32 << 20).unchecked(true);
-    private Bytes bytes2 = Bytes.allocateElasticDirect(32 << 20).unchecked(true);
+    private final Bytes bytes1 = Bytes.allocateElasticDirect(32 << 20).unchecked(true);
+    private final Bytes bytes2 = Bytes.allocateElasticDirect(32 << 20).unchecked(true);
 
     public SingleMessageWriter(XCLServer xclServer) {
         this.xclServer = xclServer;
+        writeLock.set(bytes1);
     }
 
     @Override
@@ -38,55 +39,54 @@ public class SingleMessageWriter extends WritingAllMessages implements Runnable,
 
     @Override
     public void write(SignedMessage message) {
-        lock();
+        Bytes bytes = lock();
         try {
-            long position = bytes1.writePosition();
-            bytes1.ensureCapacity(position + (1 << 16));
-            bytes1.writeInt(0);
-            bytes1.writeLong(addressOrRegion);
-            message.writeMarshallable(bytes1);
-            bytes1.writeInt(position, (int) (bytes1.writePosition() - position - 4));
+            long position = bytes.writePosition();
+            bytes.ensureCapacity(position + (1 << 16));
+            bytes.writeInt(0);
+            bytes.writeLong(addressOrRegion);
+            message.writeMarshallable(bytes);
+            bytes.writeInt(position, (int) (bytes.writePosition() - position - 4));
         } finally {
-            unlock();
+            unlock(bytes);
         }
         pauser.unpause();
     }
 
-    private void lock() {
-        while (!spinLock.compareAndSet(false, true)) ;
+    private Bytes lock() {
+        return writeLock.getAndSet(null);
     }
 
-    private void unlock() {
-        spinLock.set(false);
+    private void unlock(Bytes bytes) {
+        writeLock.set(bytes);
     }
 
     boolean flush() {
-        lock();
-        try {
-            if (bytes1.writePosition() == 0)
-                return false;
-            Bytes tmp = bytes2;
-            bytes2 = bytes1;
-            bytes1 = tmp;
-            bytes1.clear();
-        } finally {
-            unlock();
-        }
-        long limit = bytes2.readLimit();
-        while (bytes2.readRemaining() > 0) {
-            int size = bytes2.readInt();
-            long end = bytes2.readPosition() + size;
-            bytes2.readLimit(end);
+        Bytes bytes = writeLock.get();
+        if (bytes == null)
+            return false;
+        Bytes other = bytes == bytes1 ? bytes2 : bytes1;
+        if (!writeLock.compareAndSet(bytes, other))
+            return false;
+
+        if (bytes.writePosition() == 0)
+            return false;
+
+        long limit = bytes.readLimit();
+        while (bytes.readRemaining() > 0) {
+            int size = bytes.readInt();
+            long end = bytes.readPosition() + size;
+            bytes.readLimit(end);
             try {
-                long address = bytes2.readLong();
-                signedMessage.readMarshallable(bytes2);
+                long address = bytes.readLong();
+                signedMessage.readMarshallable(bytes);
                 xclServer.write(address, signedMessage);
             } finally {
-                bytes2.readPosition(end);
-                bytes2.readLimit(limit);
+                bytes.readPosition(end);
+                bytes.readLimit(limit);
             }
         }
-        bytes2.clear();
+        bytes.clear();
         return true;
     }
 

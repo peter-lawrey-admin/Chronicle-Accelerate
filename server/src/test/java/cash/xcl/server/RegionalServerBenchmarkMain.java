@@ -27,16 +27,19 @@ import static org.junit.Assert.assertEquals;
 -DfastJava8IO=true
 
 Intel(R) Core(TM) i7-7820X CPU @ 3.60GHz, Centos 7 with linux 4.12
-benchmark - oneThread = 173060 messages per second
-benchmark - twoThreads = 178308 messages per second
-benchmark - threeThread = 192333 messages per second
-benchmark - fourThreads = 200645 messages per second
+TBA
 
 Intel i7-7700 CPU, Windows 10, 32 GB memory.
 benchmark - oneThread = 331318 sustained, 416312 burst messages per second
 benchmark - twoThreads = 464425 sustained, 755085 burst messages per second
 benchmark - fourThreads = 465087 sustained, 994536 burst messages per second
 benchmark - eightThreads = 431039 sustained, 808222 burst messages per second
+
+Intel i7-7820X, Windows 10, 64 GB memory.
+benchmark - oneThread = 390034 sustained, 461002 burst messages per second
+benchmark - twoThreads = 419318 sustained, 653218 burst messages per second
+benchmark - fourThreads = 405181 sustained, 711742 burst messages per second
+benchmark - eightThreads = 359564 sustained, 606695 burst messages per second
 */
 
 public class RegionalServerBenchmarkMain {
