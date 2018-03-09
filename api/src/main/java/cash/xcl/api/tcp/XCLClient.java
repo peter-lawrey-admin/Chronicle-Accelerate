@@ -24,8 +24,7 @@ public class XCLClient extends WritingAllMessages implements Closeable, TCPConne
     private final long address;
     private final Bytes secretKey;
     private final AllMessages allMessageListener;
-
-
+    private boolean internal = false;
 
     public XCLClient(String name,
                      String socketHost,
@@ -62,7 +61,7 @@ public class XCLClient extends WritingAllMessages implements Closeable, TCPConne
                     message.eventTime(SystemTimeProvider.INSTANCE.currentTimeMicros());
                 Bytes bytes = bytesTL.get();
                 bytes.clear();
-                message.sign(bytes, address, secretKey);
+                message.sign(bytes, address, internal ? null : secretKey);
             }
             tcpClient.write(message.sigAndMsg());
 
@@ -79,6 +78,15 @@ public class XCLClient extends WritingAllMessages implements Closeable, TCPConne
     @Override
     public void close() {
         tcpClient.close();
+    }
+
+    public boolean internal() {
+        return internal;
+    }
+
+    public XCLClient internal(boolean internal) {
+        this.internal = internal;
+        return this;
     }
 
     class ClientListener implements TCPClientListener {

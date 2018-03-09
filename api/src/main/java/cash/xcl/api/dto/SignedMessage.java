@@ -130,8 +130,10 @@ public abstract class SignedMessage extends AbstractBytesMarshallable {
         } else {
             sigAndMsg.clear();
         }
-//        Ed25519.sign(sigAndMsg, tempBytes, secretKey);
-        sigAndMsg.clear().writeSkip(Ed25519.SIGNATURE_LENGTH).write(tempBytes);
+        if (secretKey == null)
+            sigAndMsg.clear().writeSkip(Ed25519.SIGNATURE_LENGTH).write(tempBytes);
+        else
+            Ed25519.sign(sigAndMsg, tempBytes, secretKey);
     }
 
     @Override
