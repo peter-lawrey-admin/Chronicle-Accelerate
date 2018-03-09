@@ -1,0 +1,10 @@
+to: 2
+queryFailedResponse: {
+  sourceAddress: 123123123123,
+  eventTime: 12345678920000,
+  origSourceAddress: 2,
+  origEventTime: 0,
+  origMessageType: 77,
+  reason: "java.lang.Exception: AccountService does not have a balance for account = 0"
+}
+---

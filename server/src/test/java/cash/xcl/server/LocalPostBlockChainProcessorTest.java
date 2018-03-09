@@ -66,5 +66,19 @@ public class LocalPostBlockChainProcessorTest {
     }
 
 
+    // *** currentBalanceQuery ***
+    @Test
+    public void currentBalanceQuery() {
+
+        test("post-block-chain/current-balance-query");
+    }
+
+    @Test
+    public void currentBalanceQueryFails() {
+
+        test("post-block-chain/current-balance-query-fails");
+    }
+
+
 
 }
