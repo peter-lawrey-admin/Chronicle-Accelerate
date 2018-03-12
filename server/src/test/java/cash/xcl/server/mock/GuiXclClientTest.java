@@ -56,7 +56,7 @@ public class GuiXclClientTest {
 
         System.out.println("count is " + count);
 
-        assertEquals(2, count.get());
+        assertEquals(2, count.get(), 1);
     }
 
 
