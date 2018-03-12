@@ -1,7 +1,6 @@
 package cash.xcl.server.mock;
 
 import cash.xcl.api.dto.*;
-import cash.xcl.api.tcp.WritingAllMessages;
 import cash.xcl.api.tcp.XCLServer;
 import cash.xcl.server.Gateway;
 import cash.xcl.server.VanillaGateway;
@@ -9,7 +8,7 @@ import net.openhft.chronicle.bytes.Bytes;
 import net.openhft.chronicle.core.io.Closeable;
 import net.openhft.chronicle.salt.Ed25519;
 
-import java.util.concurrent.atomic.AtomicInteger;
+
 
 
 public class GuiXclServer {
@@ -27,6 +26,7 @@ public class GuiXclServer {
             this.gateway = VanillaGateway.newGateway(serverAddress, "gb1dn", clusterAddresses, mainBlockPeriodMS, localBlockPeriodMS, TransactionBlockEvent._32_MB);
             this.server = new XCLServer("one", serverAddress, serverAddress, secretKey, gateway);
             gateway.start();
+
         } catch (Throwable t) {
             t.printStackTrace();
 
@@ -42,10 +42,20 @@ public class GuiXclServer {
 
 
 
+    // quick workaround to register our address
+    public void register(long address, Bytes<?> publicKey) {
+        this.server.register(address, publicKey);
+    }
+
 
 
     public void transferValueCommand(TransferValueCommand transferValueCommand) {
         this.gateway.transferValueCommand(transferValueCommand);
+    }
+
+    //    @Override
+    public void openingBalanceEvent(OpeningBalanceEvent openingBalanceEvent) {
+        this.gateway.openingBalanceEvent(openingBalanceEvent);
     }
 
 
@@ -59,6 +69,7 @@ public class GuiXclServer {
         GuiXclServer guiXclServer = null;
         try {
             guiXclServer = new GuiXclServer(secretKey,1000, 10, 10001);
+
 
             System.out.println("before transfer");
             TransferValueCommand tvc1 = new TransferValueCommand(1, 0, 2, 1e-9, "USD", "");

@@ -35,14 +35,31 @@ public class GuiXclClient extends AbstractAllMessages {
         }
     }
 
-    @Override
-    public void createNewAddressEvent(CreateNewAddressEvent createNewAddressEvent) {
-        this.client.createNewAddressEvent(createNewAddressEvent);
+
+
+    public void openingBalanceEven2(OpeningBalanceEvent openingBalanceEvent) {
+        this.client.openingBalanceEvent(openingBalanceEvent);
     }
+
+
+    @Override
+    public void createNewAddressCommand(CreateNewAddressCommand createNewAddressCommand) {
+//        this.client.createNewAddressEvent(
+//                new CreateNewAddressEvent(0, 0, 0, 0, createNewAddressCommand.sourceAddress(), createNewAddressCommand.publicKey()));
+
+        this.client.createNewAddressCommand(createNewAddressCommand);
+    }
+
     @Override
     public void openingBalanceEvent(OpeningBalanceEvent openingBalanceEvent) {
         this.client.openingBalanceEvent(openingBalanceEvent);
     }
+
+    @Override
+    public void subscriptionQuery(SubscriptionQuery subscriptionQuery) {
+        this.client.subscriptionQuery(subscriptionQuery);
+    }
+
     @Override
     public void transferValueCommand(TransferValueCommand transferValueCommand) {
         this.client.transferValueCommand(transferValueCommand);
