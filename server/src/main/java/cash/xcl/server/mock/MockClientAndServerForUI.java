@@ -1,12 +1,15 @@
 package cash.xcl.server.mock;
 
+import cash.xcl.api.AllMessages;
 import cash.xcl.api.dto.*;
 import cash.xcl.api.tcp.WritingAllMessages;
 import cash.xcl.api.tcp.XCLClient;
 import cash.xcl.api.tcp.XCLServer;
+import cash.xcl.api.util.AbstractAllMessages;
 import cash.xcl.server.Gateway;
 import cash.xcl.server.VanillaGateway;
 import net.openhft.chronicle.bytes.Bytes;
+import net.openhft.chronicle.core.annotation.NotNull;
 import net.openhft.chronicle.core.io.Closeable;
 import net.openhft.chronicle.salt.Ed25519;
 
@@ -15,67 +18,36 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 
 
-public class MockClientAndServerForUI {
+public class MockClientAndServerForUI extends AbstractAllMessages {
 
-    // XCLServer and Gateway are the server side blockchain
     private XCLServer server;
     private Gateway gateway;
     private int serverAddress = 10001;
     private int sourceAddress = 1;
     private int destinationAddress = 2;
 
-    // this client will be part of the UI-webserver
+
     private XCLClient client;
 
     private Bytes publicKey = Bytes.allocateDirect(Ed25519.PUBLIC_KEY_LENGTH);
     private Bytes secretKey = Bytes.allocateDirect(Ed25519.SECRET_KEY_LENGTH);
 
 
-    // Not using JUnit at the moment because
-    // on Windows, using JUnit and the native encryption library will crash the JVM.
-    public static void main(String[] args) {
-        MockClientAndServerForUI benchmarkMain = null;
-        try {
-            benchmarkMain = new MockClientAndServerForUI(1000, 10);
-
-            System.out.println("before transfer");
-            TransferValueCommand tvc1 = new TransferValueCommand(1, 0, 2, 1e-9, "USD", "");
-            benchmarkMain.transfer(tvc1);
-            System.out.println("after transfer");
-
-            TransactionBlockEvent.printNumberOfObjects();
-            System.out.println("before print");
-
-            ((VanillaGateway) benchmarkMain.gateway).printBalances();
-            System.out.println("after print");
-
-        } catch (Throwable t) {
-            t.printStackTrace();
-
-        } finally {
-            //Jvm.pause(1000);
-            //benchmarkMain.close();
-            System.exit(0);
-        }
-
-    }
-
-
     public MockClientAndServerForUI(int mainBlockPeriodMS,
-                                    int localBlockPeriodMS) throws IOException {
+                                    int localBlockPeriodMS,
+                                    @NotNull final AllMessages allMessageListener) {
+        super(99999999999999L);
 
         try {
             Ed25519.generatePublicAndSecretKey(publicKey, secretKey);
-
 
             long[] clusterAddresses = {serverAddress};
             this.gateway = VanillaGateway.newGateway(serverAddress, "gb1dn", clusterAddresses, mainBlockPeriodMS, localBlockPeriodMS, TransactionBlockEvent._32_MB);
             this.server = new XCLServer("one", serverAddress, serverAddress, secretKey, gateway);
             gateway.start();
 
-            AtomicInteger count = new AtomicInteger();
             client = new XCLClient("client", "localhost", serverAddress, sourceAddress, secretKey,
-                    new MyWritingAllMessages(count));
+                            allMessageListener);
 
             final OpeningBalanceEvent obe1 = new OpeningBalanceEvent(sourceAddress,
                     1,
@@ -159,6 +131,24 @@ public class MockClientAndServerForUI {
         Closeable.closeQuietly(server);
     }
 
+
+
+
+    @Override
+    public void createNewAddressEvent(CreateNewAddressEvent createNewAddressEvent) {
+        this.client.createNewAddressEvent(createNewAddressEvent);
+    }
+    @Override
+    public void openingBalanceEvent(OpeningBalanceEvent openingBalanceEvent) {
+        this.client.openingBalanceEvent(openingBalanceEvent);
+    }
+    @Override
+    public void transferValueCommand(TransferValueCommand transferValueCommand) {
+        this.client.transferValueCommand(transferValueCommand);
+    }
+
+
+
     private static class MyWritingAllMessages extends WritingAllMessages {
         private final AtomicInteger count;
 
@@ -173,12 +163,56 @@ public class MockClientAndServerForUI {
 
         @Override
         public void write(SignedMessage message) {
+            System.out.println("message received " + message);
             count.incrementAndGet();
         }
+
+        @Override
+        public void transferValueEvent(TransferValueEvent transferValueEvent) {
+            System.out.println("message received " + transferValueEvent);
+        }
+
 
         @Override
         public void close() {
 
         }
     }
+
+
+
+
+    // Not using JUnit at the moment because
+    // on Windows, using JUnit and the native encryption library will crash the JVM.
+    public static void main(String[] args) {
+        MockClientAndServerForUI benchmarkMain = null;
+        try {
+
+            AtomicInteger count = new AtomicInteger();
+            MyWritingAllMessages myWritingAllMessages = new MyWritingAllMessages(count);
+            benchmarkMain = new MockClientAndServerForUI(1000, 10, myWritingAllMessages);
+
+            System.out.println("before transfer");
+            TransferValueCommand tvc1 = new TransferValueCommand(1, 0, 2, 1e-9, "USD", "");
+            benchmarkMain.transfer(tvc1);
+            System.out.println("after transfer");
+
+            TransactionBlockEvent.printNumberOfObjects();
+            System.out.println("before print");
+
+            ((VanillaGateway) benchmarkMain.gateway).printBalances();
+            System.out.println("after print");
+
+        } catch (Throwable t) {
+            t.printStackTrace();
+
+        } finally {
+            //Jvm.pause(1000);
+            //benchmarkMain.close();
+            System.exit(0);
+        }
+
+    }
+
+
 }
