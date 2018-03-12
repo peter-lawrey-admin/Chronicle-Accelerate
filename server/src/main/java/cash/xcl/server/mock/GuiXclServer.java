@@ -11,7 +11,7 @@ import net.openhft.chronicle.salt.Ed25519;
 
 
 
-public class GuiXclServer {
+public class GuiXclServer implements Closeable{
 
     private XCLServer server;
     private Gateway gateway;
@@ -30,14 +30,14 @@ public class GuiXclServer {
         } catch (Throwable t) {
             t.printStackTrace();
 
-        } finally {
-            //Jvm.pause(1000);
-            //benchmarkMain.close();
         }
     }
 
+    @Override
     public void close() {
-        Closeable.closeQuietly(server);
+        // todo: quietly terminate the BlcokEngine voting thread
+        //this.gateway.close();
+        Closeable.closeQuietly(this.server);
     }
 
 
@@ -51,11 +51,15 @@ public class GuiXclServer {
 
     public void transferValueCommand(TransferValueCommand transferValueCommand) {
         this.gateway.transferValueCommand(transferValueCommand);
+
+        ((VanillaGateway) this.gateway).printBalances();
     }
 
     //    @Override
     public void openingBalanceEvent(OpeningBalanceEvent openingBalanceEvent) {
         this.gateway.openingBalanceEvent(openingBalanceEvent);
+
+        ((VanillaGateway) this.gateway).printBalances();
     }
 
 
@@ -76,11 +80,7 @@ public class GuiXclServer {
             guiXclServer.transferValueCommand(tvc1);
             System.out.println("after transfer");
 
-            TransactionBlockEvent.printNumberOfObjects();
-            System.out.println("before print");
-
             ((VanillaGateway) guiXclServer.gateway).printBalances();
-            System.out.println("after print");
 
         } catch (Throwable t) {
             t.printStackTrace();

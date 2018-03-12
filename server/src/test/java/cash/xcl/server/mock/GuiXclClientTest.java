@@ -9,10 +9,13 @@ import net.openhft.chronicle.core.Jvm;
 import net.openhft.chronicle.salt.Ed25519;
 import org.junit.Test;
 
+
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.*;
+
+import net.openhft.chronicle.core.io.Closeable;
 
 public class GuiXclClientTest {
 
@@ -23,40 +26,54 @@ public class GuiXclClientTest {
 
     @Test
     public void test() {
-        int sourceAddress = 1;
-        Ed25519.generatePublicAndSecretKey(publicKey, secretKey);
+        GuiXclServer server = null;
+        GuiXclClient client = null;
+        try {
+            int sourceAddress = 1;
+            Ed25519.generatePublicAndSecretKey(publicKey, secretKey);
 
-        GuiXclServer server = new GuiXclServer(secretKey,1000, 50, this.serverAddress);
-        server.register(sourceAddress, publicKey);
+            server = new GuiXclServer(secretKey,1000, 50, this.serverAddress);
+            server.register(sourceAddress, publicKey);
 
-        AtomicInteger count = new AtomicInteger();
-        AllMessages listener = new MyWritingAllMessages(count);
-        GuiXclClient client = new GuiXclClient(secretKey, listener, this.serverAddress);
+            AtomicInteger count = new AtomicInteger();
+            AllMessages listener = new MyWritingAllMessages(count);
+            client = new GuiXclClient(secretKey, listener, this.serverAddress);
 
-        client.createNewAddressCommand(new CreateNewAddressCommand(sourceAddress, 1L, publicKey, "usny"));
+            client.createNewAddressCommand(new CreateNewAddressCommand(sourceAddress, 1L, publicKey, "usny"));
 
-        Jvm.pause(100);
+            Jvm.pause(100);
 
-        OpeningBalanceEvent obe1 = new OpeningBalanceEvent(sourceAddress, 1, sourceAddress, "USD", 1000);
-        client.openingBalanceEvent(obe1);
+            OpeningBalanceEvent obe1 = new OpeningBalanceEvent(sourceAddress, 1, sourceAddress, "USD", 1000);
+            client.openingBalanceEvent(obe1);
 
-        Jvm.pause(100);
+            Jvm.pause(100);
 
-        int destinationAddress = 2;
-        OpeningBalanceEvent obe2 = new OpeningBalanceEvent(sourceAddress, 1, destinationAddress, "USD", 1000);
-        client.openingBalanceEvent(obe2);
+            int destinationAddress = 2;
+            OpeningBalanceEvent obe2 = new OpeningBalanceEvent(sourceAddress, 1, destinationAddress, "USD", 1000);
+            client.openingBalanceEvent(obe2);
 
-        Jvm.pause(100);
+            Jvm.pause(100);
 
-        client.subscriptionQuery(new SubscriptionQuery(sourceAddress, 0));
-        TransferValueCommand tvc = new TransferValueCommand(sourceAddress, 3, destinationAddress, 1.23, "USD", "init");
-        client.transferValueCommand(tvc);
+            client.subscriptionQuery(new SubscriptionQuery(sourceAddress, 0));
+            TransferValueCommand tvc = new TransferValueCommand(sourceAddress, 3, destinationAddress, 1.23, "USD", "init");
+            client.transferValueCommand(tvc);
 
-        Jvm.pause(1000);
+            Jvm.pause(1000);
 
-        System.out.println("count is " + count);
+            System.out.println("count is " + count);
 
-        assertEquals(2, count.get(), 1);
+            assertEquals(2, count.get(), 1);
+
+        } finally {
+            Jvm.pause(1000);
+
+            // TODO
+            // if we close here now , we will get Interrupted exceptions in the voting thread
+            // but if we dont close , we will get binding exceptions later?
+
+            //net.openhft.chronicle.core.io.Closeable.closeQuietly(server);
+        }
+
     }
 
 
