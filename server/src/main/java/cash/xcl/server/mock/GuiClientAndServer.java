@@ -13,12 +13,11 @@ import net.openhft.chronicle.core.annotation.NotNull;
 import net.openhft.chronicle.core.io.Closeable;
 import net.openhft.chronicle.salt.Ed25519;
 
-import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 
 
-public class MockClientAndServerForUI extends AbstractAllMessages {
+public class GuiClientAndServer extends AbstractAllMessages {
 
     private XCLServer server;
     private Gateway gateway;
@@ -33,9 +32,9 @@ public class MockClientAndServerForUI extends AbstractAllMessages {
     private Bytes secretKey = Bytes.allocateDirect(Ed25519.SECRET_KEY_LENGTH);
 
 
-    public MockClientAndServerForUI(int mainBlockPeriodMS,
-                                    int localBlockPeriodMS,
-                                    @NotNull final AllMessages allMessageListener) {
+    public GuiClientAndServer(int mainBlockPeriodMS,
+                              int localBlockPeriodMS,
+                              @NotNull final AllMessages allMessageListener) {
         super(99999999999999L);
 
         try {
@@ -185,12 +184,12 @@ public class MockClientAndServerForUI extends AbstractAllMessages {
     // Not using JUnit at the moment because
     // on Windows, using JUnit and the native encryption library will crash the JVM.
     public static void main(String[] args) {
-        MockClientAndServerForUI benchmarkMain = null;
+        GuiClientAndServer benchmarkMain = null;
         try {
 
             AtomicInteger count = new AtomicInteger();
             MyWritingAllMessages myWritingAllMessages = new MyWritingAllMessages(count);
-            benchmarkMain = new MockClientAndServerForUI(1000, 10, myWritingAllMessages);
+            benchmarkMain = new GuiClientAndServer(1000, 10, myWritingAllMessages);
 
             System.out.println("before transfer");
             TransferValueCommand tvc1 = new TransferValueCommand(1, 0, 2, 1e-9, "USD", "");
