@@ -18,43 +18,55 @@ public class TransactionBlockEvent extends SignedMessage {
     private int weekNumber;
     private long blockNumber; // unsigned int
     static public int MAX_16_BIT_NUMBER = 65536 - 1000;
-
+    static int numberOfObjects = 0;
     private transient Bytes transactions;
-
     private transient int count;
+    private transient DtoParser dtoParser;
 
-    public DtoParser dtoParser() {
-        return dtoParser;
+
+    static public long _1_MB    = 1  << 20;
+    static public long _2_MB    = 2  << 20;
+    static public long _4_MB    = 4  << 20;
+    static public long _16_MB   = 16 << 20;
+    static public long _32_MB   = 32 << 20;
+
+
+
+    public TransactionBlockEvent() {
+        this(0, false);
     }
+
+    public TransactionBlockEvent(long capacity, boolean isFixedCapacity) {
+        if( isFixedCapacity ) {
+            transactions = NativeBytesStore.lazyNativeBytesStoreWithFixedCapacity(capacity).bytesForWrite();
+            System.out.printf("NEW TBE object - deep copying: %,d bytes%n", transactions.realCapacity() );
+        } else {
+            if( capacity > 0 ) {
+                transactions = Bytes.allocateElasticDirect(capacity);
+                System.out.printf("NEW TBE object - explicit: %,d bytes%n", transactions.realCapacity() );
+            } else {
+                if( capacity == 0 ) { // 0 means use default
+                    transactions = Bytes.allocateElasticDirect();
+                    System.out.printf("NEW TBE object - default: %,d bytes%n", transactions.realCapacity() );
+                } else {
+                    throw new IllegalArgumentException("bad capacity");
+                }
+            }
+        }
+
+        numberOfObjects++;
+        if( numberOfObjects % 100 == 0)
+            System.out.println("number of new TransactionBlockEvent objects: " + numberOfObjects);
+    }
+
+
+
 
     public TransactionBlockEvent dtoParser(DtoParser dtoParser) {
         this.dtoParser = dtoParser;
         return this;
     }
 
-    private transient DtoParser dtoParser;
-
-    public TransactionBlockEvent(long sourceAddress, long eventTime, String region, int weekNumber, long blockNumber) {
-        this(sourceAddress, eventTime, RegionIntConverter.INSTANCE.parse(region), weekNumber, blockNumber);
-    }
-
-    public TransactionBlockEvent(long sourceAddress, long eventTime, int region, int weekNumber, long blockNumber) {
-        super(sourceAddress, eventTime);
-        this.region = region;
-        this.weekNumber = weekNumber;
-        this.blockNumber = blockNumber;
-        transactions = Bytes.allocateElasticDirect(32 << 20);
-    }
-
-    public TransactionBlockEvent() {
-        transactions = Bytes.allocateElasticDirect(32 << 20);
-    }
-
-    TransactionBlockEvent(long capacity) {
-        transactions = NativeBytesStore
-                .lazyNativeBytesStoreWithFixedCapacity(capacity)
-                .bytesForWrite();
-    }
 
     @Override
     public void reset() {
@@ -125,7 +137,7 @@ public class TransactionBlockEvent extends SignedMessage {
     @NotNull
     @Override
     public <T> T deepCopy() {
-        TransactionBlockEvent tbe = new TransactionBlockEvent(transactions.readRemaining());
+        TransactionBlockEvent tbe = new TransactionBlockEvent(transactions.realCapacity(), true);
         this.copyTo(tbe);
         return (T) tbe;
     }
@@ -213,5 +225,9 @@ public class TransactionBlockEvent extends SignedMessage {
 
     public boolean isBufferFull() {
         return transactions.writePosition() > MAX_16_BIT_NUMBER;
+    }
+
+    static public void printNumberOfObjects() {
+        System.out.println("Total number of new TransactionBlockEvent objects = " + numberOfObjects);
     }
 }

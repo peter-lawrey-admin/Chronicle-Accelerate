@@ -16,6 +16,14 @@ public class DepositValueEvent extends SignedMessage {
         this.depositValueCommand = notNull(depositValueCommand);
     }
 
+
+    public DepositValueEvent init(long sourceAddress, long eventTime, DepositValueCommand depositValueCommand) {
+        super.init(sourceAddress, eventTime);
+        this.depositValueCommand = notNull(depositValueCommand);
+        return this;
+    }
+
+
     public DepositValueEvent() {
         super();
     }

@@ -3,10 +3,13 @@ package cash.xcl.server;
 import cash.xcl.api.AllMessages;
 import cash.xcl.api.AllMessagesLookup;
 import cash.xcl.api.dto.*;
+import cash.xcl.api.exch.DepositValueCommand;
+import cash.xcl.api.exch.WithdrawValueCommand;
 import cash.xcl.api.util.AbstractAllMessages;
 import cash.xcl.api.util.CountryRegion;
 import cash.xcl.api.util.PublicKeyRegistry;
 import cash.xcl.api.util.RegionIntConverter;
+import net.openhft.chronicle.core.annotation.NotNull;
 
 /**
  * This accepts message from the XCLServer and passes them to the appropriate downstream component
@@ -24,12 +27,13 @@ public class VanillaGateway extends AbstractAllMessages implements Gateway {
         this.local = local;
     }
 
-    public static VanillaGateway newGateway(long address, String region, long[] clusterAddresses, int mainPeriodMS, int localPeriodMS) {
+
+    public static VanillaGateway newGateway(long address, String region, long[] clusterAddresses, int mainPeriodMS, int localPeriodMS, long tbeInitialCapacity) {
         int regionInt = RegionIntConverter.INSTANCE.parse(region);
         return new VanillaGateway(address,
                 regionInt,
                 BlockEngine.newMain(address, mainPeriodMS, clusterAddresses),
-                BlockEngine.newLocal(address, regionInt, localPeriodMS, clusterAddresses)
+                BlockEngine.newLocal(address, regionInt, localPeriodMS, clusterAddresses, tbeInitialCapacity)
         );
     }
 
@@ -121,6 +125,20 @@ public class VanillaGateway extends AbstractAllMessages implements Gateway {
         local.transferValueCommand(transferValueCommand);
     }
 
+
+
+    @Override
+    public void currentBalanceQuery(@NotNull final CurrentBalanceQuery currentBalanceQuery) {
+        local.currentBalanceQuery(currentBalanceQuery);
+    }
+
+    @Override
+    public void exchangeRateQuery(ExchangeRateQuery exchangeRateQuery) {
+        local.exchangeRateQuery(exchangeRateQuery);
+    }
+
+
+
     // todo ?
     @Override
     public void transferValueEvent(TransferValueEvent transferValueEvent) {
@@ -152,5 +170,18 @@ public class VanillaGateway extends AbstractAllMessages implements Gateway {
     public void printBalances() {
         this.local.printBalances();
     }
+
+
+    // TODO
+    @Override
+    public void depositValueCommand(DepositValueCommand depositValueCommand) {
+        local.depositValueCommand(depositValueCommand);
+    }
+
+    @Override
+    public void withdrawValueCommand(WithdrawValueCommand withdrawValueCommand) {
+        local.withdrawValueCommand(withdrawValueCommand);
+    }
+
 
 }

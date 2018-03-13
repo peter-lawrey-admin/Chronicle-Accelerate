@@ -12,6 +12,13 @@ public class CurrentBalanceQuery extends SignedMessage {
         this.address = address;
     }
 
+    public CurrentBalanceQuery init(long sourceAddress, long eventTime, long address) {
+        super.init(sourceAddress, eventTime);
+        this.address = address;
+        return this;
+    }
+
+
     public CurrentBalanceQuery() {
 
     }

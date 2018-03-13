@@ -1,6 +1,7 @@
 package cash.xcl.api.exch;
 
 import cash.xcl.api.dto.CurrentBalanceQuery;
+import cash.xcl.api.dto.ExchangeRateQuery;
 
 
 public interface ExchangeCommands {
@@ -19,6 +20,6 @@ public interface ExchangeCommands {
 
     void currentBalanceQuery(CurrentBalanceQuery currentBalanceQuery);
 
-    // void exchangeRateQuery(ExchangeRateQuery exchangeRateQuery); ???
+    void exchangeRateQuery(ExchangeRateQuery exchangeRateQuery);
 
 }

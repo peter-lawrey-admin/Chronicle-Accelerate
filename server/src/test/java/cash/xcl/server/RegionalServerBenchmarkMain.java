@@ -49,6 +49,7 @@ public class RegionalServerBenchmarkMain {
     private Bytes secretKey = Bytes.allocateDirect(Ed25519.SECRET_KEY_LENGTH);
 
 
+
     public RegionalServerBenchmarkMain(int mainBlockPeriodMS,
                                        int localBlockPeriodMS,
                                        int iterations,
@@ -58,7 +59,12 @@ public class RegionalServerBenchmarkMain {
 
 
         long[] clusterAddresses = {serverAddress};
-        this.gateway = VanillaGateway.newGateway(serverAddress, "gb1dn", clusterAddresses, mainBlockPeriodMS, localBlockPeriodMS);
+
+        this.gateway = VanillaGateway.newGateway(serverAddress, "gb1dn", clusterAddresses,
+                mainBlockPeriodMS, localBlockPeriodMS,
+                TransactionBlockEvent._2_MB);
+
+
         this.server = new XCLServer("one", serverAddress, serverAddress, secretKey, gateway);
         gateway.start();
         // register the address - otherwise, verify will fail
@@ -75,18 +81,26 @@ public class RegionalServerBenchmarkMain {
                 gateway.createNewAddressEvent(new CreateNewAddressEvent(0, 0, 0, 0,
                         destinationAddress, publicKey));
 
+// TODO
+                ExchangeRateQuery err = new ExchangeRateQuery(0, 0, "XCL", "USD");
+                gateway.exchangeRateQuery(err);
+
+                CurrentBalanceQuery cbq = new CurrentBalanceQuery(0,0, 1000);
+                gateway.currentBalanceQuery(cbq);
+
+
 
                 AtomicInteger count = new AtomicInteger();
                 XCLClient client = new XCLClient("client", "localhost", serverAddress, sourceAddress, secretKey,
                         new MyWritingAllMessages(count));
-                sendOpenningBalance(client, sourceAddress, sourceAddress);
-                sendOpenningBalance(client, sourceAddress, destinationAddress);
+                sendOpeningBalance(client, sourceAddress, sourceAddress);
+                sendOpeningBalance(client, sourceAddress, destinationAddress);
                 // how do we know if the openingBalanceEvent msg was a success or a failure?
             }
         }
     }
 
-    static void sendOpenningBalance(XCLClient client, int sourceAddress, int destinationAddress) {
+    static void sendOpeningBalance(XCLClient client, int sourceAddress, int destinationAddress) {
         final OpeningBalanceEvent obe1 = new OpeningBalanceEvent(sourceAddress,
                 1,
                 destinationAddress,
@@ -98,7 +112,7 @@ public class RegionalServerBenchmarkMain {
     // Not using JUnit at the moment because
     // on Windows, using JUnit and the native encryption library will crash the JVM.
     public static void main(String[] args) {
-        RegionalServerBenchmarkMain benchmarkMain = null;
+      RegionalServerBenchmarkMain benchmarkMain = null;
         try {
             int iterations = 3;
             int transfers = 1_000_000;
@@ -113,6 +127,8 @@ public class RegionalServerBenchmarkMain {
             System.out.println("benchmark - twoThreads = " + twoThreads + " messages per second");
             System.out.println("benchmark - fourThreads = " + fourThreads + " messages per second");
             System.out.println("benchmark - eightThreads = " + eightThreads + " messages per second");
+
+            TransactionBlockEvent.printNumberOfObjects();
 
         } catch (Throwable t) {
             t.printStackTrace();
@@ -204,7 +220,7 @@ public class RegionalServerBenchmarkMain {
                 average,
                 sentAverage);
 
-        ((VanillaGateway) gateway).printBalances();
+        //((VanillaGateway) gateway).printBalances();
 
         return average + " sustained, " + sentAverage + " burst";
     }

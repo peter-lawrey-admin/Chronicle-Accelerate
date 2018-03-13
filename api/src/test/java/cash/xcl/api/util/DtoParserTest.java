@@ -43,8 +43,8 @@ public class DtoParserTest {
         return tests;
     }
 
+    @Ignore("")
     @Test
-    @Ignore
     public void allMethodIds() {
         Bytes<?> bytes = Bytes.allocateDirect(512);
         DtoParser parser = new DtoParser();

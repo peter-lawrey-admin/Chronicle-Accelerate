@@ -16,6 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class VanillaBlockReplayer implements BlockReplayer {
     private final long address;
     private final AllMessagesServer postBlockChainProcessor;
+
     private Map<Long, TransactionLog> transactionLogMap = new ConcurrentHashMap<>();
     private EndOfRoundBlockEvent lastEndOfRoundBlockEvent = null;
     private XCLLongLongMap replayedMap = XCLLongLongMap.withExpectedSize(16);

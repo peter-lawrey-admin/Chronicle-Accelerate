@@ -7,6 +7,7 @@ import cash.xcl.api.tcp.XCLServer;
 import cash.xcl.api.util.AbstractAllMessages;
 import cash.xcl.api.util.CountryRegion;
 import cash.xcl.api.util.XCLBase32;
+import net.openhft.chronicle.core.annotation.NotNull;
 import net.openhft.chronicle.core.time.SystemTimeProvider;
 import net.openhft.chronicle.threads.NamedThreadFactory;
 
@@ -71,8 +72,8 @@ public class BlockEngine extends AbstractAllMessages {
         return new BlockEngine(address, CountryRegion.MAIN_CHAIN, periodMS, fastPath, chainer, postBlockChainProcessor, clusterAddresses);
     }
 
-    public static BlockEngine newLocal(long address, int region, int periodMS, long[] clusterAddresses) {
-        Chainer chainer = new VanillaChainer(region);
+    public static BlockEngine newLocal(long address, int region, int periodMS, long[] clusterAddresses, long tbeInitialCapacity) {
+        Chainer chainer = new VanillaChainer(region, tbeInitialCapacity);
         AllMessagesServer fastPath = new MainFastPath(address, chainer, null);
 
         AllMessagesServer postBlockChainProcessor = new LocalPostBlockChainProcessor(address);
@@ -112,6 +113,27 @@ public class BlockEngine extends AbstractAllMessages {
     public void transferValueCommand(TransferValueCommand transferValueCommand) {
         fastPath.transferValueCommand(transferValueCommand);
     }
+
+//    @Override
+//    public void depositValueCommand(DepositValueCommand depositValueCommand) {
+//        fastPath.depositValueCommand(depositValueCommand);
+//    }
+//
+//    @Override
+//    public void withdrawValueCommand(WithdrawValueCommand withdrawValueCommand) {
+//        fastPath.withdrawValueCommand(withdrawValueCommand);
+//    }
+
+    @Override
+    public void currentBalanceQuery(@NotNull final CurrentBalanceQuery currentBalanceQuery) {
+        fastPath.currentBalanceQuery(currentBalanceQuery);
+    }
+
+    @Override
+    public void exchangeRateQuery(ExchangeRateQuery exchangeRateQuery) {
+        fastPath.exchangeRateQuery(exchangeRateQuery);
+    }
+
 
     @Override
     public void clusterTransferStep1Command(ClusterTransferStep1Command clusterTransferStep1Command) {

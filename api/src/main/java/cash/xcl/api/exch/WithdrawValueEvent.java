@@ -15,6 +15,14 @@ public class WithdrawValueEvent extends SignedMessage {
         this.withdrawValueCommand = notNull(withdrawValueCommand);
     }
 
+    public WithdrawValueEvent init(long sourceAddress, long eventTime, WithdrawValueCommand withdrawValueCommand) {
+        super.init(sourceAddress, eventTime);
+        this.withdrawValueCommand = notNull(withdrawValueCommand);
+        return this;
+    }
+
+
+
     public WithdrawValueEvent() {
         super();
     }

@@ -31,14 +31,14 @@ public class MainPostBlockChainProcessorTest {
     }
 
     @Test
-    @Ignore
     public void createNewAddressCommand() {
+
         test("post-block-chain/create-new-address");
     }
 
     @Test
-    @Ignore
     public void createNewAddressCommandFails() {
+
         test("post-block-chain/create-new-address-fails");
     }
 }
