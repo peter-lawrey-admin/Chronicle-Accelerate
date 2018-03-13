@@ -218,12 +218,12 @@ public class ExchangePostBlockChainProcessor extends LocalPostBlockChainProcesso
 
 
     @Override
-    public void replyStarted() {
+    public void replayStarted() {
         exchangeMarket.setCurrentTime(timeProvider.currentTimeMillis());
     }
 
     @Override
-    public void replyFinished() {
+    public void replayFinished() {
         exchangeMarket.removeExpired();
     }
 

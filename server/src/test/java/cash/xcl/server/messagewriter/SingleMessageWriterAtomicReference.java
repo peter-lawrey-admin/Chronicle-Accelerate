@@ -1,18 +1,23 @@
-package cash.xcl.server;
+package cash.xcl.server.messagewriter;
 
 import cash.xcl.api.dto.GenericSignedMessage;
 import cash.xcl.api.dto.SignedMessage;
 import cash.xcl.api.tcp.WritingAllMessages;
 import cash.xcl.api.tcp.XCLServer;
+import cash.xcl.server.MessageWriter;
 import net.openhft.chronicle.bytes.Bytes;
 import net.openhft.chronicle.core.Jvm;
 import net.openhft.chronicle.threads.LongPauser;
+import net.openhft.chronicle.threads.NamedThreadFactory;
 import net.openhft.chronicle.threads.Pauser;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class SingleMessageWriter extends WritingAllMessages implements Runnable, MessageWriter {
+public class SingleMessageWriterAtomicReference extends WritingAllMessages implements Runnable, MessageWriter {
     final Pauser pauser = new LongPauser(0, 10, 1, 20, TimeUnit.MILLISECONDS);
     private final XCLServer xclServer;
     private final GenericSignedMessage signedMessage = new GenericSignedMessage();
@@ -21,7 +26,9 @@ public class SingleMessageWriter extends WritingAllMessages implements Runnable,
     private final Bytes bytes1 = Bytes.allocateElasticDirect(32 << 20).unchecked(true);
     private final Bytes bytes2 = Bytes.allocateElasticDirect(32 << 20).unchecked(true);
 
-    public SingleMessageWriter(XCLServer xclServer) {
+    private int sent = 0;
+
+    public SingleMessageWriterAtomicReference(XCLServer xclServer) {
         this.xclServer = xclServer;
         writeLock.set(bytes1);
     }
@@ -81,6 +88,9 @@ public class SingleMessageWriter extends WritingAllMessages implements Runnable,
                 long address = bytes.readLong();
                 signedMessage.readMarshallable(bytes);
                 xclServer.write(address, signedMessage);
+
+                sent++;
+
             } finally {
                 bytes.readPosition(end);
                 bytes.readLimit(limit);
@@ -103,10 +113,21 @@ public class SingleMessageWriter extends WritingAllMessages implements Runnable,
                     pauser.reset();
                 else
                     pauser.pause();
+
+                if( sent == SingleMessageWriterTest.NUMBER_OF_MESSAGES ) {
+                    break;
+                }
             }
         } catch (Throwable t) {
             Jvm.warn().on(getClass(), "Writer died", t);
         }
+    }
+
+
+    // only for testing purposes
+    private ExecutorService service = Executors.newSingleThreadExecutor(new NamedThreadFactory("-messageWriter", true,Thread.MIN_PRIORITY));
+    public Future start() {
+        return service.submit(this::run);
     }
 }
 

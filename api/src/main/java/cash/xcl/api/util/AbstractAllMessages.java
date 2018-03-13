@@ -105,7 +105,10 @@ public class AbstractAllMessages implements AllMessagesServer {
     @Override
     public void createNewAddressCommand(CreateNewAddressCommand createNewAddressCommand) {
         // todo any further validation required?
+        throw new UnsupportedOperationException(getClass().getName());
+
     }
+
 
     @Override
     public void clusterTransferStep1Command(ClusterTransferStep1Command clusterTransferStep1Command) {

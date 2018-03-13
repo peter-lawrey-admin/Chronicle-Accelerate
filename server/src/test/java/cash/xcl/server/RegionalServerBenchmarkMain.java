@@ -27,27 +27,37 @@ import static org.junit.Assert.assertEquals;
 -DfastJava8IO=true
 
 Intel(R) Core(TM) i7-7820X CPU @ 3.60GHz, Centos 7 with linux 4.12
-benchmark - oneThread = 173060 messages per second
-benchmark - twoThreads = 178308 messages per second
-benchmark - threeThread = 192333 messages per second
-benchmark - fourThreads = 200645 messages per second
+TBA
 
 Intel i7-7700 CPU, Windows 10, 32 GB memory.
 benchmark - oneThread = 331318 sustained, 416312 burst messages per second
 benchmark - twoThreads = 464425 sustained, 755085 burst messages per second
 benchmark - fourThreads = 465087 sustained, 994536 burst messages per second
 benchmark - eightThreads = 431039 sustained, 808222 burst messages per second
+
+Intel i7-7820X, Windows 10, 64 GB memory.
+as a core service
+benchmark - oneThread = 372916 sustained, 476293 burst messages per second
+benchmark - twoThreads = 441794 sustained, 686253 burst messages per second
+benchmark - fourThreads = 421588 sustained, 743256 burst messages per second
+benchmark - eightThreads = 393173 sustained, 683544 burst messages per second
+
+with verify/sign
+benchmark - oneThread = 9652 sustained, 180129 burst messages per second
+benchmark - twoThreads = 18885 sustained, 441968 burst messages per second
+benchmark - fourThreads = 32032 sustained, 576003 burst messages per second
+benchmark - eightThreads = 52218 sustained, 489249 burst messages per second
 */
 
 public class RegionalServerBenchmarkMain {
 
+    static final boolean INTERNAL = Boolean.getBoolean("internal");
     private XCLServer server;
     private Gateway gateway;
     private int serverAddress = 10001;
 
     private Bytes publicKey = Bytes.allocateDirect(Ed25519.PUBLIC_KEY_LENGTH);
     private Bytes secretKey = Bytes.allocateDirect(Ed25519.SECRET_KEY_LENGTH);
-
 
 
     public RegionalServerBenchmarkMain(int mainBlockPeriodMS,
@@ -65,7 +75,8 @@ public class RegionalServerBenchmarkMain {
                 TransactionBlockEvent._2_MB);
 
 
-        this.server = new XCLServer("one", serverAddress, serverAddress, secretKey, gateway);
+        this.server = new XCLServer("one", serverAddress, serverAddress, secretKey, gateway)
+                .internal(INTERNAL);
         gateway.start();
         // register the address - otherwise, verify will fail
         gateway.createNewAddressEvent(new CreateNewAddressEvent(serverAddress, 0, 0, 0, serverAddress, publicKey));
@@ -85,14 +96,14 @@ public class RegionalServerBenchmarkMain {
                 ExchangeRateQuery err = new ExchangeRateQuery(0, 0, "XCL", "USD");
                 gateway.exchangeRateQuery(err);
 
-                CurrentBalanceQuery cbq = new CurrentBalanceQuery(0,0, 1000);
+                CurrentBalanceQuery cbq = new CurrentBalanceQuery(0, 0, 1000);
                 gateway.currentBalanceQuery(cbq);
-
 
 
                 AtomicInteger count = new AtomicInteger();
                 XCLClient client = new XCLClient("client", "localhost", serverAddress, sourceAddress, secretKey,
-                        new MyWritingAllMessages(count));
+                        new MyWritingAllMessages(count))
+                        .internal(INTERNAL);
                 sendOpeningBalance(client, sourceAddress, sourceAddress);
                 sendOpeningBalance(client, sourceAddress, destinationAddress);
                 // how do we know if the openingBalanceEvent msg was a success or a failure?
@@ -112,10 +123,10 @@ public class RegionalServerBenchmarkMain {
     // Not using JUnit at the moment because
     // on Windows, using JUnit and the native encryption library will crash the JVM.
     public static void main(String[] args) {
-      RegionalServerBenchmarkMain benchmarkMain = null;
+        RegionalServerBenchmarkMain benchmarkMain = null;
         try {
             int iterations = 3;
-            int transfers = 1_000_000;
+            int transfers = INTERNAL ? 1_000_000 : 20_000;
             int total = iterations * transfers;
             benchmarkMain = new RegionalServerBenchmarkMain(1000, 10, 10, 8);
             String oneThread = benchmarkMain.benchmark(iterations, 1, transfers);

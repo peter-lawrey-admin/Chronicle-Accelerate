@@ -1,11 +1,11 @@
 package cash.xcl.api;
 
 public interface PostBlockChainProcessor {
-    default void replyStarted() {
+    default void replayStarted() {
 
     }
 
-    default void replyFinished() {
+    default void replayFinished() {
 
     }
 }

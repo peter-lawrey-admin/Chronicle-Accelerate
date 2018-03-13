@@ -49,8 +49,9 @@ public class VanillaBlockReplayer implements BlockReplayer {
         synchronized (this) {
             try {
                 for (Map.Entry<Long, TransactionLog> entry : transactionLogMap.entrySet()) {
-                    Long upto = lastEndOfRoundBlockEvent.blockRecords().get(entry.getKey());
-                    if (upto == null) {
+                    long upto = lastEndOfRoundBlockEvent.blockRecords()
+                            .getOrDefault(entry.getKey(), -1L);
+                    if (upto == -1L) {
                         continue;
                     }
 
@@ -76,11 +77,11 @@ public class VanillaBlockReplayer implements BlockReplayer {
                 Thread.currentThread().interrupt();
             }
         }
-        postBlockChainProcessor.replyStarted();
+        postBlockChainProcessor.replayStarted();
         for (Runnable replayAction : replayActions) {
             replayAction.run();
         }
-        postBlockChainProcessor.replyFinished();
+        postBlockChainProcessor.replayFinished();
     }
 
     private void replay(TransactionLog messages, long fromIndex, long toIndex) {

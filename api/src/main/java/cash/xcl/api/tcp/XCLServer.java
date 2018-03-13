@@ -48,6 +48,15 @@ public class XCLServer implements AllMessagesLookup, PublicKeyRegistry, Closeabl
         serverComponent.allMessagesLookup(this);
     }
 
+    public boolean internal() {
+        return publicKeyRegistry.internal();
+    }
+
+    public XCLServer internal(boolean internal) {
+        publicKeyRegistry.internal(internal);
+        return this;
+    }
+
     /**
      * Add known connections between clusters
      *

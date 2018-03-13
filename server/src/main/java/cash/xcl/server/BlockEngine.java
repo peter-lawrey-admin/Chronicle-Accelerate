@@ -13,7 +13,6 @@ import net.openhft.chronicle.threads.NamedThreadFactory;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.locks.LockSupport;
 
 public class BlockEngine extends AbstractAllMessages {
     private final int region;
@@ -164,23 +163,41 @@ public class BlockEngine extends AbstractAllMessages {
 
     void runVoter() {
         try {
+//            Histogram one = new Histogram();
+//            Histogram two = new Histogram();
+//            Histogram three = new Histogram();
+//            Histogram four = new Histogram();
+            int count = 0;
             while (!Thread.currentThread().isInterrupted()) {
+                long start = System.nanoTime();
                 TransactionBlockEvent tbe = chainer.nextTransactionBlockEvent();
+//                one.sample(System.nanoTime() - start);
+                start = System.nanoTime();
                 // tg System.out.println("TBE "+tbe);
                 if (tbe != null) {
                     tbe.sourceAddress(address);
                     tbe.blockNumber(blockNumber++);
                     for (long clusterAddress : clusterAddresses) {
-                        to(clusterAddress).transactionBlockEvent(tbe);
+                        to(clusterAddress)
+                                .transactionBlockEvent(tbe);
                     }
                 }
 
-                int subRound = Math.max(100_000, periodUS * 100);
-                LockSupport.parkNanos(subRound);
+//                int subRound = Math.max(100_000, periodUS * 100);
+//                two.sample(System.nanoTime() - start);
+                Thread.sleep(1);
+//                LockSupport.parkNanos(subRound);
                 gossiper.sendGossip(blockNumber);
-                LockSupport.parkNanos(subRound);
+                Thread.sleep(1);
+//                LockSupport.parkNanos(subRound);
+
+                start = System.nanoTime();
                 voter.sendVote(blockNumber);
-                LockSupport.parkNanos(subRound);
+//                three.sample(System.nanoTime() - start);
+
+                Thread.sleep(1);
+//                LockSupport.parkNanos(subRound);
+                start = System.nanoTime();
                 //System.out.println(address + " " + blockNumber);
                 if (voteTaker.hasMajority()) {
                     voteTaker.sendEndOfRoundBlock(blockNumber++);
@@ -189,8 +206,22 @@ public class BlockEngine extends AbstractAllMessages {
                 processingSes.submit(blockReplayer::replayBlocks);
                 nextSendUS += periodUS;
                 long delay = nextSendUS - SystemTimeProvider.INSTANCE.currentTimeMicros();
-                if (delay > 10) // minimum delay
-                    LockSupport.parkNanos(delay * 1000);
+//                four.sample(System.nanoTime() - start);
+
+                if (delay > 999)
+                    Thread.sleep(delay / 1000);
+//                if (delay > 10) // minimum delay
+//                    LockSupport.parkNanos(delay * 1000);
+
+/*
+                if (++count % 100 == 0) {
+                    System.out.println(one.toMicrosFormat());
+                    System.out.println(two.toMicrosFormat());
+                    System.out.println(three.toMicrosFormat());
+                    System.out.println(four.toMicrosFormat());
+                }
+*/
+
             }
 
         } catch (Throwable t) {
