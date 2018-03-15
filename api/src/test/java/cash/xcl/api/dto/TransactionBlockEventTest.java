@@ -3,6 +3,8 @@ package cash.xcl.api.dto;
 import cash.xcl.api.AllMessages;
 import net.openhft.chronicle.bytes.Bytes;
 import net.openhft.chronicle.core.Mocker;
+import net.openhft.chronicle.core.time.SystemTimeProvider;
+import net.openhft.chronicle.salt.Ed25519;
 import net.openhft.chronicle.wire.Marshallable;
 import org.junit.Test;
 
@@ -11,6 +13,28 @@ import java.io.StringWriter;
 import static org.junit.Assert.assertEquals;
 
 public class TransactionBlockEventTest {
+
+    @Test
+    public void modifyMessageAfterSigning() {
+        Bytes publicKey = Bytes.allocateDirect(Ed25519.PUBLIC_KEY_LENGTH);
+        Bytes secretKey = Bytes.allocateDirect(Ed25519.SECRET_KEY_LENGTH);
+        Ed25519.generatePublicAndSecretKey(publicKey, secretKey);
+        CreateNewAddressCommand command = new CreateNewAddressCommand(1, 2, publicKey, "usny");
+        command.newAddressSeed(111111111111111L);
+        System.out.println("BEFORE SIGNING " + command.toString());
+        Bytes bytes = Bytes.allocateElasticDirect();
+        if (!command.hasSignature()) {
+            command.eventTime(SystemTimeProvider.INSTANCE.currentTimeMicros());
+            bytes.clear();
+            command.sign(bytes, 1, secretKey);
+        }
+        command.newAddressSeed(2222222222222222L);
+        System.out.println("AFTER SIGNING " + command.toString());
+        TransactionBlockEvent tbe = new TransactionBlockEvent().region(-1);
+        tbe.addTransaction(command);
+        System.out.println(tbe.toString());
+    }
+
 
     @Test
     public void writeMarshallable() {

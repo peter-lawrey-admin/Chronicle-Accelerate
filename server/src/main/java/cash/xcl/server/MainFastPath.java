@@ -18,8 +18,18 @@ public class MainFastPath extends AbstractAllMessages {
 
     @Override
     public void createNewAddressCommand(CreateNewAddressCommand createNewAddressCommand) {
-        createNewAddressCommand.newAddressSeed(addressService.generateAddress(createNewAddressCommand.regionStr()));
-        // TODO validate
+        long newAddress = addressService.generateAddress(createNewAddressCommand.regionStr());
+        createNewAddressCommand.newAddressSeed(newAddress);
+
+        // TODO
+        // delete the signature from the message
+        // this a quick workaround to get addresses to the UI working quickly
+        long eventTime = createNewAddressCommand.eventTime();
+        long sourceAddress = createNewAddressCommand.sourceAddress();
+        createNewAddressCommand.reset();
+        createNewAddressCommand.sourceAddress(sourceAddress);
+        createNewAddressCommand.eventTime(eventTime);
+
         chainer.createNewAddressCommand(createNewAddressCommand);
     }
 
