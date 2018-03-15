@@ -24,8 +24,6 @@ public class TransactionBlockEventTest {
         Bytes publicKey = Bytes.allocateDirect(Ed25519.PUBLIC_KEY_LENGTH);
         Bytes secretKey = Bytes.allocateDirect(Ed25519.SECRET_KEY_LENGTH);
         Ed25519.generatePublicAndSecretKey(publicKey, secretKey);
-        System.out.println(publicKey);
-        System.out.println(secretKey);
         CreateNewAddressCommand command = new CreateNewAddressCommand(1, 2, publicKey, "usny");
         command.newAddressSeed(111111111111111L);
         System.out.println("BEFORE SIGNING: " + command.toString());
