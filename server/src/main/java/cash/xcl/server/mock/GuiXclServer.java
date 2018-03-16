@@ -8,7 +8,7 @@ import net.openhft.chronicle.bytes.Bytes;
 import net.openhft.chronicle.core.io.Closeable;
 import net.openhft.chronicle.salt.Ed25519;
 
-
+import java.io.IOException;
 
 
 public class GuiXclServer implements Closeable{
@@ -20,17 +20,17 @@ public class GuiXclServer implements Closeable{
     public GuiXclServer(Bytes secretKey,
                         int mainBlockPeriodMS,
                         int localBlockPeriodMS,
-                        int serverAddress) {
-        try {
+                        int serverAddress) throws IOException {
+        //try {
             long[] clusterAddresses = {serverAddress};
             this.gateway = VanillaGateway.newGateway(serverAddress, "gb1dn", clusterAddresses, mainBlockPeriodMS, localBlockPeriodMS, TransactionBlockEvent._32_MB);
             this.server = new XCLServer("one", serverAddress, serverAddress, secretKey, gateway);
             gateway.start();
 
-        } catch (Throwable t) {
+       /* } catch (Throwable t) {
             t.printStackTrace();
 
-        }
+        }*/
     }
 
     @Override

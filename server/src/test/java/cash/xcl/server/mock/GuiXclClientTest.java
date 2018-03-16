@@ -10,6 +10,7 @@ import net.openhft.chronicle.salt.Ed25519;
 import org.junit.Test;
 
 
+import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static junit.framework.TestCase.assertTrue;
@@ -32,12 +33,16 @@ public class GuiXclClientTest {
             int sourceAddress = 1;
             Ed25519.generatePublicAndSecretKey(publicKey, secretKey);
 
-            server = new GuiXclServer(secretKey,1000, 50, this.serverAddress);
+            try {
+                server = new GuiXclServer(secretKey,1000, 50, this.serverAddress);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             server.register(sourceAddress, publicKey);
 
             AtomicInteger count = new AtomicInteger();
             AllMessages listener = new MyWritingAllMessages(count);
-            client = new GuiXclClient(secretKey, listener, this.serverAddress);
+            client = new GuiXclClient(secretKey, listener, this.serverAddress, sourceAddress);
 
             client.createNewAddressCommand(new CreateNewAddressCommand(sourceAddress, 1L, publicKey, "usny"));
 

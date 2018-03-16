@@ -14,13 +14,11 @@ import net.openhft.chronicle.bytes.Bytes;
 public class GuiXclClient extends AbstractAllMessages {
 
     private XCLClient client;
-    private int sourceAddress = 1;
-
-
 
     public GuiXclClient(Bytes secretKey,
                         AllMessages allMessages,
-                        int serverAddress) {
+                        int serverAddress,
+                        long sourceAddress) {
         super(99999999999L);
         try {
             client = new XCLClient("client", "localhost", serverAddress, sourceAddress,
@@ -33,12 +31,6 @@ public class GuiXclClient extends AbstractAllMessages {
             //Jvm.pause(1000);
             //benchmarkMain.close();
         }
-    }
-
-
-
-    public void openingBalanceEven2(OpeningBalanceEvent openingBalanceEvent) {
-        this.client.openingBalanceEvent(openingBalanceEvent);
     }
 
 
