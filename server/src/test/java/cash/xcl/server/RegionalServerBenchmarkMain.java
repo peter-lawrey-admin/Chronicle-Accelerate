@@ -43,116 +43,28 @@ benchmark - eightThreads = 52218 sustained, 489249 burst messages per second
 */
 
 public class RegionalServerBenchmarkMain {
-
     static final boolean INTERNAL = Boolean.getBoolean("internal");
     private XCLServer server;
     private Gateway gateway;
     private int serverAddress = 10001;
-
     private Bytes publicKey = Bytes.allocateDirect(Ed25519.PUBLIC_KEY_LENGTH);
     private Bytes secretKey = Bytes.allocateDirect(Ed25519.SECRET_KEY_LENGTH);
-
-
-    public RegionalServerBenchmarkMain(int mainBlockPeriodMS,
-                                       int localBlockPeriodMS,
-                                       int iterations,
-                                       int clientThreads) throws IOException {
-
-        Ed25519.generatePublicAndSecretKey(publicKey, secretKey);
-
-
-        long[] clusterAddresses = {serverAddress};
-
-        this.gateway = VanillaGateway.newGateway(serverAddress, "gb1dn", clusterAddresses,
-                mainBlockPeriodMS, localBlockPeriodMS,
-                TransactionBlockEvent._2_MB);
-
-
-        this.server = new XCLServer("one", serverAddress, serverAddress, secretKey, gateway)
-                .internal(INTERNAL);
-        gateway.start();
-        // register the address - otherwise, verify will fail
-        gateway.createNewAddressEvent(new CreateNewAddressEvent(serverAddress, 0, 0, 0, serverAddress, publicKey));
-        // register all the addresses involved in the transfers
-        // -source and destination accounts- in the Account Service with a opening balance of $1,000,000,000
-        for (int iterationNumber = 0; iterationNumber < iterations; iterationNumber++) {
-            for (int s = 0; s < clientThreads; s++) {
-                final int sourceAddress = (iterationNumber * 100) + s + 1;
-                final int destinationAddress = sourceAddress + 1000000;
-                gateway.createNewAddressEvent(new CreateNewAddressEvent(0, 0, 0, 0,
-                        sourceAddress, publicKey));
-
-                gateway.createNewAddressEvent(new CreateNewAddressEvent(0, 0, 0, 0,
-                        destinationAddress, publicKey));
-
-// TODO
-                ExchangeRateQuery err = new ExchangeRateQuery(0, 0, "XCL", "USD");
-                gateway.exchangeRateQuery(err);
-
-                CurrentBalanceQuery cbq = new CurrentBalanceQuery(0, 0, 1000);
-                gateway.currentBalanceQuery(cbq);
-
-                XCLClient client = null;
-                try {
-                    AtomicInteger count = new AtomicInteger();
-                    client = new XCLClient("client", "localhost", serverAddress, sourceAddress, secretKey,
-                            new MyWritingAllMessages(count))
-                            .internal(INTERNAL);
-                    sendOpeningBalance(client, sourceAddress, sourceAddress);
-                    sendOpeningBalance(client, sourceAddress, destinationAddress);
-                } finally {
-                    //client.close();
-                    Closeable.closeQuietly(client);
-                }
-            }
-        }
-    }
-
-    static void sendOpeningBalance(XCLClient client, int sourceAddress, int destinationAddress) {
-        final OpeningBalanceEvent obe1 = new OpeningBalanceEvent(sourceAddress,
-                1,
-                destinationAddress,
-                "USD",
-                1000);
-        client.openingBalanceEvent(obe1);
-    }
-
-    // Not using JUnit at the moment because
-    // on Windows, using JUnit and the native encryption library will crash the JVM.
     static RegionalServerBenchmarkMain benchmarkMain = null;
 
+    public RegionalServerBenchmarkMain(int mainBlockPeriodMS, int localBlockPeriodMS) throws IOException {
+        Ed25519.generatePublicAndSecretKey(publicKey, secretKey);
+        long[] clusterAddresses = {serverAddress};
+        this.gateway = VanillaGateway.newGateway(serverAddress, "gb1dn", clusterAddresses, mainBlockPeriodMS, localBlockPeriodMS, TransactionBlockEvent._2_MB);
+        this.server = new XCLServer("one", serverAddress, serverAddress, secretKey, gateway).internal(INTERNAL);
+        gateway.start();
+    }
+
     public static void main(String[] args) throws IOException {
-            int iterations = 3;
-            int transfers = INTERNAL ? 1_000_000 : 20_000;
-            int total = iterations * transfers;
-            benchmarkMain = new RegionalServerBenchmarkMain(1000, 5, 10, 8);
+        benchmarkMain = new RegionalServerBenchmarkMain(1000, 5);
         System.out.println("Server started");
     }
 
     public void close() {
         Closeable.closeQuietly(server);
-    }
-
-    private static class MyWritingAllMessages extends WritingAllMessages {
-        private final AtomicInteger count;
-
-        public MyWritingAllMessages(AtomicInteger count) {
-            this.count = count;
-        }
-
-        @Override
-        public WritingAllMessages to(long addressOrRegion) {
-            return this;
-        }
-
-        @Override
-        public void write(SignedMessage message) {
-            count.incrementAndGet();
-        }
-
-        @Override
-        public void close() {
-
-        }
     }
 }

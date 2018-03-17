@@ -1,10 +1,10 @@
 package cash.xcl.server;
 
 import cash.xcl.api.AllMessages;
-import cash.xcl.api.dto.SubscriptionQuery;
-import cash.xcl.api.dto.TransactionBlockEvent;
-import cash.xcl.api.dto.TransferValueCommand;
+import cash.xcl.api.dto.*;
+import cash.xcl.api.tcp.WritingAllMessages;
 import cash.xcl.api.tcp.XCLClient;
+import cash.xcl.server.mock.ServerJVM;
 import net.openhft.chronicle.bytes.Bytes;
 import net.openhft.chronicle.core.Jvm;
 import net.openhft.chronicle.core.io.Closeable;
@@ -37,25 +37,13 @@ TODO The client and server generate different keys. Client needs to send the ser
 */
 
 public class RegionalClientBenchmarkMain {
-
     static final boolean INTERNAL = Boolean.getBoolean("internal");
     static final String HOST = System.getProperty("host", "localhost");
     private int serverAddress = 10001;
-
     private Bytes publicKey = Bytes.allocateDirect(Ed25519.PUBLIC_KEY_LENGTH);
     private Bytes secretKey = Bytes.allocateDirect(Ed25519.SECRET_KEY_LENGTH);
 
 
-    public RegionalClientBenchmarkMain(int iterations,
-                                       int clientThreads) throws IOException {
-
-        Ed25519.generatePublicAndSecretKey(publicKey, secretKey);
-
-    }
-
-
-    // Not using JUnit at the moment because
-    // on Windows, using JUnit and the native encryption library will crash the JVM.
     public static void main(String[] args) throws IOException, ExecutionException, InterruptedException {
         System.out.println("internal= " + INTERNAL);
         RegionalClientBenchmarkMain benchmarkMain = null;
@@ -74,14 +62,56 @@ public class RegionalClientBenchmarkMain {
             System.out.println("benchmark - twoThreads = " + twoThreads + " messages per second");
             System.out.println("benchmark - fourThreads = " + fourThreads + " messages per second");
             System.out.println("benchmark - eightThreads = " + eightThreads + " messages per second");
-
-            TransactionBlockEvent.printNumberOfObjects();
-
         } finally {
             //Jvm.pause(1000);
             //benchmarkMain.close();
             System.exit(0);
         }
+    }
+
+
+    public RegionalClientBenchmarkMain(int iterations, int clientThreads) {
+
+        Ed25519.generatePublicAndSecretKey(publicKey, secretKey);
+
+        for (int iterationNumber = 0; iterationNumber < iterations; iterationNumber++) {
+            for (int s = 0; s < clientThreads; s++) {
+                final int sourceAddress = (iterationNumber * 100) + s + 1;
+                final int destinationAddress = sourceAddress + 1000000;
+
+                XCLClient client = null;
+                try {
+                    AtomicInteger count = new AtomicInteger();
+                    client = new XCLClient("client", HOST,
+                            serverAddress, sourceAddress, secretKey,
+                            new RegionalClientBenchmarkMain.MyWritingAllMessages(count));
+
+                    // register public keys
+                    client.internal(true);
+                    client.createNewAddressEvent(new CreateNewAddressEvent(0, 0, 0, 0, sourceAddress, publicKey));
+                    client.createNewAddressEvent(new CreateNewAddressEvent(0, 0, 0, 0, destinationAddress, publicKey));
+
+                    client.internal(INTERNAL);
+                    sendOpeningBalance(client, sourceAddress, sourceAddress);
+                    sendOpeningBalance(client, sourceAddress, destinationAddress);
+                } finally {
+                    // no need to wait for a response
+                    // as the server does not send a reply for OpeningBalanceEvents
+                    Closeable.closeQuietly(client);
+                    //client.close();
+                }
+            }
+
+        }
+    }
+
+    static void sendOpeningBalance(XCLClient client, int sourceAddress, int destinationAddress) {
+        final OpeningBalanceEvent obe1 = new OpeningBalanceEvent(sourceAddress,
+                1,
+                destinationAddress,
+                "USD",
+                1000);
+        client.openingBalanceEvent(obe1);
     }
 
     private String benchmark(int iterations, int clientThreads, int transfers) throws InterruptedException, ExecutionException {
@@ -96,7 +126,7 @@ public class RegionalClientBenchmarkMain {
         for (int iterationNumber = 0; iterationNumber < iterations; iterationNumber++) {
             long start = System.nanoTime();
             ExecutorService service = Executors.newFixedThreadPool(clientThreads);
-            BlockingQueue<String> sent = new LinkedBlockingQueue<>(4);
+            BlockingQueue<String> sent = new LinkedBlockingQueue<>(10);// todo: with 4 we get: java.lang.IllegalStateException: Queue full
             List<Future> futures = new ArrayList<>();
             long sentStart = System.nanoTime();
             for (int s = 0; s < clientThreads; s++) {
@@ -108,6 +138,7 @@ public class RegionalClientBenchmarkMain {
                         AtomicInteger count = new AtomicInteger();
                         AllMessages queuing = new MyWritingAllMessages(count);
                         XCLClient client = new XCLClient("client", HOST, this.serverAddress, sourceAddress, secretKey, queuing);
+                        client.internal(INTERNAL);
                         client.subscriptionQuery(new SubscriptionQuery(sourceAddress, 0));
                         TransferValueCommand tvc1 = new TransferValueCommand(sourceAddress, 0, destinationAddress, 1e-9, "USD", "");
                         int c = 0;
@@ -164,9 +195,33 @@ public class RegionalClientBenchmarkMain {
                 average,
                 sentAverage);
 
-        //((VanillaGateway) gateway).printBalances();
 
         return average + " sustained, " + sentAverage + " burst";
     }
+
+
+    private static class MyWritingAllMessages extends WritingAllMessages {
+        private final AtomicInteger count;
+
+        public MyWritingAllMessages(AtomicInteger count) {
+            this.count = count;
+        }
+
+        @Override
+        public WritingAllMessages to(long addressOrRegion) {
+            return this;
+        }
+
+        @Override
+        public void write(SignedMessage message) {
+            count.incrementAndGet();
+        }
+
+        @Override
+        public void close() {
+
+        }
+    }
+
 
 }
