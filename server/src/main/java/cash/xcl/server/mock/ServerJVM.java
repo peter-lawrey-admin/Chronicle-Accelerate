@@ -9,8 +9,8 @@ import net.openhft.chronicle.core.io.Closeable;
 import net.openhft.chronicle.salt.Ed25519;
 
 public class ServerJVM implements Closeable{
-    public static boolean INTERNAL = Boolean.getBoolean("internal");
-    //public static boolean INTERNAL = true;
+    //public static boolean INTERNAL = Boolean.getBoolean("internal");
+    public static boolean INTERNAL = true;
     public static int DEFAULT_SERVER_ADDRESS = 10001;
     public static int ITERATIONS = 3;
     public static int MAX_CLIENT_THREADS = 8;
