@@ -1,7 +1,6 @@
 package cash.xcl.server;
 
 import cash.xcl.api.AllMessages;
-import cash.xcl.api.dto.OpeningBalanceEvent;
 import cash.xcl.api.dto.SubscriptionQuery;
 import cash.xcl.api.dto.TransactionBlockEvent;
 import cash.xcl.api.dto.TransferValueCommand;
@@ -40,7 +39,7 @@ TODO The client and server generate different keys. Client needs to send the ser
 public class RegionalClientBenchmarkMain {
 
     static final boolean INTERNAL = Boolean.getBoolean("internal");
-    static final String HOST = System.getProperty("localhost");
+    static final String HOST = System.getProperty("host", "localhost");
     private int serverAddress = 10001;
 
     private Bytes publicKey = Bytes.allocateDirect(Ed25519.PUBLIC_KEY_LENGTH);
@@ -52,33 +51,8 @@ public class RegionalClientBenchmarkMain {
 
         Ed25519.generatePublicAndSecretKey(publicKey, secretKey);
 
-
-        // register all the addresses involved in the transfers
-        // -source and destination accounts- in the Account Service with a opening balance of $1,000,000,000
-        for (int iterationNumber = 0; iterationNumber < iterations; iterationNumber++) {
-            for (int s = 0; s < clientThreads; s++) {
-                final int sourceAddress = (iterationNumber * 100) + s + 1;
-                final int destinationAddress = sourceAddress + 1000000;
-
-                AtomicInteger count = new AtomicInteger();
-                XCLClient client = new XCLClient("client", HOST, serverAddress, sourceAddress, secretKey,
-                        new MyWritingAllMessages(count))
-                        .internal(INTERNAL);
-                sendOpeningBalance(client, sourceAddress, sourceAddress);
-                sendOpeningBalance(client, sourceAddress, destinationAddress);
-                // how do we know if the openingBalanceEvent msg was a success or a failure?
-            }
-        }
     }
 
-    static void sendOpeningBalance(XCLClient client, int sourceAddress, int destinationAddress) {
-        final OpeningBalanceEvent obe1 = new OpeningBalanceEvent(sourceAddress,
-                1,
-                destinationAddress,
-                "USD",
-                1000);
-        client.openingBalanceEvent(obe1);
-    }
 
     // Not using JUnit at the moment because
     // on Windows, using JUnit and the native encryption library will crash the JVM.
@@ -95,6 +69,7 @@ public class RegionalClientBenchmarkMain {
             String fourThreads = benchmarkMain.benchmark(iterations, 4, transfers);
             String eightThreads = benchmarkMain.benchmark(iterations, 8, transfers);
             System.out.println("Total number of messages per benchmark = " + total);
+            System.out.println("Including signing and verifying = " + !INTERNAL);
             System.out.println("benchmark - oneThread = " + oneThread + " messages per second");
             System.out.println("benchmark - twoThreads = " + twoThreads + " messages per second");
             System.out.println("benchmark - fourThreads = " + fourThreads + " messages per second");

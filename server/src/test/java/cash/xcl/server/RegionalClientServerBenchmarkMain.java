@@ -98,14 +98,18 @@ public class RegionalClientServerBenchmarkMain {
                 CurrentBalanceQuery cbq = new CurrentBalanceQuery(0, 0, 1000);
                 gateway.currentBalanceQuery(cbq);
 
-
-                AtomicInteger count = new AtomicInteger();
-                XCLClient client = new XCLClient("client", "localhost", serverAddress, sourceAddress, secretKey,
-                        new MyWritingAllMessages(count))
-                        .internal(INTERNAL);
-                sendOpeningBalance(client, sourceAddress, sourceAddress);
-                sendOpeningBalance(client, sourceAddress, destinationAddress);
-                // how do we know if the openingBalanceEvent msg was a success or a failure?
+                XCLClient client = null;
+                try {
+                    AtomicInteger count = new AtomicInteger();
+                    client = new XCLClient("client", "localhost", serverAddress, sourceAddress, secretKey,
+                            new MyWritingAllMessages(count))
+                            .internal(INTERNAL);
+                    sendOpeningBalance(client, sourceAddress, sourceAddress);
+                    sendOpeningBalance(client, sourceAddress, destinationAddress);
+                } finally {
+                    //client.close();
+                    Closeable.closeQuietly(client);
+                }
             }
         }
     }
@@ -121,8 +125,7 @@ public class RegionalClientServerBenchmarkMain {
 
     // Not using JUnit at the moment because
     // on Windows, using JUnit and the native encryption library will crash the JVM.
-    public static void main(String[] args) throws IOException, ExecutionException, InterruptedException {
-        System.out.println("internal= " + INTERNAL);
+    public static void main(String[] args) {
         RegionalClientServerBenchmarkMain benchmarkMain = null;
         try {
             int iterations = 3;
@@ -134,12 +137,16 @@ public class RegionalClientServerBenchmarkMain {
             String fourThreads = benchmarkMain.benchmark(iterations, 4, transfers);
             String eightThreads = benchmarkMain.benchmark(iterations, 8, transfers);
             System.out.println("Total number of messages per benchmark = " + total);
+            System.out.println("Including signing and verifying = " + !INTERNAL);
             System.out.println("benchmark - oneThread = " + oneThread + " messages per second");
             System.out.println("benchmark - twoThreads = " + twoThreads + " messages per second");
             System.out.println("benchmark - fourThreads = " + fourThreads + " messages per second");
             System.out.println("benchmark - eightThreads = " + eightThreads + " messages per second");
 
             TransactionBlockEvent.printNumberOfObjects();
+
+        } catch (Throwable t) {
+            t.printStackTrace();
 
         } finally {
             //Jvm.pause(1000);
@@ -231,5 +238,9 @@ public class RegionalClientServerBenchmarkMain {
         //((VanillaGateway) gateway).printBalances();
 
         return average + " sustained, " + sentAverage + " burst";
+    }
+
+    public void close() {
+        Closeable.closeQuietly(server);
     }
 }
