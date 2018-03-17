@@ -26,9 +26,23 @@ public class MainPostBlockChainProcessorTest {
 
     public static void main(String[] args) {
         AddressService as = new AddressService();
-        long usny = as.generateAddress("usny");
+        long usny = as.generateAddress("gb-ans");
         System.out.println(usny);
     }
+
+    @Test
+    public void testCreate2addresses() {
+        AddressService as = new AddressService();
+
+        long usny = as.generateAddress("gb-ans");
+        System.out.println(usny);
+
+        long usny1 = as.generateAddress("gb-ans");
+        System.out.println(usny1);
+
+        assert usny != usny1;
+    }
+
 
     @Test
     public void createNewAddressCommand() {

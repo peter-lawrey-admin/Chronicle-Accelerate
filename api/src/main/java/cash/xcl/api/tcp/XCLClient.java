@@ -3,6 +3,7 @@ package cash.xcl.api.tcp;
 import cash.xcl.api.AllMessages;
 import cash.xcl.api.dto.DtoParser;
 import cash.xcl.api.dto.SignedMessage;
+import cash.xcl.api.dto.SubscriptionQuery;
 import cash.xcl.api.util.XCLBase32;
 import cash.xcl.net.TCPClientListener;
 import cash.xcl.net.TCPConnection;
@@ -34,6 +35,19 @@ public class XCLClient extends WritingAllMessages implements Closeable, TCPConne
                      AllMessages allMessageListener) {
         this(name, Arrays.asList(new InetSocketAddress(socketHost, socketPort)), address, secretKey, allMessageListener);
     }
+
+    public XCLClient(String name,
+                     String socketHost,
+                     int socketPort,
+                     long address,
+                     Bytes secretKey,
+                     AllMessages allMessageListener,
+                     boolean subscribe) {
+        this(name, Arrays.asList(new InetSocketAddress(socketHost, socketPort)), address, secretKey, allMessageListener);
+        if( subscribe )
+            subscriptionQuery(new SubscriptionQuery(address, SystemTimeProvider.INSTANCE.currentTimeMicros()));
+    }
+
 
     public XCLClient(String name,
                      List<InetSocketAddress> socketAddresses,
