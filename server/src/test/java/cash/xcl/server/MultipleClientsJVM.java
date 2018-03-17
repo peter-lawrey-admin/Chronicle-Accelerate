@@ -4,11 +4,12 @@ import cash.xcl.api.AllMessages;
 import cash.xcl.api.dto.*;
 import cash.xcl.api.tcp.WritingAllMessages;
 import cash.xcl.api.tcp.XCLClient;
-import cash.xcl.api.tcp.XCLServer;
+import cash.xcl.server.mock.ServerJVM;
 import net.openhft.chronicle.bytes.Bytes;
 import net.openhft.chronicle.core.Jvm;
 import net.openhft.chronicle.core.io.Closeable;
 import net.openhft.chronicle.salt.Ed25519;
+
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -25,120 +26,27 @@ import static org.junit.Assert.assertEquals;
 -XX:+DebugNonSafepoints
 -XX:StartFlightRecording=name=test,filename=test.jfr,dumponexit=true,settings=profile
 -DfastJava8IO=true
-
-Intel(R) Core(TM) i7-7820X CPU @ 3.60GHz, Centos 7 with linux 4.12
-TBA
-
-Intel i7-7700 CPU, Windows 10, 32 GB memory.
-benchmark - oneThread = 331318 sustained, 416312 burst messages per second
-benchmark - twoThreads = 464425 sustained, 755085 burst messages per second
-benchmark - fourThreads = 465087 sustained, 994536 burst messages per second
-benchmark - eightThreads = 431039 sustained, 808222 burst messages per second
-
-Intel i7-7820X, Windows 10, 64 GB memory.
-as a core service
-benchmark - oneThread = 372916 sustained, 476293 burst messages per second
-benchmark - twoThreads = 441794 sustained, 686253 burst messages per second
-benchmark - fourThreads = 421588 sustained, 743256 burst messages per second
-benchmark - eightThreads = 393173 sustained, 683544 burst messages per second
-
-with verify/sign
-benchmark - oneThread = 9652 sustained, 180129 burst messages per second
-benchmark - twoThreads = 18885 sustained, 441968 burst messages per second
-benchmark - fourThreads = 32032 sustained, 576003 burst messages per second
-benchmark - eightThreads = 52218 sustained, 489249 burst messages per second
 */
 
-public class RegionalServerBenchmarkMain {
+public class MultipleClientsJVM {
 
-    static final boolean INTERNAL = Boolean.getBoolean("internal");
-    private XCLServer server;
-    private Gateway gateway;
-    private int serverAddress = 10001;
-
+    public static int ITERATIONS = 3;
+    public static int MAX_CLIENT_THREADS = 8;
     private Bytes publicKey = Bytes.allocateDirect(Ed25519.PUBLIC_KEY_LENGTH);
     private Bytes secretKey = Bytes.allocateDirect(Ed25519.SECRET_KEY_LENGTH);
 
-
-    public RegionalServerBenchmarkMain(int mainBlockPeriodMS,
-                                       int localBlockPeriodMS,
-                                       int iterations,
-                                       int clientThreads) throws IOException {
-
-        Ed25519.generatePublicAndSecretKey(publicKey, secretKey);
-
-
-        long[] clusterAddresses = {serverAddress};
-
-        this.gateway = VanillaGateway.newGateway(serverAddress, "gb1dn", clusterAddresses,
-                mainBlockPeriodMS, localBlockPeriodMS,
-                TransactionBlockEvent._2_MB);
-
-
-        this.server = new XCLServer("one", serverAddress, serverAddress, secretKey, gateway)
-                .internal(INTERNAL);
-        gateway.start();
-        // register the address - otherwise, verify will fail
-        gateway.createNewAddressEvent(new CreateNewAddressEvent(serverAddress, 0, 0, 0, serverAddress, publicKey));
-        // register all the addresses involved in the transfers
-        // -source and destination accounts- in the Account Service with a opening balance of $1,000,000,000
-        for (int iterationNumber = 0; iterationNumber < iterations; iterationNumber++) {
-            for (int s = 0; s < clientThreads; s++) {
-                final int sourceAddress = (iterationNumber * 100) + s + 1;
-                final int destinationAddress = sourceAddress + 1000000;
-                gateway.createNewAddressEvent(new CreateNewAddressEvent(0, 0, 0, 0,
-                        sourceAddress, publicKey));
-
-                gateway.createNewAddressEvent(new CreateNewAddressEvent(0, 0, 0, 0,
-                        destinationAddress, publicKey));
-
-// TODO
-                ExchangeRateQuery err = new ExchangeRateQuery(0, 0, "XCL", "USD");
-                gateway.exchangeRateQuery(err);
-
-                CurrentBalanceQuery cbq = new CurrentBalanceQuery(0, 0, 1000);
-                gateway.currentBalanceQuery(cbq);
-
-                XCLClient client = null;
-                try {
-                    AtomicInteger count = new AtomicInteger();
-                    client = new XCLClient("client", "localhost", serverAddress, sourceAddress, secretKey,
-                            new MyWritingAllMessages(count))
-                            .internal(INTERNAL);
-                    sendOpeningBalance(client, sourceAddress, sourceAddress);
-                    sendOpeningBalance(client, sourceAddress, destinationAddress);
-                } finally {
-                    //client.close();
-                    Closeable.closeQuietly(client);
-                }
-            }
-        }
-    }
-
-    static void sendOpeningBalance(XCLClient client, int sourceAddress, int destinationAddress) {
-        final OpeningBalanceEvent obe1 = new OpeningBalanceEvent(sourceAddress,
-                1,
-                destinationAddress,
-                "USD",
-                1000);
-        client.openingBalanceEvent(obe1);
-    }
-
-    // Not using JUnit at the moment because
-    // on Windows, using JUnit and the native encryption library will crash the JVM.
     public static void main(String[] args) {
-        RegionalServerBenchmarkMain benchmarkMain = null;
+        MultipleClientsJVM benchmarkMain = null;
         try {
-            int iterations = 3;
-            int transfers = INTERNAL ? 1_000_000 : 20_000;
-            int total = iterations * transfers;
-            benchmarkMain = new RegionalServerBenchmarkMain(1000, 10, 10, 8);
-            String oneThread = benchmarkMain.benchmark(iterations, 1, transfers);
-            String twoThreads = benchmarkMain.benchmark(iterations, 2, transfers);
-            String fourThreads = benchmarkMain.benchmark(iterations, 4, transfers);
-            String eightThreads = benchmarkMain.benchmark(iterations, 8, transfers);
+            int transfers = ServerJVM.INTERNAL ? 1_000_000 : 20_000;
+            int total = ITERATIONS * transfers;
+            benchmarkMain = new MultipleClientsJVM(ITERATIONS, MAX_CLIENT_THREADS);
+            String oneThread = benchmarkMain.benchmark(ITERATIONS, 1, transfers);
+            String twoThreads = benchmarkMain.benchmark(ITERATIONS, 2, transfers);
+            String fourThreads = benchmarkMain.benchmark(ITERATIONS, 4, transfers);
+            String eightThreads = benchmarkMain.benchmark(ITERATIONS, MAX_CLIENT_THREADS, transfers);
             System.out.println("Total number of messages per benchmark = " + total);
-            System.out.println("Including signing and verifying = " + !INTERNAL );
+            System.out.println("Including signing and verifying = " + !ServerJVM.INTERNAL );
             System.out.println("benchmark - oneThread = " + oneThread + " messages per second");
             System.out.println("benchmark - twoThreads = " + twoThreads + " messages per second");
             System.out.println("benchmark - fourThreads = " + fourThreads + " messages per second");
@@ -154,6 +62,44 @@ public class RegionalServerBenchmarkMain {
             //benchmarkMain.close();
             System.exit(0);
         }
+    }
+
+
+
+    public MultipleClientsJVM(int iterations, int clientThreads)  {
+        Ed25519.generatePublicAndSecretKey(publicKey, secretKey);
+        for (int iterationNumber = 0; iterationNumber < iterations; iterationNumber++) {
+            for (int s = 0; s < clientThreads; s++) {
+                final int sourceAddress = (iterationNumber * 100) + s + 1;
+                final int destinationAddress = sourceAddress + 1000000;
+
+                XCLClient client = null;
+                try {
+                    AtomicInteger count = new AtomicInteger();
+                    client = new XCLClient("client", "localhost",
+                            ServerJVM.DEFAULT_SERVER_ADDRESS, sourceAddress, secretKey,
+                            new MyWritingAllMessages(count))
+                            .internal(ServerJVM.INTERNAL);
+                    sendOpeningBalance(client, sourceAddress, sourceAddress);
+                    sendOpeningBalance(client, sourceAddress, destinationAddress);
+                }finally {
+                    // no need to wait for a response
+                    // as the server does not send a reply for OpeningBalanceEvents
+                    Closeable.closeQuietly(client);
+                    //client.close();
+                }
+            }
+        }
+    }
+
+    static void sendOpeningBalance(XCLClient client, int sourceAddress, int destinationAddress) {
+        final OpeningBalanceEvent obe1 = new OpeningBalanceEvent(sourceAddress,
+                1,
+                destinationAddress,
+                "USD",
+                1000);
+        //System.out.println(obe1);
+        client.openingBalanceEvent(obe1);
     }
 
     private String benchmark(int iterations, int clientThreads, int transfers) throws InterruptedException, ExecutionException {
@@ -179,7 +125,7 @@ public class RegionalServerBenchmarkMain {
                     try {
                         AtomicInteger count = new AtomicInteger();
                         AllMessages queuing = new MyWritingAllMessages(count);
-                        XCLClient client = new XCLClient("client", "localhost", this.serverAddress, sourceAddress, secretKey, queuing);
+                        XCLClient client = new XCLClient("client", "localhost", ServerJVM.DEFAULT_SERVER_ADDRESS, sourceAddress, secretKey, queuing);
                         client.subscriptionQuery(new SubscriptionQuery(sourceAddress, 0));
                         TransferValueCommand tvc1 = new TransferValueCommand(sourceAddress, 0, destinationAddress, 1e-9, "USD", "");
                         int c = 0;
@@ -241,9 +187,7 @@ public class RegionalServerBenchmarkMain {
         return average + " sustained, " + sentAverage + " burst";
     }
 
-    public void close() {
-        Closeable.closeQuietly(server);
-    }
+
 
     private static class MyWritingAllMessages extends WritingAllMessages {
         private final AtomicInteger count;
