@@ -11,8 +11,6 @@ import net.openhft.chronicle.salt.Ed25519;
 public class ServerJVM implements Closeable{
     public static boolean INTERNAL = Boolean.getBoolean("internal");
     public static int DEFAULT_SERVER_ADDRESS = 10001;
-    public static int ITERATIONS = 3;
-    public static int MAX_CLIENT_THREADS = 8;
     private XCLServer server;
     private Gateway gateway;
 
@@ -37,8 +35,6 @@ public class ServerJVM implements Closeable{
         }
     }
 
-
-
     public ServerJVM(int serverAddress,
                      Bytes secretKey,
                      int mainBlockPeriodMS,
@@ -48,8 +44,8 @@ public class ServerJVM implements Closeable{
         try {
             long[] clusterAddresses = {serverAddress};
             this.gateway = VanillaGateway.newGateway(serverAddress, "gb1dn", clusterAddresses, mainBlockPeriodMS, localBlockPeriodMS, TransactionBlockEvent._32_MB);
-            this.server = new XCLServer("one", serverAddress, serverAddress, secretKey, gateway)
-                    .internal(INTERNAL);
+            this.server = new XCLServer("one", serverAddress, serverAddress, secretKey, gateway);
+            this.server.internal(INTERNAL);
             gateway.start();
 
             register(sourceAddress, publicKey);

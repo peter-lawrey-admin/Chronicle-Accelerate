@@ -78,13 +78,14 @@ public class MultipleClientsJVM {
                     AtomicInteger count = new AtomicInteger();
                     client = new XCLClient("client", HOST,
                             ServerJVM.DEFAULT_SERVER_ADDRESS, sourceAddress, secretKey,
-                            new MyWritingAllMessages(count))
-                            .internal(ServerJVM.INTERNAL);
+                            new MyWritingAllMessages(count));
 
                     // register public keys
+                    client.internal(true);
                     client.createNewAddressEvent(new CreateNewAddressEvent(0, 0, 0, 0, sourceAddress, publicKey));
                     client.createNewAddressEvent(new CreateNewAddressEvent(0, 0, 0, 0, destinationAddress, publicKey));
 
+                    client.internal(ServerJVM.INTERNAL);
                     sendOpeningBalance(client, sourceAddress, sourceAddress);
                     sendOpeningBalance(client, sourceAddress, destinationAddress);
                 }finally {
@@ -131,6 +132,7 @@ public class MultipleClientsJVM {
                         AtomicInteger count = new AtomicInteger();
                         AllMessages queuing = new MyWritingAllMessages(count);
                         XCLClient client = new XCLClient("client", HOST, ServerJVM.DEFAULT_SERVER_ADDRESS, sourceAddress, secretKey, queuing);
+                        client.internal(ServerJVM.INTERNAL);
                         client.subscriptionQuery(new SubscriptionQuery(sourceAddress, 0));
                         TransferValueCommand tvc1 = new TransferValueCommand(sourceAddress, 0, destinationAddress, 1e-9, "USD", "");
                         int c = 0;
