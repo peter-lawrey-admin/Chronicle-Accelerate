@@ -17,7 +17,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 
 
-public class GuiClientAndServer extends AbstractAllMessages {
+public class ServerAndClientProcesses extends AbstractAllMessages {
 
     private XCLServer server;
     private Gateway gateway;
@@ -32,9 +32,9 @@ public class GuiClientAndServer extends AbstractAllMessages {
     private Bytes secretKey = Bytes.allocateDirect(Ed25519.SECRET_KEY_LENGTH);
 
 
-    public GuiClientAndServer(int mainBlockPeriodMS,
-                              int localBlockPeriodMS,
-                              @NotNull final AllMessages allMessageListener) {
+    public ServerAndClientProcesses(int mainBlockPeriodMS,
+                                    int localBlockPeriodMS,
+                                    @NotNull final AllMessages allMessageListener) {
         super(99999999999999L);
 
         try {
@@ -123,9 +123,6 @@ public class GuiClientAndServer extends AbstractAllMessages {
     }
 
 
-
-
-
     public void close() {
         Closeable.closeQuietly(server);
     }
@@ -184,12 +181,12 @@ public class GuiClientAndServer extends AbstractAllMessages {
     // Not using JUnit at the moment because
     // on Windows, using JUnit and the native encryption library will crash the JVM.
     public static void main(String[] args) {
-        GuiClientAndServer benchmarkMain = null;
+        ServerAndClientProcesses benchmarkMain = null;
         try {
 
             AtomicInteger count = new AtomicInteger();
             MyWritingAllMessages myWritingAllMessages = new MyWritingAllMessages(count);
-            benchmarkMain = new GuiClientAndServer(1000, 10, myWritingAllMessages);
+            benchmarkMain = new ServerAndClientProcesses(1000, 10, myWritingAllMessages);
 
             System.out.println("before transfer");
             TransferValueCommand tvc1 = new TransferValueCommand(1, 0, 2, 1e-9, "USD", "");

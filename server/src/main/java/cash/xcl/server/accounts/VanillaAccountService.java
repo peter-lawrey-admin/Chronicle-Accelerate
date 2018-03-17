@@ -88,6 +88,7 @@ public class VanillaAccountService extends AbstractAllMessages implements Accoun
     }
 
     // only for testing purposes
+    // note - access to balances is not thread-safe
     @Override
     public void print() {
         SortedMap<Long, BalanceByCurrency> map = new TreeMap<>();
