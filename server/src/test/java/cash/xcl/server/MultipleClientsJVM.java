@@ -11,7 +11,6 @@ import net.openhft.chronicle.core.io.Closeable;
 import net.openhft.chronicle.salt.Ed25519;
 
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
@@ -81,6 +80,11 @@ public class MultipleClientsJVM {
                             ServerJVM.DEFAULT_SERVER_ADDRESS, sourceAddress, secretKey,
                             new MyWritingAllMessages(count))
                             .internal(ServerJVM.INTERNAL);
+
+                    // register public keys
+                    client.createNewAddressEvent(new CreateNewAddressEvent(0, 0, 0, 0, sourceAddress, publicKey));
+                    client.createNewAddressEvent(new CreateNewAddressEvent(0, 0, 0, 0, destinationAddress, publicKey));
+
                     sendOpeningBalance(client, sourceAddress, sourceAddress);
                     sendOpeningBalance(client, sourceAddress, destinationAddress);
                 }finally {

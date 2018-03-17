@@ -125,7 +125,7 @@ public class RegionalServerBenchmarkMain {
             int iterations = 3;
             int transfers = INTERNAL ? 1_000_000 : 20_000;
             int total = iterations * transfers;
-            benchmarkMain = new RegionalServerBenchmarkMain(1000, 10, 10, 8);
+            benchmarkMain = new RegionalServerBenchmarkMain(1000, 5, 10, 8);
         System.out.println("Server started");
     }
 

@@ -154,10 +154,15 @@ public class XCLServer implements AllMessagesLookup, PublicKeyRegistry, Closeabl
             try {
                 long address = bytes.readLong(bytes.readPosition() + Ed25519.SIGNATURE_LENGTH);
                 long messageType = bytes.readUnsignedByte(bytes.readPosition() + MESSAGE_OFFSET);
-                Boolean verify = publicKeyRegistry.verify(address, bytes);
-                if (verify == null || !verify) {
-                    System.err.println("Verify: " + verify + " for address " + address + " and  object of message type " + messageType);
-                    return;
+                // todo
+                // this is a quick workaround - don't verify CreateNewAddressEvent messages
+                // as they are currently used to register the public key.
+                if( messageType != CREATE_NEW_ADDRESS_EVENT ) {
+                    Boolean verify = publicKeyRegistry.verify(address, bytes);
+                    if (verify == null || !verify) {
+                        System.err.println("Verify: " + verify + " for address " + address + " and  object of message type " + messageType);
+                        return;
+                    }
                 }
                 if (messageType == SUBSCRIPTION_QUERY ||
                         messageType == CURRENT_BALANCE_QUERY ||
