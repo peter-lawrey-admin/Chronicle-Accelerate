@@ -34,6 +34,7 @@ public class MultipleClientsJVM {
     public static int MAX_CLIENT_THREADS = 8;
     private Bytes publicKey = Bytes.allocateDirect(Ed25519.PUBLIC_KEY_LENGTH);
     private Bytes secretKey = Bytes.allocateDirect(Ed25519.SECRET_KEY_LENGTH);
+    static final String HOST = System.getProperty("host", "localhost");
 
     public static void main(String[] args) {
         MultipleClientsJVM benchmarkMain = null;
@@ -76,7 +77,7 @@ public class MultipleClientsJVM {
                 XCLClient client = null;
                 try {
                     AtomicInteger count = new AtomicInteger();
-                    client = new XCLClient("client", "localhost",
+                    client = new XCLClient("client", HOST,
                             ServerJVM.DEFAULT_SERVER_ADDRESS, sourceAddress, secretKey,
                             new MyWritingAllMessages(count))
                             .internal(ServerJVM.INTERNAL);
@@ -125,7 +126,7 @@ public class MultipleClientsJVM {
                     try {
                         AtomicInteger count = new AtomicInteger();
                         AllMessages queuing = new MyWritingAllMessages(count);
-                        XCLClient client = new XCLClient("client", "localhost", ServerJVM.DEFAULT_SERVER_ADDRESS, sourceAddress, secretKey, queuing);
+                        XCLClient client = new XCLClient("client", HOST, ServerJVM.DEFAULT_SERVER_ADDRESS, sourceAddress, secretKey, queuing);
                         client.subscriptionQuery(new SubscriptionQuery(sourceAddress, 0));
                         TransferValueCommand tvc1 = new TransferValueCommand(sourceAddress, 0, destinationAddress, 1e-9, "USD", "");
                         int c = 0;
