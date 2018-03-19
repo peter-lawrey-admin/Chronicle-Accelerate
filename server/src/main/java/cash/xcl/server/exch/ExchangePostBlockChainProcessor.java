@@ -183,7 +183,7 @@ public class ExchangePostBlockChainProcessor extends LocalPostBlockChainProcesso
         }
     }
 
-    private void onTrade(Order aggressor, Order initiator, long qty) {
+    private void onTrade(Order aggressor, Order initiator, double qty) {
         unlockMoney(aggressor, qty);
         unlockMoney(initiator, qty);
         ExecutionReport executionReport = new ExecutionReport(currencyPair, aggressor.getSide(), qty, initiator.getPrice(),
@@ -204,7 +204,7 @@ public class ExchangePostBlockChainProcessor extends LocalPostBlockChainProcesso
     }
 
 
-    private void unlockMoney(Order order, long qty) {
+    private void unlockMoney(Order order, double qty) {
         if (order.getSide() == BUY) {
             Account quoteAccount = exchangeAccounts.getQuoteAccount(order.getOwnerAddress(), false);
             assert quoteAccount != null;

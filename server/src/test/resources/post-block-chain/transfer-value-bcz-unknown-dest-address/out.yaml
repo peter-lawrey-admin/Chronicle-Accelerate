@@ -5,6 +5,7 @@ commandFailedEvent: {
   eventTime: 12345678920000,
   origSourceAddress: 4444,
   origEventTime: 12345678920000,
+  origProtocol: 1,
   origMessageType: 64,
   reason: "java.lang.IllegalArgumentException: Invalid transfer: no balance records for destination address 5555"
 }

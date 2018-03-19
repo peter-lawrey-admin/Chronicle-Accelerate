@@ -6,6 +6,7 @@ import cash.xcl.api.exch.Side;
 import net.openhft.chronicle.core.annotation.SingleThreaded;
 
 import java.io.Closeable;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.PriorityQueue;
 import java.util.TreeSet;
@@ -26,7 +27,7 @@ class ExchangeMarket implements Closeable {
     private final TreeSet<Order> buyOrders = new TreeSet<>(Order.getBuyComparator());
     private final TreeSet<Order> sellOrders = new TreeSet<>(Order.getSellComparator());
     private final PriorityQueue<Order> expirationOrder = new PriorityQueue<>(
-            (o1, o2) -> Long.compare(o1.getExpirationTime(), o2.getExpirationTime()));
+            Comparator.comparingLong(Order::getExpirationTime));
 
     private final double tickSize;
     private final double precision;
@@ -61,7 +62,8 @@ class ExchangeMarket implements Closeable {
         Side orderSide = newLimitOrderCommand.getAction();
         double orderPrice = orderSide.roundWorse(newLimitOrderCommand.getMaxPrice(), tickSize);
         Order newOrder = new Order(orderId, orderSide, newLimitOrderCommand.getQuantity(), orderPrice,
-                newLimitOrderCommand.getTimeToLive() + currentReferenceTimeinMillis, newLimitOrderCommand.sourceAddress(), newLimitOrderCommand.eventTime());
+                newLimitOrderCommand.getTimeToLive() + currentReferenceTimeinMillis,
+                newLimitOrderCommand.sourceAddress(), newLimitOrderCommand.eventTime());
         TreeSet<Order> sideToMatch = getMarket(orderSide.other());
         Iterator<Order> it = sideToMatch.iterator();
         while (it.hasNext()) {
@@ -73,7 +75,7 @@ class ExchangeMarket implements Closeable {
                 // send order expired event
             } else {
                 if (orderSide.isBetterOrSame(orderPrice, topOrder.getPrice(), precision)) {
-                    long fillQty = min(newOrder.getQuantityLeft(), topOrder.getQuantityLeft());
+                    double fillQty = min(newOrder.getQuantityLeft(), topOrder.getQuantityLeft());
                     newOrder.fill(fillQty);
                     topOrder.fill(fillQty);
                     tradeListener.onTrade(newOrder, topOrder, fillQty);
@@ -161,13 +163,13 @@ class ExchangeMarket implements Closeable {
     }
 
     @FunctionalInterface
-    public static interface OrderClosedListener {
+    public interface OrderClosedListener {
         void onClosed(Order order, REASON reason);
     }
 
     @FunctionalInterface
-    public static interface TradeListener {
-        void onTrade(Order aggressive, Order initiator, long qty);
+    public interface TradeListener {
+        void onTrade(Order aggressive, Order initiator, double qty);
     }
 
 }

@@ -1,13 +1,10 @@
 package cash.xcl.server.exch;
 
+import org.junit.Test;
+
 import static cash.xcl.api.exch.Side.BUY;
 import static cash.xcl.api.exch.Side.SELL;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
-
-import org.junit.Test;
+import static org.junit.Assert.*;
 
 public class OrderTest {
 
@@ -24,10 +21,10 @@ public class OrderTest {
         assertNotEquals(order1, order2);
         assertEquals(order2, order2);
         assertNotEquals(order1.hashCode(), order2.hashCode());
-        assertEquals(70, order1.fill(30));
-        assertEquals(20, order1.fill(50));
-        assertEquals(0, order1.fill(20));
-        assertEquals(0, order2.fill(100));
+        assertEquals(70, order1.fill(30), 0);
+        assertEquals(20, order1.fill(50), 0);
+        assertEquals(0, order1.fill(20), 0);
+        assertEquals(0, order2.fill(100), 0);
     }
 
 }

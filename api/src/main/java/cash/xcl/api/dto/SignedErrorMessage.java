@@ -10,17 +10,20 @@ import static cash.xcl.api.dto.Validators.notNullOrEmpty;
  */
 public class SignedErrorMessage extends SignedTracedMessage {
 
+    private int origProtocol;
     private int origMessageType;
     private String reason;
 
     public SignedErrorMessage(long sourceAddress, long eventTime, SignedMessage orig, String reason) {
         super(sourceAddress, eventTime, orig);
+        this.origProtocol = orig.protocol();
         this.origMessageType = orig.messageType();
         this.reason = reason;
     }
 
-    public SignedErrorMessage(long sourceAddress, long eventTime, long origSourceAddress, long origEventTime, int origMessageType, String reason) {
+    public SignedErrorMessage(long sourceAddress, long eventTime, long origSourceAddress, long origEventTime, int origProtocol, int origMessageType, String reason) {
         super(sourceAddress, eventTime, origSourceAddress, origEventTime);
+        this.origProtocol = origProtocol;
         this.origMessageType = origMessageType;
         this.reason = reason;
     }
@@ -53,7 +56,8 @@ public class SignedErrorMessage extends SignedTracedMessage {
 
     @Override
     protected void readMarshallable2(BytesIn<?> bytes) {
-        origMessageType = bytes.readUnsignedByte();
+        origProtocol = bytes.readUnsignedShort();
+        origMessageType = bytes.readUnsignedShort();
         reason = bytes.readUtf8();
     }
 
@@ -64,7 +68,8 @@ public class SignedErrorMessage extends SignedTracedMessage {
 
     @Override
     protected void writeMarshallable2(BytesOut<?> bytes) {
-        bytes.writeUnsignedByte(origMessageType);
+        bytes.writeUnsignedShort(origProtocol);
+        bytes.writeUnsignedShort(origMessageType);
         bytes.writeUtf8(reason);
     }
 }

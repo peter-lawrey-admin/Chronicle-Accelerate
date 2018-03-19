@@ -1,65 +1,17 @@
 package cash.xcl.api.dto;
 
 
-import static cash.xcl.api.dto.MessageTypes.APPLICATION_MESSAGE_EVENT;
-import static cash.xcl.api.dto.MessageTypes.BLOCK_SUBSCRIPTION_QUERY;
-import static cash.xcl.api.dto.MessageTypes.CANCEL_ORDER_COMMAND;
-import static cash.xcl.api.dto.MessageTypes.CLUSTERS_STATUS_QUERY;
-import static cash.xcl.api.dto.MessageTypes.CLUSTERS_STATUS_RESPONSE;
-import static cash.xcl.api.dto.MessageTypes.CLUSTER_STATUS_QUERY;
-import static cash.xcl.api.dto.MessageTypes.CLUSTER_STATUS_RESPONSE;
-import static cash.xcl.api.dto.MessageTypes.CLUSTER_TRANSFER_STEP1_COMMAND;
-import static cash.xcl.api.dto.MessageTypes.CLUSTER_TRANSFER_STEP2_COMMAND;
-import static cash.xcl.api.dto.MessageTypes.CLUSTER_TRANSFER_STEP3_COMMAND;
-import static cash.xcl.api.dto.MessageTypes.CLUSTER_TRANSFER_STEP3_EVENT;
-import static cash.xcl.api.dto.MessageTypes.COMMAND_FAILED_EVENT;
-import static cash.xcl.api.dto.MessageTypes.CREATE_NEW_ADDRESS_COMMAND;
-import static cash.xcl.api.dto.MessageTypes.CREATE_NEW_ADDRESS_EVENT;
-import static cash.xcl.api.dto.MessageTypes.CURRENT_BALANCE_QUERY;
-import static cash.xcl.api.dto.MessageTypes.CURRENT_BALANCE_RESPONSE;
-import static cash.xcl.api.dto.MessageTypes.DEPOSIT_VALUE_COMMAND;
-import static cash.xcl.api.dto.MessageTypes.DEPOSIT_VALUE_EVENT;
-import static cash.xcl.api.dto.MessageTypes.EXCHANGE_RATE_EVENT;
-import static cash.xcl.api.dto.MessageTypes.EXCHANGE_RATE_QUERY;
-import static cash.xcl.api.dto.MessageTypes.EXCHANGE_RATE_RESPONSE;
-import static cash.xcl.api.dto.MessageTypes.EXECUTION_REPORT;
-import static cash.xcl.api.dto.MessageTypes.FEES_EVENT;
-import static cash.xcl.api.dto.MessageTypes.NEW_ORDER_COMMAND;
-import static cash.xcl.api.dto.MessageTypes.OPENING_BALANCE_EVENT;
-import static cash.xcl.api.dto.MessageTypes.ORDER_CLOSED_EVENT;
-import static cash.xcl.api.dto.MessageTypes.QUERY_FAILED_RESPONSE;
-import static cash.xcl.api.dto.MessageTypes.SERVICE_NODES_EVENT;
-import static cash.xcl.api.dto.MessageTypes.SUBSCRIPTION_QUERY;
-import static cash.xcl.api.dto.MessageTypes.SUBSCRIPTION_SUCCESS_RESPONSE;
-import static cash.xcl.api.dto.MessageTypes.TRANSACTION_BLOCK_EVENT;
-import static cash.xcl.api.dto.MessageTypes.TRANSACTION_BLOCK_GOSSIP_EVENT;
-import static cash.xcl.api.dto.MessageTypes.TRANSACTION_BLOCK_VOTE_EVENT;
-import static cash.xcl.api.dto.MessageTypes.TRANSFER_FROM_EXCHANGE_COMMAND;
-import static cash.xcl.api.dto.MessageTypes.TRANSFER_TO_EXCHANGE_COMMAND;
-import static cash.xcl.api.dto.MessageTypes.TRANSFER_VALUE_COMMAND;
-import static cash.xcl.api.dto.MessageTypes.TRANSFER_VALUE_EVENT;
-import static cash.xcl.api.dto.MessageTypes.TREE_BLOCK_EVENT;
-import static cash.xcl.api.dto.MessageTypes.WITHDRAW_VALUE_COMMAND;
-import static cash.xcl.api.dto.MessageTypes.WITHDRAW_VALUE_EVENT;
+import cash.xcl.api.AllMessages;
+import cash.xcl.api.exch.*;
+import net.openhft.chronicle.bytes.Bytes;
 
 import java.util.function.BiConsumer;
 
-import cash.xcl.api.AllMessages;
-import cash.xcl.api.exch.CancelOrderCommand;
-import cash.xcl.api.exch.DepositValueCommand;
-import cash.xcl.api.exch.DepositValueEvent;
-import cash.xcl.api.exch.ExecutionReportEvent;
-import cash.xcl.api.exch.NewOrderCommand;
-import cash.xcl.api.exch.OrderClosedEvent;
-import cash.xcl.api.exch.TransferFromExchangeCommand;
-import cash.xcl.api.exch.TransferToExchangeCommand;
-import cash.xcl.api.exch.WithdrawValueCommand;
-import cash.xcl.api.exch.WithdrawValueEvent;
-import net.openhft.chronicle.bytes.Bytes;
+import static cash.xcl.api.dto.MessageTypes.*;
 
 public class DtoParser {
     public static final int PROTOCOL_OFFSET = 80;
-    public static final int MESSAGE_OFFSET = 81;
+    public static final int MESSAGE_OFFSET = 82;
 
     final TransactionBlockEvent tbe = new TransactionBlockEvent();
     final TransactionBlockGossipEvent tbge = new TransactionBlockGossipEvent();
@@ -133,8 +85,8 @@ public class DtoParser {
     }
 
     public void parseOne(Bytes<?> bytes, AllMessages messages) {
-        int protocol = bytes.readUnsignedByte(bytes.readPosition() + PROTOCOL_OFFSET);
-        int messageType = bytes.readUnsignedByte(bytes.readPosition() + MESSAGE_OFFSET);
+        int protocol = bytes.readUnsignedShort(bytes.readPosition() + PROTOCOL_OFFSET);
+        int messageType = bytes.readUnsignedShort(bytes.readPosition() + MESSAGE_OFFSET);
 
         if (protocol != 1) {
             throw new IllegalArgumentException("protocol: " + protocol);

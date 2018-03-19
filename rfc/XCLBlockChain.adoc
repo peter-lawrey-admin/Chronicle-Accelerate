@@ -12,8 +12,35 @@ All data is in little endian. All strings use UTF-8 encoding.
 NOTE: Events must come from a trusted source.
 i.e. a recognised node in the current cluster, or a recognised node in the previous week's cluster.
 
+== Message header
 
-== Message types
+=== Source Address
+
+The source address is the address associated with the signer of this message.
+
+For administration messages, this is the server which is performing the function.
+
+For transfers and exchanges, it is the address the money comes from.
+
+=== Event time
+
+This is the time in micro-seconds for GMT, the message was send. The timestamp must be unique for a given source address. If two events are sent in quick succession, or the machine doesn't have micro-second resolution timer, the time must be incremented until the system time is greater.
+
+In many cases this source address & event time combination identifies which command or query triggers an event or response.
+
+=== Protocol or Schema version
+
+Messages are grouped into a schema or protocol version. Initially, all messages have version 1.
+
+However over time the schema could be updated, or new groups of messages could be added.
+
+Version 0 is reserved as invalid.
+
+Version 1 - 1023 is reserved for standard system messages.
+
+Version 1024 - 65535 is available for user defined schema.
+
+=== Message types
 
 Message types are defined in the https://github.com/OpenHFT/Chronicle-Accelerate/blob/master/api/src/main/java/cash/xcl/api/dto/MethodIds.java[MethodIds] class.
 
@@ -24,6 +51,8 @@ If the schema changes and a field is added, it should be filled with 0 bytes; i.
 If the message sent has more bytes than expected, they may be silently ignored.
 
 NOTE: The signature will always include only the bytes actually written and not include the notional extra zero bytes.
+
+== Message format
 
 === Signed Messages
 
@@ -37,13 +66,13 @@ The message format looks like:
 | 0 - 63 | Signature
 | 64 - 71 | Source address
 | 72 - 79 | Event timestamp
-| 80 - 80 | Protocol version == 1 (1.)
-| 81 - 81 | Message type (for version)
-| 82 - 83 | Week number
-| 84 - 87 | Block in week for source
+| 80 - 81 | Protocol or schema version == 1 (1)
+| 82 - 83 | Message type (for version)
 | 84+ | The rest of the message depending on the message type
 |===
 <1> In the future, two protocol versions might be supported while an old one is deprecated.
+
+For any given
 
 === Transaction Block Event (message type = 0x01)
 
@@ -52,14 +81,18 @@ The transaction block is a signed message which contains zero or more messages.
 [width="80%",cols="1,3",options="header"]
 |===
 | Byte offset | Field
-| 0 - 81 | Message header
-| 82 - 83 | Week number
-| 84 - 87 | Block in week for source (1.)
-| 88 - 89 | The first message length
-| 90+ | The first message
+|  0 - 63 | Signature
+| 64 - 71 | Source address
+| 72 - 79 | Event timestamp
+| 80 - 81 | Protocol or schema version == 1
+| 82 - 83 | Message type (for version) == 0x01
+| 84 - 87 | Week number
+| 88 - 91 | Block in week for source (1) (2)
+| 92+ | The first message
 | Later | Additional messages
 |===
 <1> Allows for 4 billion blocks per week, per source.
+<2> Blocks must be monotonically increasing from 0 at the start of the week.
 
 Within the transaction block, each message is preceded by a message length which is 2 byte unsigned length.
 
@@ -78,15 +111,14 @@ The transaction block is a signed message which contains zero or more messages.
 [width="80%",cols="1,3",options="header"]
 |===
 | Byte offset | Field
-| 0 - 81 | Message header
-| 82 - 83 | Week number
-| 84 - 87 | Block in week for source
-| 88 - 95 | The first source address
-| 96 - 99 | The first block number
-| 100 - 103 | The first block status (1.)
-| 104+ | Any additional block entries
+| 0 - 79 | Message header
+| 80 - 81 | Protocol or schema version == 1
+| 82 - 83 | Message type (for version) == 0x04
+| 84 - 87 | Week number
+| 88 - 91 | Block in week for source
+| 92+ | The first vote
+| Later | Additional copies of votes
 |===
-<1> The block status records how many times it has been replicated and whether it was timed out or not.
 
 === Opening Balance Event (0x05)
 

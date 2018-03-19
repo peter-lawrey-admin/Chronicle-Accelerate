@@ -38,7 +38,8 @@ public class XCLClientServerTest {
         ClientOut client = new XCLClient("test-client", addresses, 2, secretKey, logging2);
         server.register(2, publicKey);
 
-        client.createNewAddressCommand(new CreateNewAddressCommand(2, 1L, publicKey, "usny"));
+        client.createNewAddressCommand(
+                new CreateNewAddressCommand(2, 1L, publicKey, "usny"));
         for (int i = 0; i <= 20; i++) {
             assertTrue(i < 20);
             Jvm.pause(Jvm.isDebug() ? 2000 : 25);
