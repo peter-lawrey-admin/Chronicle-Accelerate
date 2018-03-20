@@ -1,7 +1,8 @@
 package cash.xcl.api.tcp;
 
 import cash.xcl.api.AllMessages;
-import cash.xcl.api.dto.DtoParser;
+import cash.xcl.api.DtoParser;
+import cash.xcl.api.dto.BaseDtoParser;
 import cash.xcl.api.dto.SignedMessage;
 import cash.xcl.api.dto.SubscriptionQuery;
 import cash.xcl.api.util.XCLBase32;
@@ -104,7 +105,7 @@ public class XCLClient extends WritingAllMessages implements Closeable, TCPConne
     }
 
     class ClientListener implements TCPClientListener {
-        final DtoParser parser = new DtoParser();
+        final DtoParser parser = new BaseDtoParser();
 
         @Override
         public void onMessage(TCPConnection client, Bytes bytes) throws IOException {

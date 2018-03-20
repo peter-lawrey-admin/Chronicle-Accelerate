@@ -1,9 +1,7 @@
 package cash.xcl.api.tcp;
 
-import cash.xcl.api.AllMessagesLookup;
-import cash.xcl.api.AllMessagesServer;
-import cash.xcl.api.ClientException;
-import cash.xcl.api.dto.DtoParser;
+import cash.xcl.api.*;
+import cash.xcl.api.dto.BaseDtoParser;
 import cash.xcl.api.dto.SignedMessage;
 import cash.xcl.api.util.PublicKeyRegistry;
 import cash.xcl.api.util.VanillaPublicKeyRegistry;
@@ -18,18 +16,19 @@ import net.openhft.chronicle.core.io.Closeable;
 import net.openhft.chronicle.core.io.IORuntimeException;
 import net.openhft.chronicle.core.time.SystemTimeProvider;
 import net.openhft.chronicle.salt.Ed25519;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Supplier;
 
-import static cash.xcl.api.dto.DtoParser.MESSAGE_OFFSET;
+import static cash.xcl.api.DtoParser.MESSAGE_OFFSET;
 import static cash.xcl.api.dto.MessageTypes.*;
 
 public class XCLServer implements AllMessagesLookup, PublicKeyRegistry, Closeable {
-    final ThreadLocal<Bytes> bytesTL = ThreadLocal.withInitial(Bytes::allocateElasticDirect);
-
-    final TCPServer tcpServer;
+    final Map<Integer, Supplier<DtoParser<?>>> protocolDtoParserSupplierMap = new ConcurrentHashMap<>();
+    final ThreadLocal<DtoParser> parserTL = new ThreadLocal<>();
     private final long address;
     private final Bytes secretKey;
     private final AllMessagesServer serverComponent;
@@ -37,16 +36,11 @@ public class XCLServer implements AllMessagesLookup, PublicKeyRegistry, Closeabl
     private final XCLLongObjMap<TCPConnection> remoteMap = XCLLongObjMap.withExpectedSize(TCPConnection.class, 128);
     private final Map<Long, WritingAllMessages> allMessagesMap = new ConcurrentHashMap<>();
     private final PublicKeyRegistry publicKeyRegistry = new VanillaPublicKeyRegistry();
-
-    public XCLServer(String name, int port, long address, Bytes secretKey, AllMessagesServer serverComponent) throws IOException {
-        this.address = address;
-        this.secretKey = secretKey;
-        this.serverComponent = serverComponent;
-        tcpServer = new VanillaTCPServer(name, port, new XCLConnectionListener());
-
-        // do this last after initialisation.
-        serverComponent.allMessagesLookup(this);
-    }
+    private final ThreadLocal<Bytes> bytesTL = ThreadLocal.withInitial(Bytes::allocateElasticDirect);
+    private final TCPServer tcpServer;
+    private final Bytes publicKey;
+    private final int port;
+    boolean useBaseDtoParser = true;
 
     public boolean internal() {
         return publicKeyRegistry.internal();
@@ -74,46 +68,18 @@ public class XCLServer implements AllMessagesLookup, PublicKeyRegistry, Closeabl
         return allMessagesMap.computeIfAbsent(addressOrRegion, OneWritingAllMessages::new);
     }
 
-    public void write(long toAddress, SignedMessage message) {
-        TCPConnection tcpConnection;
-        synchronized (connections) {
-            tcpConnection = connections.get(toAddress);
-        }
-        if (tcpConnection == null) {
-            synchronized (remoteMap) {
-                tcpConnection = remoteMap.get(toAddress);
-            }
-        }
+    public XCLServer(String name, int port, long address, Bytes publicKey, Bytes secretKey, AllMessagesServer serverComponent) throws IOException {
+        this.port = port;
+        this.address = address;
+        this.publicKey = publicKey;
+        this.secretKey = secretKey;
+        this.serverComponent = serverComponent;
+        tcpServer = new VanillaTCPServer(name, port, new XCLConnectionListener());
 
-        if (tcpConnection == null) {
-            System.out.println(address + " - No connection to address " + toAddress + " to send " + message);
-            return;
-        }
+        // do this last after initialisation.
+        serverComponent.allMessagesLookup(this);
 
-        try {
-
-            if (!message.hasSignature()) {
-                message.eventTime(SystemTimeProvider.INSTANCE.currentTimeMicros());
-                Bytes bytes = bytesTL.get();
-                bytes.clear();
-                message.sign(bytes, address(), secretKey);
-            }
-            tcpConnection.write(message.sigAndMsg());
-        } catch (IllegalStateException e2) {
-            e2.printStackTrace();
-            System.err.println("Failed to marshall object " + e2.toString());
-            // we should never get IllegalStateException exceptions, but if we do,
-            // rethrow the exception so that the LocalPostBlockChainProcessor can send a CommandFailedEvent back to the Client
-            throw e2;
-        } catch (Exception e) {
-            e.printStackTrace();
-            // assume it's dead.
-            Closeable.closeQuietly(tcpConnection);
-            synchronized (connections) {
-                connections.remove(toAddress);
-            }
-            Jvm.warn().on(getClass(), "Exception while sending message to: " + toAddress + ", message: " + message, e);
-        }
+        protocolDtoParserSupplierMap.put(1, BaseDtoParser::new);
     }
 
     private long address() {
@@ -146,8 +112,83 @@ public class XCLServer implements AllMessagesLookup, PublicKeyRegistry, Closeabl
         return publicKeyRegistry.verify(address, sigAndMsg);
     }
 
+    public void write(long toAddress, SignedMessage message) {
+        TCPConnection tcpConnection;
+        synchronized (connections) {
+            tcpConnection = connections.get(toAddress);
+        }
+        if (tcpConnection == null) {
+            synchronized (remoteMap) {
+                tcpConnection = remoteMap.get(toAddress);
+            }
+        }
+
+        if (tcpConnection == null) {
+            System.out.println(address + " - No connection to address " + toAddress + " to send " + message);
+            return;
+        }
+
+        try {
+
+            if (!message.hasSignature()) {
+                message.eventTime(SystemTimeProvider.INSTANCE.currentTimeMicros());
+                Bytes bytes = bytesTL.get();
+                bytes.clear();
+                message.sign(bytes, address(), secretKey);
+            }
+            tcpConnection.write(message.sigAndMsg());
+
+        } catch (IllegalStateException e2) {
+            e2.printStackTrace();
+            System.err.println("Failed to marshall object " + e2.toString());
+            // we should never get IllegalStateException exceptions, but if we do,
+            // rethrow the exception so that the LocalPostBlockChainProcessor can send a CommandFailedEvent back to the Client
+            throw e2;
+        } catch (Exception e) {
+            e.printStackTrace();
+            // assume it's dead.
+            Closeable.closeQuietly(tcpConnection);
+            synchronized (connections) {
+                connections.remove(toAddress);
+            }
+            Jvm.warn().on(getClass(), "Exception while sending message to: " + toAddress + ", message: " + message, e);
+        }
+    }
+
+    public void addDtoParser(int protocol, Supplier<DtoParser<?>> dtoParserSupplier) {
+        protocolDtoParserSupplierMap.put(protocol, dtoParserSupplier);
+        useBaseDtoParser = false;
+    }
+
+    private DtoParser dtoParser() {
+        DtoParser dtoParser = parserTL.get();
+        return dtoParser == null ? initDtoParser() : dtoParser;
+    }
+
+    @NotNull
+    private DtoParser initDtoParser() {
+        DtoParser dtoParser = useBaseDtoParser
+                ? new BaseDtoParser()
+                : new MultiDtoParser(protocolDtoParserSupplierMap);
+        parserTL.set(dtoParser);
+        return dtoParser;
+    }
+
+    public <G> G gatewayFor(Class<G> gClass) {
+        if (gClass.isAssignableFrom(AllMessages.class))
+            return (G) serverComponent;
+        throw new IllegalArgumentException("No such gateway for " + gClass);
+    }
+
+    public Bytes publicKey() {
+        return publicKey;
+    }
+
+    public int port() {
+        return port;
+    }
+
     class XCLConnectionListener implements TCPServerConnectionListener {
-        final ThreadLocal<DtoParser> parserTL = ThreadLocal.withInitial(DtoParser::new);
 
         @Override
         public void onMessage(TCPServer server, TCPConnection channel, Bytes bytes) throws IOException {
@@ -157,7 +198,7 @@ public class XCLServer implements AllMessagesLookup, PublicKeyRegistry, Closeabl
                 // todo
                 // this is a quick workaround - don't verify CreateNewAddressEvent messages
                 // as they are currently used to register the public key.
-                if( messageType != CREATE_NEW_ADDRESS_EVENT ) {
+                if (messageType != CREATE_NEW_ADDRESS_EVENT) {
                     Boolean verify = publicKeyRegistry.verify(address, bytes);
                     if (verify == null || !verify) {
                         System.err.println("Verify: " + verify + " for address " + address + " and  object of message type " + messageType);
@@ -174,7 +215,7 @@ public class XCLServer implements AllMessagesLookup, PublicKeyRegistry, Closeabl
                     }
                 }
 
-                parserTL.get().parseOne(bytes, serverComponent);
+                dtoParser().parseOne(bytes, serverComponent);
 
             } catch (ClientException ce) {
                 SignedMessage message = ce.message();

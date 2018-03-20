@@ -31,7 +31,7 @@ public class XCLClientServerTest {
 
         StringWriter out = new StringWriter();
         AllMessagesServer logging = Mocker.logging(AllMessagesServer.class, "", out);
-        XCLServer server = new XCLServer("test", 9900, 1, secretKey, logging);
+        XCLServer server = new XCLServer("test", 9900, 1, publicKey, secretKey, logging);
 
         List<InetSocketAddress> addresses = Arrays.asList(new InetSocketAddress("localhost", 9900));
         AllMessages logging2 = Mocker.logging(AllMessages.class, "", out);

@@ -4,14 +4,14 @@ import cash.xcl.api.AllMessages;
 import cash.xcl.api.dto.*;
 import cash.xcl.api.tcp.XCLClient;
 import cash.xcl.api.tcp.XCLServer;
-import net.openhft.chronicle.bytes.Bytes;
 import net.openhft.chronicle.core.Jvm;
 import net.openhft.chronicle.core.io.Closeable;
-import net.openhft.chronicle.salt.Ed25519;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -51,34 +51,25 @@ benchmark - eightThreads = 52218 sustained, 489249 burst messages per second
 public class RegionalClientServerBenchmarkMain {
 
     static final boolean INTERNAL = Boolean.getBoolean("internal");
-    private XCLServer server;
-    private Gateway gateway;
+    final Set<Integer> openingSet = new HashSet<>();
+    private final XCLBuilder builder;
+    private final XCLServer server;
     private int serverAddress = 10001;
-
-    private Bytes publicKey = Bytes.allocateDirect(Ed25519.PUBLIC_KEY_LENGTH);
-    private Bytes secretKey = Bytes.allocateDirect(Ed25519.SECRET_KEY_LENGTH);
-
+    private final AllMessages gateway;
 
     public RegionalClientServerBenchmarkMain(int mainBlockPeriodMS,
                                              int localBlockPeriodMS,
                                              int iterations,
                                              int clientThreads) throws IOException {
 
-        Ed25519.generatePublicAndSecretKey(publicKey, secretKey);
+        builder = new XCLBuilder()
+                .mainBlockPeriodMS(mainBlockPeriodMS)
+                .localBlockPeriodMS(localBlockPeriodMS)
+                .internal(INTERNAL)
+                .serverAddress(serverAddress);
+        this.server = builder.createServer(serverAddress);
+        gateway = server.gatewayFor(AllMessages.class);
 
-
-        long[] clusterAddresses = {serverAddress};
-
-        this.gateway = VanillaGateway.newGateway(serverAddress, "gb1dn", clusterAddresses,
-                mainBlockPeriodMS, localBlockPeriodMS,
-                TransactionBlockEvent._2_MB);
-
-
-        this.server = new XCLServer("one", serverAddress, serverAddress, secretKey, gateway)
-                .internal(INTERNAL);
-        gateway.start();
-        // register the address - otherwise, verify will fail
-        gateway.createNewAddressEvent(new CreateNewAddressEvent(serverAddress, 0, 0, 0, serverAddress, publicKey));
         // register all the addresses involved in the transfers
         // -source and destination accounts- in the Account Service with a opening balance of $1,000,000,000
         for (int iterationNumber = 0; iterationNumber < iterations; iterationNumber++) {
@@ -86,10 +77,10 @@ public class RegionalClientServerBenchmarkMain {
                 final int sourceAddress = (iterationNumber * 100) + s + 1;
                 final int destinationAddress = sourceAddress + 1000000;
                 gateway.createNewAddressEvent(new CreateNewAddressEvent(0, 0, 0, 0,
-                        sourceAddress, publicKey));
+                        sourceAddress, server.publicKey()));
 
                 gateway.createNewAddressEvent(new CreateNewAddressEvent(0, 0, 0, 0,
-                        destinationAddress, publicKey));
+                        destinationAddress, server.publicKey()));
 
 // TODO
                 ExchangeRateQuery err = new ExchangeRateQuery(0, 0, "XCL", "USD");
@@ -97,24 +88,15 @@ public class RegionalClientServerBenchmarkMain {
 
                 CurrentBalanceQuery cbq = new CurrentBalanceQuery(0, 0, 1000);
                 gateway.currentBalanceQuery(cbq);
-
-                XCLClient client = null;
-                try {
-                    AtomicInteger count = new AtomicInteger();
-                    client = new XCLClient("client", "localhost", serverAddress, sourceAddress, secretKey,
-                            new MyWritingAllMessages(count))
-                            .internal(INTERNAL);
-                    sendOpeningBalance(client, sourceAddress, sourceAddress);
-                    sendOpeningBalance(client, sourceAddress, destinationAddress);
-                } finally {
-                    //client.close();
-                    Closeable.closeQuietly(client);
                 }
-            }
         }
     }
 
-    static void sendOpeningBalance(XCLClient client, int sourceAddress, int destinationAddress) {
+    void sendOpeningBalance(XCLClient client, int sourceAddress, int destinationAddress) {
+        synchronized (openingSet) {
+            if (!openingSet.add(destinationAddress))
+                return;
+        }
         final OpeningBalanceEvent obe1 = new OpeningBalanceEvent(sourceAddress,
                 1,
                 destinationAddress,
@@ -178,7 +160,9 @@ public class RegionalClientServerBenchmarkMain {
                     try {
                         AtomicInteger count = new AtomicInteger();
                         AllMessages queuing = new MyWritingAllMessages(count);
-                        XCLClient client = new XCLClient("client", "localhost", this.serverAddress, sourceAddress, secretKey, queuing);
+                        XCLClient client = builder.createClient("client", "localhost", server.port(), sourceAddress, queuing);
+                        sendOpeningBalance(client, sourceAddress, sourceAddress);
+                        sendOpeningBalance(client, sourceAddress, destinationAddress);
                         client.subscriptionQuery(new SubscriptionQuery(sourceAddress, 0));
                         TransferValueCommand tvc1 = new TransferValueCommand(sourceAddress, 0, destinationAddress, 1e-9, "USD", "");
                         int c = 0;

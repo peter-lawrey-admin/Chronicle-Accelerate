@@ -1,15 +1,11 @@
 package cash.xcl.server;
 
-import cash.xcl.api.dto.*;
-import cash.xcl.api.tcp.WritingAllMessages;
-import cash.xcl.api.tcp.XCLClient;
 import cash.xcl.api.tcp.XCLServer;
 import net.openhft.chronicle.bytes.Bytes;
 import net.openhft.chronicle.core.io.Closeable;
 import net.openhft.chronicle.salt.Ed25519;
 
 import java.io.IOException;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /*
 -XX:+UnlockCommercialFeatures
@@ -54,8 +50,8 @@ public class RegionalServerBenchmarkMain {
     public RegionalServerBenchmarkMain(int mainBlockPeriodMS, int localBlockPeriodMS) throws IOException {
         Ed25519.generatePublicAndSecretKey(publicKey, secretKey);
         long[] clusterAddresses = {serverAddress};
-        this.gateway = VanillaGateway.newGateway(serverAddress, "gb1dn", clusterAddresses, mainBlockPeriodMS, localBlockPeriodMS, TransactionBlockEvent._2_MB);
-        this.server = new XCLServer("one", serverAddress, serverAddress, secretKey, gateway).internal(INTERNAL);
+        this.gateway = VanillaGateway.newGateway(serverAddress, "gb1dn", clusterAddresses, mainBlockPeriodMS, localBlockPeriodMS);
+        this.server = new XCLServer("one", serverAddress, serverAddress, publicKey, secretKey, gateway).internal(INTERNAL);
         gateway.start();
     }
 

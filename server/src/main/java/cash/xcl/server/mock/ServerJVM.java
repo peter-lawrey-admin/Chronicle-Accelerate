@@ -1,6 +1,5 @@
 package cash.xcl.server.mock;
 
-import cash.xcl.api.dto.*;
 import cash.xcl.api.tcp.XCLServer;
 import cash.xcl.server.Gateway;
 import cash.xcl.server.VanillaGateway;
@@ -43,8 +42,8 @@ public class ServerJVM implements Closeable{
                      Bytes publicKey) {
         try {
             long[] clusterAddresses = {serverAddress};
-            this.gateway = VanillaGateway.newGateway(serverAddress, "gb1dn", clusterAddresses, mainBlockPeriodMS, localBlockPeriodMS, TransactionBlockEvent._32_MB);
-            this.server = new XCLServer("one", serverAddress, serverAddress, secretKey, gateway);
+            this.gateway = VanillaGateway.newGateway(serverAddress, "gb1dn", clusterAddresses, mainBlockPeriodMS, localBlockPeriodMS);
+            this.server = new XCLServer("one", serverAddress, serverAddress, publicKey, secretKey, gateway);
             this.server.internal(INTERNAL);
             gateway.start();
 

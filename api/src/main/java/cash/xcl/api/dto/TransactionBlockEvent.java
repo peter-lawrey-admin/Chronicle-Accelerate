@@ -1,6 +1,7 @@
 package cash.xcl.api.dto;
 
 import cash.xcl.api.AllMessages;
+import cash.xcl.api.DtoParser;
 import cash.xcl.api.tcp.WritingAllMessages;
 import cash.xcl.api.util.RegionIntConverter;
 import net.openhft.chronicle.bytes.*;
@@ -89,7 +90,7 @@ public class TransactionBlockEvent extends SignedMessage {
 
     public void replay(AllMessages allMessages) {
         if (dtoParser == null) {
-            dtoParser = new DtoParser();
+            dtoParser = new BaseDtoParser();
         }
         transactions.readPosition(0);
         long limit = transactions.readLimit();

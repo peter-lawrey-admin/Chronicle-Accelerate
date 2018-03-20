@@ -1,7 +1,8 @@
 package cash.xcl.api.util;
 
 import cash.xcl.api.AllMessages;
-import cash.xcl.api.dto.DtoParser;
+import cash.xcl.api.DtoParser;
+import cash.xcl.api.dto.BaseDtoParser;
 import cash.xcl.api.dto.MessageTypes;
 import cash.xcl.api.dto.SignedMessage;
 import net.openhft.chronicle.bytes.Bytes;
@@ -44,7 +45,7 @@ public class DtoParserTest {
     @Test
     public void allMethodIds() {
         Bytes<?> bytes = Bytes.allocateDirect(512);
-        DtoParser parser = new DtoParser();
+        DtoParser parser = new BaseDtoParser();
         bytes.zeroOut(0, bytes.realCapacity());
         bytes.readLimit(DtoParser.MESSAGE_OFFSET + 2);
         bytes.writeUnsignedShort(DtoParser.PROTOCOL_OFFSET, 1);

@@ -41,8 +41,8 @@ public class ServerAndClientProcesses extends AbstractAllMessages {
             Ed25519.generatePublicAndSecretKey(publicKey, secretKey);
 
             long[] clusterAddresses = {serverAddress};
-            this.gateway = VanillaGateway.newGateway(serverAddress, "gb1dn", clusterAddresses, mainBlockPeriodMS, localBlockPeriodMS, TransactionBlockEvent._32_MB);
-            this.server = new XCLServer("one", serverAddress, serverAddress, secretKey, gateway);
+            this.gateway = VanillaGateway.newGateway(serverAddress, "gb1dn", clusterAddresses, mainBlockPeriodMS, localBlockPeriodMS);
+            this.server = new XCLServer("one", serverAddress, serverAddress, publicKey, secretKey, gateway);
             gateway.start();
 
             client = new XCLClient("client", "localhost", serverAddress, sourceAddress, secretKey,
