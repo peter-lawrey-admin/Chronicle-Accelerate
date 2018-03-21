@@ -15,6 +15,9 @@ import org.jetbrains.annotations.NotNull;
 import java.nio.ByteBuffer;
 
 public abstract class SignedMessage extends AbstractBytesMarshallable {
+
+    public static final int PROTOCOL = 1;
+
     static {
         ClassAliasPool.CLASS_ALIASES.addAlias(
                 TransactionBlockEvent.class,
@@ -84,11 +87,10 @@ public abstract class SignedMessage extends AbstractBytesMarshallable {
         bytes.readSkip(Ed25519.SIGNATURE_LENGTH);
         sourceAddress = bytes.readLong();
         eventTime = bytes.readLong();
-        int protocol = bytes.readUnsignedByte();
-        assert bytes.lenient() || (protocol == 1);
-        int messageType = bytes.readUnsignedByte();
+        int protocol = bytes.readUnsignedShort();
+        assert bytes.lenient() || (protocol == PROTOCOL);
+        int messageType = bytes.readUnsignedShort();
         assert bytes.lenient() || (messageType == messageType());
-        int padding = bytes.readUnsignedShort();
         readMarshallable2(bytes);
     }
 
@@ -106,9 +108,8 @@ public abstract class SignedMessage extends AbstractBytesMarshallable {
         }
         bytes.writeLong(sourceAddress);
         bytes.writeLong(eventTime);
-        bytes.writeUnsignedByte(1);
-        bytes.writeUnsignedByte(messageType());
-        bytes.writeUnsignedShort(0); // padding.
+        bytes.writeUnsignedShort(PROTOCOL);
+        bytes.writeUnsignedShort(messageType());
         writeMarshallable2(bytes);
     }
 
@@ -121,9 +122,8 @@ public abstract class SignedMessage extends AbstractBytesMarshallable {
         tempBytes.clear();
         tempBytes.writeLong(sourceAddress);
         tempBytes.writeLong(eventTime);
-        tempBytes.writeUnsignedByte(1);
-        tempBytes.writeUnsignedByte(messageType());
-        tempBytes.writeUnsignedShort(0); // padding.
+        tempBytes.writeUnsignedShort(PROTOCOL);
+        tempBytes.writeUnsignedShort(messageType());
         writeMarshallable2(tempBytes);
         if (sigAndMsg == null) {
             sigAndMsg = Bytes.elasticByteBuffer();
@@ -152,6 +152,10 @@ public abstract class SignedMessage extends AbstractBytesMarshallable {
         sm.sourceAddress(sourceAddress);
         sm.eventTime(eventTime);
         return t;
+    }
+
+    public int protocol() {
+        return PROTOCOL;
     }
 
     public abstract int messageType();

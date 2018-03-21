@@ -1,5 +1,6 @@
 package cash.xcl.api.dto;
 
+import cash.xcl.api.DtoParser;
 import net.openhft.chronicle.bytes.BytesIn;
 import net.openhft.chronicle.bytes.BytesOut;
 

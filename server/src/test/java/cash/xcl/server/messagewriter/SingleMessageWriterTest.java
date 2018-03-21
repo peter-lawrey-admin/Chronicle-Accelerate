@@ -1,7 +1,7 @@
 package cash.xcl.server.messagewriter;
 
 
-import cash.xcl.api.dto.*;
+import cash.xcl.api.dto.TransferValueCommand;
 import cash.xcl.api.tcp.XCLServer;
 import cash.xcl.server.Gateway;
 import cash.xcl.server.VanillaGateway;
@@ -32,9 +32,9 @@ public class SingleMessageWriterTest extends TestCase {
         Ed25519.generatePublicAndSecretKey(publicKey, secretKey);
         long[] clusterAddresses = {serverAddress};
         this.gateway = VanillaGateway.newGateway(serverAddress, "gb1dn", clusterAddresses,
-                1000, 40,
-                TransactionBlockEvent._2_MB);
-        this.server = new XCLServer("one", serverAddress, serverAddress, secretKey, gateway);
+                1000, 40
+        );
+        this.server = new XCLServer("one", serverAddress, serverAddress, publicKey, secretKey, gateway);
         gateway.start();
         tvc1 = new TransferValueCommand(sourceAddress, 0, destinationAddress, 1e-9, "USD", "");
     }

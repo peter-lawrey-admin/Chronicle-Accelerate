@@ -38,6 +38,7 @@ public class MockGatewayTest {
                 "  eventTime: 0,\n" +
                 "  origSourceAddress: 1,\n" +
                 "  origEventTime: 0,\n" +
+                "  origProtocol: 1,\n" +
                 "  origMessageType: 32,\n" +
                 "  reason: Unknown region code IEA\n" +
                 "}\n" +

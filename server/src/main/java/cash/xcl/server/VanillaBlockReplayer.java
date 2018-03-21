@@ -1,7 +1,8 @@
 package cash.xcl.server;
 
 import cash.xcl.api.AllMessagesServer;
-import cash.xcl.api.dto.DtoParser;
+import cash.xcl.api.DtoParser;
+import cash.xcl.api.dto.BaseDtoParser;
 import cash.xcl.api.dto.EndOfRoundBlockEvent;
 import cash.xcl.api.dto.SignedMessage;
 import cash.xcl.api.dto.TransactionBlockEvent;
@@ -20,7 +21,7 @@ public class VanillaBlockReplayer implements BlockReplayer {
     private Map<Long, TransactionLog> transactionLogMap = new ConcurrentHashMap<>();
     private EndOfRoundBlockEvent lastEndOfRoundBlockEvent = null;
     private XCLLongLongMap replayedMap = XCLLongLongMap.withExpectedSize(16);
-    private DtoParser dtoParser = new DtoParser();
+    private DtoParser dtoParser = new BaseDtoParser();
 
     public VanillaBlockReplayer(long address, AllMessagesServer postBlockChainProcessor) {
         this.address = address;
@@ -109,7 +110,7 @@ public class VanillaBlockReplayer implements BlockReplayer {
 
         synchronized void add(SignedMessage msg, int blockNumber) {
             if (blockNumber < messages.size()) {
-                System.out.println("Duplicate message id: " + blockNumber + " " + msg.getClassName());
+                System.out.println("Duplicate message id: " + blockNumber + " size: " + messages.size() + " was " + msg.getClassName());
             } else if (blockNumber > messages.size()) {
                 System.out.println("Missing message id: " + blockNumber);
             } else {

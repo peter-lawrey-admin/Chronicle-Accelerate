@@ -9,8 +9,8 @@ public class CommandFailedEvent extends SignedErrorMessage {
         super(sourceAddress, eventTime, message, reason);
     }
 
-    public CommandFailedEvent(long sourceAddress, long eventTime, long origSourceAddress, long origEventTime, int origMessageType, String reason) {
-        super(sourceAddress, eventTime, origSourceAddress, origEventTime, origMessageType, reason);
+    public CommandFailedEvent(long sourceAddress, long eventTime, long origSourceAddress, long origEventTime, int origProtocol, int origMessageType, String reason) {
+        super(sourceAddress, eventTime, origSourceAddress, origEventTime, origProtocol, origMessageType, reason);
     }
 
     public CommandFailedEvent() {

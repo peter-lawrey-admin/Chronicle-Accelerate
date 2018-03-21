@@ -28,12 +28,12 @@ public class VanillaGateway extends AbstractAllMessages implements Gateway {
     }
 
 
-    public static VanillaGateway newGateway(long address, String region, long[] clusterAddresses, int mainPeriodMS, int localPeriodMS, long tbeInitialCapacity) {
+    public static VanillaGateway newGateway(long address, String region, long[] clusterAddresses, int mainPeriodMS, int localPeriodMS) {
         int regionInt = RegionIntConverter.INSTANCE.parse(region);
         return new VanillaGateway(address,
                 regionInt,
                 BlockEngine.newMain(address, mainPeriodMS, clusterAddresses),
-                BlockEngine.newLocal(address, regionInt, localPeriodMS, clusterAddresses, tbeInitialCapacity)
+                BlockEngine.newLocal(address, regionInt, localPeriodMS, clusterAddresses, 2 << 20)
         );
     }
 

@@ -21,7 +21,10 @@ public class CurrencyPair extends AbstractBytesMarshallable {
 
     @Override
     public void readMarshallable(@SuppressWarnings("rawtypes") BytesIn bytes) throws IORuntimeException {
-        setPair(bytes.readUtf8(), bytes.readUtf8());
+        if (bytes.readRemaining() > 0)
+            setPair(bytes.readUtf8(), bytes.readUtf8());
+        else
+            base = quote = "";
     }
 
     @Override

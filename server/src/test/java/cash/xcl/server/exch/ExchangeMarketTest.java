@@ -46,15 +46,15 @@ public class ExchangeMarketTest {
             MethodCall call = resultsQueue.poll();
             Order aggressor = call.getParams(0);
             assertEquals(BUY, aggressor.getSide());
-            assertEquals(0L, aggressor.getQuantityLeft());
-            assertEquals(aggressor.getQuantity(), aggressor.getQuantityLeft() + (Long) call.getParams(2));
+            assertEquals(0L, aggressor.getQuantityLeft(), 0);
+            assertEquals(aggressor.getQuantity(), aggressor.getQuantityLeft() + (Double) call.getParams(2), 0);
             assertEquals(BUY, aggressor.getSide());
             Order initiator = call.getParams(1);
             assertEquals(SELL, initiator.getSide());
             assertEquals(210D, initiator.getPrice(), precision);
-            assertEquals(0L, initiator.getQuantityLeft());
-            assertEquals(100L, call.<Long>getParams(2).longValue());
-            assertEquals(initiator.getQuantity(), initiator.getQuantityLeft() + (Long) call.getParams(2));
+            assertEquals(0L, initiator.getQuantityLeft(), 0);
+            assertEquals(100L, call.<Double>getParams(2).longValue());
+            assertEquals(initiator.getQuantity(), initiator.getQuantityLeft() + (Double) call.getParams(2), 0);
 
             assertNotEquals(aggressor, initiator);
 
@@ -70,21 +70,21 @@ public class ExchangeMarketTest {
             call = resultsQueue.poll();
             aggressor = call.getParams(0);
             assertEquals(SELL, aggressor.getSide());
-            assertEquals(200L, aggressor.getQuantityLeft());
+            assertEquals(200L, aggressor.getQuantityLeft(), 0);
             initiator = call.getParams(1);
             assertEquals(BUY, initiator.getSide());
             assertEquals(200D, initiator.getPrice(), precision);
-            assertEquals(100L, call.getParams()[2]);
+            assertEquals(100.0, call.getParams()[2]);
             assertNotEquals(aggressor, initiator);
 
             call = resultsQueue.poll();
             aggressor = call.getParams(0);
             assertEquals(SELL, aggressor.getSide());
-            assertEquals(100L, aggressor.getQuantityLeft());
+            assertEquals(100L, aggressor.getQuantityLeft(), 0);
             initiator = call.getParams(1);
             assertEquals(BUY, initiator.getSide());
             assertEquals(199D, initiator.getPrice(), precision);
-            assertEquals(100L, call.getParams()[2]);
+            assertEquals(100.0, call.getParams()[2]);
             assertNotEquals(aggressor, initiator);
         }
     }
@@ -122,12 +122,12 @@ public class ExchangeMarketTest {
             MethodCall call = resultsQueue.poll();
             Order aggressor = call.getParams(0);
             assertEquals(SELL, aggressor.getSide());
-            assertEquals(100L, aggressor.getQuantityLeft());
+            assertEquals(100L, aggressor.getQuantityLeft(), 0);
             Order initiator = call.getParams(1);
             assertEquals(BUY, initiator.getSide());
             assertEquals(200D, initiator.getPrice(), precision);
-            assertEquals(0L, initiator.getQuantityLeft());
-            assertEquals(100L, call.getParams()[2]);
+            assertEquals(0L, initiator.getQuantityLeft(), 0);
+            assertEquals(100.0, call.getParams()[2]);
 
             assertEquals(2, market.getOrdersCount(BUY));
             assertEquals(2, market.getOrdersCount(SELL));

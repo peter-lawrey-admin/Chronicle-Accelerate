@@ -5,6 +5,8 @@ import cash.xcl.api.dto.EndOfRoundBlockEvent;
 import cash.xcl.api.dto.TransactionBlockVoteEvent;
 import cash.xcl.util.XCLLongLongMap;
 
+import java.util.stream.LongStream;
+
 // TODO only take a majority view rather than last one wins.
 // TODO might need a stage before this where the servers announce a proposed EndOfRoundBlock.
 
@@ -17,6 +19,8 @@ public class VanillaVoteTaker implements VoteTaker {
     private EndOfRoundBlockEvent endOfRoundBlockEvent = new EndOfRoundBlockEvent();
 
     public VanillaVoteTaker(long address, int region, long[] clusterAddresses) {
+        assert LongStream.of(clusterAddresses).distinct().count() == clusterAddresses.length;
+
         this.address = address;
         this.clusterAddresses = clusterAddresses;
         this.region = region;

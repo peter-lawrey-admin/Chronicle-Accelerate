@@ -1,48 +1,44 @@
 package cash.xcl.server.mock;
 
 import cash.xcl.api.AllMessages;
-import cash.xcl.api.ClientOut;
 import cash.xcl.api.dto.*;
 import cash.xcl.api.tcp.WritingAllMessages;
+import cash.xcl.api.tcp.XCLClient;
 import net.openhft.chronicle.bytes.Bytes;
 import net.openhft.chronicle.core.Jvm;
 import net.openhft.chronicle.salt.Ed25519;
 import org.junit.Test;
 
 
-import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.*;
 
-import net.openhft.chronicle.core.io.Closeable;
-
-public class GuiXclClientTest {
+public class ClientProcessTest {
 
     private Bytes publicKey = Bytes.allocateDirect(Ed25519.PUBLIC_KEY_LENGTH);
     private Bytes secretKey = Bytes.allocateDirect(Ed25519.SECRET_KEY_LENGTH);
-    private int serverAddress = 10001;
+
+
 
 
     @Test
     public void test() {
-        GuiXclServer server = null;
-        GuiXclClient client = null;
+        ServerJVM server = null;
+        XCLClient client = null;
         try {
             int sourceAddress = 1;
             Ed25519.generatePublicAndSecretKey(publicKey, secretKey);
 
-            try {
-                server = new GuiXclServer(secretKey,1000, 50, this.serverAddress);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            server = new ServerJVM(ServerJVM.DEFAULT_SERVER_ADDRESS, secretKey,1000, 50, sourceAddress, publicKey);
             server.register(sourceAddress, publicKey);
 
             AtomicInteger count = new AtomicInteger();
             AllMessages listener = new MyWritingAllMessages(count);
-            client = new GuiXclClient(secretKey, listener, this.serverAddress, sourceAddress);
+            client = new XCLClient("client", "localhost", ServerJVM.DEFAULT_SERVER_ADDRESS, sourceAddress, secretKey,
+                    listener, true);
+                    //.internal(false);
 
             client.createNewAddressCommand(new CreateNewAddressCommand(sourceAddress, 1L, publicKey, "usny"));
 
@@ -59,7 +55,6 @@ public class GuiXclClientTest {
 
             Jvm.pause(100);
 
-            client.subscriptionQuery(new SubscriptionQuery(sourceAddress, 0));
             TransferValueCommand tvc = new TransferValueCommand(sourceAddress, 3, destinationAddress, 1.23, "USD", "init");
             client.transferValueCommand(tvc);
 

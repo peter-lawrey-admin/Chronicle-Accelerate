@@ -29,7 +29,7 @@ public class LocalPostBlockChainProcessor extends AbstractAllMessages implements
     private ExchangeRateResponse err = new ExchangeRateResponse();
 
     private int numberOfTransferEventsSent = 0;
-    // private int numberOfOpeningBalanceEventsSent = 0;
+    private int numberOfOpeningBalanceEventsSent = 0;
 //    private int numberOfDepositEventsSent = 0;
 //    private int numberOfWithdrawalEventsSent = 0;
 
@@ -68,8 +68,9 @@ public class LocalPostBlockChainProcessor extends AbstractAllMessages implements
         long sourceAddress = openingBalanceEvent.sourceAddress();
         try {
             accountService.setOpeningBalancesForAccount(openingBalanceEvent);
-//            numberOfOpeningBalanceEventsSent++;
-//            System.out.println( "PostProcessor - numberOfOpeningBalanceEventsSent = " + numberOfOpeningBalanceEventsSent);
+            numberOfOpeningBalanceEventsSent++;
+            if( numberOfOpeningBalanceEventsSent % 50 == 0)
+                System.out.println( "PostProcessor - numberOfOpeningBalanceEventsSent = " + numberOfOpeningBalanceEventsSent);
         } catch (Exception e) {
             e.printStackTrace();
             Jvm.warn().on(getClass(), e.toString());

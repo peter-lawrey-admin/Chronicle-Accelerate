@@ -33,6 +33,7 @@ commandFailedEvent: {
   eventTime: 20,
   origSourceAddress: 12345,
   origEventTime: 5,
+  origProtocol: 1,
   origMessageType: 96,
   reason: "No such currency quoted on the exchange "
 }
@@ -71,6 +72,7 @@ commandFailedEvent: {
   eventTime: 60,
   origSourceAddress: 1,
   origEventTime: 55,
+  origProtocol: 1,
   origMessageType: 97,
   reason: Unsufficient funds
 }
@@ -97,6 +99,7 @@ commandFailedEvent: {
   eventTime: 80,
   origSourceAddress: 11,
   origEventTime: 75,
+  origProtocol: 1,
   origMessageType: 97,
   reason: No such account on the exchange
 }

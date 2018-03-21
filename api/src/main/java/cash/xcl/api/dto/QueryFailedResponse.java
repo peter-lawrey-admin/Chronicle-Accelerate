@@ -9,8 +9,8 @@ public class QueryFailedResponse extends SignedErrorMessage {
         super(sourceAddress, eventTime, orig, reason);
     }
 
-    public QueryFailedResponse(long sourceAddress, long eventTime, long origSourceAddress, long origEventTime, int origMessageType, String reason) {
-        super(sourceAddress, eventTime, origSourceAddress, origEventTime, origMessageType, reason);
+    public QueryFailedResponse(long sourceAddress, long eventTime, long origSourceAddress, long origEventTime, int origProtocol, int origMessageType, String reason) {
+        super(sourceAddress, eventTime, origSourceAddress, origEventTime, origProtocol, origMessageType, reason);
     }
 
     public QueryFailedResponse() {

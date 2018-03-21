@@ -1,6 +1,7 @@
 package cash.xcl.api.dto;
 
 import cash.xcl.api.AllMessages;
+import cash.xcl.api.DtoParser;
 import cash.xcl.api.tcp.WritingAllMessages;
 import cash.xcl.api.util.RegionIntConverter;
 import net.openhft.chronicle.bytes.*;
@@ -53,8 +54,8 @@ public class TransactionBlockEvent extends SignedMessage {
             } else {
                 if (capacity == 0) { // 0 means use default
                     transactions = Bytes.allocateElasticDirect();
-                    if (Jvm.isDebugEnabled(getClass()))
-                        System.out.printf("NEW TBE object - default: %,d bytes%n", transactions.realCapacity());
+//                    if (Jvm.isDebugEnabled(getClass()))
+//                        System.out.printf("NEW TBE object - default: %,d bytes%n", transactions.realCapacity());
                 } else {
                     throw new IllegalArgumentException("bad capacity");
                 }
@@ -62,7 +63,7 @@ public class TransactionBlockEvent extends SignedMessage {
         }
 
         numberOfObjects++;
-        if (numberOfObjects % 100 == 0)
+        if (numberOfObjects % 1000 == 0)
             System.out.println("number of new TransactionBlockEvent objects: " + numberOfObjects);
     }
 
@@ -89,7 +90,7 @@ public class TransactionBlockEvent extends SignedMessage {
 
     public void replay(AllMessages allMessages) {
         if (dtoParser == null) {
-            dtoParser = new DtoParser();
+            dtoParser = new BaseDtoParser();
         }
         transactions.readPosition(0);
         long limit = transactions.readLimit();
