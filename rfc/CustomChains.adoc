@@ -1,0 +1,46 @@
+= Custom Chains
+Peter Lawrey
+
+Chronicle Accelerate provide simple transactions. This documents looks at how custom transactions can be added.
+
+=== Multi-protocol
+
+A chain can be extended by adding a protocol.  A new protocol has;
+
+ - it's own id (1024 - 65535)
+ - it's own data transfer objects, and messages
+=== Data Transfer Objects
+
+A key part of sending an receiving custom DTOs is the ability to write and parse them.
+
+==== Writing a DTO
+
+A new DTO must extend `SignedMessage`, and in particular it must have a unique messageId for the protocol.
+
+==== Parsing DTOs
+
+Each protocol has a DtoParser to parse all the DTOs for that protocol.
+
+=== Creating a client connection.
+
+[source, Java]
+----
+XCLBuilder<C> builder = new XCLBuilder<>();
+builder.addProtocol(protocol, MyDtoInterface.class, MyDtoParser::new);
+C callback = ....;
+XCLClient<C> client = build.newClient("test", hostname, port, clientAddress, callback);
+C writer = client.writer();
+writer.myNewMethod(new MyNewDTO());
+----
+
+=== Create a server connection.
+
+[source, Java]
+----
+XCLBuilder<C> builder = new XCLBuilder<>();
+builder.addProtocol(protocol, MyDtoInterface.class, MyDtoParser::new,
+    MyGateway::new, MyFastPath::new, MyPostBlockChainProcessor::new);
+XCLServer<C> server = builder.createServer(port);
+AllMessages main = server.main();
+C local = server.local();
+----
