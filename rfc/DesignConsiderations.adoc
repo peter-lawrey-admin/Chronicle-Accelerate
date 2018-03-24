@@ -5,7 +5,7 @@ Peter Lawrey
 :hp-tags: Blockchain, Architecture Design
 // :hp-alt-title: My English Title
 
-I recently accounced the release of Chronicle Accelerate, a high throughput blockchain solution in Java. One of the questions which came up was; What were the design considerations that went into the solution, particualrly around throughput vs latency?
+After I announced the release of Chronicle Accelerate, a high throughput blockchain solution in Java. One of the questions which came up was; What were the design considerations that went into the solution, particularly around throughput vs latency?
 
 Many of these design considerations are not specific to Blockchain or Java, but general performance tuning.
 
@@ -38,17 +38,17 @@ In short, we want to maximise developer efficiency, and most of the CPU consumed
 == Why develop a Blockchain?
 Many solutions which are blockchain based, when they optimise the CPU consumed end up taking away some of the reason for having a blockchain in the first place.  If all you end up developing is a distributed ledger or a simple database, I don't see the point as these solutions already exist.  Making them more blockchain-y might be a good marketing tactic.
 
-An essential feature with makes a blockchain different is; not needing to trust individual nodes are fraudulant. If we optimise the solution but lose this feature in the process, we really have a distributed ledger (sometimes called a "Private Blockchain")  Basically if you have a blockchain which can't be run/mined publically I wonder what the point is techincally.
+An essential feature with makes a blockchain different is; not needing to trust individual nodes are fraudulent. If we optimise the solution but lose this feature in the process, we really have a distributed ledger (sometimes called a "Private Blockchain")  Basically if you have a blockchain which can't be run/mined publically I wonder, what the point is technically.
 
 == Ways of protecting against fraud
-Fraud protection reduces mofification and create false messages. It doesn't prevent reading those messages which can be a problem in itself, but can to be handled another way.
+Fraud protection reduces modification and create false messages. It doesn't prevent reading those messages which can be a problem in itself, but can to be handled another way.
 
 In our case, we use of signatures to transactions so that only the holder of a private key can create or modify the the transaction.  For this case we use Ed25519 as one of the fastest 256-bit signatures. 
 
 Use of such a signature and verify, adds significantly to latency.  The backend blockchain add about 2.5 micro-seconds latency however the verify and sign needed adds about 100 micro-seconds.  While we can add CPUs to increase throughput, they won't help in reducing latency.
 
 == Optimising for throughput
-While most system optimise for throughput, trading systems tend to optimise for latency.  Reduce latency enough and you will also get the throughput you need.  Whether you optimise for throughput or latency depends on type of problem you have. If many portions of the work can be done at once without having to work together, you can optimise for throughput, esp as this is usually easier.  If you have have key portions of work which must be performed in order e.g. transactions, you have to reduce the latency of each one to increase throughput.
+While most system optimized for throughput, trading systems tend to optimise for latency.  Reduce latency enough and you will also get the throughput you need.  Whether you optimise for throughput or latency depends on type of problem you have. If many portions of the work can be done at once without having to work together, you can optimise for throughput, esp as this is usually easier.  If you have have key portions of work which must be performed in order e.g. transactions, you have to reduce the latency of each one to increase throughput.
 
 As we have identified, most of the work is CPU bound, and independant. To identify how to optimise the system, we need to examine which pieces need to be serialized.
 
@@ -57,25 +57,25 @@ As we have identified, most of the work is CPU bound, and independant. To identi
 | Concurrent | Serial
 
 | Sign/verify 
-| Concensus
+| Consensus
 
 | Client TCP 
-| Transacton processing
+| Transaction processing
 |===
 
-=== Concensus
-The cost of concesus increases with the rate at which this happens O(N), and the number of nodes in the cluster O(M ln M). In the later case, M nodes have M times the processing power so the overhead is just O(ln M)
+=== Consensus
+The cost of consensus increases with the rate at which this happens O(N), and the number of nodes in the cluster O(M ln M). In the later case, M nodes have M times the processing power so the overhead is just O(ln M)
 
-However, both of these are in our control. We determine how often concesus is reached. We decide if its 10 ms, 1 s or 1 minute. Obviously we want this to be low, as this largely determines the latency of each transaction, however we can adjust it to suit our needs.
+However, both of these are in our control. We determine how often consensus is reached. We decide if its 10 ms, 1 s or 1 minute. Obviously we want this to be low, as this largely determines the latency of each transaction, however we can adjust it to suit our needs.
 
 The number of nodes in the cluster is also something we have some control over.  We don't want too few nodes, but we get diminishing returns and increasing cost on having more nodes.
 
-In our case, we are looking to split the chain to improve effecency once we have more nodes than we need in a chain.
+In our case, we are looking to split the chain to improve efficiency once we have more nodes than we need in a chain.
 
-NOTE: The cost of concensus doesn't increase with throughput, and is largely constant. i.e. when there is no transactions, confirming nothing is happening is all the nodes will do.
+NOTE: The cost of consensus doesn't increase with throughput, and is largely constant. i.e. when there is no transactions, confirming nothing is happening is all the nodes will do.
 
 === Transaction processing
-The cost of processing increases with throughput, and this determines the limit as to how much each sub-chain can do. Our aim is to make processing each transaction as light weight as possible. Current each transaction takes around 2.5 micro-seconds, which means the throughput achievable is 400K per second (1/2.5 us)  We believe this can be improved, however with the option of having thousands of sub-chains, we might never need to do this.
+The cost of processing increases with throughput, and this determines the limit as to how much each sub-chain can do. Our aim is to make processing each transaction as lightweight as possible. Current each transaction takes around 2.5 micro-seconds, which means the throughput achievable is 400K per second (1/2.5 us)  We believe this can be improved, however with the option of having thousands of sub-chains, we might never need to do this.
 
 == Conclusion
 
