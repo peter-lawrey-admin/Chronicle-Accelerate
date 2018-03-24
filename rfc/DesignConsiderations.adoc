@@ -83,6 +83,15 @@ Another approach is to attempt to regionalise the addresses.  For this purpose w
 
 For example, if I live in New York, or do some business there, I could have an New York address.  The blockchain address in base 32 appears as @usny6897dh38d. The **usny** is the region code. I can trade with any address on the same chain quickly and efficiently.  If I need to send money to another region, this will take longer, but it might take seconds instead of being sub-second.
 
+=== Weekly checkpointing
+
+Some blockchain solutions require every transaction from the genesis block to be available to work out if any given transaction was successful. The cost of doing this grows both with the number of transactions over time.  This is fine provided that computing power grows faster, however what works for say 10 transactions per second won't scale to beyond 100,000 transactions per second.
+
+So based on how foriegn exchange systems work, we will be using a weekly cycle.  This has a number of benefits.
+
+- it reduces the volume of data which needs to be retained to the state at the start of the week and each transaction which has happened in the week.
+- GDPR includes the right to be forgotten. However if a blockchain requires your transaction to be remembered forever, it's not clear how this can work.  If you use weekly cycles, your transactions can be forgotten after N weeks (data may need to be retained for legal reasons, but not more than that)
+
 == Conclusion
 
 There are many design consideration is how to layout a blockchain solution.  My focus is on the sort of problem only a blockchain could solve i.e. with untrusted nodes running the service.  I firmly believe these problems are solvable.
