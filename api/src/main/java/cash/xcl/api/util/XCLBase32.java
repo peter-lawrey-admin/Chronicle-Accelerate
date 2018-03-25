@@ -12,8 +12,8 @@ public enum XCLBase32 {
     ;
     public static final int BITS_PER_CHAR = 5;
     static final byte[] PARSING = new byte[128];
-    static final char[] ENCODING = "0123456789abcdefghijkmnprstuvwyz".toCharArray();
-    public static final String STR2 = "ol234567xqabcdefghijkmnprstuvwyz";
+    public static final String STR2 = "ol23456zxqabcdefghijkmnprstuvwy.";
+    static final char[] ENCODING = "0123456789abcdefghijkmnprstuvwy.".toCharArray();
     static final char[] ENCODING2 = STR2.toCharArray();
     static final char[] ENCODING_UPPER = STR2.toUpperCase().toCharArray();
 
@@ -25,6 +25,7 @@ public enum XCLBase32 {
         }
         setParsing((byte) 0, 'o');
         setParsing((byte) 1, 'l');
+        setParsing((byte) 7, 'z');
         setParsing((byte) 8, 'x');
         setParsing((byte) 9, 'q');
     }
@@ -141,6 +142,9 @@ public enum XCLBase32 {
                     break;
                 case 'l':
                     ch = '1';
+                    break;
+                case 'z':
+                    ch = '7';
                     break;
                 case 'x':
                     ch = '8';
