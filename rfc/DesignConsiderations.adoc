@@ -1,0 +1,97 @@
+= Blockchain Design considerations
+Peter Lawrey
+// :hp-image: /covers/cover.png
+// :published_at: 2019-01-31
+:hp-tags: Blockchain, Architecture Design
+// :hp-alt-title: My English Title
+
+After I announced the release of Chronicle Accelerate, a high throughput blockchain solution in Java. One of the questions which came up was; What were the design considerations that went into the solution, particularly around throughput vs latency?
+
+Many of these design considerations are not specific to Blockchain or Java, but general performance tuning.
+
+If you have any questions, please AMA https://t.me/ChronicleXCL
+
+== Why use Java?
+If you want maximum performance, why use Java?
+
+This has two assumptions; what are you maximising the performance of, and is the Java portion a bottleneck anyway.
+
+In most IT solutions, the cost of the hardware is small compared with the cost of IT development, esp if you don't use a solution which is designed to be expensive such as Proof of Work.  Use a lower CPU model, and the resource you want to maximise is development of the solution ie people. Most of the cost of development is actually in integration with existing systems. So you want to spend most of your time designing a system which is easy to develop and integrate with.
+Java is one of the most widely used languages, and one of the easiest to master all it's lean set of features. By supporting multiple common APIs from the start, you make sure ease of integration is a priority in the design.
+
+In terms of the blockchain solution we chose, the key bottleneck CPU wise is the Ed25519 signature and verification.  The core of this algorithm is actually written in assembly to maximise performance. In designing a "maxed out" node to get the highest throughput per sub chain I would estimate the number of CPUs to be
+
+|====
+| Code type | CPUs
+
+| Assembly (Ed25519) | &nbsp;40
+| Operating System (Mostly TCP) | &nbsp;24
+| Java | &nbsp;&nbsp;4
+|====
+
+While all the interesting custom development and business logic will be in Java, most of the CPU will be consumed by code already written and optimised in another language.
+
+In short, we want to maximise developer efficiency, and most of the CPU consumed isn't written in Java anyway.
+
+== Why develop a Blockchain?
+Many solutions which are blockchain based, when they optimise the CPU consumed end up taking away some of the reason for having a blockchain in the first place.  If all you end up developing is a distributed ledger or a simple database, I don't see the point as these solutions already exist. 
+
+An essential feature which makes a blockchain different is; not needing to trust individual nodes are not fraudulent. If we optimise the solution but lose this feature in the process, we really have a distributed ledger (sometimes called a "Private Blockchain")  Basically if you have a blockchain which can't be run/mined publically I don't see the use case, though it might be a good marketting strategy.
+
+== Ways of protecting against fraud
+Fraud protection should prevent creating unathorized messages. Note: preventing a message from being falsified doesn't prevent it from being read.
+
+In our case, we use cryptographic signatures to transactions so that only the holder of a private key can create or modify the the transaction.  For this case we use Ed25519 as one of the fastest 256-bit signatures. 
+
+Use of such a signature and verification, adds significantly to latency.  The backend blockchain add about 2.5 micro-seconds latency however the verification and signing needed adds about 100 micro-seconds.  While we can add CPUs to increase throughput, they won't help in reducing latency.
+
+== Optimising for throughput
+While most systems are optimized for throughput, trading systems tend to optimise for latency.  Reduce latency enough and you will also get the throughput you need.  Whether you optimise for throughput or latency depends on the type of problem you have. If many portions of the work can be done at once without having to work together, you can optimise for throughput with concurrent processing, esp as this is usually easier.  If you have have key portions of work which must be performed in order such as transactions, you have to reduce the latency of each transaction to increase throughput.
+
+As we have identified, most of the work is CPU bound, and independant. To optimise the system, we need to examine which pieces of work are serial by nature.
+
+== Identifying serial bottlenecks
+|===
+| Concurrent | Serial
+
+| Sign/verify 
+| Consensus
+
+| Client TCP 
+| Transaction processing
+|===
+
+=== Consensus
+The cost of consensus increases with the rate at which this happens O(N), and the number of nodes in the cluster O(M ln M). In the later case, M nodes have M times the processing power so the overhead is just O(ln M)
+
+However, both of these are in our control. We determine how often consensus is reached. We decide if its 10 ms, 1 second or 1 minute. Obviously we want this to be low, as this largely determines the latency of each transaction, however we can adjust it to suit our needs and the enviroment the nodes are running in.
+
+The number of nodes in the cluster is also something we have some control over.  We don't want too few nodes, but we get diminishing returns and increasing cost on having more nodes.
+
+In our case, we are looking to split the chain to improve efficiency once we have more nodes than we need in a chain.
+
+NOTE: The cost of consensus doesn't increase with throughput, and is largely constant. i.e. when there is no transactions, confirming nothing is happening is all the nodes will do.
+
+=== Transaction processing
+The cost of processing transactions increases with throughput, and this determines the limit as to how much each sub-chain can do. Our aim is to make processing each transaction as lightweight as possible. Currently each transaction takes around 2.5 micro-seconds, which means the throughput achievable is 400K per second per sub-chain (1/2.5 us)  We believe this can be improved, however with the option of having thousands of sub-chains, we might never need to do this.
+
+=== Chain splitting
+
+A straight forward way to split a chain is by address. We could use a bit of the address to determine which chain the address will be managed by.  However, if we have a random arrangement of addresses, as we split, it gets increasingly unlikely that a transaction with only involve one sub-chain.  Ideally we want a high proportion of transaction to involve just one chain to maximise concurrency and reduce overhead.
+
+Another approach is to attempt to regionalise the addresses.  For this purpose we have chosen the https://en.wikipedia.org/wiki/ISO_3166[ISO 3166] standard for country and region codes around the world, giving us around 4000 regions which have some meaning geographically.  This follows the assumption that most transactions a person or local business has, will involve other people or businesses in their local area.  A person or business can hold multiple addresses to benifit from local transactions across multiple sub-chains.
+
+For example, if I live in New York, or do some business there, I could have an New York address.  The blockchain address in base 32 appears as @usny6897dh38d. The **usny** is the region code. I can trade with any address on the same chain quickly and efficiently.  If I need to send money to another region, this will take longer, but it might take seconds instead of being sub-second.
+
+=== Weekly checkpointing
+
+Some blockchain solutions require every transaction from the genesis block to be available to work out if any given transaction was successful. The cost of doing this grows both with the number of transactions over time.  This is fine provided that computing power grows faster, however what works for say 10 transactions per second won't scale to beyond 100,000 transactions per second.
+
+So based on how foriegn exchange systems work, we will be using a weekly cycle.  This has a number of benefits.
+
+- it reduces the volume of data which needs to be retained to the state at the start of the week and each transaction which has happened in the week.
+- GDPR includes the right to be forgotten. However if a blockchain requires your transaction to be remembered forever, it's not clear how this can work.  If you use weekly cycles, your transactions can be forgotten after N weeks (data may need to be retained for legal reasons, but not more than that)
+
+== Conclusion
+
+There are many design consideration is how to layout a blockchain solution.  My focus is on the sort of problem only a blockchain could solve i.e. with untrusted nodes running the service.  I firmly believe these problems are solvable.
