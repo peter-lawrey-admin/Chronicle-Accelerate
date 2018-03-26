@@ -48,7 +48,7 @@ public class MockGatewayTest {
                 "  eventTime: 0,\n" +
                 "  origSourceAddress: 1,\n" +
                 "  origEventTime: 0,\n" +
-                "  address: -7811493390981337397,\n" +
+                "  address: iec109f17upcw,\n" +
                 "  publicKey: !!binary AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=\n" +
                 "}\n" +
                 "]\n" +
@@ -57,7 +57,7 @@ public class MockGatewayTest {
                 "  eventTime: 0,\n" +
                 "  origSourceAddress: 1,\n" +
                 "  origEventTime: 0,\n" +
-                "  address: -7810885632407925157,\n" +
+                "  address: iee2hsmj3y773,\n" +
                 "  publicKey: !!binary AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=\n" +
                 "}\n" +
                 "]\n" +
@@ -66,7 +66,7 @@ public class MockGatewayTest {
                 "  eventTime: 0,\n" +
                 "  origSourceAddress: 1,\n" +
                 "  origEventTime: 0,\n" +
-                "  address: -7810898871858203435,\n" +
+                "  address: ied2sp16chtdh,\n" +
                 "  publicKey: !!binary AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=\n" +
                 "}\n" +
                 "]\n", out.toString()

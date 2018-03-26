@@ -6,7 +6,7 @@ public enum AddressUtil {
     ;
     public static final int CHECK_NUMBER = 37;
     private static final ThreadLocal<Bytes<?>> bytesCache = ThreadLocal.withInitial(() -> Bytes.elasticByteBuffer(14));
-    public static final long INVALID_ADDRESS = decode("0"); // multiples of 16 are reserved
+    public static final long INVALID_ADDRESS = decode("."); // multiples of 16 are reserved
 
     public static String encode(long address) {
         Bytes<?> addressAsBytes = bytesCache.get().clear();

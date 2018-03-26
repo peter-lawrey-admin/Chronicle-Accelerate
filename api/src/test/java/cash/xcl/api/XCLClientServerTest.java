@@ -3,6 +3,7 @@ package cash.xcl.api;
 import cash.xcl.api.dto.CreateNewAddressCommand;
 import cash.xcl.api.tcp.XCLClient;
 import cash.xcl.api.tcp.XCLServer;
+import cash.xcl.api.util.XCLBase32;
 import net.openhft.chronicle.bytes.Bytes;
 import net.openhft.chronicle.core.Jvm;
 import net.openhft.chronicle.core.Mocker;
@@ -38,8 +39,12 @@ public class XCLClientServerTest {
         ClientOut client = new XCLClient("test-client", addresses, 2, secretKey, logging2);
         server.register(2, publicKey);
 
+        CreateNewAddressCommand cnac = new CreateNewAddressCommand(2, 1L, publicKey, "usny");
+        assertEquals("usny", XCLBase32.encodeInt(cnac.region()));
+        assertEquals("usny", XCLBase32.encodeInt2(cnac.region()));
+        assertEquals("USNY", XCLBase32.encodeIntUpper(cnac.region()));
         client.createNewAddressCommand(
-                new CreateNewAddressCommand(2, 1L, publicKey, "usny"));
+                cnac);
         for (int i = 0; i <= 20; i++) {
             assertTrue(i < 20);
             Jvm.pause(Jvm.isDebug() ? 2000 : 25);

@@ -31,56 +31,66 @@ public enum XCLBase32 {
     }
 
     private static void setParsing(byte i, char ch) {
-        PARSING[ch] = i;
-        PARSING[Character.toUpperCase(ch)] = i;
+        PARSING[ch] = (byte) (31 - i);
+        PARSING[Character.toUpperCase(ch)] = (byte) (31 - i);
     }
 
     public static String encodeInt(int value) {
-        return encode((long) value << 32);
+        long value2 = (long) value << 32;
+        value2 |= 0xffffffffL;
+        return encode(value2);
     }
 
     public static String encode(long value) {
+        value = ~value;
         StringBuilder sb = new StringBuilder(14);
         do {
             int digit = (int) (value >>> 59);
-            sb.append(ENCODING[digit]);
+            sb.append(ENCODING[31 - digit]);
             value <<= 5;
         } while (value != 0);
         return sb.toString();
     }
 
     public static String encodeInt2(int value) {
-        return encode2((long) value << 32);
+        long value2 = (long) value << 32;
+        value2 |= 0xffffffffL;
+        return encode2(value2);
     }
 
     public static String encode2(long value) {
+        value = ~value;
         StringBuilder sb = new StringBuilder(14);
         do {
             int digit = (int) (value >>> 59);
-            sb.append(ENCODING2[digit]);
+            sb.append(ENCODING2[31 - digit]);
             value <<= 5;
         } while (value != 0);
         return sb.toString();
     }
 
     public static String encodeIntUpper(int value) {
-        return encodeUpper((long) value << 32);
+        long value2 = (long) value << 32;
+        value2 |= 0xffffffffL;
+        return encodeUpper(value2);
     }
 
     public static String encodeUpper(long value) {
+        value = ~value;
         StringBuilder sb = new StringBuilder(14);
         do {
             int digit = (int) (value >>> 59);
-            sb.append(ENCODING_UPPER[digit]);
+            sb.append(ENCODING_UPPER[31 - digit]);
             value <<= 5;
         } while (value != 0);
         return sb.toString();
     }
 
     public static void encode(Bytes<?> bytes, long value) {
+        value = ~value;
         do {
             int digit = (int) (value >>> 59);
-            bytes.append(ENCODING[digit]);
+            bytes.append(ENCODING[31 - digit]);
             value <<= 5;
         } while (value != 0);
     }
@@ -92,11 +102,11 @@ public enum XCLBase32 {
             int ch = bytes.readUnsignedByte();
             if (ch == '-') continue;
             if (ch < 0) {
-                return n;
+                return ~n;
             }
             long value = ch < PARSING.length ? PARSING[ch] : -1;
             if (value < 0) {
-                return n;
+                return ~n;
             }
             n |= shift < 0 ? value >> -shift : value << shift;
             shift -= BITS_PER_CHAR;
@@ -107,7 +117,7 @@ public enum XCLBase32 {
                 throw new IllegalArgumentException("Encoded number too long at " + (char) ch);
             }
         }
-        return n;
+        return ~n;
     }
 
     public static int decodeInt(CharSequence chars) {
@@ -124,12 +134,12 @@ public enum XCLBase32 {
             if (ch == '-') continue;
             long value = ch < PARSING.length ? PARSING[ch] : -1;
             if (value < 0) {
-                return n;
+                return ~n;
             }
             n |= shift < 0 ? value >> -shift : value << shift;
             shift -= BITS_PER_CHAR;
         }
-        return n;
+        return ~n;
     }
 
     public static String normalize(String regionCode) {

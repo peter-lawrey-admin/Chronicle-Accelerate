@@ -20,8 +20,8 @@ currentBalanceResponse: {
   eventTime: 12345678920000,
   address: 5555,
   balances: {
-    XCL: 999.0,
     EUR: 0.0,
+    XCL: 999.0,
     USD: 0.0
   }
 }
