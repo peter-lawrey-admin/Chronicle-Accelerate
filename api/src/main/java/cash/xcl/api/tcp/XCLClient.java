@@ -74,6 +74,10 @@ public class XCLClient extends WritingAllMessages implements Closeable, TCPConne
         addressToPrivateKey.put(address, secretKey.copy());
     }
 
+    public void unregister(long address) {
+        addressToPrivateKey.remove(address);
+    }
+
     @Override
     public void write(SignedMessage message) {
         try {
