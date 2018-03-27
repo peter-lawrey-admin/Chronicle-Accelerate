@@ -118,7 +118,7 @@ public abstract class SignedMessage extends AbstractBytesMarshallable {
         if (this.sourceAddress == 0) {
             this.sourceAddress = sourceAddress;
         } else if (!internal && this.sourceAddress != sourceAddress) {
-            throw new IllegalArgumentException("Cannot change the source address");
+            throw new IllegalArgumentException("Cannot change the source address, message must be signed first.");
         }
         tempBytes.clear();
         tempBytes.writeLong(sourceAddress);
