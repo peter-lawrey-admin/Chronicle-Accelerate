@@ -7,8 +7,8 @@ Chronicle Accelerate provide simple transactions. This documents looks at how cu
 
 A chain can be extended by adding a protocol.  A new protocol has;
 
- - it's own id (1024 - 65535)
- - it's own data transfer objects, and messages
+ - its own id (1024 - 65535)
+ - its own data transfer objects, and messages
 === Data Transfer Objects
 
 A key part of sending an receiving custom DTOs is the ability to write and parse them.
