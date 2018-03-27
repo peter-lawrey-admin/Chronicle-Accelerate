@@ -113,7 +113,7 @@ public abstract class SignedMessage extends AbstractBytesMarshallable {
         writeMarshallable2(bytes);
     }
 
-    public void sign(Bytes tempBytes, long sourceAddress, Bytes secretKey) {
+    public void sign(Bytes tempBytes, long sourceAddress, BytesStore secretKey) {
         boolean internal = secretKey == null;
         if (this.sourceAddress == 0) {
             this.sourceAddress = sourceAddress;
