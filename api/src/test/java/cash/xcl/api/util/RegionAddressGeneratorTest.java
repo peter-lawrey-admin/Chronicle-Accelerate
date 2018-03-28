@@ -48,13 +48,13 @@ public class RegionAddressGeneratorTest {
     @Test
     public void testMaxAddressValue() {
         long addressIe = ied.newAddressFrom(ied.getMaxAddress() - 1);
-        assertEquals("iedzzzzzzzzya", encode(addressIe));
+        assertEquals("ied........ya", encode(addressIe));
 
         long addressRo = rohd.newAddressFrom(rohd.getMaxAddress() - 1);
-        assertEquals("r0hdzzzzzzzwn", encode(addressRo));
+        assertEquals("r0hd.......wn", encode(addressRo));
 
         long addressGb = gblnd.newAddressFrom(gblnd.getMaxAddress() - 1);
-        assertEquals("gb1ndzzzzzzyt", encode(addressGb));
+        assertEquals("gb1nd......yt", encode(addressGb));
     }
 
     @Test

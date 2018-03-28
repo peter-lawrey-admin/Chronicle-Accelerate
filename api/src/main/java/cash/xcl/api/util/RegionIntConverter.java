@@ -10,23 +10,16 @@ public class RegionIntConverter implements IntConverter {
     public int parse(CharSequence text) {
         return StringUtils.isEqual(text, CountryRegion.MAIN_CODE)
                 ? 0
-                : XCLBase32.decodeInt(text + "Z");
+                : XCLBase32.decodeInt(text);
     }
 
     @Override
     public void append(StringBuilder text, int value) {
-        if (value == 0) {
-            text.append("0000");
-        }
         String str = XCLBase32.encodeInt2(value).toUpperCase();
-        text.append(str, 0, str.length() - 1);
+        text.append(str);
     }
 
     public String asString(int region) {
-        if (region == 0) {
-            return "0000";
-        }
-        String s = XCLBase32.encodeInt2(region).toUpperCase();
-        return s.substring(0, s.length() - 1);
+        return XCLBase32.encodeIntUpper(region);
     }
 }

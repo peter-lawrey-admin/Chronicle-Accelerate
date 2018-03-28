@@ -18,7 +18,7 @@ public class ServerJVM implements Closeable{
         Bytes secretKey = Bytes.allocateDirect(Ed25519.SECRET_KEY_LENGTH);
         Ed25519.generatePublicAndSecretKey(publicKey, secretKey);
         try {
-            new ServerJVM(DEFAULT_SERVER_ADDRESS, secretKey,1000, 5, 1, publicKey);
+            new ServerJVM(DEFAULT_SERVER_ADDRESS, secretKey,2500, 1000, 1, publicKey);
             while(true) {
                 System.out.println("server is running... ");
                 Thread.sleep(10000);

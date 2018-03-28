@@ -113,11 +113,12 @@ public abstract class SignedMessage extends AbstractBytesMarshallable {
         writeMarshallable2(bytes);
     }
 
-    public void sign(Bytes tempBytes, long sourceAddress, Bytes secretKey) {
+    public void sign(Bytes tempBytes, long sourceAddress, BytesStore secretKey) {
+        boolean internal = secretKey == null;
         if (this.sourceAddress == 0) {
             this.sourceAddress = sourceAddress;
-        } else if (this.sourceAddress != sourceAddress) {
-            throw new IllegalArgumentException("Cannot change the source address");
+        } else if (!internal && this.sourceAddress != sourceAddress) {
+            throw new IllegalArgumentException("Cannot change the source address, message must be signed first.");
         }
         tempBytes.clear();
         tempBytes.writeLong(sourceAddress);
@@ -130,7 +131,7 @@ public abstract class SignedMessage extends AbstractBytesMarshallable {
         } else {
             sigAndMsg.clear();
         }
-        if (secretKey == null)
+        if (internal)
             sigAndMsg.clear().writeSkip(Ed25519.SIGNATURE_LENGTH).write(tempBytes);
         else
             Ed25519.sign(sigAndMsg, tempBytes, secretKey);

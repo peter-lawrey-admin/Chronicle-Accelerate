@@ -9,7 +9,9 @@ import cash.xcl.api.util.XCLBase32;
 import cash.xcl.net.TCPClientListener;
 import cash.xcl.net.TCPConnection;
 import cash.xcl.net.VanillaTCPClient;
+import cash.xcl.util.XCLLongObjMap;
 import net.openhft.chronicle.bytes.Bytes;
+import net.openhft.chronicle.bytes.BytesStore;
 import net.openhft.chronicle.core.io.Closeable;
 import net.openhft.chronicle.core.io.IORuntimeException;
 import net.openhft.chronicle.core.time.SystemTimeProvider;
@@ -24,8 +26,8 @@ public class XCLClient extends WritingAllMessages implements Closeable, TCPConne
     final ThreadLocal<Bytes> bytesTL = ThreadLocal.withInitial(Bytes::allocateElasticDirect);
     private final VanillaTCPClient tcpClient;
     private final long address;
-    private final Bytes secretKey;
     private final AllMessages allMessageListener;
+    private final XCLLongObjMap<BytesStore> addressToPrivateKey = XCLLongObjMap.withExpectedSize(BytesStore.class, 16);
     private boolean internal = false;
 
     public XCLClient(String name,
@@ -45,7 +47,7 @@ public class XCLClient extends WritingAllMessages implements Closeable, TCPConne
                      AllMessages allMessageListener,
                      boolean subscribe) {
         this(name, Arrays.asList(new InetSocketAddress(socketHost, socketPort)), address, secretKey, allMessageListener);
-        if( subscribe )
+        if (subscribe)
             subscriptionQuery(new SubscriptionQuery(address, SystemTimeProvider.INSTANCE.currentTimeMicros()));
     }
 
@@ -56,9 +58,9 @@ public class XCLClient extends WritingAllMessages implements Closeable, TCPConne
                      Bytes secretKey,
                      AllMessages allMessageListener) {
         this.address = address;
-        this.secretKey = secretKey;
         this.allMessageListener = allMessageListener;
         this.tcpClient = new VanillaTCPClient(name, socketAddresses, new ClientListener());
+        register(address, secretKey);
     }
 
     @Override
@@ -66,6 +68,14 @@ public class XCLClient extends WritingAllMessages implements Closeable, TCPConne
         if (addressOrRegion != address)
             throw new IllegalArgumentException("Address " + XCLBase32.encode(addressOrRegion) + " needs to be " + XCLBase32.encode(address));
         return this;
+    }
+
+    public void register(long address, Bytes secretKey) {
+        addressToPrivateKey.put(address, secretKey.copy());
+    }
+
+    public void unregister(long address) {
+        addressToPrivateKey.remove(address);
     }
 
     @Override
@@ -76,7 +86,12 @@ public class XCLClient extends WritingAllMessages implements Closeable, TCPConne
                     message.eventTime(SystemTimeProvider.INSTANCE.currentTimeMicros());
                 Bytes bytes = bytesTL.get();
                 bytes.clear();
-                message.sign(bytes, address, internal ? null : secretKey);
+                long msgAddr = message.sourceAddress();
+                if (msgAddr == 0) msgAddr = address;
+                BytesStore secretKey = addressToPrivateKey.get(msgAddr);
+                if (!internal && secretKey == null)
+                    throw new IllegalArgumentException("Address " + XCLBase32.encode(msgAddr) + " not registered");
+                message.sign(bytes, address, secretKey);
             }
             tcpClient.write(message.sigAndMsg());
 

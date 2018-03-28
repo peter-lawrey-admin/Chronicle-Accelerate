@@ -13,17 +13,18 @@ One of the aims is to produce numbers which can also be used to form words.
 The encoding is the same as Base16, with the rest of the alphabet except:
 
 - l and O as they can be confused with 1 and 0.
-- q and x as these are rare letters.
+- q, x and z as these are rare letters.
+- . is added a value which works as both a separator and a trailing value which is truncated.
 
 |===
 | 0, o, O =  0 | 1, l, L =  1 | 2 =  2 | 3 =  3
-| 4 =  4 | 5 =  5 | 6 =  6 | 7 =  7
+| 4 =  4 | 5 =  5 | 6 =  6 | 7, z, Z =  7
 | 8, x, X =  8 | 9, q, Q =  9 | a, A =  a | b, B =  b
 | c, C =  c | d, D =  d | e, E =  e | f, F =  f
 | g, G =  g | h, H =  h | i, I =  i | j, J =  j
 | k, K =  k | m, M =  m | n, N =  n | p, P =  p
 | r, R =  r | s, S =  s | t, T =  t | u, U =  u
-| v, V =  v | w, W =  w | y, Y =  y | z, Z =  z
+| v, V =  v | w, W =  w | y, Y =  y | . = .
 |===
 
 NOTE: When decoding an encoded string, multiple characters map to the same value. +

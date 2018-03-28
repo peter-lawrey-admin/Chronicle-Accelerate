@@ -37,11 +37,11 @@ public class XCLBase32Test {
 
     @Test
     public void decode2() {
-        doTest2("de6de00000000000", "usny");
-        doTest2("82c2db0000000000", "gbldn");
-        doTest2("6582300000000000", "cn13");
-        doTest2("4076ca7800000000", "8lucky");
-        doTest2("bbb4ec055dc3bc00", "peterlawrey");
+        doTest2("de6defffffffffff", "usny");
+        doTest2("82c2db7fffffffff", "gbldn");
+        doTest2("65823fffffffffff", "cn13");
+        doTest2("4076ca7bffffffff", "8lucky");
+        doTest2("bbb4ec055dc3bdff", "peterlawrey");
     }
 
     private void doTest2(String expected, String input) {

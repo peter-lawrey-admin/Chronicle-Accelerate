@@ -12,8 +12,8 @@ public enum XCLBase32 {
     ;
     public static final int BITS_PER_CHAR = 5;
     static final byte[] PARSING = new byte[128];
-    static final char[] ENCODING = "0123456789abcdefghijkmnprstuvwyz".toCharArray();
-    public static final String STR2 = "ol234567xqabcdefghijkmnprstuvwyz";
+    public static final String STR2 = "ol23456zxqabcdefghijkmnprstuvwy.";
+    static final char[] ENCODING = "0123456789abcdefghijkmnprstuvwy.".toCharArray();
     static final char[] ENCODING2 = STR2.toCharArray();
     static final char[] ENCODING_UPPER = STR2.toUpperCase().toCharArray();
 
@@ -25,61 +25,72 @@ public enum XCLBase32 {
         }
         setParsing((byte) 0, 'o');
         setParsing((byte) 1, 'l');
+        setParsing((byte) 7, 'z');
         setParsing((byte) 8, 'x');
         setParsing((byte) 9, 'q');
     }
 
     private static void setParsing(byte i, char ch) {
-        PARSING[ch] = i;
-        PARSING[Character.toUpperCase(ch)] = i;
+        PARSING[ch] = (byte) (31 - i);
+        PARSING[Character.toUpperCase(ch)] = (byte) (31 - i);
     }
 
     public static String encodeInt(int value) {
-        return encode((long) value << 32);
+        long value2 = (long) value << 32;
+        value2 |= 0xffffffffL;
+        return encode(value2);
     }
 
     public static String encode(long value) {
+        value = ~value;
         StringBuilder sb = new StringBuilder(14);
         do {
             int digit = (int) (value >>> 59);
-            sb.append(ENCODING[digit]);
+            sb.append(ENCODING[31 - digit]);
             value <<= 5;
         } while (value != 0);
         return sb.toString();
     }
 
     public static String encodeInt2(int value) {
-        return encode2((long) value << 32);
+        long value2 = (long) value << 32;
+        value2 |= 0xffffffffL;
+        return encode2(value2);
     }
 
     public static String encode2(long value) {
+        value = ~value;
         StringBuilder sb = new StringBuilder(14);
         do {
             int digit = (int) (value >>> 59);
-            sb.append(ENCODING2[digit]);
+            sb.append(ENCODING2[31 - digit]);
             value <<= 5;
         } while (value != 0);
         return sb.toString();
     }
 
     public static String encodeIntUpper(int value) {
-        return encodeUpper((long) value << 32);
+        long value2 = (long) value << 32;
+        value2 |= 0xffffffffL;
+        return encodeUpper(value2);
     }
 
     public static String encodeUpper(long value) {
+        value = ~value;
         StringBuilder sb = new StringBuilder(14);
         do {
             int digit = (int) (value >>> 59);
-            sb.append(ENCODING_UPPER[digit]);
+            sb.append(ENCODING_UPPER[31 - digit]);
             value <<= 5;
         } while (value != 0);
         return sb.toString();
     }
 
     public static void encode(Bytes<?> bytes, long value) {
+        value = ~value;
         do {
             int digit = (int) (value >>> 59);
-            bytes.append(ENCODING[digit]);
+            bytes.append(ENCODING[31 - digit]);
             value <<= 5;
         } while (value != 0);
     }
@@ -91,11 +102,11 @@ public enum XCLBase32 {
             int ch = bytes.readUnsignedByte();
             if (ch == '-') continue;
             if (ch < 0) {
-                return n;
+                return ~n;
             }
             long value = ch < PARSING.length ? PARSING[ch] : -1;
             if (value < 0) {
-                return n;
+                return ~n;
             }
             n |= shift < 0 ? value >> -shift : value << shift;
             shift -= BITS_PER_CHAR;
@@ -106,7 +117,7 @@ public enum XCLBase32 {
                 throw new IllegalArgumentException("Encoded number too long at " + (char) ch);
             }
         }
-        return n;
+        return ~n;
     }
 
     public static int decodeInt(CharSequence chars) {
@@ -123,12 +134,12 @@ public enum XCLBase32 {
             if (ch == '-') continue;
             long value = ch < PARSING.length ? PARSING[ch] : -1;
             if (value < 0) {
-                return n;
+                return ~n;
             }
             n |= shift < 0 ? value >> -shift : value << shift;
             shift -= BITS_PER_CHAR;
         }
-        return n;
+        return ~n;
     }
 
     public static String normalize(String regionCode) {
@@ -141,6 +152,9 @@ public enum XCLBase32 {
                     break;
                 case 'l':
                     ch = '1';
+                    break;
+                case 'z':
+                    ch = '7';
                     break;
                 case 'x':
                     ch = '8';
