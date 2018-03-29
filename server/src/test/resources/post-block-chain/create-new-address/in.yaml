@@ -3,5 +3,5 @@ createNewAddressCommand: {
   eventTime: 0,
   publicKey: !!binary O2onvM62pC1io6jQKm8Nc2UyFXcd4kOmOsBIoYtZ2ik=,
   region: usny,
-  newAddressSeed: usny241902195
+  newAddressSeed: usny24lqo2lq4
 }

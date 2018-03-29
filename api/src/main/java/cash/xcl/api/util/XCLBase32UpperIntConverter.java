@@ -10,6 +10,6 @@ public class XCLBase32UpperIntConverter implements IntConverter {
 
     @Override
     public void append(StringBuilder text, int value) {
-        text.append(XCLBase32.encodeInt2(value).toUpperCase());
+        text.append(XCLBase32.encodeIntUpper(value));
     }
 }

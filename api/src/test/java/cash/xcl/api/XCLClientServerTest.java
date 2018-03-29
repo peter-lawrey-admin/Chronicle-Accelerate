@@ -41,7 +41,7 @@ public class XCLClientServerTest {
 
         CreateNewAddressCommand cnac = new CreateNewAddressCommand(2, 1L, publicKey, "usny");
         assertEquals("usny", XCLBase32.encodeInt(cnac.region()));
-        assertEquals("usny", XCLBase32.encodeInt2(cnac.region()));
+        assertEquals("usny", XCLBase32.encodeIntNum(cnac.region()));
         assertEquals("USNY", XCLBase32.encodeIntUpper(cnac.region()));
         client.createNewAddressCommand(
                 cnac);
@@ -56,7 +56,7 @@ public class XCLClientServerTest {
         assertEquals(
                 "allMessagesLookup[cash.xcl.api.tcp.XCLServer@xxxxxxxx]\n" + "createNewAddressCommand[!CreateNewAddressCommand {\n"
                         + "  sourceAddress: 2,\n" + "  eventTime: 1,\n" + "  publicKey: !!binary O2onvM62pC1io6jQKm8Nc2UyFXcd4kOmOsBIoYtZ2ik=,\n"
-                        + "  region: USNY,\n" + "  newAddressSeed: 0\n" + "}\n" + "]\n",
+                        + "  region: USNY,\n" + "  newAddressSeed: ooooooooooooo\n" + "}\n" + "]\n",
                 out.toString().replaceAll("\r", "").replaceAll("XCLServer@\\w+", "XCLServer@xxxxxxxx"));
 
         client.close();

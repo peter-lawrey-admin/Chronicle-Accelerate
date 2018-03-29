@@ -15,7 +15,7 @@ public class RegionIntConverter implements IntConverter {
 
     @Override
     public void append(StringBuilder text, int value) {
-        String str = XCLBase32.encodeInt2(value).toUpperCase();
+        String str = XCLBase32.encodeIntUpper(value).toUpperCase();
         text.append(str);
     }
 

@@ -98,7 +98,7 @@ public class CurrentBalanceResponse extends SignedMessage {
         if (balances == null) balances = XCLIntDoubleMap.withExpectedSize(8);
         wire.read("balances").marshallable(m -> {
             while (m.hasMore()) {
-                int currencyId = XCLBase32IntConverter.INSTANCE.parse(m.readEvent(String.class));
+                int currencyId = XCLBase32.decodeInt(m.readEvent(String.class));
                 balances.put(currencyId, m.getValueIn().float64());
             }
         });
@@ -111,7 +111,7 @@ public class CurrentBalanceResponse extends SignedMessage {
         wire.write("address").int64(address());
         wire.write("balances").marshallable(m -> {
             balances.forEach((c, v) -> {
-                wire.write(XCLBase32IntConverter.asString(c)).float64(v);
+                wire.write(XCLBase32.encodeIntUpper(c)).float64(v);
             });
         });
     }
