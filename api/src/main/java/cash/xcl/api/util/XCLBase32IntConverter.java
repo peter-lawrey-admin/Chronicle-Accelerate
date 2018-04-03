@@ -10,7 +10,7 @@ public class XCLBase32IntConverter implements IntConverter {
     }
 
     public static String asString(int value) {
-        return XCLBase32.encodeInt2(value).toUpperCase();
+        return XCLBase32.encodeInt(value);
     }
 
     @Override

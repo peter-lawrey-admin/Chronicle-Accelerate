@@ -65,7 +65,7 @@ public class TransactionBlockEventTest {
                 "  weekNumber: 0,\n" +
                 "  blockNumber: 0,\n" +
                 "  transactions: [\n" +
-                "    !CreateNewAddressCommand { sourceAddress: 1, eventTime: 2, publicKey: !!binary AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=, region: GBLND, newAddressSeed: 0 },\n" +
+                "    !CreateNewAddressCommand { sourceAddress: 1, eventTime: 2, publicKey: !!binary AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=, region: GBLND, newAddressSeed: ooooooooooooo },\n" +
                 "    !TransferValueCommand { sourceAddress: 0, eventTime: 3, toAddress: 1, amount: 1.23, currency: XCL, reference: init }\n" +
                 "  ]\n" +
                 "}\n", tbe.toString().replaceAll("\r", ""));
@@ -91,7 +91,7 @@ public class TransactionBlockEventTest {
                 "  eventTime: 2,\n" +
                 "  publicKey: !!binary AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=,\n" +
                 "  region: GBLDN,\n" +
-                "  newAddressSeed: 0\n" +
+                "  newAddressSeed: ooooooooooooo\n" +
                 "}\n" +
                 "]\n" +
                 "out transferValueCommand[!TransferValueCommand {\n" +

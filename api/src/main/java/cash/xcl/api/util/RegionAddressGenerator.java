@@ -34,9 +34,10 @@ public class RegionAddressGenerator {
 
     long newAddressFrom(long seed) {
         long address = seed & (maxAddress - 1);
-        long newAddress = regionPrefix + address;
+        long regionStart = (regionPrefix & ~(maxAddress - 1));
+        long newAddress = regionStart + address;
         newAddress -= UnsignedLong.mod(newAddress, CHECK_NUMBER);
-        if (newAddress < regionPrefix)
+        if (newAddress < regionStart)
             newAddress += CHECK_NUMBER;
 
         if (isValid(newAddress) && !isReserved(newAddress) && doesNotOverlap(newAddress)) {

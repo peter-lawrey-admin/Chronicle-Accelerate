@@ -75,7 +75,9 @@ public class XCLClient extends WritingAllMessages implements Closeable, TCPConne
     }
 
     public void unregister(long address) {
-        addressToPrivateKey.remove(address);
+        BytesStore remove = addressToPrivateKey.remove(address);
+        if (remove != null)
+            remove.zeroOut(remove.start(), remove.realCapacity());
     }
 
     @Override

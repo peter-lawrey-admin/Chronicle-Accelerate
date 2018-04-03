@@ -41,7 +41,42 @@ public class XCLBase32Test {
         doTest2("82c2db7fffffffff", "gbldn");
         doTest2("65823fffffffffff", "cn13");
         doTest2("4076ca7bffffffff", "8lucky");
+        doTest2("e01bf0ffffffffff", "vod.l");
+        doTest2("76f1f4323fffffff", "eur.xch");
         doTest2("bbb4ec055dc3bdff", "peterlawrey");
+        doTest2("bbb4ec7c2aee1def", "peter.lawrey");
+    }
+
+    @Test
+    public void logic() {
+        assertEquals("ooooooo", XCLBase32.encodeInt(0));
+        assertEquals("ooooooe", XCLBase32.encodeInt(1));
+        assertEquals("ooooooi", XCLBase32.encodeInt(2));
+        assertEquals("oooooo", XCLBase32.encodeInt(3));
+        Random random = new Random();
+        for (int i = 0; i < 1000; i++) {
+            int v = random.nextInt();
+            String encode = XCLBase32.encodeInt(v);
+            assertEquals(v, XCLBase32.decodeInt(encode));
+            assertEquals(v, XCLBase32.decodeInt(XCLBase32.encodeIntNum(v)));
+            assertEquals(v, XCLBase32.decodeInt(XCLBase32.encodeIntNum(v)));
+        }
+        for (int i = 0; i < 1000; i++) {
+            long v = random.nextLong();
+            String encode = XCLBase32.encode(v);
+            assertEquals(v, XCLBase32.decode(encode));
+        }
+        long _0 = XCLBase32.decode("0");
+        long _00 = XCLBase32.decode("00");
+        assertEquals((1L << 59) - 1, _0);
+        assertEquals((1L << 54) - 1, _00);
+        assertEquals("o", XCLBase32.encode(_0));
+        long abcd = XCLBase32.decode("abcd");
+        long two = XCLBase32.decode("abce000000000");
+        assertEquals(1, two - abcd);
+        assertEquals("abcd", XCLBase32.encode(abcd));
+        assertEquals("abcd........v", XCLBase32.encode(abcd - 1));
+        assertEquals("abceooooooooo", XCLBase32.encode(abcd + 1));
     }
 
     private void doTest2(String expected, String input) {
