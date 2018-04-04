@@ -44,7 +44,9 @@ public class ServerJVM implements Closeable{
             long[] clusterAddresses = {serverAddress};
             this.gateway = VanillaGateway.newGateway(serverAddress, "gb1dn", clusterAddresses, mainBlockPeriodMS, localBlockPeriodMS);
             this.server = new XCLServer("one", serverAddress, serverAddress, publicKey, secretKey, gateway);
-            this.server.internal(INTERNAL);
+            //TODO : This has to be reinstated later.
+            //this.server.internal(INTERNAL);
+            this.server.internal(true);
             gateway.start();
 
             register(sourceAddress, publicKey);
