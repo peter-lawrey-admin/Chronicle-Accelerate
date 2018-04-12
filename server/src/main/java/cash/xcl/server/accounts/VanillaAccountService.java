@@ -44,13 +44,13 @@ public class VanillaAccountService extends AbstractAllMessages implements Accoun
     @Override
     public BalanceByCurrency setOpeningBalancesForAccount(OpeningBalanceEvent openingBalanceEvent) throws Exception {
         // the opening balance of an account can only be set once
-        if (balances(openingBalanceEvent.address()) == null) {
+        //if (balances(openingBalanceEvent.address()) == null) {
             BalanceByCurrency balanceByCurrency = balances.computeIfAbsent(openingBalanceEvent.address(), BalanceByCurrency::new);
             balanceByCurrency.setBalances(openingBalanceEvent.balances());
             return balanceByCurrency;
-        } else {
-            throw new IllegalArgumentException("Unable to set opening balance. Balance is already set for address " + openingBalanceEvent.address());
-        }
+        //} else {
+            //throw new IllegalArgumentException("Unable to set opening balance. Balance is already set for address " + openingBalanceEvent.address());
+       // }
     }
 
     @Override
