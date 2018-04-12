@@ -70,9 +70,9 @@ public class BalanceByCurrency extends AbstractBytesMarshallable {
     }
 
     public BalanceByCurrency setBalances(Map<String, Double> newBalances) {
-        if (!this.balances.isEmpty()) {
+        /*if (!this.balances.isEmpty()) {
             throw new IllegalArgumentException("opening balances can only be set once");
-        }
+        }*/
         newBalances.forEach((k, v) -> balances.put(XCLBase32.decodeInt(k), v));
         return this;
     }
