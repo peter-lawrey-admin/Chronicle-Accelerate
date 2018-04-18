@@ -1,0 +1,84 @@
+= Base Message Format
+Peter Lawrey
+:published_at: 30-03-2018
+
+Every messages need to have some basic feature which allow for easy extension.  This document describes the overall structure which allows for this.
+
+=== Message Types
+
+There is three families of messages allowed for in this specification.
+
+- internal binary messages
+- user specified binary messages
+- text based messages.
+
+The reason for allowing binary and text messages as these have different trade offs.  Binary messages are more efficient in terms of CPU and memory, however text messages are easier to work with and extend as their schema changes.
+
+Broadly, unless a message structure is very stable and needs maximum efficiency, text messages may be preferred.
+
+=== Message Header
+
+Each message;
+
+- starts with a 4 byte length, in little endian.  A length of less than 64 is invalid.
+- contains a 64-byte E25519 signature.
+- contains a 2-byte protocol and 2 byte message type identifier OR is a text message.
+
+|===
+| Field | Binary | Text
+| 00 - 03 | length | length
+| 04 - 67 | signature | signature
+| 68 - 69 | protocol / schema number | first 2 bytes
+| 70 - 71 | message type | second 2 bytes
+| 72+ | additional message contents.
+|===
+
+Whether a message is binary or text depends on the first two bytes.
+
+|===
+| Type | Description
+| Binary | byte 69 is 0 to 31
+| Text | byte 68 and 69 are 32 - 126
+| Reserved | all others.
+|===
+
+==== Binary formats
+
+The schema for the binary format is determined by reading the first two bytes as a little endian 2-byte integer.
+
+|===
+| Type (LE short) | Description
+| 0 - 1023 | XCL messages
+| 1024 - 8191 | User Extended messages
+|===
+
+==== Text formats
+
+Each text formats is distinguished by read the first one or two bytes as ASCII characters.
+While the messages might contain UTF-8 encoded characters, the first two cannot.
+
+|===
+| Characters | Type
+| <[!a-zA-Z] | XML
+| {" | JSon
+| [a-z] | YAML
+|===
+
+NOTE: The first two bytes cannot contain control characters such as tab, carriage return or new line.
+
+=== Name spacing text messages
+
+While collections of binary messages are distinguished by their protocol number, text messages have a prefix to distinguish the protocol name.
+
+==== JSON
+
+Use prefix attribute.
+
+==== XML
+
+Use XML naming scope
+
+==== YAML prefix
+
+YAML messages use either a prefix attribute or a YAML specific means TBD
+
