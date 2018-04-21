@@ -214,9 +214,9 @@ public abstract class WritingAllMessages implements AllMessages {
         write(transferCommand);
     }
 
-    public abstract void write(SignedMessage message);
+    public abstract void write(SignedBinaryMessage message);
 
-    public void write(long address, SignedMessage message) {
+    public void write(long address, SignedBinaryMessage message) {
         to(address).write(message);
     }
 }

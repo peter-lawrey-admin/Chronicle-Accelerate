@@ -2,13 +2,13 @@ package cash.xcl.api.tcp;
 
 import cash.xcl.api.*;
 import cash.xcl.api.dto.BaseDtoParser;
-import cash.xcl.api.dto.SignedMessage;
-import cash.xcl.api.util.PublicKeyRegistry;
-import cash.xcl.api.util.VanillaPublicKeyRegistry;
+import cash.xcl.api.dto.SignedBinaryMessage;
 import cash.xcl.net.TCPConnection;
 import cash.xcl.net.TCPServer;
 import cash.xcl.net.TCPServerConnectionListener;
 import cash.xcl.net.VanillaTCPServer;
+import cash.xcl.util.PublicKeyRegistry;
+import cash.xcl.util.VanillaPublicKeyRegistry;
 import cash.xcl.util.XCLLongObjMap;
 import net.openhft.chronicle.bytes.Bytes;
 import net.openhft.chronicle.core.Jvm;
@@ -112,7 +112,7 @@ public class XCLServer implements AllMessagesLookup, PublicKeyRegistry, Closeabl
         return publicKeyRegistry.verify(address, sigAndMsg);
     }
 
-    public void write(long toAddress, SignedMessage message) {
+    public void write(long toAddress, SignedBinaryMessage message) {
         TCPConnection tcpConnection;
         synchronized (connections) {
             tcpConnection = connections.get(toAddress);
@@ -218,7 +218,7 @@ public class XCLServer implements AllMessagesLookup, PublicKeyRegistry, Closeabl
                 dtoParser().parseOne(bytes, serverComponent);
 
             } catch (ClientException ce) {
-                SignedMessage message = ce.message();
+                SignedBinaryMessage message = ce.message();
                 try {
                     if (!message.hasSignature()) {
                         bytes.clear();
@@ -251,12 +251,12 @@ public class XCLServer implements AllMessagesLookup, PublicKeyRegistry, Closeabl
         }
 
         @Override
-        public void write(SignedMessage message) {
+        public void write(SignedBinaryMessage message) {
             XCLServer.this.write(address, message);
         }
 
         @Override
-        public void write(long address, SignedMessage message) {
+        public void write(long address, SignedBinaryMessage message) {
             XCLServer.this.write(address, message);
         }
 

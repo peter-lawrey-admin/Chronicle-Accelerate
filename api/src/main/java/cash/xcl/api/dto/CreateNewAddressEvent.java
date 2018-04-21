@@ -1,6 +1,6 @@
 package cash.xcl.api.dto;
 
-import cash.xcl.api.util.XCLBase32LongConverter;
+import cash.xcl.util.XCLBase32LongConverter;
 import net.openhft.chronicle.bytes.Bytes;
 import net.openhft.chronicle.bytes.BytesIn;
 import net.openhft.chronicle.bytes.BytesOut;
@@ -44,7 +44,7 @@ public class CreateNewAddressEvent extends SignedTracedMessage {
     }
 
     @Override
-    public int messageType() {
+    public int intMessageType() {
         return MessageTypes.CREATE_NEW_ADDRESS_EVENT;
     }
 

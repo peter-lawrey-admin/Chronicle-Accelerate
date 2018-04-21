@@ -3,7 +3,7 @@ package cash.xcl.api;
 import cash.xcl.api.dto.CreateNewAddressCommand;
 import cash.xcl.api.tcp.XCLClient;
 import cash.xcl.api.tcp.XCLServer;
-import cash.xcl.api.util.XCLBase32;
+import cash.xcl.util.XCLBase32;
 import net.openhft.chronicle.bytes.Bytes;
 import net.openhft.chronicle.core.Jvm;
 import net.openhft.chronicle.core.Mocker;
@@ -54,9 +54,15 @@ public class XCLClientServerTest {
             System.out.println(out);
         }
         assertEquals(
-                "allMessagesLookup[cash.xcl.api.tcp.XCLServer@xxxxxxxx]\n" + "createNewAddressCommand[!CreateNewAddressCommand {\n"
-                        + "  sourceAddress: 2,\n" + "  eventTime: 1,\n" + "  publicKey: !!binary O2onvM62pC1io6jQKm8Nc2UyFXcd4kOmOsBIoYtZ2ik=,\n"
-                        + "  region: USNY,\n" + "  newAddressSeed: ooooooooooooo\n" + "}\n" + "]\n",
+                "allMessagesLookup[cash.xcl.api.tcp.XCLServer@xxxxxxxx]\n" +
+                        "createNewAddressCommand[!CreateNewAddressCommand {\n" +
+                        "  sourceAddress: oooooooooooo4,\n" +
+                        "  eventTime: 1,\n" +
+                        "  publicKey: !!binary O2onvM62pC1io6jQKm8Nc2UyFXcd4kOmOsBIoYtZ2ik=,\n" +
+                        "  region: USNY,\n" +
+                        "  newAddressSeed: ooooooooooooo\n" +
+                        "}\n" +
+                        "]\n",
                 out.toString().replaceAll("\r", "").replaceAll("XCLServer@\\w+", "XCLServer@xxxxxxxx"));
 
         client.close();

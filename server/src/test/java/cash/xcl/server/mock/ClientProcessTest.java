@@ -9,19 +9,14 @@ import net.openhft.chronicle.core.Jvm;
 import net.openhft.chronicle.salt.Ed25519;
 import org.junit.Test;
 
-
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static junit.framework.TestCase.assertTrue;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class ClientProcessTest {
 
     private Bytes publicKey = Bytes.allocateDirect(Ed25519.PUBLIC_KEY_LENGTH);
     private Bytes secretKey = Bytes.allocateDirect(Ed25519.SECRET_KEY_LENGTH);
-
-
-
 
     @Test
     public void test() {
@@ -90,7 +85,7 @@ public class ClientProcessTest {
         }
 
         @Override
-        public void write(SignedMessage message) {
+        public void write(SignedBinaryMessage message) {
             System.out.println("message received " + message);
             count.incrementAndGet();
         }

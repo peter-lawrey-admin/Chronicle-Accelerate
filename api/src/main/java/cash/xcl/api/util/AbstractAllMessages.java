@@ -5,8 +5,11 @@ import cash.xcl.api.AllMessagesLookup;
 import cash.xcl.api.AllMessagesServer;
 import cash.xcl.api.dto.*;
 import cash.xcl.api.exch.*;
+import cash.xcl.util.XCLBase32LongConverter;
+import net.openhft.chronicle.wire.LongConversion;
 
 public class AbstractAllMessages implements AllMessagesServer {
+    @LongConversion(XCLBase32LongConverter.class)
     protected long address;
     protected AllMessagesLookup lookup;
 

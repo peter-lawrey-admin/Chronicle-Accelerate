@@ -4,6 +4,7 @@ import cash.xcl.api.dto.CreateNewAddressEvent;
 import cash.xcl.api.dto.OpeningBalanceEvent;
 import cash.xcl.api.dto.TransferValueCommand;
 import cash.xcl.api.util.AbstractAllMessages;
+import cash.xcl.util.XCLBase32;
 import cash.xcl.util.XCLLongObjMap;
 import net.openhft.chronicle.core.annotation.NotNull;
 import net.openhft.chronicle.core.annotation.Nullable;
@@ -44,13 +45,13 @@ public class VanillaAccountService extends AbstractAllMessages implements Accoun
     @Override
     public BalanceByCurrency setOpeningBalancesForAccount(OpeningBalanceEvent openingBalanceEvent) throws Exception {
         // the opening balance of an account can only be set once
-        //if (balances(openingBalanceEvent.address()) == null) {
+        if (balances(openingBalanceEvent.address()) == null) {
             BalanceByCurrency balanceByCurrency = balances.computeIfAbsent(openingBalanceEvent.address(), BalanceByCurrency::new);
             balanceByCurrency.setBalances(openingBalanceEvent.balances());
             return balanceByCurrency;
-        //} else {
-            //throw new IllegalArgumentException("Unable to set opening balance. Balance is already set for address " + openingBalanceEvent.address());
-       // }
+        } else {
+            throw new IllegalArgumentException("Unable to set opening balance. Balance is already set for address " + openingBalanceEvent.address());
+        }
     }
 
     @Override
@@ -59,18 +60,18 @@ public class VanillaAccountService extends AbstractAllMessages implements Accoun
         long destAddress = tvc.toAddress();
         String errorMsg = null;
         if (sourceAddress == destAddress) {
-            errorMsg = "source and destination addresses are the same " + sourceAddress;
+            errorMsg = "source and destination addresses are the same " + XCLBase32.encode(sourceAddress);
         } else {
             BalanceByCurrency sourceBalanceByCurrency = balances(sourceAddress);
             BalanceByCurrency destinationBalanceByCurrency = balances(destAddress);
             if (sourceBalanceByCurrency == null) {
-                errorMsg = "no balance records for source address " + sourceAddress;
+                errorMsg = "no balance records for source address " + XCLBase32.encode(sourceAddress);
             } else if (destinationBalanceByCurrency == null) {
-                errorMsg = "no balance records for destination address " + destAddress;
+                errorMsg = "no balance records for destination address " + XCLBase32.encode(destAddress);
             } else {
                 double sourceAccountBalance = sourceBalanceByCurrency.getBalance(tvc.currency());
                 if (tvc.amount() > sourceAccountBalance) {
-                    errorMsg = "trying to transfer " + tvc.currencyStr() + tvc.amount() + " from account: " + sourceAddress + " but balance is only: " + sourceAccountBalance;
+                    errorMsg = "trying to transfer " + tvc.currencyStr() + tvc.amount() + " from account: " + XCLBase32.encode(sourceAddress) + " but balance is only: " + sourceAccountBalance;
                 } else if (tvc.amount() <= 0) {
                     errorMsg = "amount is negative or zero : " + tvc.amount();
                 } else {

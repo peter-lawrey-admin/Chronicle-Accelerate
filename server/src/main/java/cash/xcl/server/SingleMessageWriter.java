@@ -1,7 +1,7 @@
 package cash.xcl.server;
 
 import cash.xcl.api.dto.GenericSignedMessage;
-import cash.xcl.api.dto.SignedMessage;
+import cash.xcl.api.dto.SignedBinaryMessage;
 import cash.xcl.api.tcp.WritingAllMessages;
 import cash.xcl.api.tcp.XCLServer;
 import net.openhft.chronicle.bytes.Bytes;
@@ -38,7 +38,7 @@ public class SingleMessageWriter extends WritingAllMessages implements Runnable,
     }
 
     @Override
-    public void write(SignedMessage message) {
+    public void write(SignedBinaryMessage message) {
         Bytes bytes = lock();
         try {
             long position = bytes.writePosition();

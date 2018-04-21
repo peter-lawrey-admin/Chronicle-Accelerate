@@ -1,13 +1,13 @@
 package cash.xcl.api.exch;
 
-import static cash.xcl.api.dto.Validators.notNull;
-
 import cash.xcl.api.dto.MessageTypes;
-import cash.xcl.api.dto.SignedMessage;
+import cash.xcl.api.dto.SignedBinaryMessage;
 import net.openhft.chronicle.bytes.BytesIn;
 import net.openhft.chronicle.bytes.BytesOut;
 
-public class DepositValueEvent extends SignedMessage {
+import static cash.xcl.util.Validators.notNull;
+
+public class DepositValueEvent extends SignedBinaryMessage {
 
     private DepositValueCommand depositValueCommand;
 
@@ -45,7 +45,7 @@ public class DepositValueEvent extends SignedMessage {
     }
 
     @Override
-    public int messageType() {
+    public int intMessageType() {
         return MessageTypes.DEPOSIT_VALUE_EVENT;
     }
 

@@ -6,6 +6,9 @@ public interface DtoParser<M> {
     int PROTOCOL_OFFSET = 80;
     int MESSAGE_OFFSET = 82;
 
+    int JSON_PROTOCOL = '{' + ('"' << 8);
+    int YAML_PROTOCOL = '?' + (' ' << 8);
+
     static int protocol(Bytes<?> bytes) {
         return bytes.readUnsignedShort(bytes.readPosition() + PROTOCOL_OFFSET);
     }

@@ -1,9 +1,9 @@
 package cash.xcl.server.exch;
 
-import static cash.xcl.api.dto.Validators.notInfinite;
-import static cash.xcl.api.dto.Validators.positive;
-
 import net.openhft.chronicle.core.annotation.SingleThreaded;
+
+import static cash.xcl.util.Validators.notInfinite;
+import static cash.xcl.util.Validators.positive;
 
 @SingleThreaded
 final class Account {

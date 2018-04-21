@@ -1,10 +1,13 @@
 package cash.xcl.api.dto;
 
+import cash.xcl.util.XCLBase32LongConverter;
 import net.openhft.chronicle.bytes.BytesIn;
 import net.openhft.chronicle.bytes.BytesOut;
+import net.openhft.chronicle.wire.LongConversion;
 
-public class CurrentBalanceQuery extends SignedMessage {
+public class CurrentBalanceQuery extends SignedBinaryMessage {
 
+    @LongConversion(XCLBase32LongConverter.class)
     private long address;
 
     public CurrentBalanceQuery(long sourceAddress, long eventTime, long address) {
@@ -38,7 +41,7 @@ public class CurrentBalanceQuery extends SignedMessage {
     }
 
     @Override
-    public int messageType() {
+    public int intMessageType() {
         return MessageTypes.CURRENT_BALANCE_QUERY;
     }
 

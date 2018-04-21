@@ -10,7 +10,6 @@ import net.openhft.chronicle.core.Jvm;
 import net.openhft.chronicle.core.io.Closeable;
 import net.openhft.chronicle.salt.Ed25519;
 
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
@@ -209,7 +208,7 @@ public class MultipleClientsJVM {
         }
 
         @Override
-        public void write(SignedMessage message) {
+        public void write(SignedBinaryMessage message) {
             count.incrementAndGet();
         }
 

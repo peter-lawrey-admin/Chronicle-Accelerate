@@ -12,8 +12,8 @@ import net.openhft.chronicle.core.time.TimeProvider;
 
 import java.util.Map;
 
-import static cash.xcl.api.dto.Validators.notNull;
 import static cash.xcl.api.exch.Side.BUY;
+import static cash.xcl.util.Validators.notNull;
 
 /**
  * I assume that class is always called from the same thread, so no synchronization is necessary This component does no address validation

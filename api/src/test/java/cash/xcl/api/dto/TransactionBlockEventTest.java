@@ -13,8 +13,8 @@ import org.junit.Test;
 import java.io.StringWriter;
 
 import static org.junit.Assert.assertEquals;
+
 //import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 public class TransactionBlockEventTest {
 
@@ -59,14 +59,14 @@ public class TransactionBlockEventTest {
                         new TransferValueCommand(0, 3, 1, 1.23, "XCL", "init"));
 
         assertEquals("!TransactionBlockEvent {\n" +
-                "  sourceAddress: 0,\n" +
+                "  sourceAddress: .,\n" +
                 "  eventTime: 0,\n" +
                 "  region: GBLDN,\n" +
                 "  weekNumber: 0,\n" +
                 "  blockNumber: 0,\n" +
                 "  transactions: [\n" +
-                "    !CreateNewAddressCommand { sourceAddress: 1, eventTime: 2, publicKey: !!binary AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=, region: GBLND, newAddressSeed: ooooooooooooo },\n" +
-                "    !TransferValueCommand { sourceAddress: 0, eventTime: 3, toAddress: 1, amount: 1.23, currency: XCL, reference: init }\n" +
+                "    !CreateNewAddressCommand { sourceAddress: oooooooooooo2, eventTime: 2, publicKey: !!binary AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=, region: GBLND, newAddressSeed: ooooooooooooo },\n" +
+                "    !TransferValueCommand { sourceAddress: ooooooooooooo, eventTime: 3, toAddress: oooooooooooo2, amount: 1.23, currency: XCL, reference: init }\n" +
                 "  ]\n" +
                 "}\n", tbe.toString().replaceAll("\r", ""));
     }
@@ -87,7 +87,7 @@ public class TransactionBlockEventTest {
         StringWriter out = new StringWriter();
         tbe.replay(Mocker.logging(AllMessages.class, "out ", out));
         assertEquals("out createNewAddressCommand[!CreateNewAddressCommand {\n" +
-                "  sourceAddress: 1,\n" +
+                "  sourceAddress: l,\n" +
                 "  eventTime: 2,\n" +
                 "  publicKey: !!binary AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=,\n" +
                 "  region: GBLDN,\n" +
@@ -95,9 +95,9 @@ public class TransactionBlockEventTest {
                 "}\n" +
                 "]\n" +
                 "out transferValueCommand[!TransferValueCommand {\n" +
-                "  sourceAddress: 0,\n" +
+                "  sourceAddress: o,\n" +
                 "  eventTime: 3,\n" +
-                "  toAddress: 1,\n" +
+                "  toAddress: l,\n" +
                 "  amount: 1.23,\n" +
                 "  currency: XCL,\n" +
                 "  reference: init\n" +

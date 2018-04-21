@@ -1,7 +1,7 @@
 package cash.xcl.server.messagewriter;
 
 import cash.xcl.api.dto.GenericSignedMessage;
-import cash.xcl.api.dto.SignedMessage;
+import cash.xcl.api.dto.SignedBinaryMessage;
 import cash.xcl.api.tcp.WritingAllMessages;
 import cash.xcl.api.tcp.XCLServer;
 import cash.xcl.server.MessageWriter;
@@ -45,7 +45,7 @@ public class SingleMessageWriterAtomicReference extends WritingAllMessages imple
     }
 
     @Override
-    public void write(SignedMessage message) {
+    public void write(SignedBinaryMessage message) {
         Bytes bytes = lock();
         try {
             long position = bytes.writePosition();

@@ -1,12 +1,12 @@
 ---
-to: 2
+to: test.prev
 commandFailedEvent: {
-  sourceAddress: 123123123123,
+  sourceAddress: test.server,
   eventTime: 12345678920000,
-  origSourceAddress: 2,
+  origSourceAddress: test.prev,
   origEventTime: 12345678900000,
-  origProtocol: 1,
-  origMessageType: 5,
-  reason: "java.lang.IllegalArgumentException: Unable to set opening balance. Balance is already set for address 4444"
+  origProtocol: "1",
+  origMessageType: "5",
+  reason: "java.lang.IllegalArgumentException: Unable to set opening balance. Balance is already set for address -3595573216392773633"
 }
 ---

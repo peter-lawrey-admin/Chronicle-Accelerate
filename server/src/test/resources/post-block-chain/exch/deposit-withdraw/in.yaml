@@ -1,5 +1,5 @@
 depositValueCommand: {
-    sourceAddress: 12345,
+    sourceAddress: test.exch,
     eventTime: 0,
     toAddress: 1,
     amount: 100.0,
@@ -11,7 +11,7 @@ depositValueCommand: {
 time: 10
 
 depositValueCommand: {
-    sourceAddress: 12345,
+    sourceAddress: test.exch,
     eventTime: 5,
     toAddress: 1,
     amount: 100.0,
@@ -23,7 +23,7 @@ depositValueCommand: {
 time: 20
 
 depositValueCommand: {
-    sourceAddress: 12345,
+    sourceAddress: test.exch,
     eventTime: 5,
     toAddress: 1,
     amount: 100.0,

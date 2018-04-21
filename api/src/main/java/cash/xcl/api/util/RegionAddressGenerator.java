@@ -1,5 +1,8 @@
 package cash.xcl.api.util;
 
+import cash.xcl.util.UnsignedLong;
+import cash.xcl.util.XCLBase32;
+
 import java.util.concurrent.ThreadLocalRandom;
 
 import static cash.xcl.api.util.AddressUtil.*;

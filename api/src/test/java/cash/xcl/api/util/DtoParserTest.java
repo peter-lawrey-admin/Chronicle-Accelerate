@@ -4,7 +4,7 @@ import cash.xcl.api.AllMessages;
 import cash.xcl.api.DtoParser;
 import cash.xcl.api.dto.BaseDtoParser;
 import cash.xcl.api.dto.MessageTypes;
-import cash.xcl.api.dto.SignedMessage;
+import cash.xcl.api.dto.SignedBinaryMessage;
 import net.openhft.chronicle.bytes.Bytes;
 import net.openhft.chronicle.core.Mocker;
 import org.junit.Test;
@@ -50,12 +50,12 @@ public class DtoParserTest {
         bytes.readLimit(DtoParser.MESSAGE_OFFSET + 2);
         bytes.writeUnsignedShort(DtoParser.PROTOCOL_OFFSET, 1);
         bytes.writeUnsignedShort(DtoParser.MESSAGE_OFFSET, methodId);
-        // make sure it can be parsed and has the expected messageType
+        // make sure it can be parsed and has the expected intMessageType
         parser.parseOne(bytes, Mocker.intercepting(AllMessages.class,
                 (String method, Object[] args) -> {
-                    SignedMessage arg0 = (SignedMessage) args[0];
+                    SignedBinaryMessage arg0 = (SignedBinaryMessage) args[0];
                     //                    System.out.println(arg0.getClass().getName()+".class,");
-                    assertEquals(name, methodId, arg0.messageType());
+                    assertEquals(name, methodId, arg0.intMessageType());
                 },
                 null));
     }

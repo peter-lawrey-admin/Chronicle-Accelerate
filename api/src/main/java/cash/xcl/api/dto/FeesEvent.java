@@ -3,7 +3,7 @@ package cash.xcl.api.dto;
 import net.openhft.chronicle.bytes.BytesIn;
 import net.openhft.chronicle.bytes.BytesOut;
 
-public class FeesEvent extends SignedMessage {
+public class FeesEvent extends SignedBinaryMessage {
 
     //private int weekNumber;
     private double minFeePerTransaction;
@@ -34,7 +34,7 @@ public class FeesEvent extends SignedMessage {
     }
 
     @Override
-    public int messageType() {
+    public int intMessageType() {
         return MessageTypes.FEES_EVENT;
     }
 

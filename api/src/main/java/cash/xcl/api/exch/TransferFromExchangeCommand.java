@@ -14,7 +14,7 @@ public class TransferFromExchangeCommand extends TransferValueCommand {
     }
 
     @Override
-    public int messageType() {
+    public int intMessageType() {
         return MessageTypes.TRANSFER_FROM_EXCHANGE_COMMAND;
     }
 

@@ -158,7 +158,7 @@ public class ServerAndClientProcesses extends AbstractAllMessages {
         }
 
         @Override
-        public void write(SignedMessage message) {
+        public void write(SignedBinaryMessage message) {
             System.out.println("message received " + message);
             count.incrementAndGet();
         }

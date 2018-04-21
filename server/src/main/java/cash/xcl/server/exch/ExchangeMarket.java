@@ -11,10 +11,10 @@ import java.util.Iterator;
 import java.util.PriorityQueue;
 import java.util.TreeSet;
 
-import static cash.xcl.api.dto.Validators.positive;
-import static cash.xcl.api.dto.Validators.validNumber;
 import static cash.xcl.api.exch.Side.BUY;
 import static cash.xcl.api.exch.Side.SELL;
+import static cash.xcl.util.Validators.positive;
+import static cash.xcl.util.Validators.validNumber;
 import static java.lang.Math.min;
 
 @SingleThreaded

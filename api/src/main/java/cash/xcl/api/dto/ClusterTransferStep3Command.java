@@ -4,7 +4,7 @@ import net.openhft.chronicle.bytes.Bytes;
 import net.openhft.chronicle.bytes.BytesIn;
 import net.openhft.chronicle.bytes.BytesOut;
 
-public class ClusterTransferStep3Command extends SignedMessage {
+public class ClusterTransferStep3Command extends SignedBinaryMessage {
 
     private ClusterTransferStep2Command clusterTransferStep2Command = new ClusterTransferStep2Command();
 
@@ -28,7 +28,7 @@ public class ClusterTransferStep3Command extends SignedMessage {
     }
 
     @Override
-    public int messageType() {
+    public int intMessageType() {
         return MessageTypes.CLUSTER_TRANSFER_STEP3_COMMAND;
     }
 

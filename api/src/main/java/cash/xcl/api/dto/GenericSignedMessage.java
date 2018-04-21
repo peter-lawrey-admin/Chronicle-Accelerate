@@ -4,7 +4,7 @@ import cash.xcl.api.DtoParser;
 import net.openhft.chronicle.bytes.BytesIn;
 import net.openhft.chronicle.bytes.BytesOut;
 
-public class GenericSignedMessage extends SignedMessage {
+public class GenericSignedMessage extends SignedBinaryMessage {
     public GenericSignedMessage() {
     }
 
@@ -14,7 +14,7 @@ public class GenericSignedMessage extends SignedMessage {
     }
 
     @Override
-    public int messageType() {
+    public int intMessageType() {
         return sigAndMsg().readUnsignedByte(DtoParser.MESSAGE_OFFSET);
     }
 

@@ -76,7 +76,7 @@ public class BaseDtoParser implements DtoParser<AllMessages> {
     final CurrentBalanceResponse cbr = new CurrentBalanceResponse();
     final ExchangeRateResponse err = new ExchangeRateResponse();
 
-    static <T extends SignedMessage, AM> void parse(Bytes<?> bytes, T t, AM am, BiConsumer<AM, T> tConsumer) {
+    static <T extends SignedBinaryMessage, AM> void parse(Bytes<?> bytes, T t, AM am, BiConsumer<AM, T> tConsumer) {
         t.reset();
         bytes.lenient(true);
         t.readMarshallable(bytes);
@@ -266,7 +266,7 @@ public class BaseDtoParser implements DtoParser<AllMessages> {
                 break;
 
             default:
-                throw new IllegalArgumentException("Unknown messageType: " + Integer.toHexString(messageType));
+                throw new IllegalArgumentException("Unknown intMessageType: " + Integer.toHexString(messageType));
 
         }
     }

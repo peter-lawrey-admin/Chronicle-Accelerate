@@ -1,20 +1,22 @@
 package cash.xcl.api.dto;
 
-import cash.xcl.api.util.XCLBase32;
-import cash.xcl.api.util.XCLBase32IntConverter;
+import cash.xcl.util.XCLBase32;
+import cash.xcl.util.XCLBase32LongConverter;
 import cash.xcl.util.XCLIntDoubleMap;
 import net.openhft.chronicle.bytes.BytesIn;
 import net.openhft.chronicle.bytes.BytesOut;
 import net.openhft.chronicle.core.io.IORuntimeException;
+import net.openhft.chronicle.wire.LongConversion;
 import net.openhft.chronicle.wire.WireIn;
 import net.openhft.chronicle.wire.WireOut;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 
-import static cash.xcl.api.dto.Validators.validNumber;
+import static cash.xcl.util.Validators.validNumber;
 
-public class CurrentBalanceResponse extends SignedMessage {
+public class CurrentBalanceResponse extends SignedBinaryMessage {
+    @LongConversion(XCLBase32LongConverter.class)
     private long address;
 
     private XCLIntDoubleMap balances = XCLIntDoubleMap.withExpectedSize(16);
@@ -92,9 +94,9 @@ public class CurrentBalanceResponse extends SignedMessage {
 
     @Override
     public void readMarshallable(@NotNull WireIn wire) throws IORuntimeException {
-        sourceAddress(wire.read("sourceAddress").int64());
+        sourceAddress(XCLBase32.decode(wire.read("sourceAddress").text()));
         eventTime(wire.read("eventTime").int64());
-        address(wire.read("address").int64());
+        address(XCLBase32.decode(wire.read("address").text()));
         if (balances == null) balances = XCLIntDoubleMap.withExpectedSize(8);
         wire.read("balances").marshallable(m -> {
             while (m.hasMore()) {
@@ -106,9 +108,9 @@ public class CurrentBalanceResponse extends SignedMessage {
 
     @Override
     public void writeMarshallable(@NotNull WireOut wire) {
-        wire.write("sourceAddress").int64(sourceAddress());
+        wire.write("sourceAddress").text(XCLBase32.encode(sourceAddress()));
         wire.write("eventTime").int64(eventTime());
-        wire.write("address").int64(address());
+        wire.write("address").text(XCLBase32.encode(address()));
         wire.write("balances").marshallable(m -> {
             balances.forEach((c, v) -> {
                 wire.write(XCLBase32.encodeIntUpper(c)).float64(v);
@@ -143,7 +145,7 @@ public class CurrentBalanceResponse extends SignedMessage {
     }
 
     @Override
-    public int messageType() {
+    public int intMessageType() {
         return MessageTypes.CURRENT_BALANCE_RESPONSE;
     }
 

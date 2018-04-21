@@ -1,13 +1,14 @@
 package cash.xcl.api.util;
 
+import cash.xcl.util.XCLBase32;
 import net.openhft.chronicle.bytes.Bytes;
 import org.junit.Test;
 
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
-import static cash.xcl.api.util.XCLBase32.decode;
-import static cash.xcl.api.util.XCLBase32.encode;
+import static cash.xcl.util.XCLBase32.decode;
+import static cash.xcl.util.XCLBase32.encode;
 import static org.junit.Assert.assertEquals;
 
 public class XCLBase32Test {

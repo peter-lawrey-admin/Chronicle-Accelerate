@@ -1,4 +1,4 @@
-package cash.xcl.api.dto;
+package cash.xcl.util;
 
 import static java.lang.Double.isInfinite;
 import static java.lang.Double.isNaN;

@@ -5,7 +5,7 @@ import net.openhft.chronicle.bytes.BytesOut;
 import net.openhft.chronicle.core.io.IORuntimeException;
 import net.openhft.chronicle.wire.AbstractBytesMarshallable;
 
-import static cash.xcl.api.dto.Validators.*;
+import static cash.xcl.util.Validators.*;
 
 public class ExecutionReport extends AbstractBytesMarshallable {
 

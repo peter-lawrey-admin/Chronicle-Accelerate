@@ -4,7 +4,6 @@ import cash.xcl.api.AllMessages;
 import cash.xcl.api.dto.*;
 import cash.xcl.api.tcp.WritingAllMessages;
 import cash.xcl.api.tcp.XCLClient;
-import cash.xcl.server.mock.ServerJVM;
 import net.openhft.chronicle.bytes.Bytes;
 import net.openhft.chronicle.core.Jvm;
 import net.openhft.chronicle.core.io.Closeable;
@@ -213,7 +212,7 @@ public class RegionalClientBenchmarkMain {
         }
 
         @Override
-        public void write(SignedMessage message) {
+        public void write(SignedBinaryMessage message) {
             count.incrementAndGet();
         }
 

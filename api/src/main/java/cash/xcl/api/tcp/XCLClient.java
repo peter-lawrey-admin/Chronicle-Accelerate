@@ -3,12 +3,12 @@ package cash.xcl.api.tcp;
 import cash.xcl.api.AllMessages;
 import cash.xcl.api.DtoParser;
 import cash.xcl.api.dto.BaseDtoParser;
-import cash.xcl.api.dto.SignedMessage;
+import cash.xcl.api.dto.SignedBinaryMessage;
 import cash.xcl.api.dto.SubscriptionQuery;
-import cash.xcl.api.util.XCLBase32;
 import cash.xcl.net.TCPClientListener;
 import cash.xcl.net.TCPConnection;
 import cash.xcl.net.VanillaTCPClient;
+import cash.xcl.util.XCLBase32;
 import cash.xcl.util.XCLLongObjMap;
 import net.openhft.chronicle.bytes.Bytes;
 import net.openhft.chronicle.bytes.BytesStore;
@@ -81,7 +81,7 @@ public class XCLClient extends WritingAllMessages implements Closeable, TCPConne
     }
 
     @Override
-    public void write(SignedMessage message) {
+    public void write(SignedBinaryMessage message) {
         try {
             if (!message.hasSignature()) {
                 if (message.eventTime() == 0)

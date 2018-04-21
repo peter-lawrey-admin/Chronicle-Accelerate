@@ -1,16 +1,15 @@
-package cash.xcl.api.util;
+package cash.xcl.util;
 
-import net.openhft.chronicle.core.util.StringUtils;
 import net.openhft.chronicle.wire.IntConverter;
 
 public class RegionIntConverter implements IntConverter {
-    public static RegionIntConverter INSTANCE = new RegionIntConverter();
+    public static final String MAIN_CODE = "4main";
+    public static final int MAIN_REGINT = XCLBase32.decodeInt(MAIN_CODE);
+    public static final RegionIntConverter INSTANCE = new RegionIntConverter();
 
     @Override
     public int parse(CharSequence text) {
-        return StringUtils.isEqual(text, CountryRegion.MAIN_CODE)
-                ? 0
-                : XCLBase32.decodeInt(text);
+        return XCLBase32.decodeInt(text);
     }
 
     @Override

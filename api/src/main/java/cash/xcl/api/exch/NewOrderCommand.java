@@ -1,13 +1,13 @@
 package cash.xcl.api.exch;
 
 import cash.xcl.api.dto.MessageTypes;
-import cash.xcl.api.dto.SignedMessage;
+import cash.xcl.api.dto.SignedBinaryMessage;
 import net.openhft.chronicle.bytes.BytesIn;
 import net.openhft.chronicle.bytes.BytesOut;
 
-import static cash.xcl.api.dto.Validators.*;
+import static cash.xcl.util.Validators.*;
 
-public class NewOrderCommand extends SignedMessage {
+public class NewOrderCommand extends SignedBinaryMessage {
 
     private Side action;
     private double quantity;
@@ -54,7 +54,7 @@ public class NewOrderCommand extends SignedMessage {
     }
 
     @Override
-    public int messageType() {
+    public int intMessageType() {
         return MessageTypes.NEW_ORDER_COMMAND;
     }
 
