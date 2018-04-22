@@ -13,6 +13,10 @@
 
     <dependencies>
         <dependency>
+            <groupId>net.openhft</groupId>
+            <artifactId>chronicle-wire</artifactId>
+        </dependency>
+        <dependency>
             <groupId>cash.xcl</groupId>
             <artifactId>util</artifactId>
             <version>${project.version}</version>
