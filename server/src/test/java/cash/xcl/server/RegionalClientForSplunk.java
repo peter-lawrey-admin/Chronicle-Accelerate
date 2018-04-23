@@ -8,6 +8,8 @@ import net.openhft.chronicle.bytes.Bytes;
 import net.openhft.chronicle.core.Jvm;
 import net.openhft.chronicle.core.io.Closeable;
 import net.openhft.chronicle.salt.Ed25519;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -34,32 +36,44 @@ as a core service
 
 */
 
-public class RegionalClientBenchmarkMain {
+public class RegionalClientForSplunk {
+
+
+    private static final Logger log = LoggerFactory.getLogger(RegionalClientForSplunk.class);
+
+
+
     static final boolean INTERNAL = Boolean.getBoolean("internal");
     static final String HOST = System.getProperty("host", "localhost");
     private int serverAddress = 10001;
     private Bytes publicKey = Bytes.allocateDirect(Ed25519.PUBLIC_KEY_LENGTH);
     private Bytes secretKey = Bytes.allocateDirect(Ed25519.SECRET_KEY_LENGTH);
 
-    static int ITERATIONS = 3;
-    static int TRANSFERS_PER_ITERATION = INTERNAL ? 1_000_000 : 20_000;
+    // todo:
+    // on Windows - more that 100 iterations will cause issues with libsodium.dll
+    static int ITERATIONS = 100;
+
+    // small number of transfers per iteration - so that we can update Splunk more often
+    static int TRANSFERS_PER_ITERATION = 1_000;
     static int TOTAL_TRANSFERS = ITERATIONS * TRANSFERS_PER_ITERATION;
 
     public static void main(String[] args) throws IOException, ExecutionException, InterruptedException {
-        System.out.println("internal= " + INTERNAL);
-        RegionalClientBenchmarkMain benchmarkMain = null;
+        log.info("internal= " + INTERNAL);
+        RegionalClientForSplunk benchmarkMain = null;
         try {
-            benchmarkMain = new RegionalClientBenchmarkMain(ITERATIONS, 8);
-            String oneThread = benchmarkMain.benchmark(ITERATIONS, 1, TRANSFERS_PER_ITERATION);
-            String twoThreads = benchmarkMain.benchmark(ITERATIONS, 2, TRANSFERS_PER_ITERATION);
-            String fourThreads = benchmarkMain.benchmark(ITERATIONS, 4, TRANSFERS_PER_ITERATION);
-            String eightThreads = benchmarkMain.benchmark(ITERATIONS, 8, TRANSFERS_PER_ITERATION);
-            System.out.println("Total number of messages per benchmark = " + TOTAL_TRANSFERS);
-            System.out.println("Including signing and verifying = " + !INTERNAL);
-            System.out.println("benchmark - oneThread = " + oneThread + " messages per second");
-            System.out.println("benchmark - twoThreads = " + twoThreads + " messages per second");
-            System.out.println("benchmark - fourThreads = " + fourThreads + " messages per second");
-            System.out.println("benchmark - eightThreads = " + eightThreads + " messages per second");
+            while(true) {
+                benchmarkMain = new RegionalClientForSplunk(ITERATIONS, 8);
+                String oneThread = benchmarkMain.benchmark(ITERATIONS, 1, TRANSFERS_PER_ITERATION);
+                String twoThreads = benchmarkMain.benchmark(ITERATIONS, 2, TRANSFERS_PER_ITERATION);
+                String fourThreads = benchmarkMain.benchmark(ITERATIONS, 4, TRANSFERS_PER_ITERATION);
+                String eightThreads = benchmarkMain.benchmark(ITERATIONS, 8, TRANSFERS_PER_ITERATION);
+                log.info("Total number of messages per benchmark = " + TOTAL_TRANSFERS);
+                log.info("Including signing and verifying = " + !INTERNAL);
+                log.info("benchmark - oneThread = " + oneThread + " messages per second");
+                log.info("benchmark - twoThreads = " + twoThreads + " messages per second");
+                log.info("benchmark - fourThreads = " + fourThreads + " messages per second");
+                log.info("benchmark - eightThreads = " + eightThreads + " messages per second");
+            }
         } finally {
             //Jvm.pause(1000);
             //benchmarkMain.close();
@@ -68,7 +82,7 @@ public class RegionalClientBenchmarkMain {
     }
 
 
-    public RegionalClientBenchmarkMain(int iterations, int clientThreads) {
+    public RegionalClientForSplunk(int iterations, int clientThreads) {
 
         Ed25519.generatePublicAndSecretKey(publicKey, secretKey);
 
@@ -82,7 +96,7 @@ public class RegionalClientBenchmarkMain {
                     AtomicInteger count = new AtomicInteger();
                     client = new XCLClient("client", HOST,
                             serverAddress, sourceAddress, secretKey,
-                            new RegionalClientBenchmarkMain.MyWritingAllMessages(count));
+                            new RegionalClientForSplunk.MyWritingAllMessages(count));
 
                     // register public keys
                     client.internal(true);
@@ -112,11 +126,11 @@ public class RegionalClientBenchmarkMain {
         client.openingBalanceEvent(obe1);
     }
 
-    private String benchmark(int iterations, int clientThreads, int transfers) throws InterruptedException, ExecutionException {
+    private String benchmark(int iterations, int clientThreads, int transfersPerIteration) throws InterruptedException, ExecutionException {
 
         Thread.sleep(2000);
 
-        System.out.println(" STARTING BENCHMARK TEST **********************************************");
+        log.info(" STARTING BENCHMARK TEST **********************************************");
         // number of messages = msgs * number of iterations
         // number of messages = 10000 * 10 = 100,000
         double allIterationsTotalTimeSecs = 0;
@@ -140,21 +154,25 @@ public class RegionalClientBenchmarkMain {
                         client.subscriptionQuery(new SubscriptionQuery(sourceAddress, 0));
                         TransferValueCommand tvc1 = new TransferValueCommand(sourceAddress, 0, destinationAddress, 1e-9, "USD", "");
                         int c = 0;
-                        for (int i = 0; i < transfers; i += clientThreads) {
+                        int requests = 0;
+                        for (int i = 0; i < transfersPerIteration; i += clientThreads) {
                             client.transferValueCommand(tvc1);
+                            requests++;
                             if (++c > 10000 && c % 1000 == 0)
                                 Jvm.pause(1);
                         }
                         sent.add("DONE");
                         long last = System.currentTimeMillis() + 1000;
-                        for (int i = 0; i < transfers; i += clientThreads) {
+                        int replies = 0;
+                        for (int transferNumber = 0; transferNumber < transfersPerIteration; transferNumber += clientThreads) {
                             while (count.get() <= 0) {
                                 if (System.currentTimeMillis() > last + 1000) {
-                                    System.out.println("pause " + i);
+                                    log.info("waiting, transferNumber={}, sourceAddress={}, requests={}, replies={}", transferNumber, sourceAddress,requests, replies);
                                     last = System.currentTimeMillis();
                                 }
                                 Jvm.pause(10);
                             }
+                            replies++;
                             count.decrementAndGet();
                         }
                         //client.close();
@@ -176,25 +194,37 @@ public class RegionalClientBenchmarkMain {
 
             double time = (System.nanoTime() - start) / 1e9;
 
-            System.out.printf("Iteration %d - Throughput: %,d sustained, %,d burst messages per sec%n",
-                    iterationNumber, (int) (transfers / time), (int) (transfers / sentTime));
+
+
+            log.info("Iteration={}, SustainedTransactionsPerSec={}, BurstTransactionsPerSec={}, clientThreads={}",
+                    iterationNumber,
+                    (int) (transfersPerIteration / time),
+                    (int) (transfersPerIteration / sentTime),
+                    clientThreads);
+
             allIterationsTotalTimeSecs += time;
             service.shutdown();
         }
 
-        int sentAverage = (int) (transfers * iterations / totalSentTime);
-        int average = (int) (transfers * iterations / allIterationsTotalTimeSecs);
+        int sentAverage = (int) (transfersPerIteration * iterations / totalSentTime);
+        int average = (int) (transfersPerIteration * iterations / allIterationsTotalTimeSecs);
 
-        System.out.printf("Average Throughput after sending %d messages (%d messages * %d times) using %d client threads = %,d / sec, %,d /sec burst%n",
-                transfers * iterations,
-                transfers,
-                iterations,
+        log.info("Benchmark for: " +
+                        "clientThreads={}, " +
+                        "iterations={} and " +
+                        "transactionsPerIteration={}: " +
+                        "TotalNumberOfTransactions={} " +
+                        "AverageSUSTAINEDtransactionsPerSec={} " +
+                        "AverageBURSTtransactionsPerSec={} ",
                 clientThreads,
+                iterations,
+                transfersPerIteration,
+                transfersPerIteration * iterations,
                 average,
                 sentAverage);
 
 
-        return average + " sustained, " + sentAverage + " burst";
+        return average + " transactions/sec sustained, " + sentAverage + " transactions/sec burst";
     }
 
 

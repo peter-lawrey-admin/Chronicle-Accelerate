@@ -1,0 +1,214 @@
+<dashboard>
+    <label>XCL8 dashboard from RegionalClient logs</label>
+    <description>XCL8 Iteration</description>
+    <row>
+        <panel>
+            <title>Burst txns/sec  - last 5 minutes in real time</title>
+            <chart>
+                <search>
+                    <query>index=_* OR index=* sourcetype=xcl7 Iteration SustainedTransactionsPerSec BurstTransactionsPerSec clientThreads | table _time BurstTransactionsPerSec</query>
+                    <earliest>rt-5m</earliest>
+                    <latest>rt</latest>
+                    <sampleRatio>1</sampleRatio>
+                </search>
+                <option name="charting.chart">line</option>
+                <option name="charting.drilldown">none</option>
+                <option name="refresh.display">progressbar</option>
+            </chart>
+        </panel>
+    </row>
+    <row>
+        <panel>
+            <title>Sustained txns/sec  - last 5 minutes in real time</title>
+            <chart>
+                <search>
+                    <query>index=_* OR index=* sourcetype=xcl7 Iteration SustainedTransactionsPerSec BurstTransactionsPerSec clientThreads | table _time SustainedTransactionsPerSec</query>
+                    <earliest>rt-5m</earliest>
+                    <latest>rt</latest>
+                    <sampleRatio>1</sampleRatio>
+                </search>
+                <option name="charting.chart">line</option>
+                <option name="charting.drilldown">none</option>
+                <option name="refresh.display">progressbar</option>
+            </chart>
+        </panel>
+    </row>
+    <row>
+        <panel>
+            <title>ALL</title>
+            <chart>
+                <search>
+                    <query>index=_* OR index=* sourcetype=xcl7 clientThreads iterations transactionsPerIteration TotalNumberOfTransactions AverageSUSTAINEDtransactionsPerSec AverageBURSTtransactionsPerSec | table _time clientThreads iterations transactionsPerIteration TotalNumberOfTransactions AverageSUSTAINEDtransactionsPerSec AverageBURSTtransactionsPerSec</query>
+                    <earliest>-24h@h</earliest>
+                    <latest>now</latest>
+                    <sampleRatio>1</sampleRatio>
+                </search>
+                <option name="charting.chart">line</option>
+                <option name="charting.drilldown">none</option>
+            </chart>
+        </panel>
+    </row>
+    <row>
+        <panel>
+            <chart>
+                <search>
+                    <query>index=_* OR index=* sourcetype=xcl7 clientThreads iterations transactionsPerIteration TotalNumberOfTransactions AverageSUSTAINEDtransactionsPerSec AverageBURSTtransactionsPerSec | table _time AverageSUSTAINEDtransactionsPerSec AverageBURSTtransactionsPerSec by clientThreads iterations transactionsPerIteration TotalNumberOfTransactions</query>
+                    <earliest>-24h@h</earliest>
+                    <latest>now</latest>
+                    <sampleRatio>1</sampleRatio>
+                </search>
+                <option name="charting.chart">line</option>
+                <option name="charting.drilldown">none</option>
+            </chart>
+        </panel>
+    </row>
+    <row>
+        <panel>
+            <title>Average SUSTAINED txns/sec - last 5 minutes in real time</title>
+            <chart>
+                <search>
+                    <query>index=_* OR index=* sourcetype=xcl7 | where AverageSUSTAINEDtransactionsPerSec &gt; 0 | table  _time AverageSUSTAINEDtransactionsPerSec</query>
+                    <earliest>rt-5m</earliest>
+                    <latest>rt</latest>
+                    <sampleRatio>1</sampleRatio>
+                </search>
+                <option name="charting.chart">line</option>
+                <option name="charting.drilldown">none</option>
+                <option name="refresh.display">progressbar</option>
+            </chart>
+        </panel>
+    </row>
+    <row>
+        <panel>
+            <title>Average BURST txns/sec - last 5 minutes in real time</title>
+            <chart>
+                <search>
+                    <query>index=_* OR index=* sourcetype=xcl7 iterations clientThreads  transactionsPerIteration TotalNumberOfTransactions AverageSUSTAINEDtransactionsPerSec AverageBURSTtransactionsPerSec | table _time AverageBURSTtransactionsPerSec</query>
+                    <earliest>rt-5m</earliest>
+                    <latest>rt</latest>
+                    <sampleRatio>1</sampleRatio>
+                </search>
+                <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+                <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+                <option name="charting.axisTitleX.visibility">visible</option>
+                <option name="charting.axisTitleY.visibility">visible</option>
+                <option name="charting.axisTitleY2.visibility">visible</option>
+                <option name="charting.axisX.abbreviation">none</option>
+                <option name="charting.axisX.scale">linear</option>
+                <option name="charting.axisY.abbreviation">none</option>
+                <option name="charting.axisY.scale">linear</option>
+                <option name="charting.axisY2.abbreviation">none</option>
+                <option name="charting.axisY2.enabled">0</option>
+                <option name="charting.axisY2.scale">inherit</option>
+                <option name="charting.chart">line</option>
+                <option name="charting.chart.bubbleMaximumSize">50</option>
+                <option name="charting.chart.bubbleMinimumSize">10</option>
+                <option name="charting.chart.bubbleSizeBy">area</option>
+                <option name="charting.chart.nullValueMode">gaps</option>
+                <option name="charting.chart.showDataLabels">none</option>
+                <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+                <option name="charting.chart.stackMode">default</option>
+                <option name="charting.chart.style">shiny</option>
+                <option name="charting.drilldown">none</option>
+                <option name="charting.layout.splitSeries">0</option>
+                <option name="charting.layout.splitSeries.allowIndependentYRanges">0</option>
+                <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+                <option name="charting.legend.mode">standard</option>
+                <option name="charting.legend.placement">right</option>
+                <option name="charting.lineWidth">2</option>
+                <option name="refresh.display">progressbar</option>
+                <option name="trellis.enabled">0</option>
+                <option name="trellis.scales.shared">1</option>
+                <option name="trellis.size">medium</option>
+            </chart>
+        </panel>
+    </row>
+    <row>
+        <panel>
+            <title>SUSTAINED txns/sec by clientThreads</title>
+            <chart>
+                <search>
+                    <query>index=_* OR index=* sourcetype=xcl7 iterations clientThreads  transactionsPerIteration TotalNumberOfTransactions AverageSUSTAINEDtransactionsPerSec AverageBURSTtransactionsPerSec | where AverageBURSTtransactionsPerSec &gt; 0 | chart max(AverageSUSTAINEDtransactionsPerSec) over clientThreads</query>
+                    <earliest>-24h@h</earliest>
+                    <latest>now</latest>
+                    <sampleRatio>1</sampleRatio>
+                </search>
+                <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+                <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+                <option name="charting.axisTitleX.visibility">visible</option>
+                <option name="charting.axisTitleY.visibility">visible</option>
+                <option name="charting.axisTitleY2.visibility">visible</option>
+                <option name="charting.axisX.abbreviation">none</option>
+                <option name="charting.axisX.scale">linear</option>
+                <option name="charting.axisY.abbreviation">none</option>
+                <option name="charting.axisY.scale">linear</option>
+                <option name="charting.axisY2.abbreviation">none</option>
+                <option name="charting.axisY2.enabled">0</option>
+                <option name="charting.axisY2.scale">inherit</option>
+                <option name="charting.chart">line</option>
+                <option name="charting.chart.bubbleMaximumSize">50</option>
+                <option name="charting.chart.bubbleMinimumSize">10</option>
+                <option name="charting.chart.bubbleSizeBy">area</option>
+                <option name="charting.chart.nullValueMode">gaps</option>
+                <option name="charting.chart.showDataLabels">none</option>
+                <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+                <option name="charting.chart.stackMode">default</option>
+                <option name="charting.chart.style">shiny</option>
+                <option name="charting.drilldown">none</option>
+                <option name="charting.layout.splitSeries">0</option>
+                <option name="charting.layout.splitSeries.allowIndependentYRanges">0</option>
+                <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+                <option name="charting.legend.mode">standard</option>
+                <option name="charting.legend.placement">right</option>
+                <option name="charting.lineWidth">2</option>
+                <option name="trellis.enabled">0</option>
+                <option name="trellis.scales.shared">1</option>
+                <option name="trellis.size">medium</option>
+            </chart>
+        </panel>
+    </row>
+    <row>
+        <panel>
+            <title>BURST txns/sec by clientThreads</title>
+            <chart>
+                <search>
+                    <query>index=_* OR index=* sourcetype=xcl7 iterations clientThreads  transactionsPerIteration TotalNumberOfTransactions AverageSUSTAINEDtransactionsPerSec AverageBURSTtransactionsPerSec | where AverageBURSTtransactionsPerSec &gt; 0 | chart max(AverageBURSTtransactionsPerSec) over clientThreads</query>
+                    <earliest>-24h@h</earliest>
+                    <latest>now</latest>
+                    <sampleRatio>1</sampleRatio>
+                </search>
+                <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+                <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+                <option name="charting.axisTitleX.visibility">visible</option>
+                <option name="charting.axisTitleY.visibility">visible</option>
+                <option name="charting.axisTitleY2.visibility">visible</option>
+                <option name="charting.axisX.abbreviation">none</option>
+                <option name="charting.axisX.scale">linear</option>
+                <option name="charting.axisY.abbreviation">none</option>
+                <option name="charting.axisY.scale">linear</option>
+                <option name="charting.axisY2.abbreviation">none</option>
+                <option name="charting.axisY2.enabled">0</option>
+                <option name="charting.axisY2.scale">inherit</option>
+                <option name="charting.chart">line</option>
+                <option name="charting.chart.bubbleMaximumSize">50</option>
+                <option name="charting.chart.bubbleMinimumSize">10</option>
+                <option name="charting.chart.bubbleSizeBy">area</option>
+                <option name="charting.chart.nullValueMode">gaps</option>
+                <option name="charting.chart.showDataLabels">none</option>
+                <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+                <option name="charting.chart.stackMode">default</option>
+                <option name="charting.chart.style">shiny</option>
+                <option name="charting.drilldown">none</option>
+                <option name="charting.layout.splitSeries">0</option>
+                <option name="charting.layout.splitSeries.allowIndependentYRanges">0</option>
+                <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+                <option name="charting.legend.mode">standard</option>
+                <option name="charting.legend.placement">right</option>
+                <option name="charting.lineWidth">2</option>
+                <option name="trellis.enabled">0</option>
+                <option name="trellis.scales.shared">1</option>
+                <option name="trellis.size">medium</option>
+            </chart>
+        </panel>
+    </row>
+</dashboard>
