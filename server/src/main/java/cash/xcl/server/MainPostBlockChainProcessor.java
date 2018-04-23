@@ -5,6 +5,7 @@ import cash.xcl.api.AllMessagesServer;
 import cash.xcl.api.dto.CommandFailedEvent;
 import cash.xcl.api.dto.CreateNewAddressCommand;
 import cash.xcl.api.dto.CreateNewAddressEvent;
+import cash.xcl.util.XCLBase32;
 import net.openhft.chronicle.bytes.Bytes;
 import net.openhft.chronicle.core.Jvm;
 
@@ -18,7 +19,7 @@ public class MainPostBlockChainProcessor extends LocalPostBlockChainProcessor {
 
     // Used for testing purposes
     MainPostBlockChainProcessor(AllMessagesServer allMessagesServer) {
-        super(121212121212L);
+        super(XCLBase32.decode("test.main"));
         addressService = new AddressService();
         allMessagesLookup(allMessagesServer);
     }

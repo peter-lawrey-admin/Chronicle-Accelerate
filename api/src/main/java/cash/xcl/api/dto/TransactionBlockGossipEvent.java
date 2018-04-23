@@ -1,6 +1,6 @@
 package cash.xcl.api.dto;
 
-import cash.xcl.api.util.RegionIntConverter;
+import cash.xcl.util.RegionIntConverter;
 import cash.xcl.util.XCLLongLongMap;
 import net.openhft.chronicle.bytes.BytesIn;
 import net.openhft.chronicle.bytes.BytesOut;
@@ -8,7 +8,7 @@ import net.openhft.chronicle.wire.IntConversion;
 import net.openhft.chronicle.wire.Marshallable;
 import org.jetbrains.annotations.NotNull;
 
-public class TransactionBlockGossipEvent extends SignedMessage {
+public class TransactionBlockGossipEvent extends SignedBinaryMessage {
     @IntConversion(RegionIntConverter.class)
     private int region;
     private int weekNumber;
@@ -53,7 +53,7 @@ public class TransactionBlockGossipEvent extends SignedMessage {
     }
 
     @Override
-    public int messageType() {
+    public int intMessageType() {
         return MessageTypes.TRANSACTION_BLOCK_GOSSIP_EVENT;
     }
 

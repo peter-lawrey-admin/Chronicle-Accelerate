@@ -7,8 +7,8 @@ import cash.xcl.api.exch.DepositValueCommand;
 import cash.xcl.api.exch.WithdrawValueCommand;
 import cash.xcl.api.util.AbstractAllMessages;
 import cash.xcl.api.util.CountryRegion;
-import cash.xcl.api.util.PublicKeyRegistry;
-import cash.xcl.api.util.RegionIntConverter;
+import cash.xcl.util.PublicKeyRegistry;
+import cash.xcl.util.RegionIntConverter;
 import net.openhft.chronicle.core.annotation.NotNull;
 
 /**

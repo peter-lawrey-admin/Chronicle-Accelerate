@@ -3,7 +3,7 @@ package cash.xcl.api.dto;
 import net.openhft.chronicle.bytes.BytesIn;
 import net.openhft.chronicle.bytes.BytesOut;
 
-public class ExchangeRateEvent extends SignedMessage {
+public class ExchangeRateEvent extends SignedBinaryMessage {
     private String symbol1symbol2;
     private double midPrice, spreadPrice;
 
@@ -42,7 +42,7 @@ public class ExchangeRateEvent extends SignedMessage {
     }
 
     @Override
-    public int messageType() {
+    public int intMessageType() {
         return MessageTypes.EXCHANGE_RATE_EVENT;
     }
 

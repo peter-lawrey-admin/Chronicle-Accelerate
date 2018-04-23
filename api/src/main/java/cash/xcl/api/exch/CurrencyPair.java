@@ -1,6 +1,6 @@
 package cash.xcl.api.exch;
 
-import cash.xcl.api.dto.Validators;
+import cash.xcl.util.Validators;
 import net.openhft.chronicle.bytes.BytesIn;
 import net.openhft.chronicle.bytes.BytesOut;
 import net.openhft.chronicle.core.io.IORuntimeException;

@@ -1,13 +1,13 @@
 ---
 ---
-to: 4444
+to: src.addr
 transferValueEvent: {
-  sourceAddress: 123123123123,
+  sourceAddress: test.server,
   eventTime: 12345678920000,
   transferValueCommand: {
-    sourceAddress: 4444,
+    sourceAddress: src.addr,
     eventTime: 12345678920000,
-    toAddress: 5555,
+    toAddress: dst.addr,
     amount: 999.0,
     currency: XCL,
     reference: ref1

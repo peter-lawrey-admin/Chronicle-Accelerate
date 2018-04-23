@@ -1,7 +1,7 @@
 openingBalanceEvent: {
     sourceAddress: 2,
     eventTime: 12345678900000,
-    address: 4444,
+    address: src.addr,
     balances: {
       XCL: 1000.0,
       EUR: 2000.0,

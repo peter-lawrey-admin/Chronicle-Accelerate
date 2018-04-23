@@ -3,7 +3,7 @@ package cash.xcl.api.dto;
 import net.openhft.chronicle.bytes.BytesIn;
 import net.openhft.chronicle.bytes.BytesOut;
 
-public class TransactionBlockVoteEvent extends SignedMessage {
+public class TransactionBlockVoteEvent extends SignedBinaryMessage {
     private TransactionBlockGossipEvent gossipEvent;
 
     public TransactionBlockVoteEvent(long sourceAddress, long eventTime, TransactionBlockGossipEvent gossipEvent) {
@@ -25,7 +25,7 @@ public class TransactionBlockVoteEvent extends SignedMessage {
     }
 
     @Override
-    public int messageType() {
+    public int intMessageType() {
         return MessageTypes.TRANSACTION_BLOCK_VOTE_EVENT;
     }
 

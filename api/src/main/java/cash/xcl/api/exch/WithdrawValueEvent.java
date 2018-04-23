@@ -1,13 +1,13 @@
 package cash.xcl.api.exch;
 
-import static cash.xcl.api.dto.Validators.notNull;
-
 import cash.xcl.api.dto.MessageTypes;
-import cash.xcl.api.dto.SignedMessage;
+import cash.xcl.api.dto.SignedBinaryMessage;
 import net.openhft.chronicle.bytes.BytesIn;
 import net.openhft.chronicle.bytes.BytesOut;
 
-public class WithdrawValueEvent extends SignedMessage {
+import static cash.xcl.util.Validators.notNull;
+
+public class WithdrawValueEvent extends SignedBinaryMessage {
     private WithdrawValueCommand withdrawValueCommand;
 
     public WithdrawValueEvent(long sourceAddress, long eventTime, WithdrawValueCommand withdrawValueCommand) {
@@ -42,7 +42,7 @@ public class WithdrawValueEvent extends SignedMessage {
     }
 
     @Override
-    public int messageType() {
+    public int intMessageType() {
         return MessageTypes.WITHDRAW_VALUE_EVENT;
     }
 

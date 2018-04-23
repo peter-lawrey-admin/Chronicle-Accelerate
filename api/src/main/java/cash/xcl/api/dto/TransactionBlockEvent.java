@@ -3,7 +3,7 @@ package cash.xcl.api.dto;
 import cash.xcl.api.AllMessages;
 import cash.xcl.api.DtoParser;
 import cash.xcl.api.tcp.WritingAllMessages;
-import cash.xcl.api.util.RegionIntConverter;
+import cash.xcl.util.RegionIntConverter;
 import net.openhft.chronicle.bytes.*;
 import net.openhft.chronicle.core.Jvm;
 import net.openhft.chronicle.core.io.IORuntimeException;
@@ -14,7 +14,7 @@ import net.openhft.chronicle.wire.WireOut;
 import org.jetbrains.annotations.NotNull;
 
 
-public class TransactionBlockEvent extends SignedMessage {
+public class TransactionBlockEvent extends SignedBinaryMessage {
     @IntConversion(RegionIntConverter.class)
     private int region;
     private int weekNumber;
@@ -81,7 +81,7 @@ public class TransactionBlockEvent extends SignedMessage {
         count = 0;
     }
 
-    public TransactionBlockEvent addTransaction(SignedMessage message) {
+    public TransactionBlockEvent addTransaction(SignedBinaryMessage message) {
         count++;
         transactions.writeMarshallableLength16(message);
         //System.out.println("transactions writePosition " + transactions.writePosition() );
@@ -133,7 +133,7 @@ public class TransactionBlockEvent extends SignedMessage {
         super.readMarshallable(wire);
         wire.read("transactions").sequence(this, (tbe, in) -> {
             while (in.hasNextSequenceItem()) {
-                tbe.addTransaction(in.object(SignedMessage.class));
+                tbe.addTransaction(in.object(SignedBinaryMessage.class));
             }
         });
         //        System.out.println("Read " + this);
@@ -172,7 +172,7 @@ public class TransactionBlockEvent extends SignedMessage {
             }
 
             @Override
-            public void write(SignedMessage message) {
+            public void write(SignedBinaryMessage message) {
                 out.object(message);
             }
 
@@ -184,7 +184,7 @@ public class TransactionBlockEvent extends SignedMessage {
     }
 
     @Override
-    public int messageType() {
+    public int intMessageType() {
         return MessageTypes.TRANSACTION_BLOCK_EVENT;
     }
 

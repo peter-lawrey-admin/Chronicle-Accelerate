@@ -1,7 +1,7 @@
 openingBalanceEvent: {
     sourceAddress: 2,
     eventTime: 12345678900000,
-    address: 4444,
+    address: src.addr,
     balances: {
       XCL: 1000.0,
       EUR: 1000.0,
@@ -12,7 +12,7 @@ openingBalanceEvent: {
 openingBalanceEvent: {
     sourceAddress: 2,
     eventTime: 12345678900000,
-    address: 5555,
+    address: dst.addr,
     balances: {
       XCL: 0.0,
       EUR: 0.0,
@@ -21,9 +21,9 @@ openingBalanceEvent: {
 }
 ---
 transferValueCommand: {
-  sourceAddress: 4444,
+  sourceAddress: src.addr,
   eventTime: 12345678920000,
-  toAddress: 5555,
+  toAddress: dst.addr,
   amount: 999.0,
   currency: XCL,
   reference: ref1

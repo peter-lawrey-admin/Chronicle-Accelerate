@@ -1,5 +1,6 @@
 package cash.xcl.api.util;
 
+import cash.xcl.util.XCLBase32;
 import net.openhft.chronicle.bytes.Bytes;
 
 public enum AddressUtil {

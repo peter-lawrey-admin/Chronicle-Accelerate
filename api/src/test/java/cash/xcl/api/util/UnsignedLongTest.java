@@ -1,5 +1,6 @@
 package cash.xcl.api.util;
 
+import cash.xcl.util.UnsignedLong;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;

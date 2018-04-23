@@ -1,21 +1,21 @@
-to: 2
+to: test.addr
 createNewAddressEvent: {
-  sourceAddress: 121212121212,
+  sourceAddress: test.main,
   eventTime: 12345678910000,
-  origSourceAddress: 2,
+  origSourceAddress: test.addr,
   origEventTime: 12345678900000,
   address: usnyq5llloz6x,
   publicKey: !!binary O2onvM62pC1io6jQKm8Nc2UyFXcd4kOmOsBIoYtZ2ik=
 }
 ---
-to: 2
+to: test.addr
 commandFailedEvent: {
-  sourceAddress: 121212121212,
+  sourceAddress: test.main,
   eventTime: 12345678910000,
-  origSourceAddress: 2,
+  origSourceAddress: test.addr,
   origEventTime: 12345678900000,
-  origProtocol: 1,
-  origMessageType: 32,
+  origProtocol: "1",
+  origMessageType: "32",
   reason: "java.lang.IllegalArgumentException: Address !cash.xcl.util.KolobokeXCLLongObjMap {\n  ? -2419026099967619484: !!binary O2onvM62pC1io6jQKm8Nc2UyFXcd4kOmOsBIoYtZ2ik=\n}\n already taken"
 }
 ---

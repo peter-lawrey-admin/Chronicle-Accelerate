@@ -1,4 +1,4 @@
-package cash.xcl.api.util;
+package cash.xcl.util;
 
 // selected sections copied from https://github.com/google/guava/blob/master/guava/src/com/google/common/primitives/UnsignedLongs.java
 public enum UnsignedLong {

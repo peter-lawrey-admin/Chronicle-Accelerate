@@ -4,7 +4,7 @@ import net.openhft.chronicle.bytes.Bytes;
 import net.openhft.chronicle.bytes.BytesIn;
 import net.openhft.chronicle.bytes.BytesOut;
 
-public class TransferValueEvent extends SignedMessage {
+public class TransferValueEvent extends SignedBinaryMessage {
 
     private TransferValueCommand transferValueCommand = new TransferValueCommand();
 
@@ -34,7 +34,7 @@ public class TransferValueEvent extends SignedMessage {
     }
 
     @Override
-    public int messageType() {
+    public int intMessageType() {
         return MessageTypes.TRANSFER_VALUE_EVENT;
     }
 

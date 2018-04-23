@@ -34,37 +34,37 @@ public class MockGatewayTest {
         mg.createNewAddressCommand(new CreateNewAddressCommand(1, 0, publicKey, "IE-DL"));
 
         assertEquals("commandFailedEvent[!CommandFailedEvent {\n" +
-                "  sourceAddress: 0,\n" +
+                "  sourceAddress: ooooooooooooo,\n" +
                 "  eventTime: 0,\n" +
-                "  origSourceAddress: 1,\n" +
+                "  origSourceAddress: oooooooooooo2,\n" +
                 "  origEventTime: 0,\n" +
-                "  origProtocol: 1,\n" +
-                "  origMessageType: 32,\n" +
+                "  origProtocol: \"1\",\n" +
+                "  origMessageType: \"32\",\n" +
                 "  reason: Unknown region code IEA\n" +
                 "}\n" +
                 "]\n" +
                 "createNewAddressEvent[!CreateNewAddressEvent {\n" +
-                "  sourceAddress: 0,\n" +
+                "  sourceAddress: ooooooooooooo,\n" +
                 "  eventTime: 0,\n" +
-                "  origSourceAddress: 1,\n" +
+                "  origSourceAddress: oooooooooooo2,\n" +
                 "  origEventTime: 0,\n" +
                 "  address: iecooqflzupcn,\n" +
                 "  publicKey: !!binary AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=\n" +
                 "}\n" +
                 "]\n" +
                 "createNewAddressEvent[!CreateNewAddressEvent {\n" +
-                "  sourceAddress: 0,\n" +
+                "  sourceAddress: ooooooooooooo,\n" +
                 "  eventTime: 0,\n" +
-                "  origSourceAddress: 1,\n" +
+                "  origSourceAddress: oooooooooooo2,\n" +
                 "  origEventTime: 0,\n" +
                 "  address: ied2hsmj3yz5n,\n" +
                 "  publicKey: !!binary AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=\n" +
                 "}\n" +
                 "]\n" +
                 "createNewAddressEvent[!CreateNewAddressEvent {\n" +
-                "  sourceAddress: 0,\n" +
+                "  sourceAddress: ooooooooooooo,\n" +
                 "  eventTime: 0,\n" +
-                "  origSourceAddress: 1,\n" +
+                "  origSourceAddress: oooooooooooo2,\n" +
                 "  origEventTime: 0,\n" +
                 "  address: iedlspl6chtda,\n" +
                 "  publicKey: !!binary AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=\n" +

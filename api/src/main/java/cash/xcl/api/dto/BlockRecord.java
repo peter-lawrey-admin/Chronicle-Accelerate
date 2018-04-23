@@ -1,11 +1,14 @@
 package cash.xcl.api.dto;
 
+import cash.xcl.util.XCLBase32LongConverter;
 import net.openhft.chronicle.bytes.BytesIn;
 import net.openhft.chronicle.bytes.BytesOut;
 import net.openhft.chronicle.core.io.IORuntimeException;
 import net.openhft.chronicle.wire.AbstractBytesMarshallable;
+import net.openhft.chronicle.wire.LongConversion;
 
 public class BlockRecord extends AbstractBytesMarshallable {
+    @LongConversion(XCLBase32LongConverter.class)
     long address;
     long blockNumber;
     int status;

@@ -1,6 +1,6 @@
 package cash.xcl.server;
 
-import cash.xcl.api.dto.SignedMessage;
+import cash.xcl.api.dto.SignedBinaryMessage;
 import cash.xcl.api.tcp.WritingAllMessages;
 
 import java.util.concurrent.atomic.AtomicInteger;
@@ -18,7 +18,7 @@ class MyWritingAllMessages extends WritingAllMessages {
     }
 
     @Override
-    public void write(SignedMessage message) {
+    public void write(SignedBinaryMessage message) {
         count.incrementAndGet();
     }
 

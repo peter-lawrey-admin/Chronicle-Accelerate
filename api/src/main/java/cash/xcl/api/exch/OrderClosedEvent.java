@@ -1,11 +1,11 @@
 package cash.xcl.api.exch;
 
 import cash.xcl.api.dto.MessageTypes;
-import cash.xcl.api.dto.SignedMessage;
+import cash.xcl.api.dto.SignedBinaryMessage;
 import net.openhft.chronicle.bytes.BytesIn;
 import net.openhft.chronicle.bytes.BytesOut;
 
-public class OrderClosedEvent extends SignedMessage {
+public class OrderClosedEvent extends SignedBinaryMessage {
     public static enum REASON {
         USER_REQUEST((byte) 0), TIME_OUT((byte) 32);
         private byte value;
@@ -50,7 +50,7 @@ public class OrderClosedEvent extends SignedMessage {
     }
 
     @Override
-    public int messageType() {
+    public int intMessageType() {
         return MessageTypes.ORDER_CLOSED_EVENT;
     }
 

@@ -1,12 +1,12 @@
 package cash.xcl.api.exch;
 
 import cash.xcl.api.dto.MessageTypes;
-import cash.xcl.api.dto.SignedMessage;
+import cash.xcl.api.dto.SignedBinaryMessage;
 import net.openhft.chronicle.bytes.BytesIn;
 import net.openhft.chronicle.bytes.BytesOut;
 
 
-public class ExecutionReportEvent extends SignedMessage {
+public class ExecutionReportEvent extends SignedBinaryMessage {
 
     private ExecutionReport executionReport;
 
@@ -33,7 +33,7 @@ public class ExecutionReportEvent extends SignedMessage {
     }
 
     @Override
-    public int messageType() {
+    public int intMessageType() {
         return MessageTypes.EXECUTION_REPORT;
     }
 

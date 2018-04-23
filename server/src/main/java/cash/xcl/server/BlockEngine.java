@@ -6,7 +6,7 @@ import cash.xcl.api.dto.*;
 import cash.xcl.api.tcp.XCLServer;
 import cash.xcl.api.util.AbstractAllMessages;
 import cash.xcl.api.util.CountryRegion;
-import cash.xcl.api.util.XCLBase32;
+import cash.xcl.util.XCLBase32;
 import net.openhft.chronicle.core.annotation.NotNull;
 import net.openhft.chronicle.core.time.SystemTimeProvider;
 import net.openhft.chronicle.threads.NamedThreadFactory;

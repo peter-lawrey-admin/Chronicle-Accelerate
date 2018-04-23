@@ -211,7 +211,7 @@ public class RegionalClientBenchmarkMain {
         }
 
         @Override
-        public void write(SignedMessage message) {
+        public void write(SignedBinaryMessage message) {
             count.incrementAndGet();
         }
 

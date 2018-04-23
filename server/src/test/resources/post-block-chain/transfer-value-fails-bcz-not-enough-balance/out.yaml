@@ -1,13 +1,13 @@
 ---
 ---
-to: 4444
+to: src.addr
 commandFailedEvent: {
-  sourceAddress: 123123123123,
+  sourceAddress: test.server,
   eventTime: 12345678910000,
-  origSourceAddress: 4444,
+  origSourceAddress: src.addr,
   origEventTime: 12345678920000,
-  origProtocol: 1,
-  origMessageType: 64,
-  reason: "java.lang.IllegalArgumentException: Invalid transfer: trying to transfer XCL100000.0 from account: 4444 but balance is only: 1000.0"
+  origProtocol: "1",
+  origMessageType: "64",
+  reason: "java.lang.IllegalArgumentException: Invalid transfer: trying to transfer XCL100000.0 from account: src.addr but balance is only: 1000.0"
 }
 ---

@@ -4,7 +4,7 @@ import net.openhft.chronicle.bytes.BytesIn;
 import net.openhft.chronicle.bytes.BytesOut;
 
 // FIXME needs reviewing/completing
-public class ExchangeRateResponse extends SignedMessage {
+public class ExchangeRateResponse extends SignedBinaryMessage {
 
     private String symbol1symbol2;
     private double midPrice;
@@ -55,7 +55,7 @@ public class ExchangeRateResponse extends SignedMessage {
 
 
     @Override
-    public int messageType() {
+    public int intMessageType() {
 
         return MessageTypes.EXCHANGE_RATE_RESPONSE;
     }
