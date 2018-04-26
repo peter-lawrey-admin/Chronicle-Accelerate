@@ -7,7 +7,7 @@
         <version>0.1.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>api-enterprise</artifactId>
+    <artifactId>api</artifactId>
     <name>Chronicle-Accelerate/API</name>
     <description>Chronicle-Accelerate API</description>
 
