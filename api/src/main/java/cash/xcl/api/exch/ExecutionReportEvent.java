@@ -37,4 +37,7 @@ public class ExecutionReportEvent extends SignedBinaryMessage {
         return MessageTypes.EXECUTION_REPORT;
     }
 
+    public ExecutionReport executionReport() {
+        return executionReport;
+    }
 }
