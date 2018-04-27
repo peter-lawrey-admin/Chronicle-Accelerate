@@ -20,7 +20,7 @@ public class ServerJVM implements Closeable{
         try {
             new ServerJVM(DEFAULT_SERVER_ADDRESS, secretKey,2500, 1000, 1, publicKey);
             while(true) {
-                System.out.println("server is running... ");
+                System.out.println("ServerJVM is running... ");
                 Thread.sleep(10000);
             }
         } catch (Throwable t) {
@@ -54,6 +54,25 @@ public class ServerJVM implements Closeable{
         } catch (Throwable t) {
             t.printStackTrace();
             close();
+        }
+    }
+
+
+    public ServerJVM() {
+
+        Bytes publicKey = Bytes.allocateDirect(Ed25519.PUBLIC_KEY_LENGTH);
+        Bytes secretKey = Bytes.allocateDirect(Ed25519.SECRET_KEY_LENGTH);
+        Ed25519.generatePublicAndSecretKey(publicKey, secretKey);
+        try {
+            new ServerJVM(DEFAULT_SERVER_ADDRESS, secretKey,2500, 1000, 1, publicKey);
+            System.out.println("ServerJVM is running... ");
+        } catch (Throwable t) {
+            t.printStackTrace();
+
+        } finally {
+            //Jvm.pause(1000);
+            //benchmarkMain.close();
+            System.out.println("exiting");
         }
     }
 
