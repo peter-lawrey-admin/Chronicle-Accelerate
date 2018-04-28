@@ -138,7 +138,7 @@ public class MockServer extends AbstractAllMessages implements ServerIn {
 
     @Override
     public void newOrderCommand(NewOrderCommand newLimitOrderCommand) {
-        throw new UnsupportedOperationException();
+
     }
 
     @Override

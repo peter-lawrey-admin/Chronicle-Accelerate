@@ -5,7 +5,9 @@ import cash.xcl.api.AllMessagesLookup;
 import cash.xcl.api.AllMessagesServer;
 import cash.xcl.api.dto.*;
 import cash.xcl.api.exch.*;
+import cash.xcl.api.exch.Side;
 import cash.xcl.util.XCLBase32LongConverter;
+import net.openhft.chronicle.core.time.SystemTimeProvider;
 import net.openhft.chronicle.wire.LongConversion;
 
 public class AbstractAllMessages implements AllMessagesServer {
@@ -123,10 +125,29 @@ public class AbstractAllMessages implements AllMessagesServer {
         throw new UnsupportedOperationException(getClass().getName());
     }
 
+//    @Override
+//    public void newOrderCommand(NewOrderCommand newOrderCommand) {
+//        throw new UnsupportedOperationException(getClass().getName());
+//    }
+
+    // TODO remove this method asap. It's only used for initial development/testing of the Fix Gateway
     @Override
     public void newOrderCommand(NewOrderCommand newOrderCommand) {
-        throw new UnsupportedOperationException(getClass().getName());
+        long eventTime = SystemTimeProvider.INSTANCE.currentTimeMicros();
+        long sourceAddress = newOrderCommand.sourceAddress();
+        try {
+            cash.xcl.api.exch.ExecutionReport er = new cash.xcl.api.exch.ExecutionReport(newOrderCommand.getCurrencyPair(), Side.BUY, 1.0, 1.0, 1L, 2L);
+            ExecutionReportEvent ere = new ExecutionReportEvent(this.address, eventTime, er);
+            AllMessages messageWriter = to(sourceAddress);
+            messageWriter.executionReportEvent(ere);
+        } catch (Exception e) {
+            e.printStackTrace();
+            CommandFailedEvent cfe = new CommandFailedEvent(address, eventTime, newOrderCommand, e.toString());
+            AllMessages allMessages = to(sourceAddress);
+            allMessages.commandFailedEvent(cfe);
+        }
     }
+
 
     @Override
     public void cancelOrderCommand(CancelOrderCommand cancelOrderCommand) {
