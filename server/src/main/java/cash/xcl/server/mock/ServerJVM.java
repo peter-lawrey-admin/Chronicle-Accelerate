@@ -7,7 +7,7 @@ import net.openhft.chronicle.bytes.Bytes;
 import net.openhft.chronicle.core.io.Closeable;
 import net.openhft.chronicle.salt.Ed25519;
 
-public class ServerJVM implements Closeable{
+public class ServerJVM implements Closeable, Runnable {
     public static boolean INTERNAL = Boolean.getBoolean("internal");
     public static int DEFAULT_SERVER_ADDRESS = 10001;
     private XCLServer server;
@@ -25,7 +25,6 @@ public class ServerJVM implements Closeable{
             }
         } catch (Throwable t) {
             t.printStackTrace();
-
         } finally {
             //Jvm.pause(1000);
             //benchmarkMain.close();
@@ -47,7 +46,7 @@ public class ServerJVM implements Closeable{
             //TODO : This has to be reinstated later.
             //this.server.internal(INTERNAL);
             this.server.internal(true);
-            gateway.start();
+            this.gateway.start();
 
             register(sourceAddress, publicKey);
 
@@ -87,5 +86,26 @@ public class ServerJVM implements Closeable{
     public void register(long address, Bytes<?> publicKey) {
 
         this.server.register(address, publicKey);
+    }
+
+    @Override
+    public void run() {
+        Bytes publicKey = Bytes.allocateDirect(Ed25519.PUBLIC_KEY_LENGTH);
+        Bytes secretKey = Bytes.allocateDirect(Ed25519.SECRET_KEY_LENGTH);
+        Ed25519.generatePublicAndSecretKey(publicKey, secretKey);
+        try {
+            new ServerJVM(DEFAULT_SERVER_ADDRESS, secretKey,2500, 1000, 1, publicKey);
+            while(true) {
+                System.out.println("ServerJVM is running... ");
+                Thread.sleep(10000);
+            }
+        } catch (Throwable t) {
+            t.printStackTrace();
+        } finally {
+            //Jvm.pause(1000);
+            //benchmarkMain.close();
+            System.out.println("exiting");
+            System.exit(0);
+        }
     }
 }
