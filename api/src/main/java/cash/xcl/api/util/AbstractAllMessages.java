@@ -10,6 +10,10 @@ import cash.xcl.util.XCLBase32LongConverter;
 import net.openhft.chronicle.core.time.SystemTimeProvider;
 import net.openhft.chronicle.wire.LongConversion;
 
+import java.util.HashSet;
+import java.util.Set;
+
+
 public class AbstractAllMessages implements AllMessagesServer {
     @LongConversion(XCLBase32LongConverter.class)
     protected long address;
@@ -130,12 +134,16 @@ public class AbstractAllMessages implements AllMessagesServer {
 //        throw new UnsupportedOperationException(getClass().getName());
 //    }
 
+    //TODO remove asap
+    protected Set<Long> orders = new HashSet<>();
+
     // TODO remove this method asap. It's only used for initial development/testing of the Fix Gateway
     @Override
     public void newOrderCommand(NewOrderCommand newOrderCommand) {
         long eventTime = SystemTimeProvider.INSTANCE.currentTimeMicros();
         long sourceAddress = newOrderCommand.sourceAddress();
         try {
+            orders.add(newOrderCommand.eventTime());
             cash.xcl.api.exch.ExecutionReport er = new cash.xcl.api.exch.ExecutionReport(newOrderCommand.getCurrencyPair(), Side.BUY, 1.0, 1.0, 1L, 2L);
             ExecutionReportEvent ere = new ExecutionReportEvent(this.address, eventTime, er);
             AllMessages messageWriter = to(sourceAddress);
@@ -149,10 +157,37 @@ public class AbstractAllMessages implements AllMessagesServer {
     }
 
 
+//    @Override
+//    public void cancelOrderCommand(CancelOrderCommand cancelOrderCommand) {
+//        throw new UnsupportedOperationException(getClass().getName());
+//    }
+    // TODO remove this method asap. It's only used for initial development/testing of the Fix Gateway
     @Override
     public void cancelOrderCommand(CancelOrderCommand cancelOrderCommand) {
-        throw new UnsupportedOperationException(getClass().getName());
+        long eventTime = SystemTimeProvider.INSTANCE.currentTimeMicros();
+        long sourceAddress = cancelOrderCommand.sourceAddress();
+        try {
+            if( orders.contains(cancelOrderCommand.eventTime()) ) {
+                cash.xcl.api.exch.OrderClosedEvent ore = new cash.xcl.api.exch.OrderClosedEvent(
+                        this.address,
+                        eventTime,
+                        cancelOrderCommand.sourceAddress(),
+                        cancelOrderCommand.eventTime(),
+                        OrderClosedEvent.REASON.USER_REQUEST);
+                AllMessages messageWriter = to(sourceAddress);
+                messageWriter.orderClosedEvent(ore);
+                orders.remove(cancelOrderCommand.eventTime());
+            } else {
+                throw new Exception("could not find order to cancel - orderId: " + cancelOrderCommand.eventTime() );
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            CommandFailedEvent cfe = new CommandFailedEvent(address, eventTime, cancelOrderCommand, e.toString());
+            AllMessages allMessages = to(sourceAddress);
+            allMessages.commandFailedEvent(cfe);
+        }
     }
+
 
     @Override
     public void clusterStatusQuery(ClusterStatusQuery clusterStatusQuery) {
