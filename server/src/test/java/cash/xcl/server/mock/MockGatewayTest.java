@@ -34,7 +34,7 @@ public class MockGatewayTest {
         mg.createNewAddressCommand(new CreateNewAddressCommand(1, 0, publicKey, "IE-DL"));
 
         assertEquals("commandFailedEvent[!CommandFailedEvent {\n" +
-                "  sourceAddress: ooooooooooooo,\n" +
+                "  sourceAddress: ooooooooooooi,\n" +
                 "  eventTime: 0,\n" +
                 "  origSourceAddress: oooooooooooo2,\n" +
                 "  origEventTime: 0,\n" +
@@ -44,7 +44,7 @@ public class MockGatewayTest {
                 "}\n" +
                 "]\n" +
                 "createNewAddressEvent[!CreateNewAddressEvent {\n" +
-                "  sourceAddress: ooooooooooooo,\n" +
+                "  sourceAddress: ooooooooooooi,\n" +
                 "  eventTime: 0,\n" +
                 "  origSourceAddress: oooooooooooo2,\n" +
                 "  origEventTime: 0,\n" +
@@ -53,7 +53,7 @@ public class MockGatewayTest {
                 "}\n" +
                 "]\n" +
                 "createNewAddressEvent[!CreateNewAddressEvent {\n" +
-                "  sourceAddress: ooooooooooooo,\n" +
+                "  sourceAddress: ooooooooooooi,\n" +
                 "  eventTime: 0,\n" +
                 "  origSourceAddress: oooooooooooo2,\n" +
                 "  origEventTime: 0,\n" +
@@ -62,7 +62,7 @@ public class MockGatewayTest {
                 "}\n" +
                 "]\n" +
                 "createNewAddressEvent[!CreateNewAddressEvent {\n" +
-                "  sourceAddress: ooooooooooooo,\n" +
+                "  sourceAddress: ooooooooooooi,\n" +
                 "  eventTime: 0,\n" +
                 "  origSourceAddress: oooooooooooo2,\n" +
                 "  origEventTime: 0,\n" +

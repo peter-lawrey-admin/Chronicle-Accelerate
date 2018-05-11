@@ -7,8 +7,7 @@ import cash.xcl.api.dto.*;
 import cash.xcl.api.exch.CancelOrderCommand;
 import cash.xcl.api.exch.ExecutionReportEvent;
 import cash.xcl.api.exch.NewOrderCommand;
-import cash.xcl.api.exch.Side;
-import net.openhft.chronicle.core.time.SystemTimeProvider;
+import cash.xcl.api.exch.OrderClosedEvent;
 
 public class MockGateway implements ClientOut {
     private final MockServer mockServer = new MockServer(null);
@@ -20,6 +19,22 @@ public class MockGateway implements ClientOut {
         this.serverOut = new MockServerOut();
         mockServer.serverOut(serverOut);
     }
+
+    public void sourceAddress(long sourceAddress) {
+        this.mockServer.sourceAddress(sourceAddress);
+    }
+
+
+    @Override
+    public void newOrderCommand(NewOrderCommand newOrderCommand) {
+        mockServer.newOrderCommand(newOrderCommand);
+    }
+
+    @Override
+    public void cancelOrderCommand(CancelOrderCommand cancelOrderCommand) {
+        mockServer.cancelOrderCommand(cancelOrderCommand);
+    }
+
 
     @Override
     public void createNewAddressCommand(CreateNewAddressCommand createNewAddressCommand) {
@@ -42,27 +57,6 @@ public class MockGateway implements ClientOut {
         clientIn.subscriptionSuccessResponse(new SubscriptionSuccessResponse(0, 0, subscriptionQuery));
     }
 
-    // only used for testing the Fix Gateway
-    @Override
-    public void newOrderCommand(NewOrderCommand newOrderCommand) {
-        long eventTime = SystemTimeProvider.INSTANCE.currentTimeMicros();
-        long sourceAddress = newOrderCommand.sourceAddress();
-        try {
-            cash.xcl.api.exch.ExecutionReport er = new cash.xcl.api.exch.ExecutionReport(newOrderCommand.getCurrencyPair(), Side.BUY, 1.0, 1.0, 1L, 2L);
-            ExecutionReportEvent ere = new ExecutionReportEvent(sourceAddress, eventTime, er);
-            clientIn.executionReportEvent(ere);
-        } catch (Exception e) {
-            e.printStackTrace();
-            CommandFailedEvent cfe = new CommandFailedEvent(11111, eventTime, newOrderCommand, e.toString());
-            clientIn.commandFailedEvent(cfe);
-        }
-    }
-
-
-    @Override
-    public void cancelOrderCommand(CancelOrderCommand cancelOrderCommand) {
-        mockServer.cancelOrderCommand(cancelOrderCommand);
-    }
 
     @Override
     public void clusterStatusQuery(ClusterStatusQuery clusterStatusQuery) {
@@ -124,6 +118,11 @@ public class MockGateway implements ClientOut {
         @Override
         public void executionReportEvent(ExecutionReportEvent executionReportEvent) {
             clientIn.executionReportEvent(executionReportEvent);
+        }
+
+        @Override
+        public void orderClosedEvent(OrderClosedEvent orderClosedEvent) {
+            clientIn.orderClosedEvent(orderClosedEvent);
         }
 
         @Override
