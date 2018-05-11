@@ -5,6 +5,7 @@ import cash.xcl.api.dto.ClusterTransferStep3Command;
 import cash.xcl.api.dto.ClusterTransferStep3Event;
 import cash.xcl.api.dto.CreateNewAddressEvent;
 import cash.xcl.api.exch.ExecutionReportEvent;
+import cash.xcl.api.exch.OrderClosedEvent;
 import net.openhft.chronicle.core.io.Closeable;
 
 /**
@@ -21,5 +22,7 @@ public interface ServerOut extends ErrorMessageLogger, Closeable {
     void clusterTransferStep3Event(ClusterTransferStep3Event clusterTransferStep3Event);
 
     void executionReportEvent(ExecutionReportEvent executionReportEvent);
+
+    void orderClosedEvent(OrderClosedEvent orderClosedEvent);
 
 }

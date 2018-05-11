@@ -58,7 +58,8 @@ public abstract class SignedBinaryMessage extends AbstractBytesMarshallable impl
                 CancelOrderCommand.class,
                 DepositValueEvent.class,
                 WithdrawValueEvent.class,
-                ExecutionReportEvent.class
+                ExecutionReportEvent.class,
+                OrderClosedEvent.class
         );
     }
 
