@@ -1,11 +1,11 @@
 package cash.xcl.api.exch;
 
 import cash.xcl.api.dto.MessageTypes;
-import cash.xcl.api.dto.SignedMessage;
+import cash.xcl.api.dto.SignedBinaryMessage;
 import net.openhft.chronicle.bytes.BytesIn;
 import net.openhft.chronicle.bytes.BytesOut;
 
-public class CancelOrderCommand extends SignedMessage {
+public class CancelOrderCommand extends SignedBinaryMessage {
 
     private long orderTime;
 
@@ -33,7 +33,7 @@ public class CancelOrderCommand extends SignedMessage {
     }
 
     @Override
-    public int messageType() {
+    public int intMessageType() {
         return MessageTypes.CANCEL_ORDER_COMMAND;
     }
 

@@ -1,27 +1,27 @@
 ---
 ---
-to: 4444
+to: src.addr
 transferValueEvent: {
-  sourceAddress: 123123123123,
+  sourceAddress: test.server,
   eventTime: 12345678920000,
   transferValueCommand: {
-    sourceAddress: 4444,
+    sourceAddress: src.addr,
     eventTime: 12345678920000,
-    toAddress: 5555,
+    toAddress: dst.addr,
     amount: 999.0,
     currency: XCL,
     reference: ref1
   }
 }
 ---
-to: 2
+to: test.addr
 currentBalanceResponse: {
-  sourceAddress: 123123123123,
+  sourceAddress: test.server,
   eventTime: 12345678920000,
-  address: 5555,
+  address: dst.addr,
   balances: {
-    XCL: 999.0,
     EUR: 0.0,
+    XCL: 999.0,
     USD: 0.0
   }
 }

@@ -1,16 +1,19 @@
 package cash.xcl.api.dto;
 
-import cash.xcl.api.util.RegionIntConverter;
+import cash.xcl.util.RegionIntConverter;
+import cash.xcl.util.XCLBase32LongConverter;
 import net.openhft.chronicle.bytes.Bytes;
 import net.openhft.chronicle.bytes.BytesIn;
 import net.openhft.chronicle.bytes.BytesOut;
 import net.openhft.chronicle.salt.Ed25519;
 import net.openhft.chronicle.wire.IntConversion;
+import net.openhft.chronicle.wire.LongConversion;
 
-public class CreateNewAddressCommand extends SignedMessage {
+public class CreateNewAddressCommand extends SignedBinaryMessage {
     private Bytes publicKey;
     @IntConversion(RegionIntConverter.class)
     private int region;
+    @LongConversion(XCLBase32LongConverter.class)
     private long newAddressSeed;
 
     public CreateNewAddressCommand(long sourceAddress, long eventTime, Bytes publicKey, String region) {
@@ -47,7 +50,7 @@ public class CreateNewAddressCommand extends SignedMessage {
     }
 
     @Override
-    public int messageType() {
+    public int intMessageType() {
         return MessageTypes.CREATE_NEW_ADDRESS_COMMAND;
     }
 

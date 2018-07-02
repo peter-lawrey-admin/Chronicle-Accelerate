@@ -1,6 +1,6 @@
 package cash.xcl.api.exch;
 
-import cash.xcl.api.dto.Validators;
+import cash.xcl.util.Validators;
 import net.openhft.chronicle.bytes.BytesIn;
 import net.openhft.chronicle.bytes.BytesOut;
 import net.openhft.chronicle.core.io.IORuntimeException;
@@ -21,7 +21,10 @@ public class CurrencyPair extends AbstractBytesMarshallable {
 
     @Override
     public void readMarshallable(@SuppressWarnings("rawtypes") BytesIn bytes) throws IORuntimeException {
-        setPair(bytes.readUtf8(), bytes.readUtf8());
+        if (bytes.readRemaining() > 0)
+            setPair(bytes.readUtf8(), bytes.readUtf8());
+        else
+            base = quote = "";
     }
 
     @Override

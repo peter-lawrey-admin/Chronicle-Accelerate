@@ -12,8 +12,8 @@ import net.openhft.chronicle.core.time.TimeProvider;
 
 import java.util.Map;
 
-import static cash.xcl.api.dto.Validators.notNull;
 import static cash.xcl.api.exch.Side.BUY;
+import static cash.xcl.util.Validators.notNull;
 
 /**
  * I assume that class is always called from the same thread, so no synchronization is necessary This component does no address validation
@@ -183,7 +183,7 @@ public class ExchangePostBlockChainProcessor extends LocalPostBlockChainProcesso
         }
     }
 
-    private void onTrade(Order aggressor, Order initiator, long qty) {
+    private void onTrade(Order aggressor, Order initiator, double qty) {
         unlockMoney(aggressor, qty);
         unlockMoney(initiator, qty);
         ExecutionReport executionReport = new ExecutionReport(currencyPair, aggressor.getSide(), qty, initiator.getPrice(),
@@ -204,7 +204,7 @@ public class ExchangePostBlockChainProcessor extends LocalPostBlockChainProcesso
     }
 
 
-    private void unlockMoney(Order order, long qty) {
+    private void unlockMoney(Order order, double qty) {
         if (order.getSide() == BUY) {
             Account quoteAccount = exchangeAccounts.getQuoteAccount(order.getOwnerAddress(), false);
             assert quoteAccount != null;

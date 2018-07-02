@@ -1,9 +1,9 @@
 package cash.xcl.server.exch;
 
-import java.util.Comparator;
-
 import cash.xcl.api.exch.Side;
 import net.openhft.chronicle.wire.AbstractMarshallable;
+
+import java.util.Comparator;
 
 class Order extends AbstractMarshallable {
 
@@ -11,12 +11,12 @@ class Order extends AbstractMarshallable {
     private final long ownerOrderTime;
     private final long orderId;
     private final long expires; // millis
-    private final long quantity;
+    private final double quantity;
     private final double price;
     private final Side side;
     private long filled = 0;
 
-    Order(long orderId, Side side, long quantity, double price, long expires, long ownerAddress, long ownerOrderTime) {
+    Order(long orderId, Side side, double quantity, double price, long expires, long ownerAddress, long ownerOrderTime) {
         this.orderId = orderId;
         this.side = side;
         this.quantity = quantity;
@@ -26,19 +26,16 @@ class Order extends AbstractMarshallable {
         this.ownerOrderTime = ownerOrderTime;
     }
 
+    static Comparator<Order> getBuyComparator() {
+        return new PriceComparator().reversed().thenComparing(Comparator.comparingDouble(o -> o.orderId));
+    }
 
-    long getQuantityLeft() {
+    static Comparator<Order> getSellComparator() {
+        return new PriceComparator().thenComparing(Comparator.comparingDouble(o -> o.orderId));
+    }
+
+    double getQuantityLeft() {
         return quantity - filled;
-    }
-
-    long getQuantity() {
-        return quantity;
-    }
-
-    long fill(long fillQty) {
-        assert fillQty <= getQuantityLeft();
-        filled += fillQty;
-        return getQuantityLeft();
     }
 
     long getExpirationTime() {
@@ -69,12 +66,14 @@ class Order extends AbstractMarshallable {
         return side;
     }
 
-    static Comparator<Order> getBuyComparator() {
-        return new PriceComparator().reversed().thenComparing((o1, o2) -> Double.compare(o1.orderId, o2.orderId));
+    double getQuantity() {
+        return quantity;
     }
 
-    static Comparator<Order> getSellComparator() {
-        return new PriceComparator().thenComparing((o1, o2) -> Double.compare(o1.orderId, o2.orderId));
+    double fill(double fillQty) {
+        assert fillQty <= getQuantityLeft();
+        filled += fillQty;
+        return getQuantityLeft();
     }
 
     private static class PriceComparator implements Comparator<Order> {

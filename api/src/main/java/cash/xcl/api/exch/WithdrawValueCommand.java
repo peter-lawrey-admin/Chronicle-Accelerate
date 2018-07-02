@@ -35,7 +35,7 @@ public class WithdrawValueCommand extends TransferValueCommand {
     }
 
     @Override
-    public int messageType() {
+    public int intMessageType() {
         return MessageTypes.WITHDRAW_VALUE_COMMAND;
     }
 

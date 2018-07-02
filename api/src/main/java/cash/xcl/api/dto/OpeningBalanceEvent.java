@@ -1,12 +1,15 @@
 package cash.xcl.api.dto;
 
+import cash.xcl.util.XCLBase32LongConverter;
 import net.openhft.chronicle.bytes.BytesIn;
 import net.openhft.chronicle.bytes.BytesOut;
+import net.openhft.chronicle.wire.LongConversion;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class OpeningBalanceEvent extends SignedMessage {
+public class OpeningBalanceEvent extends SignedBinaryMessage {
+    @LongConversion(XCLBase32LongConverter.class)
     long address;
     Map<String, Double> balances = new LinkedHashMap<>();
 
@@ -47,7 +50,7 @@ public class OpeningBalanceEvent extends SignedMessage {
     }
 
     @Override
-    public int messageType() {
+    public int intMessageType() {
         return MessageTypes.OPENING_BALANCE_EVENT;
     }
 

@@ -6,7 +6,7 @@ import net.openhft.chronicle.bytes.BytesOut;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class ServiceNodesEvent extends SignedMessage {
+public class ServiceNodesEvent extends SignedBinaryMessage {
     private String region; // or service
     private Map<Long, String> addressToIP = new LinkedHashMap<>();
 
@@ -29,7 +29,7 @@ public class ServiceNodesEvent extends SignedMessage {
     }
 
     @Override
-    public int messageType() {
+    public int intMessageType() {
         return MessageTypes.SERVICE_NODES_EVENT;
     }
 

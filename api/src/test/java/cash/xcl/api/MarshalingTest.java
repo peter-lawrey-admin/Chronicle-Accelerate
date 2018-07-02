@@ -1,8 +1,22 @@
 package cash.xcl.api;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.fail;
+import cash.xcl.api.dto.CurrentBalanceQuery;
+import cash.xcl.api.dto.CurrentBalanceResponse;
+import cash.xcl.api.dto.SignedBinaryMessage;
+import cash.xcl.api.exch.*;
+import net.openhft.chronicle.bytes.Bytes;
+import net.openhft.chronicle.bytes.BytesUtil;
+import net.openhft.chronicle.core.util.ObjectUtils;
+import net.openhft.chronicle.wire.AbstractMarshallable;
+import net.openhft.chronicle.wire.BinaryWire;
+import net.openhft.chronicle.wire.TextWire;
+import net.openhft.chronicle.wire.Wire;
+import org.junit.After;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameter;
+import org.junit.runners.Parameterized.Parameters;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -11,33 +25,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.After;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameter;
-import org.junit.runners.Parameterized.Parameters;
-
-import cash.xcl.api.dto.CurrentBalanceQuery;
-import cash.xcl.api.dto.CurrentBalanceResponse;
-import cash.xcl.api.dto.SignedMessage;
-import cash.xcl.api.exch.CancelOrderCommand;
-import cash.xcl.api.exch.CurrencyPair;
-import cash.xcl.api.exch.DepositValueCommand;
-import cash.xcl.api.exch.DepositValueEvent;
-import cash.xcl.api.exch.ExecutionReport;
-import cash.xcl.api.exch.ExecutionReportEvent;
-import cash.xcl.api.exch.NewOrderCommand;
-import cash.xcl.api.exch.OrderClosedEvent;
-import cash.xcl.api.exch.WithdrawValueCommand;
-import cash.xcl.api.exch.WithdrawValueEvent;
-import net.openhft.chronicle.bytes.Bytes;
-import net.openhft.chronicle.bytes.BytesUtil;
-import net.openhft.chronicle.core.util.ObjectUtils;
-import net.openhft.chronicle.wire.AbstractMarshallable;
-import net.openhft.chronicle.wire.BinaryWire;
-import net.openhft.chronicle.wire.TextWire;
-import net.openhft.chronicle.wire.Wire;
+import static org.junit.Assert.*;
 
 
 @RunWith(Parameterized.class)
@@ -63,7 +51,7 @@ public class MarshalingTest {
         Class<?>[] objClass = {CurrencyPair.class, CancelOrderCommand.class, ExecutionReport.class, ExecutionReportEvent.class,
                 OrderClosedEvent.class, NewOrderCommand.class, DepositValueCommand.class, DepositValueEvent.class,
                 WithdrawValueCommand.class, WithdrawValueEvent.class, CurrentBalanceQuery.class, CurrentBalanceResponse.class};
-        SignedMessage.addAliases();
+        SignedBinaryMessage.addAliases();
         ArrayList<Object[]> params = new ArrayList<>();
         for (int i = 0; i < files.length; i++) {
             TextWire textWire = new TextWire(BytesUtil.readFile(files[i]));

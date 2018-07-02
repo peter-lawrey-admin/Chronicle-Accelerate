@@ -20,8 +20,8 @@ public class RegionAddressGeneratorTest {
 
     @Test
     public void testRegionPrefix() {
-        assertEquals("r0hd", rohd.getRegionPrefix());
-        assertEquals("gb1nd", gblnd.getRegionPrefix());
+        assertEquals("rohd", rohd.getRegionPrefix());
+        assertEquals("gblnd", gblnd.getRegionPrefix());
         assertEquals("ied", ied.getRegionPrefix());
     }
 
@@ -48,23 +48,23 @@ public class RegionAddressGeneratorTest {
     @Test
     public void testMaxAddressValue() {
         long addressIe = ied.newAddressFrom(ied.getMaxAddress() - 1);
-        assertEquals("iedzzzzzzzzya", encode(addressIe));
+        assertEquals("ied........ya", encode(addressIe));
 
         long addressRo = rohd.newAddressFrom(rohd.getMaxAddress() - 1);
-        assertEquals("r0hdzzzzzzzwn", encode(addressRo));
+        assertEquals("rohd.......wn", encode(addressRo));
 
         long addressGb = gblnd.newAddressFrom(gblnd.getMaxAddress() - 1);
-        assertEquals("gb1ndzzzzzzyt", encode(addressGb));
+        assertEquals("gblnd......yt", encode(addressGb));
     }
 
     @Test
     public void testOverlapping() {
-        long addressIe = ied.newAddressFrom(decode("100000001i"));
-        assertEquals(0, addressIe);
+//        long addressIe = ied.newAddressFrom(decode("100000001i"));
+//        assertEquals(0, addressIe);
 
         for (long bannedSuffix : rob.bannedSuffixes) {
             long addressRob = rob.newAddressFrom((bannedSuffix << -20) + 100);
-            assertEquals("0", encode(addressRob));
+            assertEquals(".", encode(addressRob));
 
         }
     }
@@ -72,13 +72,13 @@ public class RegionAddressGeneratorTest {
     @Test
     public void testMinAddressValue() {
         long addressIe = ied.newAddressFrom(0);
-        assertEquals("ied000000001i", encode(addressIe));
+        assertEquals("iedooooooooli", encode(addressIe));
 
         long addressRo = rohd.newAddressFrom(0);
-        assertEquals("r0hd000000024", encode(addressRo));
+        assertEquals("rohdooooooo24", encode(addressRo));
 
         long addressGb = gblnd.newAddressFrom(0);
-        assertEquals("gb1nd0000001k", encode(addressGb));
+        assertEquals("gblndoooooolk", encode(addressGb));
 
     }
 

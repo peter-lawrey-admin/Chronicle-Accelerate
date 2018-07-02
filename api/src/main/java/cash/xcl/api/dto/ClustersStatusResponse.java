@@ -6,7 +6,7 @@ import net.openhft.chronicle.bytes.BytesOut;
 // FIXME needs reviewing/completing
 // This message is a response containing all the known clusters and
 // the services they provide.
-public class ClustersStatusResponse extends SignedMessage {
+public class ClustersStatusResponse extends SignedBinaryMessage {
 
     private ClusterStatusQuery clusterStatusQuery;
 
@@ -38,7 +38,7 @@ public class ClustersStatusResponse extends SignedMessage {
     }
 
     @Override
-    public int messageType() {
+    public int intMessageType() {
         return MessageTypes.CLUSTERS_STATUS_RESPONSE;
     }
 }

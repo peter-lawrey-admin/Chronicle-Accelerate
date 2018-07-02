@@ -35,7 +35,7 @@ public class DepositValueCommand extends TransferValueCommand {
     }
 
     @Override
-    public int messageType() {
+    public int intMessageType() {
         return MessageTypes.DEPOSIT_VALUE_COMMAND;
     }
 

@@ -1,16 +1,16 @@
 package cash.xcl.api.exch;
 
 import cash.xcl.api.dto.MessageTypes;
-import cash.xcl.api.dto.SignedMessage;
+import cash.xcl.api.dto.SignedBinaryMessage;
 import net.openhft.chronicle.bytes.BytesIn;
 import net.openhft.chronicle.bytes.BytesOut;
 
-import static cash.xcl.api.dto.Validators.*;
+import static cash.xcl.util.Validators.*;
 
-public class NewOrderCommand extends SignedMessage {
+public class NewOrderCommand extends SignedBinaryMessage {
 
     private Side action;
-    private long quantity;
+    private double quantity;
     private double maxPrice;
     private CurrencyPair currencyPair;
     private long timeToLive; // in milliseconds
@@ -19,8 +19,8 @@ public class NewOrderCommand extends SignedMessage {
 
     }
 
-    public NewOrderCommand(long sourceAddress, long eventTime, Side action, long qty, double maxPrice, CurrencyPair currencyPair,
-                                long timeToLive) {
+    public NewOrderCommand(long sourceAddress, long eventTime, Side action, double qty, double maxPrice, CurrencyPair currencyPair,
+                           long timeToLive) {
         super(sourceAddress, eventTime);
         this.action = action;
         setQuantity(qty);
@@ -33,7 +33,9 @@ public class NewOrderCommand extends SignedMessage {
     @Override
     protected void readMarshallable2(BytesIn<?> bytes) {
         this.action = Side.fromId(bytes.readInt());
-        setQuantity(bytes.readLong());
+        quantity = 0;
+        if (bytes.readRemaining() > 0)
+            setQuantity(bytes.readDouble());
         setMaxPrice(bytes.readDouble());
         if (currencyPair == null) {
             currencyPair = new CurrencyPair();
@@ -45,14 +47,14 @@ public class NewOrderCommand extends SignedMessage {
     @Override
     protected void writeMarshallable2(BytesOut<?> bytes) {
         bytes.writeInt(action.ordinal());
-        bytes.writeLong(quantity);
+        bytes.writeDouble(quantity);
         bytes.writeDouble(maxPrice);
         currencyPair.writeMarshallable(bytes);
         bytes.writeLong(timeToLive);
     }
 
     @Override
-    public int messageType() {
+    public int intMessageType() {
         return MessageTypes.NEW_ORDER_COMMAND;
     }
 
@@ -61,11 +63,11 @@ public class NewOrderCommand extends SignedMessage {
         return action;
     }
 
-    public long getQuantity() {
+    public double getQuantity() {
         return quantity;
     }
 
-    void setQuantity(long quantity) {
+    void setQuantity(double quantity) {
         this.quantity = strictPositive(quantity);
     }
 

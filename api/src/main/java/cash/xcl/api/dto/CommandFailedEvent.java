@@ -5,12 +5,16 @@ package cash.xcl.api.dto;
  */
 public class CommandFailedEvent extends SignedErrorMessage {
 
+    public CommandFailedEvent(SignedMessage message, String reason) {
+        this(-1/* set when sent */, 0 /* set when sent */, message, reason);
+    }
+
     public CommandFailedEvent(long sourceAddress, long eventTime, SignedMessage message, String reason) {
         super(sourceAddress, eventTime, message, reason);
     }
 
-    public CommandFailedEvent(long sourceAddress, long eventTime, long origSourceAddress, long origEventTime, int origMessageType, String reason) {
-        super(sourceAddress, eventTime, origSourceAddress, origEventTime, origMessageType, reason);
+    public CommandFailedEvent(long sourceAddress, long eventTime, long origSourceAddress, long origEventTime, String origProtocol, String origMessageType, String reason) {
+        super(sourceAddress, eventTime, origSourceAddress, origEventTime, origProtocol, origMessageType, reason);
     }
 
     public CommandFailedEvent() {
@@ -18,7 +22,7 @@ public class CommandFailedEvent extends SignedErrorMessage {
     }
 
     @Override
-    public int messageType() {
+    public int intMessageType() {
         return MessageTypes.COMMAND_FAILED_EVENT;
     }
 }

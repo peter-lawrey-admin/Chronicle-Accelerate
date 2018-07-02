@@ -1,6 +1,6 @@
 package cash.xcl.server;
 
-import cash.xcl.api.dto.SignedMessage;
+import cash.xcl.api.dto.SignedBinaryMessage;
 import cash.xcl.api.dto.TransactionBlockEvent;
 import cash.xcl.api.tcp.WritingAllMessages;
 
@@ -27,7 +27,7 @@ public class QueuingChainer extends WritingAllMessages implements Chainer {
     }
 
     @Override
-    public void write(SignedMessage message) {
+    public void write(SignedBinaryMessage message) {
         synchronized (transactionLock) {
             if (tbe.isBufferFull()) {
                 System.out.println("buffer is full - creating new block");

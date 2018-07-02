@@ -1,16 +1,21 @@
 package cash.xcl.api.dto;
 
-import cash.xcl.api.util.XCLBase32;
-import cash.xcl.api.util.XCLBase32UpperIntConverter;
+import cash.xcl.util.XCLBase32;
+import cash.xcl.util.XCLBase32LongConverter;
+import cash.xcl.util.XCLBase32UpperIntConverter;
 import net.openhft.chronicle.bytes.BytesIn;
 import net.openhft.chronicle.bytes.BytesOut;
 import net.openhft.chronicle.wire.IntConversion;
+import net.openhft.chronicle.wire.LongConversion;
 
-public class TransferValueCommand extends SignedMessage {
+public class TransferValueCommand extends SignedBinaryMessage {
+    @LongConversion(XCLBase32LongConverter.class)
     long toAddress;
+
     double amount;
     @IntConversion(XCLBase32UpperIntConverter.class)
     int currency;
+
     String reference;
 
     public TransferValueCommand(long sourceAddress, long eventTime, long toAddress, double amount, String currency, String reference) {
@@ -46,7 +51,7 @@ public class TransferValueCommand extends SignedMessage {
     }
 
     @Override
-    public int messageType() {
+    public int intMessageType() {
         return MessageTypes.TRANSFER_VALUE_COMMAND;
     }
 

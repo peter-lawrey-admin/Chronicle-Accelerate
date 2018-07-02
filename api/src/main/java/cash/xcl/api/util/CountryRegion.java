@@ -1,18 +1,19 @@
 package cash.xcl.api.util;
 
-import cash.xcl.api.dto.Validators;
+import cash.xcl.util.RegionIntConverter;
+import cash.xcl.util.Validators;
+import cash.xcl.util.XCLBase32;
 import net.openhft.chronicle.core.io.IORuntimeException;
 import net.openhft.chronicle.wire.AbstractMarshallable;
 import net.openhft.chronicle.wire.WireIn;
 
 import java.util.Arrays;
 
-import static cash.xcl.api.dto.Validators.notNullOrEmpty;
+import static cash.xcl.util.Validators.notNullOrEmpty;
 
 public class CountryRegion extends AbstractMarshallable {
 
-    public static final String MAIN_CODE = "0000";
-    public static final int MAIN_CHAIN = -1;
+    public static final int MAIN_CHAIN = RegionIntConverter.MAIN_REGINT;
     static final String[] NO_STRINGS = new String[0];
     private final String countryName;
     private final String regionCode;

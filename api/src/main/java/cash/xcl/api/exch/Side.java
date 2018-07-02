@@ -4,7 +4,7 @@ import net.openhft.chronicle.core.annotation.NotNull;
 
 import java.util.function.Consumer;
 
-import static cash.xcl.api.dto.Validators.notNaN;
+import static cash.xcl.util.Validators.notNaN;
 import static java.lang.Math.*;
 
 public enum Side {

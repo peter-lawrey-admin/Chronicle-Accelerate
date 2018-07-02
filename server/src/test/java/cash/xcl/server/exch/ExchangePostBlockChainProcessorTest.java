@@ -1,21 +1,21 @@
 package cash.xcl.server.exch;
 
-import static org.junit.Assert.assertEquals;
-
-import java.io.IOException;
-import java.util.function.Function;
-
-import org.junit.Test;
-
 import cash.xcl.api.AllMessagesServer;
 import cash.xcl.api.dto.CurrentBalanceQuery;
 import cash.xcl.api.exch.CurrencyPair;
 import cash.xcl.api.exch.DepositValueCommand;
 import cash.xcl.api.exch.WithdrawValueCommand;
+import cash.xcl.util.XCLBase32;
 import net.openhft.chronicle.core.Mocker;
 import net.openhft.chronicle.core.io.IORuntimeException;
 import net.openhft.chronicle.core.time.SetTimeProvider;
 import net.openhft.chronicle.wire.TextMethodTester;
+import org.junit.Test;
+
+import java.io.IOException;
+import java.util.function.Function;
+
+import static org.junit.Assert.assertEquals;
 
 public class ExchangePostBlockChainProcessorTest {
     public static void test(String basename, Function<AllMessagesServer, Object> creator) {
@@ -36,7 +36,7 @@ public class ExchangePostBlockChainProcessorTest {
     }
 
     static ExchangePostBlockChainProcessor buildProcessor(AllMessagesServer router) {
-        long serverAddress = 12345;
+        long serverAddress = XCLBase32.decode("text...exch");
         SetTimeProvider timeProvider = new SetTimeProvider();
         return new ExchangePostBlockChainProcessor(serverAddress,
                 new CurrencyPair("XCL", "USD"), timeProvider, router);

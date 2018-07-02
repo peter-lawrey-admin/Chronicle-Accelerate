@@ -32,18 +32,18 @@
         <module>platform</module>
         <module>api</module>
         <module>server</module>
-        <!--<module>client</module>-->
-        <!--<module>exchange</module>-->
     </modules>
     <version>0.1.0-SNAPSHOT</version>
     <name>Chronicle-Accelerate/Parent-Pom</name>
     <description>Chronicle-Accelerate (XCL) Parent Pom</description>
     <packaging>pom</packaging>
+
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <compiler.argument>-Xlint:deprecation</compiler.argument>
     </properties>
+
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -53,6 +53,7 @@
                 <version>3.6.2</version>
                 <scope>import</scope>
             </dependency>
+
             <dependency>
                 <groupId>net.openhft</groupId>
                 <artifactId>chronicle-bom</artifactId>
@@ -62,29 +63,39 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+
     <dependencies>
 
         <dependency>
             <groupId>net.openhft</groupId>
             <artifactId>chronicle-wire</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>net.openhft</groupId>
+                    <artifactId>affinity</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
+
         <dependency>
             <groupId>net.openhft</groupId>
             <artifactId>chronicle-salt</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
         </dependency>
+
         <!-- test dependencies -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <scope>test</scope>
         </dependency>
+
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
+
     <build>
         <plugins>
             <plugin>
@@ -120,12 +131,45 @@
                 </configuration>
             </plugin>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-dependencies</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/lib</outputDirectory>
+                            <overWriteReleases>false</overWriteReleases>
+                            <overWriteSnapshots>false</overWriteSnapshots>
+                            <overWriteIfNewer>true</overWriteIfNewer>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <classpathPrefix>lib/</classpathPrefix>
+                            <mainClass>cash.xcl.server.mock.ServerJVM</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+
+            <plugin>
                 <groupId>org.pitest</groupId>
                 <artifactId>pitest-maven</artifactId>
-                <version>1.2.5</version>
+                <version>1.3.2</version>
                 <configuration>
                     <verbose>false</verbose>
-                    <enableAssertions>true</enableAssertions>
+                    <!--<enableAssertions>true</enableAssertions>-->
                 </configuration>
             </plugin>
             <plugin>

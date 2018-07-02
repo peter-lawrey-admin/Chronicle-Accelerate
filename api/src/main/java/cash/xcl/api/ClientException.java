@@ -1,15 +1,15 @@
 package cash.xcl.api;
 
-import cash.xcl.api.dto.SignedMessage;
+import cash.xcl.api.dto.SignedBinaryMessage;
 
 public class ClientException extends RuntimeException {
-    private SignedMessage message;
+    private SignedBinaryMessage message;
 
-    public ClientException(SignedMessage message) {
+    public ClientException(SignedBinaryMessage message) {
         this.message = message;
     }
 
-    public SignedMessage message() {
+    public SignedBinaryMessage message() {
         return message;
     }
 }

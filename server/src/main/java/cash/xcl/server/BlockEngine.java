@@ -6,13 +6,14 @@ import cash.xcl.api.dto.*;
 import cash.xcl.api.tcp.XCLServer;
 import cash.xcl.api.util.AbstractAllMessages;
 import cash.xcl.api.util.CountryRegion;
-import cash.xcl.api.util.XCLBase32;
+import cash.xcl.util.XCLBase32;
 import net.openhft.chronicle.core.annotation.NotNull;
 import net.openhft.chronicle.core.time.SystemTimeProvider;
 import net.openhft.chronicle.threads.NamedThreadFactory;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.LongStream;
 
 public class BlockEngine extends AbstractAllMessages {
     private final int region;
@@ -62,6 +63,8 @@ public class BlockEngine extends AbstractAllMessages {
     }
 
     public static BlockEngine newMain(long address, int periodMS, long[] clusterAddresses) {
+        assert LongStream.of(clusterAddresses).distinct().count() == clusterAddresses.length;
+
         final AddressService addressService = new AddressService();
 
         Chainer chainer = new QueuingChainer(CountryRegion.MAIN_CHAIN);
@@ -72,6 +75,8 @@ public class BlockEngine extends AbstractAllMessages {
     }
 
     public static BlockEngine newLocal(long address, int region, int periodMS, long[] clusterAddresses, long tbeInitialCapacity) {
+        assert LongStream.of(clusterAddresses).distinct().count() == clusterAddresses.length;
+
         Chainer chainer = new VanillaChainer(region, tbeInitialCapacity);
         AllMessagesServer fastPath = new MainFastPath(address, chainer, null);
 

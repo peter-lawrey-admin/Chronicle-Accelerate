@@ -3,6 +3,7 @@ package cash.xcl.api;
 import cash.xcl.api.dto.CreateNewAddressCommand;
 import cash.xcl.api.tcp.XCLClient;
 import cash.xcl.api.tcp.XCLServer;
+import cash.xcl.util.XCLBase32;
 import net.openhft.chronicle.bytes.Bytes;
 import net.openhft.chronicle.core.Jvm;
 import net.openhft.chronicle.core.Mocker;
@@ -31,14 +32,19 @@ public class XCLClientServerTest {
 
         StringWriter out = new StringWriter();
         AllMessagesServer logging = Mocker.logging(AllMessagesServer.class, "", out);
-        XCLServer server = new XCLServer("test", 9900, 1, secretKey, logging);
+        XCLServer server = new XCLServer("test", 9900, 1, publicKey, secretKey, logging);
 
         List<InetSocketAddress> addresses = Arrays.asList(new InetSocketAddress("localhost", 9900));
         AllMessages logging2 = Mocker.logging(AllMessages.class, "", out);
         ClientOut client = new XCLClient("test-client", addresses, 2, secretKey, logging2);
         server.register(2, publicKey);
 
-        client.createNewAddressCommand(new CreateNewAddressCommand(2, 1L, publicKey, "usny"));
+        CreateNewAddressCommand cnac = new CreateNewAddressCommand(2, 1L, publicKey, "usny");
+        assertEquals("usny", XCLBase32.encodeInt(cnac.region()));
+        assertEquals("usny", XCLBase32.encodeIntNum(cnac.region()));
+        assertEquals("USNY", XCLBase32.encodeIntUpper(cnac.region()));
+        client.createNewAddressCommand(
+                cnac);
         for (int i = 0; i <= 20; i++) {
             assertTrue(i < 20);
             Jvm.pause(Jvm.isDebug() ? 2000 : 25);
@@ -48,9 +54,15 @@ public class XCLClientServerTest {
             System.out.println(out);
         }
         assertEquals(
-                "allMessagesLookup[cash.xcl.api.tcp.XCLServer@xxxxxxxx]\n" + "createNewAddressCommand[!CreateNewAddressCommand {\n"
-                        + "  sourceAddress: 2,\n" + "  eventTime: 1,\n" + "  publicKey: !!binary O2onvM62pC1io6jQKm8Nc2UyFXcd4kOmOsBIoYtZ2ik=,\n"
-                        + "  region: USNY,\n" + "  newAddressSeed: 0\n" + "}\n" + "]\n",
+                "allMessagesLookup[cash.xcl.api.tcp.XCLServer@xxxxxxxx]\n" +
+                        "createNewAddressCommand[!CreateNewAddressCommand {\n" +
+                        "  sourceAddress: oooooooooooo4,\n" +
+                        "  eventTime: 1,\n" +
+                        "  publicKey: !!binary O2onvM62pC1io6jQKm8Nc2UyFXcd4kOmOsBIoYtZ2ik=,\n" +
+                        "  region: USNY,\n" +
+                        "  newAddressSeed: ooooooooooooo\n" +
+                        "}\n" +
+                        "]\n",
                 out.toString().replaceAll("\r", "").replaceAll("XCLServer@\\w+", "XCLServer@xxxxxxxx"));
 
         client.close();

@@ -1,13 +1,16 @@
 package cash.xcl.api.dto;
 
+import cash.xcl.util.XCLBase32LongConverter;
 import net.openhft.chronicle.bytes.BytesIn;
 import net.openhft.chronicle.bytes.BytesOut;
+import net.openhft.chronicle.wire.LongConversion;
 
 /**
  * A generic application message has been reported.  These should be used as little as possible as they cannot be easily processed downstream.
  */
-public abstract class SignedTracedMessage extends SignedMessage {
+public abstract class SignedTracedMessage extends SignedBinaryMessage {
 
+    @LongConversion(XCLBase32LongConverter.class)
     private long origSourceAddress;
     private long origEventTime;
 

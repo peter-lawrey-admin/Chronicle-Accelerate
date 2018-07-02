@@ -4,7 +4,7 @@ import net.openhft.chronicle.bytes.BytesIn;
 import net.openhft.chronicle.bytes.BytesOut;
 
 // TODO
-public class SubscriptionSuccessResponse extends SignedMessage {
+public class SubscriptionSuccessResponse extends SignedBinaryMessage {
 
     private SubscriptionQuery subscriptionQuery;
 
@@ -26,7 +26,7 @@ public class SubscriptionSuccessResponse extends SignedMessage {
     }
 
     @Override
-    public int messageType() {
+    public int intMessageType() {
 
         return MessageTypes.SUBSCRIPTION_SUCCESS_RESPONSE;
     }

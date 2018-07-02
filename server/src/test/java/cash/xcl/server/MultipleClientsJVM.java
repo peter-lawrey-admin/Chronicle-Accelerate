@@ -10,8 +10,6 @@ import net.openhft.chronicle.core.Jvm;
 import net.openhft.chronicle.core.io.Closeable;
 import net.openhft.chronicle.salt.Ed25519;
 
-
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
@@ -34,6 +32,7 @@ public class MultipleClientsJVM {
     public static int MAX_CLIENT_THREADS = 8;
     private Bytes publicKey = Bytes.allocateDirect(Ed25519.PUBLIC_KEY_LENGTH);
     private Bytes secretKey = Bytes.allocateDirect(Ed25519.SECRET_KEY_LENGTH);
+    static final String HOST = System.getProperty("host", "localhost");
 
     public static void main(String[] args) {
         MultipleClientsJVM benchmarkMain = null;
@@ -76,10 +75,16 @@ public class MultipleClientsJVM {
                 XCLClient client = null;
                 try {
                     AtomicInteger count = new AtomicInteger();
-                    client = new XCLClient("client", "localhost",
+                    client = new XCLClient("client", HOST,
                             ServerJVM.DEFAULT_SERVER_ADDRESS, sourceAddress, secretKey,
-                            new MyWritingAllMessages(count))
-                            .internal(ServerJVM.INTERNAL);
+                            new MyWritingAllMessages(count));
+
+                    // register public keys
+                    client.internal(true);
+                    client.createNewAddressEvent(new CreateNewAddressEvent(0, 0, 0, 0, sourceAddress, publicKey));
+                    client.createNewAddressEvent(new CreateNewAddressEvent(0, 0, 0, 0, destinationAddress, publicKey));
+
+                    client.internal(ServerJVM.INTERNAL);
                     sendOpeningBalance(client, sourceAddress, sourceAddress);
                     sendOpeningBalance(client, sourceAddress, destinationAddress);
                 }finally {
@@ -125,7 +130,8 @@ public class MultipleClientsJVM {
                     try {
                         AtomicInteger count = new AtomicInteger();
                         AllMessages queuing = new MyWritingAllMessages(count);
-                        XCLClient client = new XCLClient("client", "localhost", ServerJVM.DEFAULT_SERVER_ADDRESS, sourceAddress, secretKey, queuing);
+                        XCLClient client = new XCLClient("client", HOST, ServerJVM.DEFAULT_SERVER_ADDRESS, sourceAddress, secretKey, queuing);
+                        client.internal(ServerJVM.INTERNAL);
                         client.subscriptionQuery(new SubscriptionQuery(sourceAddress, 0));
                         TransferValueCommand tvc1 = new TransferValueCommand(sourceAddress, 0, destinationAddress, 1e-9, "USD", "");
                         int c = 0;
@@ -202,7 +208,7 @@ public class MultipleClientsJVM {
         }
 
         @Override
-        public void write(SignedMessage message) {
+        public void write(SignedBinaryMessage message) {
             count.incrementAndGet();
         }
 

@@ -1,7 +1,7 @@
 package cash.xcl.server.accounts;
 
 
-import cash.xcl.api.util.XCLBase32;
+import cash.xcl.util.XCLBase32;
 import cash.xcl.util.XCLIntDoubleMap;
 import net.openhft.chronicle.bytes.BytesIn;
 import net.openhft.chronicle.bytes.BytesOut;
@@ -10,7 +10,7 @@ import net.openhft.chronicle.wire.AbstractBytesMarshallable;
 
 import java.util.Map;
 
-import static cash.xcl.api.dto.Validators.validNumber;
+import static cash.xcl.util.Validators.validNumber;
 
 
 public class BalanceByCurrency extends AbstractBytesMarshallable {

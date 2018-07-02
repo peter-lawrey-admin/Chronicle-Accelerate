@@ -1,10 +1,10 @@
 depositValueEvent: {
-  sourceAddress: 12345,
+  sourceAddress: text...exch,
   eventTime: 1,
   depositValueCommand: {
-    sourceAddress: 12345,
+    sourceAddress: test.exch,
     eventTime: 0,
-    toAddress: 1,
+    toAddress: l,
     amount: 100.0,
     currency: USD,
     reference: !!null "",
@@ -14,12 +14,12 @@ depositValueEvent: {
 ---
 ---
 depositValueEvent: {
-  sourceAddress: 12345,
+  sourceAddress: text...exch,
   eventTime: 10,
   depositValueCommand: {
-    sourceAddress: 12345,
+    sourceAddress: test.exch,
     eventTime: 5,
-    toAddress: 1,
+    toAddress: l,
     amount: 100.0,
     currency: USD,
     reference: !!null "",
@@ -29,19 +29,20 @@ depositValueEvent: {
 ---
 ---
 commandFailedEvent: {
-  sourceAddress: 12345,
+  sourceAddress: text...exch,
   eventTime: 20,
-  origSourceAddress: 12345,
+  origSourceAddress: test.exch,
   origEventTime: 5,
-  origMessageType: 96,
+  origProtocol: "1",
+  origMessageType: "96",
   reason: "No such currency quoted on the exchange "
 }
 ---
 ---
 currentBalanceResponse: {
-  sourceAddress: 12345,
+  sourceAddress: text...exch,
   eventTime: 30,
-  address: 1,
+  address: l,
   balances: {
     USD: 200.0
   }
@@ -51,12 +52,12 @@ currentBalanceResponse: {
 ---
 ---
 withdrawValueEvent: {
-  sourceAddress: 12345,
+  sourceAddress: text...exch,
   eventTime: 50,
   withdrawValueCommand: {
-    sourceAddress: 1,
+    sourceAddress: l,
     eventTime: 45,
-    toAddress: 1,
+    toAddress: l,
     amount: 100.0,
     currency: USD,
     reference: Cash,
@@ -67,22 +68,23 @@ withdrawValueEvent: {
 ---
 ---
 commandFailedEvent: {
-  sourceAddress: 12345,
+  sourceAddress: text...exch,
   eventTime: 60,
-  origSourceAddress: 1,
+  origSourceAddress: l,
   origEventTime: 55,
-  origMessageType: 97,
+  origProtocol: "1",
+  origMessageType: "97",
   reason: Unsufficient funds
 }
 ---
 ---
 withdrawValueEvent: {
-  sourceAddress: 12345,
+  sourceAddress: text...exch,
   eventTime: 70,
   withdrawValueCommand: {
-    sourceAddress: 1,
+    sourceAddress: l,
     eventTime: 65,
-    toAddress: 1,
+    toAddress: l,
     amount: 100.0,
     currency: USD,
     reference: Cash,
@@ -93,11 +95,12 @@ withdrawValueEvent: {
 ---
 ---
 commandFailedEvent: {
-  sourceAddress: 12345,
+  sourceAddress: text...exch,
   eventTime: 80,
-  origSourceAddress: 11,
+  origSourceAddress: ll,
   origEventTime: 75,
-  origMessageType: 97,
+  origProtocol: "1",
+  origMessageType: "97",
   reason: No such account on the exchange
 }
 ---

@@ -1,19 +1,17 @@
 package cash.xcl.api.exch;
 
-import static cash.xcl.api.dto.Validators.notNull;
-import static cash.xcl.api.dto.Validators.strictPositive;
-import static cash.xcl.api.dto.Validators.validNumber;
-
 import net.openhft.chronicle.bytes.BytesIn;
 import net.openhft.chronicle.bytes.BytesOut;
 import net.openhft.chronicle.core.io.IORuntimeException;
 import net.openhft.chronicle.wire.AbstractBytesMarshallable;
 
+import static cash.xcl.util.Validators.*;
+
 public class ExecutionReport extends AbstractBytesMarshallable {
 
     private CurrencyPair pair;
     private Side action;
-    private long quantity;
+    private double quantity;
     private double price;
     private long initiator;
     private long aggressor;
@@ -22,7 +20,7 @@ public class ExecutionReport extends AbstractBytesMarshallable {
     
     }
 
-    public ExecutionReport(CurrencyPair pair, Side action, long quantity, double price, long aggressor, long initiator) {
+    public ExecutionReport(CurrencyPair pair, Side action, double quantity, double price, long aggressor, long initiator) {
         assert initiator != aggressor;
         setPair(pair);
         setAction(action);
@@ -40,7 +38,7 @@ public class ExecutionReport extends AbstractBytesMarshallable {
         }
         pair.readMarshallable(bytes);
         setAction(Side.fromId(bytes.readInt()));
-        setQuantity(bytes.readLong());
+        setQuantity(bytes.readDouble());
         setPrice(bytes.readDouble());
         this.aggressor = bytes.readLong();
         this.initiator = bytes.readLong();
@@ -51,7 +49,7 @@ public class ExecutionReport extends AbstractBytesMarshallable {
     public void writeMarshallable(BytesOut bytes) {
         pair.writeMarshallable(bytes);
         bytes.writeInt(action.ordinal());
-        bytes.writeLong(quantity);
+        bytes.writeDouble(quantity);
         bytes.writeDouble(price);
         bytes.writeLong(aggressor);
         bytes.writeLong(initiator);
@@ -73,12 +71,12 @@ public class ExecutionReport extends AbstractBytesMarshallable {
         this.action = notNull(action);
     }
 
-    public long getQuantity() {
+    public double getQuantity() {
         return quantity;
     }
 
-    void setQuantity(long quantity) {
-        this.quantity = strictPositive(quantity);
+    void setQuantity(double quantity) {
+        this.quantity = positive(quantity);
     }
 
     public double getPrice() {

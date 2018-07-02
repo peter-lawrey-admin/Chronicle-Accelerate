@@ -4,11 +4,11 @@ import cash.xcl.api.AllMessages;
 import cash.xcl.api.AllMessagesServer;
 import cash.xcl.api.PostBlockChainProcessor;
 import cash.xcl.api.dto.*;
-import cash.xcl.api.exch.*;
 import cash.xcl.api.util.AbstractAllMessages;
 import cash.xcl.server.accounts.AccountService;
 import cash.xcl.server.accounts.BalanceByCurrency;
 import cash.xcl.server.accounts.VanillaAccountService;
+import cash.xcl.util.XCLBase32;
 import net.openhft.chronicle.core.Jvm;
 import net.openhft.chronicle.core.annotation.NotNull;
 import net.openhft.chronicle.core.time.SetTimeProvider;
@@ -44,7 +44,7 @@ public class LocalPostBlockChainProcessor extends AbstractAllMessages implements
 
     // Used for testing purposes
     LocalPostBlockChainProcessor(AllMessagesServer allMessagesServer) {
-        super(123123123123L);
+        super(XCLBase32.decode("test.server"));
         allMessagesLookup(allMessagesServer);
         this.accountService = new VanillaAccountService();
     }

@@ -1,11 +1,10 @@
 package cash.xcl.server.messagewriter;
 
 import cash.xcl.api.dto.GenericSignedMessage;
-import cash.xcl.api.dto.SignedMessage;
+import cash.xcl.api.dto.SignedBinaryMessage;
 import cash.xcl.api.tcp.WritingAllMessages;
 import cash.xcl.api.tcp.XCLServer;
 import cash.xcl.server.MessageWriter;
-import cash.xcl.server.SingleMessageWriter;
 import net.openhft.chronicle.bytes.Bytes;
 import net.openhft.chronicle.core.Jvm;
 import net.openhft.chronicle.threads.LongPauser;
@@ -46,7 +45,7 @@ public class SingleMessageWriterAtomicBoolean extends WritingAllMessages impleme
     }
 
     @Override
-    public void write(SignedMessage message) {
+    public void write(SignedBinaryMessage message) {
         lock();
         try {
             long position = bytes1.writePosition();

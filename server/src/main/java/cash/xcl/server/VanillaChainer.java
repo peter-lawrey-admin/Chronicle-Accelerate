@@ -1,6 +1,6 @@
 package cash.xcl.server;
 
-import cash.xcl.api.dto.SignedMessage;
+import cash.xcl.api.dto.SignedBinaryMessage;
 import cash.xcl.api.dto.TransactionBlockEvent;
 import cash.xcl.api.tcp.WritingAllMessages;
 
@@ -22,7 +22,7 @@ public class VanillaChainer extends WritingAllMessages implements Chainer {
     }
 
     @Override
-    public void write(SignedMessage message) {
+    public void write(SignedBinaryMessage message) {
         synchronized (transactionLock) {
 //            System.out.println("Add "+message);
             tbe.addTransaction(message);

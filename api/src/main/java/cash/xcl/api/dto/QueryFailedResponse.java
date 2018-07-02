@@ -5,12 +5,12 @@ package cash.xcl.api.dto;
  */
 public class QueryFailedResponse extends SignedErrorMessage {
 
-    public QueryFailedResponse(long sourceAddress, long eventTime, SignedMessage orig, String reason) {
+    public QueryFailedResponse(long sourceAddress, long eventTime, SignedBinaryMessage orig, String reason) {
         super(sourceAddress, eventTime, orig, reason);
     }
 
-    public QueryFailedResponse(long sourceAddress, long eventTime, long origSourceAddress, long origEventTime, int origMessageType, String reason) {
-        super(sourceAddress, eventTime, origSourceAddress, origEventTime, origMessageType, reason);
+    public QueryFailedResponse(long sourceAddress, long eventTime, long origSourceAddress, long origEventTime, String origProtocol, String origMessageType, String reason) {
+        super(sourceAddress, eventTime, origSourceAddress, origEventTime, origProtocol, origMessageType, reason);
     }
 
     public QueryFailedResponse() {
@@ -18,7 +18,7 @@ public class QueryFailedResponse extends SignedErrorMessage {
     }
 
     @Override
-    public int messageType() {
+    public int intMessageType() {
         return MessageTypes.QUERY_FAILED_RESPONSE;
     }
 }

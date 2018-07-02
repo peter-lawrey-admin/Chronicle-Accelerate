@@ -7,8 +7,8 @@ import cash.xcl.api.exch.DepositValueCommand;
 import cash.xcl.api.exch.WithdrawValueCommand;
 import cash.xcl.api.util.AbstractAllMessages;
 import cash.xcl.api.util.CountryRegion;
-import cash.xcl.api.util.PublicKeyRegistry;
-import cash.xcl.api.util.RegionIntConverter;
+import cash.xcl.util.PublicKeyRegistry;
+import cash.xcl.util.RegionIntConverter;
 import net.openhft.chronicle.core.annotation.NotNull;
 
 /**
@@ -28,12 +28,12 @@ public class VanillaGateway extends AbstractAllMessages implements Gateway {
     }
 
 
-    public static VanillaGateway newGateway(long address, String region, long[] clusterAddresses, int mainPeriodMS, int localPeriodMS, long tbeInitialCapacity) {
+    public static VanillaGateway newGateway(long address, String region, long[] clusterAddresses, int mainPeriodMS, int localPeriodMS) {
         int regionInt = RegionIntConverter.INSTANCE.parse(region);
         return new VanillaGateway(address,
                 regionInt,
                 BlockEngine.newMain(address, mainPeriodMS, clusterAddresses),
-                BlockEngine.newLocal(address, regionInt, localPeriodMS, clusterAddresses, tbeInitialCapacity)
+                BlockEngine.newLocal(address, regionInt, localPeriodMS, clusterAddresses, 2 << 20)
         );
     }
 

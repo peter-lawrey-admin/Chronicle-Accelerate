@@ -5,7 +5,7 @@ import net.openhft.chronicle.bytes.BytesOut;
 
 // FIXME needs reviewing/completing
 // returns the status of the nodes in the current cluster
-public class ClusterStatusResponse extends SignedMessage {
+public class ClusterStatusResponse extends SignedBinaryMessage {
 
     private ClusterStatusQuery clusterStatusQuery;
 
@@ -37,7 +37,7 @@ public class ClusterStatusResponse extends SignedMessage {
     }
 
     @Override
-    public int messageType() {
+    public int intMessageType() {
         return MessageTypes.CLUSTER_STATUS_RESPONSE;
     }
 }

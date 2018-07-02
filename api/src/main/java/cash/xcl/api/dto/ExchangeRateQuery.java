@@ -5,7 +5,7 @@ import net.openhft.chronicle.bytes.BytesOut;
 import net.openhft.chronicle.core.annotation.NotNull;
 
 // FIXME needs reviewing/completing
-public class ExchangeRateQuery extends SignedMessage {
+public class ExchangeRateQuery extends SignedBinaryMessage {
 
     private String symbol1;
 
@@ -45,7 +45,7 @@ public class ExchangeRateQuery extends SignedMessage {
     }
 
     @Override
-    public int messageType() {
+    public int intMessageType() {
         return MessageTypes.EXCHANGE_RATE_QUERY;
     }
 

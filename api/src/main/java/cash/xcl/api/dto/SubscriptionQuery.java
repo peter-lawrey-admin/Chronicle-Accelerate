@@ -3,7 +3,7 @@ package cash.xcl.api.dto;
 import net.openhft.chronicle.bytes.BytesIn;
 import net.openhft.chronicle.bytes.BytesOut;
 
-public class SubscriptionQuery extends SignedMessage {
+public class SubscriptionQuery extends SignedBinaryMessage {
     public SubscriptionQuery(long sourceAddress, long eventTime) {
         super(sourceAddress, eventTime);
     }
@@ -18,7 +18,7 @@ public class SubscriptionQuery extends SignedMessage {
     }
 
     @Override
-    public int messageType() {
+    public int intMessageType() {
         return MessageTypes.SUBSCRIPTION_QUERY;
     }
 

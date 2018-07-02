@@ -47,16 +47,16 @@ public class ThreeServerContainer {
         long tbeInitialCapacity = TransactionBlockEvent._32_MB;
 
         long[] clusterAddresses = {10001, 10002, 10003};
-        Gateway gateway1 = VanillaGateway.newGateway(10001, "gb1dn", clusterAddresses, 1000, 500, tbeInitialCapacity);
-        one = new XCLServer("one", 10001, 10001, secretKey1, gateway1);
+        Gateway gateway1 = VanillaGateway.newGateway(10001, "gb1dn", clusterAddresses, 1000, 500);
+        one = new XCLServer("one", 10001, 10001, publicKey, secretKey1, gateway1);
         weeklySetup(gateway1);
 
-        Gateway gateway2 = VanillaGateway.newGateway(10002, "gb1dn", clusterAddresses, 1000, 500, tbeInitialCapacity);
-        two = new XCLServer("two", 10002, 10002, secretKey2, gateway2);
+        Gateway gateway2 = VanillaGateway.newGateway(10002, "gb1dn", clusterAddresses, 1000, 500);
+        two = new XCLServer("two", 10002, 10002, publicKey, secretKey2, gateway2);
         weeklySetup(gateway2);
 
-        Gateway gateway3 = VanillaGateway.newGateway(10003, "gb1dn", clusterAddresses, 1000, 500, tbeInitialCapacity);
-        three = new XCLServer("two", 10003, 10003, secretKey3, gateway3);
+        Gateway gateway3 = VanillaGateway.newGateway(10003, "gb1dn", clusterAddresses, 1000, 500);
+        three = new XCLServer("two", 10003, 10003, publicKey, secretKey3, gateway3);
         weeklySetup(gateway3);
 
         one.addTCPConnection(10002,
