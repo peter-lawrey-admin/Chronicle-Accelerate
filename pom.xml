@@ -29,6 +29,7 @@
         <module>docgen</module>
         <module>util</module>
         <module>net</module>
+        <module>platform</module>
         <module>api</module>
         <module>server</module>
         <!--<module>client</module>-->
@@ -55,7 +56,7 @@
             <dependency>
                 <groupId>net.openhft</groupId>
                 <artifactId>chronicle-bom</artifactId>
-                <version>1.15.128</version>
+                <version>1.16.95</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
