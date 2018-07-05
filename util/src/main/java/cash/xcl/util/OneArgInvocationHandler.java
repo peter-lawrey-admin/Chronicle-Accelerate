@@ -1,4 +1,4 @@
-package cash.xcl.api.util;
+package cash.xcl.util;
 
 import net.openhft.chronicle.core.util.ObjectUtils;
 
