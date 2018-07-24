@@ -1,0 +1,22 @@
+startBlock: {
+  blockKey: !!binary 3IFSRpzYKvrEd2YzrTmXDtIJS1Bi10UtIwbzAqTd0XglKGol8DlmHJK3scHpNZ7jMqciWj8sAcqzDfE/s7yKoQ==,
+  blockTimeUS: "2018-07-22T09:38:56.645248"
+}
+---
+startBatch: {
+  batchKey: !!binary QKOd/TzzgFi5J0vv6Q7iSWnyOPzKFpr0bVbLn5hp00J7pRgxQ4AP0+yC5xV9Wk7cWDBONn/tnw/3JisHBEc+zA==,
+  batchTimeUS: "2018-07-22T09:38:56.740084"
+}
+---
+verified: {
+  publicKey: !!binary JShqJfA5ZhySt7HB6TWe4zKnIlo/LAHKsw3xP7O8iqE=
+}
+---
+verified: {
+  publicKey: !!binary e6UYMUOAD9PsgucVfVpO3FgwTjZ/7Z8P9yYrBwRHPsw=
+}
+---
+endBatch: ""
+---
+endBlock: ""
+---

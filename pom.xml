@@ -22,7 +22,7 @@
         <version>1.1.13</version>
         <relativePath/>
     </parent>
-    <groupId>cash.xcl</groupId>
+    <groupId>im.xcl</groupId>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>parent-pom</artifactId>
     <modules>
@@ -33,7 +33,7 @@
         <module>api</module>
         <module>server</module>
     </modules>
-    <version>0.1.0-SNAPSHOT</version>
+    <version>0.2.0-SNAPSHOT</version>
     <name>Chronicle-Accelerate/Parent-Pom</name>
     <description>Chronicle-Accelerate (XCL) Parent Pom</description>
     <packaging>pom</packaging>
@@ -57,7 +57,7 @@
             <dependency>
                 <groupId>net.openhft</groupId>
                 <artifactId>chronicle-bom</artifactId>
-                <version>1.16.95</version>
+                <version>1.16-SNAPSHOT</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -80,6 +80,7 @@
         <dependency>
             <groupId>net.openhft</groupId>
             <artifactId>chronicle-salt</artifactId>
+            <version>1.0.1</version>
         </dependency>
 
         <!-- test dependencies -->
