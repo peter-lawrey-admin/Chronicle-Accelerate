@@ -3,9 +3,6 @@ package im.xcl.platform.api;
 import net.openhft.chronicle.bytes.Bytes;
 import net.openhft.chronicle.salt.Ed25519;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class VanillaSignedMessage {
     public static final int LENGTH = 0;
     public static final int MAGIC = LENGTH + Integer.BYTES;
@@ -17,6 +14,5 @@ public class VanillaSignedMessage {
 
     private Bytes sigAndMsg;
     private SignedMessageFormat format;
-    private List<Instruction> instructions = new ArrayList<>();
     private InstructionCache instructionCache;
 }
