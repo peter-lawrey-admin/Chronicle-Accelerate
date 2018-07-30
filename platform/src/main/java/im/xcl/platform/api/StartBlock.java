@@ -20,6 +20,10 @@ public class StartBlock extends AbstractBytesMarshallable {
     }
 
     public StartBlock(BytesStore blockKey, long blockTimeUS) {
+        init(blockKey, blockTimeUS);
+    }
+
+    public void init(BytesStore blockKey, long blockTimeUS) {
         this.blockKey = blockKey;
         this.blockTimeUS = blockTimeUS;
     }

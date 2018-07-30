@@ -11,6 +11,10 @@ public class Give extends AbstractBytesMarshallable {
     }
 
     public Give(BytesStore publicKey, double amount) {
+        init(publicKey, amount);
+    }
+
+    public void init(BytesStore publicKey, double amount) {
         this.publicKey = publicKey;
         this.amount = amount;
     }

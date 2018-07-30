@@ -20,6 +20,10 @@ public class StartBatch extends AbstractBytesMarshallable {
     }
 
     public StartBatch(BytesStore batchKey, long batchTimeUS) {
+        init(batchKey, batchTimeUS);
+    }
+
+    public void init(BytesStore batchKey, long batchTimeUS) {
         this.batchKey = batchKey;
         this.batchTimeUS = batchTimeUS;
     }

@@ -11,8 +11,13 @@ public class OnBalance extends AbstractBytesMarshallable {
     }
 
     public OnBalance(BytesStore publicKey, double amount) {
+        init(publicKey, amount);
+    }
+
+    public OnBalance init(BytesStore publicKey, double amount) {
         this.publicKey = publicKey;
         this.amount = amount;
+        return this;
     }
 
     public BytesStore publicKey() {
