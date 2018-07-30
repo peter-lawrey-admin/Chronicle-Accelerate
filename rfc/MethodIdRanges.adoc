@@ -1,0 +1,38 @@
+= Method Id Ranges
+Peter Lawrey
+:published_at: 30-07-2018
+
+To make identifying method ids easier, Methods are assigned a range each based on their purpose.
+
+|===
+| Message types | MethodIdRange
+| Internal use | ~0x0000 to ~0x3FFF
+| Invalid | 0x0000
+| Reserved for common messages | 0x0001 to 0x007F
+| Transaction Commands | 0x0080 to 0x0FFF
+| Transaction Response | 0x1000 to 0x1FFF
+| Query Request        | 0x2000 to 0x2FFF
+| Query Response       | 0x3000 to 0x3FFF
+|===
+
+See im.xcl.platform.api.MethodTypeClassifier and im.xcl.platform.api.VanillaMethodTypeClassifier
+
+=== Internal messages
+
+These message are used to implement the blockchain. They are reasonably common, but don't have to be as short as transactions.
+
+=== Transaction commands
+
+These command messages are passed to the blockchain and to be as compact as possible, they are assigned small numbers
+
+=== Transaction results
+
+These command results are passed back to the client and can also be numerous. They can also be more compact.
+
+=== Query commands
+
+These are commands passed to the gateway and not processed by the blockchain. They can be longer.
+
+=== Query results.
+
+These are result passed from the gateway to the client. They can be longer.

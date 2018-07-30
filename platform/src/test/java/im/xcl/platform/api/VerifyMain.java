@@ -10,22 +10,18 @@ public class VerifyMain {
     public static void main(String[] args) {
         TextWire wire = new TextWire(Bytes.elasticHeapByteBuffer(128));
         AllListeners writer = wire.methodWriter(AllListeners.class);
-        StartBlock startBlock = new StartBlock();
 
         Bytes<Void> blockKey = Ed25519.allocateSecretKey();
         Bytes<Void> blockPublicKey = Ed25519.allocatePublicKey();
         Ed25519.generatePublicAndSecretKey(blockPublicKey, blockKey);
-        startBlock.blockKey = blockKey;
-        startBlock.blockTimeUS = TimeProvider.get().currentTimeMicros();
+        StartBlock startBlock = new StartBlock(blockKey, TimeProvider.get().currentTimeMicros());
 
         writer.startBlock(startBlock);
 
-        StartBatch startBatch = new StartBatch();
         Bytes<Void> batchKey = Ed25519.allocateSecretKey();
         Bytes<Void> batchPublicKey = Ed25519.allocatePublicKey();
         Ed25519.generatePublicAndSecretKey(batchPublicKey, batchKey);
-        startBatch.batchKey = batchKey;
-        startBatch.batchTimeUS = TimeProvider.get().currentTimeMicros();
+        StartBatch startBatch = new StartBatch(batchKey, TimeProvider.get().currentTimeMicros());
 
         writer.startBatch(startBatch);
 

@@ -1,10 +1,18 @@
 package im.xcl.platform.api;
 
+/**
+ * The blockchain processor should implement this interface
+ */
 public interface TransactionBlockListener {
     /**
-     * start a transaction block
+     * start a transaction block containing batches of transaction.
      */
-    void startBlock(StartBlock startBlock);
+    default void startBlock(StartBlock startBlock) {
+    }
 
-    void endBlock();
+    /**
+     * End of a block.
+     */
+    default void endBlock() {
+    }
 }

@@ -5,11 +5,12 @@
         <artifactId>parent-pom</artifactId>
         <groupId>im.xcl</groupId>
         <version>0.2.0-SNAPSHOT</version>
+        <relativePath>../../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>api</artifactId>
-    <name>Chronicle-Accelerate/API</name>
-    <description>Chronicle-Accelerate API</description>
+    <artifactId>examples-appreciation</artifactId>
+    <name>Chronicle-Accelerate/Examples/Appreciation</name>
+    <description>Chronicle-Accelerate Examples Appreciation</description>
 
     <dependencies>
         <dependency>
@@ -27,29 +28,14 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>im.xcl</groupId>
+            <artifactId>platform</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.pitest</groupId>
-                <artifactId>pitest-maven</artifactId>
-                <version>1.3.2</version>
-                <configuration>
-                    <verbose>false</verbose>
-                    <enableAssertions>true</enableAssertions>
-                    <targetClasses>
-                        <param>cash.xcl.api.exch*</param>
-                    </targetClasses>
-                    <targetTests>
-                        <param>cash.xcl.api.exch*</param>
-                        <param>cash.xcl.api.MarshalingTest</param>
-                    </targetTests>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 </project>
