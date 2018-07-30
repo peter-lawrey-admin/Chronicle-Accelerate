@@ -31,7 +31,13 @@ public class VanillaAppreciationGateway implements AppreciationGateway {
 
     @Override
     public void openingBalance(OpeningBalance openingBalance) {
-        blockchain.openingBalance(openingBalance);
+        if (verifyServerNode(startBatch.batchKey()))
+            blockchain.openingBalance(openingBalance);
+    }
+
+    private boolean verifyServerNode(BytesStore publicKey) {
+        // allow anyone for now.
+        return true;
     }
 
     @Override
