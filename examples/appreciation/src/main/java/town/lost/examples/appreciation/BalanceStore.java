@@ -8,4 +8,6 @@ public interface BalanceStore {
     boolean subtractBalance(BytesStore bytesStore, double amount);
 
     void addBalance(BytesStore bytesStore, double amount);
+
+    void setBalance(BytesStore bytesStore, double amount);
 }

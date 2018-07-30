@@ -13,4 +13,6 @@ public abstract class XCLLongDoubleMap extends AbstractMarshallable {
 
     public abstract double getOrDefault(long key, double defau1t);
 
+    public abstract String toString();
+
 }

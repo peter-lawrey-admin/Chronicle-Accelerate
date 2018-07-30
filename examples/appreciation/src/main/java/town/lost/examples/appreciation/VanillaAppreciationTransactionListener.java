@@ -3,10 +3,7 @@ package town.lost.examples.appreciation;
 import im.xcl.platform.api.MessageRouter;
 import im.xcl.platform.api.StartBatch;
 import net.openhft.chronicle.bytes.BytesStore;
-import town.lost.examples.appreciation.api.AppreciationResultsListener;
-import town.lost.examples.appreciation.api.AppreciationTransactionListener;
-import town.lost.examples.appreciation.api.Give;
-import town.lost.examples.appreciation.api.OnBalance;
+import town.lost.examples.appreciation.api.*;
 
 public class VanillaAppreciationTransactionListener implements AppreciationTransactionListener {
     private final MessageRouter<AppreciationResultsListener> router;
@@ -24,6 +21,16 @@ public class VanillaAppreciationTransactionListener implements AppreciationTrans
     @Override
     public void startBatch(StartBatch startBatch) {
         this.startBatch = startBatch;
+    }
+
+    @Override
+    public void endBatch() {
+        startBatch = null;
+    }
+
+    @Override
+    public void openingBalance(OpeningBalance openingBalance) {
+        balanceStore.setBalance(openingBalance.publicKey(), openingBalance.amount());
     }
 
     @Override

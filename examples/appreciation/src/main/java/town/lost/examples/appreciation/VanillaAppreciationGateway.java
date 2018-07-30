@@ -30,6 +30,11 @@ public class VanillaAppreciationGateway implements AppreciationGateway {
     }
 
     @Override
+    public void openingBalance(OpeningBalance openingBalance) {
+        blockchain.openingBalance(openingBalance);
+    }
+
+    @Override
     public void queryBalance() {
         BytesStore clientKey = startBatch.batchKey();
         AppreciationResultsListener listener = client.to(clientKey);

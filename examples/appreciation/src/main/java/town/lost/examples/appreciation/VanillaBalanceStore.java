@@ -44,4 +44,13 @@ public class VanillaBalanceStore implements BalanceStore {
             amountsMap.justPut(key, amount2);
         }
     }
+
+    @Override
+    public void setBalance(BytesStore bytesStore, double amount) {
+        assert amount >= 0;
+        long key = getKey(bytesStore);
+        synchronized (amountsMap) {
+            amountsMap.justPut(key, amount);
+        }
+    }
 }
