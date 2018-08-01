@@ -11,4 +11,17 @@ This is an index of documents.
 
 === Documents for 0.2
 
+- https://github.com/OpenHFT/Chronicle-Accelerate/blob/master/rfc/BlockMessageWorkflow.adoc[Block message workflow]
+- https://github.com/OpenHFT/Chronicle-Accelerate/blob/master/rfc/DesignConsiderations.adoc[Blockchain design considerations]
+- https://github.com/OpenHFT/Chronicle-Accelerate/blob/master/rfc/MethodIdRanges.adoc[Method id ranges]
+- https://github.com/OpenHFT/Chronicle-Accelerate/blob/master/rfc/XCLTreeDistribution.adoc[Tree Distribution]
+
+
 === Documents for 0.1
+
+- https://github.com/OpenHFT/Chronicle-Accelerate/blob/master/rfc/BaseMessageFormat.adoc[Base Message Format]
+- https://github.com/OpenHFT/Chronicle-Accelerate/blob/master/rfc/CustomChains.adoc[Custom Chains]
+- https://github.com/OpenHFT/Chronicle-Accelerate/blob/master/rfc/XCLBase32.adoc[Base 32 specificiation]
+- https://github.com/OpenHFT/Chronicle-Accelerate/blob/master/rfc/XCLBlockChain.adoc[Blockchain message format]
+- https://github.com/OpenHFT/Chronicle-Accelerate/blob/master/rfc/XCLRegionCodes.adoc[Region Codes]
+
