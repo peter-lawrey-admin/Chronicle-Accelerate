@@ -1,4 +1,4 @@
-= Custom Chains
+= Custom Chains 0.1
 Peter Lawrey
 
 Chronicle Accelerate provide simple transactions. This documents looks at how custom transactions can be added.

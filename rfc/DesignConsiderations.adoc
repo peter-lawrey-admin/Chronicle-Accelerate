@@ -1,4 +1,4 @@
-= Blockchain Design considerations
+= Blockchain Design considerations 0.2
 Peter Lawrey
 // :hp-image: /covers/cover.png
 // :published_at: 2019-01-31

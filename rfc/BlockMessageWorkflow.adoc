@@ -1,4 +1,4 @@
-= Block Message Workflow
+= Block Message Workflow 0.2
 Peter Lawrey
 
 Messages are passed around the platform to package up transactions into a block, vote on the order of those blocks, then choose and order.

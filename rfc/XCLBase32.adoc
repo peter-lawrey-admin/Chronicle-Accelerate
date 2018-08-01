@@ -1,4 +1,4 @@
-= XCLBase32 specification
+= XCLBase32 specification 0.1
 Peter Lawrey
 
 XCLBase32 is an extension of hexadecimal for encoding a string of bytes.

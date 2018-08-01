@@ -1,4 +1,4 @@
-= XCL Block Chain
+= XCL Block Chain 0.1
 Peter Lawrey
 
 The XCL Block Chain is an ordered collection of messages as commands + events and queries + responses. Its structure contains:

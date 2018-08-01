@@ -1,4 +1,4 @@
-= Method Id Ranges
+= Method Id Ranges 0.2
 Peter Lawrey
 :published_at: 30-07-2018
 

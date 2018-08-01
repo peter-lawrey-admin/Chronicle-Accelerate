@@ -1,4 +1,4 @@
-= Block Distribution
+= Tree Distribution 0.2
 Peter Lawrey
 
 Transaction are distributed in three stages:

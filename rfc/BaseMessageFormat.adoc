@@ -1,4 +1,4 @@
-= Base Message Format
+= Base Message Format 0.1
 Peter Lawrey
 :published_at: 30-03-2018
 
