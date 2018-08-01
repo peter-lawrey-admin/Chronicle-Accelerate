@@ -1,16 +1,17 @@
 package town.lost.examples.verifyip.api;
 
 import im.xcl.platform.api.TransactionListener;
+import net.openhft.chronicle.bytes.MethodId;
 
 public interface VerifyIPResponse extends TransactionListener {
     /**
      * Notify that this node has been verified
      *
-     * @param verifyIPRecord recording that this node has been verified
+     * @param verify recording that this node has been verified
      */
-    void onVerified(VerifyIPRecord verifyIPRecord);
+    @MethodId(~0x90)
+    void onVerify(Verify verify);
 
-    void onVerify();
-
+    @MethodId(~0x91)
     void onInvalidIP();
 }
