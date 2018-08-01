@@ -11,6 +11,8 @@ public interface TransactionListener {
      */
     void startBatch(StartBatch startBatch);
 
+    default void onError(String reason) {
+    }
     /**
      * End of transaction.
      */
