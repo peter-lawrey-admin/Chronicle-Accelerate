@@ -1,0 +1,17 @@
+startBatch: {
+  batchKey: !!binary RWUHCYzTzADL+4kJ9r90rWHBo6J/Wng5FmlXFjv8bd8=,
+  batchTimeUS: "1970-01-01T00:00:00"
+}
+---
+openingBalance: {
+  publicKey: !!binary RWUHCYzTzADL+4kJ9r90rWHBo6J/Wng5FmlXFjv8bd8=,
+  amount: 100.0
+}
+---
+openingBalance: {
+  publicKey: !!binary Sq1s3liIh6LkceZYP+qh6MlMRRqCNJ5Dvl9oyAiZHe8=,
+  amount: 10.0
+}
+---
+endBatch: ""
+---
