@@ -4,7 +4,7 @@ import net.openhft.chronicle.bytes.Bytes;
 import net.openhft.chronicle.bytes.BytesStore;
 import net.openhft.chronicle.salt.Ed25519;
 
-public class CreateAccount extends AbstractSignedMessage<CreateAccount> {
+public class CreateAccount extends VanillaSignedMessage<CreateAccount> {
     private final Bytes publicKey = Bytes.allocateElasticDirect(Ed25519.PUBLIC_KEY_LENGTH);
 
     public CreateAccount(int protocol, int messageType) {

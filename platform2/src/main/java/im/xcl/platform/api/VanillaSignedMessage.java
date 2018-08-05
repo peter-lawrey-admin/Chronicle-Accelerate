@@ -8,7 +8,7 @@ import net.openhft.chronicle.wire.AbstractBytesMarshallable;
 
 import java.util.function.LongFunction;
 
-public class AbstractSignedMessage<T extends AbstractSignedMessage<T>> extends AbstractBytesMarshallable implements SignedMessage {
+public class VanillaSignedMessage<T extends VanillaSignedMessage<T>> extends AbstractBytesMarshallable implements SignedMessage {
     private static final int LENGTH = 0;
     private static final int FORMAT = LENGTH + Integer.BYTES;
     private static final int SIGNATURE = FORMAT + Integer.BYTES;
@@ -27,7 +27,7 @@ public class AbstractSignedMessage<T extends AbstractSignedMessage<T>> extends A
     private short protocol, messageType;
     private long address, timestampUS;
 
-    protected AbstractSignedMessage(int protocol, int messageType) {
+    protected VanillaSignedMessage(int protocol, int messageType) {
         assert protocol == (short) protocol;
         assert messageType == (short) messageType;
         this.protocol = (short) protocol;
@@ -141,7 +141,8 @@ public class AbstractSignedMessage<T extends AbstractSignedMessage<T>> extends A
     }
 
     public String toHexString() {
-        HexDumpBytes dump = new HexDumpBytes();
+        HexDumpBytes dump = new HexDumpBytes()
+                .offsetFormat((o, b) -> b.appendBase16(o, 4));
         dump.comment("length").writeUnsignedInt(bytes.readUnsignedInt(LENGTH));
         StringBuilder formatStr = new StringBuilder("format ");
         for (int i = FORMAT; i < FORMAT + Integer.BYTES; i++)

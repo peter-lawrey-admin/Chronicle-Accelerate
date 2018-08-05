@@ -1,6 +1,6 @@
 package im.xcl.platform.api;
 
-public class OnAccountCreated extends AbstractSignedMessage {
+public class OnAccountCreated extends VanillaSignedMessage {
     private CreateAccount createAccount;
 
     public OnAccountCreated(short protocol, short messageType) {
