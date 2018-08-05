@@ -159,7 +159,7 @@ public class AbstractSignedMessage<T extends AbstractSignedMessage<T>> extends A
         BytesStore publicKey = hasPublicKey()
                 ? publicKey()
                 : addressToPublickKey.apply(address());
-        if (publicKey == null || publicKey.readRemaining() != Ed25519.SIGNATURE_LENGTH)
+        if (publicKey == null || publicKey.readRemaining() != Ed25519.PUBLIC_KEY_LENGTH)
             return false;
 
         bytes.readPosition(SIGNATURE);
@@ -176,6 +176,10 @@ public class AbstractSignedMessage<T extends AbstractSignedMessage<T>> extends A
         return (T) this;
     }
 
+    public String protocolString() {
+        return getClass().getPackage().getName();
+    }
+
     public short messageType() {
         return messageType;
     }
@@ -183,5 +187,9 @@ public class AbstractSignedMessage<T extends AbstractSignedMessage<T>> extends A
     public T messageType(short messageType) {
         this.messageType = messageType;
         return (T) this;
+    }
+
+    public String messageTypeString() {
+        return getClass().getSimpleName();
     }
 }

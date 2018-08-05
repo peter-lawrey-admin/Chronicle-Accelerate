@@ -5,7 +5,9 @@ import net.openhft.chronicle.core.time.SetTimeProvider;
 import net.openhft.chronicle.salt.Ed25519;
 import org.junit.Test;
 
+import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 public class CreateAccountTest {
 
@@ -40,5 +42,12 @@ public class CreateAccountTest {
                 "   73 65 32 15 77 1d e2 43 a6 3a c0 48 a1 8b 59 da\n" +
                 "   29\n", ca.toHexString());
 
+        assertTrue(ca.verify(this::selfSigning));
+
+    }
+
+    private <T> T selfSigning(long i) {
+        fail("Self signing");
+        return null;
     }
 }
