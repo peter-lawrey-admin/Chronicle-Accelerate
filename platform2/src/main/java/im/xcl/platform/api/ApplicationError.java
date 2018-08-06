@@ -4,7 +4,7 @@ public class ApplicationError extends VanillaSignedMessage<ApplicationError> {
     private VanillaSignedMessage origMessage;
     private String reason;
 
-    public ApplicationError(short protocol, short messageType) {
+    public ApplicationError(int protocol, int messageType) {
         super(protocol, messageType);
     }
 

@@ -3,7 +3,7 @@ package im.xcl.platform.api;
 public class OnAccountCreated extends VanillaSignedMessage {
     private CreateAccount createAccount;
 
-    public OnAccountCreated(short protocol, short messageType) {
+    public OnAccountCreated(int protocol, int messageType) {
         super(protocol, messageType);
     }
 
