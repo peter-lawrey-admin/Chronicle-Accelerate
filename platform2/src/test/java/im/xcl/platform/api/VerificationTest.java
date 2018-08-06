@@ -37,19 +37,22 @@ public class VerificationTest {
         SetTimeProvider timeProvider = new SetTimeProvider(0x05060708090a0bL * 1000);
         v.sign(secretKey2, timeProvider);
 
-        assertEquals("0000 7d 00 00 00                                     # length\n" +
+        assertEquals("0000 9e 00 00 00                                     # length\n" +
                 "0004 3f 3f 3f 3f                                     # format ????\n" +
-                "0008 1b 2b a9 6c de 0e 42 4c 2e 34 99 08 c5 05 84 69 # signature start\n" +
-                "0018 cf db ef f5 66 ae 59 0a 39 4e f6 a4 0e 86 29 3b\n" +
-                "0028 b9 60 eb 24 a4 21 d9 64 9d 78 4b c8 59 29 a7 d6\n" +
-                "0038 d0 4d d0 e3 ae c0 37 0d 20 53 bd 33 38 3d 90 04 # signature end\n" +
+                "0008 20 8b a0 16 1a 72 51 5c 80 8c 7f 5c 19 bd 19 be # signature start\n" +
+                "0018 45 d8 09 4e 7e 8e 1b 72 e3 c9 f6 cf e9 a2 3b 3d\n" +
+                "0028 ab 13 b4 38 68 bd 07 f5 5d 17 47 b4 3c 77 72 79\n" +
+                "0038 b5 19 86 25 99 96 a2 54 77 ca 9f 65 1a 75 8e 00 # signature end\n" +
                 "0048    01 00                                           # protocol\n" +
                 "004a    16 00                                           # messageType\n" +
                 "004c    e6 df 06 5d 68 3b d4 fc                         # address\n" +
                 "0054    0b 0a 09 08 07 06 05 00                         # timestampUS\n" +
-                "005c    20 3b 6a 27 bc ce b6 a4 2d 62 a3 a8 d0 2a 6f 0d # keyVerified\n" +
-                "006c    73 65 32 15 77 1d e2 43 a6 3a c0 48 a1 8b 59 da\n" +
-                "007c    29\n", v.toHexString());
+                "005c    20 ce cc 15 07 dc 1d dd 72 95 95 1c 29 08 88 f0 # publicKey\n" +
+                "006c    95 ad b9 04 4d 1b 73 d6 96 e6 df 06 5d 68 3b d4\n" +
+                "007c    fc " +
+                "20 3b 6a 27 bc ce b6 a4 2d 62 a3 a8 d0 2a 6f # keyVerified\n" +
+                "008c    0d 73 65 32 15 77 1d e2 43 a6 3a c0 48 a1 8b 59\n" +
+                "009c    da 29\n", v.toHexString());
 
         assertTrue(v.verify(i -> privateKey2));
 

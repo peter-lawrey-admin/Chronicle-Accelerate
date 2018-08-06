@@ -7,7 +7,7 @@ import net.openhft.chronicle.salt.Ed25519;
 /**
  * This message states this node verifies a given public key after connecting to it successfully.
  */
-public class Verification extends VanillaSignedMessage<Verification> {
+public class Verification extends SelfSignedMessage<Verification> {
     private final Bytes keyVerified = Bytes.allocateElasticDirect(Ed25519.PUBLIC_KEY_LENGTH);
 
     public Verification(int protocol, int messageType) {
