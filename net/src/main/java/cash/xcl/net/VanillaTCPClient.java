@@ -47,7 +47,7 @@ public class VanillaTCPClient extends AbstractTCPConnection {
         clientListener.onMessage(this, bytes);
     }
 
-    private void run() {
+    public void run() {
         Bytes<ByteBuffer> readBytes = Bytes.elasticByteBuffer(MAX_MESSAGE_SIZE);
         try {
             while (running) {

@@ -10,7 +10,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.channels.SocketChannel;
 
-public class VanillaTCPServerConnection extends AbstractTCPConnection {
+public class VanillaTCPServerConnection extends AbstractTCPConnection implements Runnable {
     private final TCPServer tcpServer;
 
     public VanillaTCPServerConnection(TCPServer tcpServer, SocketChannel channel) throws SocketException {
@@ -27,7 +27,7 @@ public class VanillaTCPServerConnection extends AbstractTCPConnection {
         return ret;
     }
 
-    void run() {
+    public void run() {
         try {
             tcpServer.connectionListener().onNewConnection(tcpServer, this);
             Bytes<ByteBuffer> readBytes = Bytes.elasticByteBuffer(MAX_MESSAGE_SIZE);

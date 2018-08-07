@@ -29,6 +29,6 @@ public class MultiMessageWriter implements MessageWriter {
 
     @Override
     public void close() {
-        Closeable.closeQuietly(messageWriters);
+        Closeable.closeQuietly((Object[]) messageWriters);
     }
 }

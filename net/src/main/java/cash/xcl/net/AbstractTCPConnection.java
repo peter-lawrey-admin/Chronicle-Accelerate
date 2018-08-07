@@ -1,6 +1,7 @@
 package cash.xcl.net;
 
 import net.openhft.chronicle.bytes.Bytes;
+import net.openhft.chronicle.bytes.BytesStore;
 import net.openhft.chronicle.core.io.Closeable;
 import net.openhft.chronicle.core.tcp.ISocketChannel;
 
@@ -49,7 +50,7 @@ public abstract class AbstractTCPConnection implements TCPConnection {
     }
 
     @Override
-    public void write(Bytes<ByteBuffer> bytes) throws IOException {
+    public void write(BytesStore<?, ByteBuffer> bytes) throws IOException {
         if (!running)
             throw new IOException("closed");
 
@@ -68,6 +69,25 @@ public abstract class AbstractTCPConnection implements TCPConnection {
 
         while (buffer.remaining() > 0 && running) {
             if (iSocketChannel.write(headerBytes) < 0) {
+                channel.close();
+                throw new EOFException("Failed to write");
+            }
+        }
+    }
+
+    @Override
+    public void write(ByteBuffer buffer) throws IOException {
+        if (!running)
+            throw new IOException("closed");
+
+        waitForReconnect();
+
+        if (buffer.remaining() > MAX_MESSAGE_SIZE)
+            throw new IOException("Message too long " + buffer.remaining());
+
+
+        while (buffer.remaining() > 0 && running) {
+            if (iSocketChannel.write(buffer) < 0) {
                 channel.close();
                 throw new EOFException("Failed to write");
             }

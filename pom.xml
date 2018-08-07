@@ -29,7 +29,7 @@
         <module>docgen</module>
         <module>util</module>
         <module>net</module>
-        <module>platform</module>
+        <module>platform2</module>
         <module>api</module>
         <module>server</module>
     </modules>

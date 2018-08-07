@@ -14,7 +14,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class VanillaTCPServer implements TCPServer {
-    final ServerSocketChannel serverChannel;
+    private final ServerSocketChannel serverChannel;
     private final ExecutorService pool;
     private final List<TCPConnection> connections = Collections.synchronizedList(new ArrayList<>());
     private final TCPServerConnectionListener connectionListener;
@@ -32,9 +32,9 @@ public class VanillaTCPServer implements TCPServer {
         try {
             while (running) {
                 SocketChannel accept = serverChannel.accept();
-                VanillaTCPServerConnection connection = new VanillaTCPServerConnection(this, accept);
+                TCPConnection connection = connectionListener.createConnection(this, accept);
                 connections.add(connection);
-                pool.submit(connection::run);
+                pool.submit(((Runnable) connection)::run);
             }
         } catch (Throwable t) {
             if (running)

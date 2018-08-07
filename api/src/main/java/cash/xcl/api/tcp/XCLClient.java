@@ -103,11 +103,6 @@ public class XCLClient extends WritingAllMessages implements Closeable, TCPConne
     }
 
     @Override
-    public void write(Bytes<ByteBuffer> bytes) throws IOException {
-        tcpClient.write(bytes);
-    }
-
-    @Override
     public void close() {
         tcpClient.close();
     }
@@ -119,6 +114,16 @@ public class XCLClient extends WritingAllMessages implements Closeable, TCPConne
     public XCLClient internal(boolean internal) {
         this.internal = internal;
         return this;
+    }
+
+    @Override
+    public void write(BytesStore<?, ByteBuffer> bytes) throws IOException {
+        tcpClient.write(bytes);
+    }
+
+    @Override
+    public void write(ByteBuffer buffer) throws IOException {
+        tcpClient.write(buffer);
     }
 
     class ClientListener implements TCPClientListener {

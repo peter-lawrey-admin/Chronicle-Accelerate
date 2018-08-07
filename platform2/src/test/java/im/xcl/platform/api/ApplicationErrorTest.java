@@ -26,27 +26,40 @@ public class ApplicationErrorTest {
         ae.sign(secretKey, timeProvider);
 
         assertEquals(
-                "0000 e9 00 00 00                                     # length\n" +
-                        "0004 3f 3f 3f 3f                                     # format ????\n" +
-                        "0008 97 ae 3e 01 32 31 49 1a ca 1b b8 9d 9d 31 6e 32 # signature start\n" +
-                        "0018 36 45 ec a1 e0 e5 16 d8 96 d1 f7 3b 23 ad 32 85\n" +
-                        "0028 88 e4 77 5b 09 35 ea 39 74 f9 f2 f4 32 d7 bd bd\n" +
-                        "0038 f1 a7 ab ea f3 19 a7 83 b2 ea 09 04 56 77 fc 08 # signature end\n" +
-                        "0048    01 00                                           # protocol\n" +
-                        "004a    0a 00                                           # messageType\n" +
-                        "004c    3a c0 48 a1 8b 59 da 29                         # address\n" +
-                        "0054    0b 0a 09 08 07 06 05 00                         # timestampUS\n" +
-                        "005c    7d 00 00 00 3f 3f 3f 3f 93 48 dc b7 65 4a b4 0c # origMessage\n" +
-                        "006c    7f 8e b8 d7 32 a1 87 29 e1 d3 ce f8 37 d3 f4 c4\n" +
-                        "007c    ea 61 95 45 47 7f a4 a7 3f 01 a3 33 72 08 3c 40\n" +
-                        "008c    fa 91 b7 aa 79 67 5a 53 e6 65 72 7d a2 f6 e7 1f\n" +
-                        "009c    0f 6f 26 e7 85 0d 6c 0c 01 00 02 00 3a c0 48 a1\n" +
-                        "00ac    8b 59 da 29 0b 0a 09 08 07 06 05 00 20 3b 6a 27\n" +
-                        "00bc    bc ce b6 a4 2d 62 a3 a8 d0 2a 6f 0d 73 65 32 15\n" +
-                        "00cc    77 1d e2 43 a6 3a c0 48 a1 8b 59 da 29 0f 4e 6f # reason\n" +
-                        "00dc    74 20 69 6d 70 6c 65 6d 65 6e 74 65 64\n",
+                "0000 e1 00 00 00                                     # length\n" +
+                        "0004 31 54 3d 74 e0 cf 5e 6e 02 9b 72 22 98 89 ec 10 # signature start\n" +
+                        "0014 e2 7e 04 d8 80 1d 06 30 bf a6 62 1a a5 df dc e1\n" +
+                        "0024 85 61 07 ed 6c 30 ab 8e 0f 31 6b 8a 08 77 2a 90\n" +
+                        "0034 14 27 8a 07 d1 f4 ed bb 69 4f 6a 36 0c b5 d8 01 # signature end\n" +
+                        "0044    0a 00                                           # messageType\n" +
+                        "0046    01 00                                           # protocol\n" +
+                        "0048    0b 0a 09 08 07 06 05 00                         # timestampUS\n" +
+                        "0050    3a c0 48 a1 8b 59 da 29                         # address\n" +
+                        "0058    79 00 00 00 96 de da 9f 15 2c 01 e1 93 0e 3f 49 # origMessage\n" +
+                        "0068    14 4f d5 88 90 03 38 f7 6a 37 e8 32 8d 59 88 39\n" +
+                        "0078    7c 9c 30 0c 1c 6f 8f fd b5 66 fd d1 a6 56 41 ee\n" +
+                        "0088    37 dc ef df 33 a1 95 3c 0e 6b 1d 7b 2f bd bd 44\n" +
+                        "0098    fc 42 97 0b 02 00 01 00 0b 0a 09 08 07 06 05 00\n" +
+                        "00a8    3a c0 48 a1 8b 59 da 29 20 3b 6a 27 bc ce b6 a4\n" +
+                        "00b8    2d 62 a3 a8 d0 2a 6f 0d 73 65 32 15 77 1d e2 43\n" +
+                        "00c8    a6 3a c0 48 a1 8b 59 da 29 0f 4e 6f 74 20 69 6d # reason\n" +
+                        "00d8    70 6c 65 6d 65 6e 74 65 64\n",
                 ae.toHexString());
 
+        assertEquals("!im.xcl.platform.api.ApplicationError {\n" +
+                "  messageType: 10,\n" +
+                "  protocol: 1,\n" +
+                "  timestampUS: \"2014-10-22T18:22:32.901131\",\n" +
+                "  address: \"29da598ba148c03a\",\n" +
+                "  origMessage: !im.xcl.platform.api.CreateAccount {\n" +
+                "    messageType: 2,\n" +
+                "    protocol: 1,\n" +
+                "    timestampUS: \"2014-10-22T18:22:32.901131\",\n" +
+                "    address: \"29da598ba148c03a\",\n" +
+                "    publicKey: !!binary O2onvM62pC1io6jQKm8Nc2UyFXcd4kOmOsBIoYtZ2ik=\n" +
+                "  },\n" +
+                "  reason: Not implemented\n" +
+                "}\n", ae.toString());
         ae.verify(i -> publicKey);
     }
 }

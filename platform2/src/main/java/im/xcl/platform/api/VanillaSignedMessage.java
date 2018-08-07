@@ -1,21 +1,27 @@
 package im.xcl.platform.api;
 
 import net.openhft.chronicle.bytes.*;
+import net.openhft.chronicle.core.Jvm;
 import net.openhft.chronicle.core.io.IORuntimeException;
 import net.openhft.chronicle.core.time.TimeProvider;
 import net.openhft.chronicle.salt.Ed25519;
 import net.openhft.chronicle.wire.AbstractBytesMarshallable;
+import net.openhft.chronicle.wire.HexadecimalLongConverter;
+import net.openhft.chronicle.wire.LongConversion;
+import net.openhft.chronicle.wire.MicroTimestampLongConverter;
 
+import java.lang.reflect.Field;
+import java.nio.ByteBuffer;
 import java.util.function.LongFunction;
 
 public class VanillaSignedMessage<T extends VanillaSignedMessage<T>> extends AbstractBytesMarshallable implements SignedMessage {
+    public static final Field ADDRESS = Jvm.getField(ByteBuffer.allocateDirect(0).getClass(), "address");
+    public static final Field CAPACITY = Jvm.getField(ByteBuffer.allocateDirect(0).getClass(), "capacity");
     private static final int LENGTH = 0;
-    private static final int FORMAT = LENGTH + Integer.BYTES;
-    private static final int SIGNATURE = FORMAT + Integer.BYTES;
-    private static final int PROTOCOL = SIGNATURE + Long.BYTES;
-    private static final int MESSAGE_TYPE = PROTOCOL + Short.BYTES;
-    private static final int MESSAGE_START = MESSAGE_TYPE + Short.BYTES;
-
+    private static final int SIGNATURE = LENGTH + Integer.BYTES;
+    static final int MESSAGE_TYPE = SIGNATURE + Short.BYTES;
+    private static final int PROTOCOL = MESSAGE_TYPE + Short.BYTES;
+    private static final int MESSAGE_START = PROTOCOL + Long.BYTES;
     // for writing to a new set of bytes
     private transient Bytes tempBytes = Bytes.allocateElasticDirect(4L << 10);
     // for reading an existing Bytes
@@ -23,15 +29,19 @@ public class VanillaSignedMessage<T extends VanillaSignedMessage<T>> extends Abs
     private transient Bytes<Void> bytes = readPointer.bytesForRead();
 
     private transient boolean signed = false;
+    private transient ByteBuffer byteBuffer;
 
-    private short protocol, messageType;
-    private long address, timestampUS;
+    private short messageType, protocol;
+    @LongConversion(MicroTimestampLongConverter.class)
+    private long timestampUS;
+    @LongConversion(HexadecimalLongConverter.class)
+    private long address;
 
     protected VanillaSignedMessage(int protocol, int messageType) {
         assert protocol == (short) protocol;
         assert messageType == (short) messageType;
-        this.protocol = (short) protocol;
         this.messageType = (short) messageType;
+        this.protocol = (short) protocol;
     }
 
     @Override
@@ -105,10 +115,6 @@ public class VanillaSignedMessage<T extends VanillaSignedMessage<T>> extends Abs
         return (T) this;
     }
 
-    public int format() {
-        return '?' * 0x01010101; // TBD
-    }
-
     @Override
     public void sign(BytesStore secretKey) {
         UniqueMicroTimeProvider timeProvider = UniqueMicroTimeProvider.INSTANCE;
@@ -126,7 +132,6 @@ public class VanillaSignedMessage<T extends VanillaSignedMessage<T>> extends Abs
 
         tempBytes.clear();
         tempBytes.writeInt(0);
-        tempBytes.writeInt(format());
         long signatureStart = tempBytes.writePosition();
         tempBytes.writeSkip(Ed25519.SIGNATURE_LENGTH);
         writeMarshallable0(tempBytes);
@@ -144,10 +149,6 @@ public class VanillaSignedMessage<T extends VanillaSignedMessage<T>> extends Abs
         HexDumpBytes dump = new HexDumpBytes()
                 .offsetFormat((o, b) -> b.appendBase16(o, 4));
         dump.comment("length").writeUnsignedInt(bytes.readUnsignedInt(LENGTH));
-        StringBuilder formatStr = new StringBuilder("format ");
-        for (int i = FORMAT; i < FORMAT + Integer.BYTES; i++)
-            formatStr.append((char) bytes.readUnsignedByte(i));
-        dump.comment(formatStr).writeUnsignedInt(bytes.readUnsignedInt(FORMAT));
         dump.comment("signature start").write(bytes, (long) SIGNATURE, Ed25519.SIGNATURE_LENGTH);
         dump.comment("signature end");
         writeMarshallable0(dump);
@@ -192,5 +193,21 @@ public class VanillaSignedMessage<T extends VanillaSignedMessage<T>> extends Abs
 
     public String messageTypeString() {
         return getClass().getSimpleName();
+    }
+
+    public BytesStore bytes() {
+        return readPointer;
+    }
+
+    public ByteBuffer byteBuffer() {
+        if (byteBuffer == null)
+            byteBuffer = ByteBuffer.allocateDirect(0);
+        try {
+            ADDRESS.setLong(byteBuffer, readPointer.addressForRead(0));
+            CAPACITY.setLong(byteBuffer, readPointer.readRemaining());
+            return byteBuffer;
+        } catch (IllegalAccessException e) {
+            throw new AssertionError(e);
+        }
     }
 }

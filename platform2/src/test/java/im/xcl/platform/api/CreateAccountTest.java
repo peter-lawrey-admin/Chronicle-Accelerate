@@ -29,19 +29,26 @@ public class CreateAccountTest {
         assertEquals("00000000 3b 6a 27 bc ce b6 a4 2d  62 a3 a8 d0 2a 6f 0d 73 ;j'····- b···*o·s\n" +
                         "00000010 65 32 15 77 1d e2 43 a6  3a c0 48 a1 8b 59 da 29 e2·w··C· :·H··Y·)\n",
                 ca.publicKey().bytesForRead().toHexString());
-        assertEquals("0000 7d 00 00 00                                     # length\n" +
-                "0004 3f 3f 3f 3f                                     # format ????\n" +
-                "0008 93 48 dc b7 65 4a b4 0c 7f 8e b8 d7 32 a1 87 29 # signature start\n" +
-                "0018 e1 d3 ce f8 37 d3 f4 c4 ea 61 95 45 47 7f a4 a7\n" +
-                "0028 3f 01 a3 33 72 08 3c 40 fa 91 b7 aa 79 67 5a 53\n" +
-                "0038 e6 65 72 7d a2 f6 e7 1f 0f 6f 26 e7 85 0d 6c 0c # signature end\n" +
-                "0048    01 00                                           # protocol\n" +
-                "004a    02 00                                           # messageType\n" +
-                "004c    3a c0 48 a1 8b 59 da 29                         # address\n" +
-                "0054    0b 0a 09 08 07 06 05 00                         # timestampUS\n" +
-                "005c    20 3b 6a 27 bc ce b6 a4 2d 62 a3 a8 d0 2a 6f 0d # publicKey\n" +
-                "006c    73 65 32 15 77 1d e2 43 a6 3a c0 48 a1 8b 59 da\n" +
-                "007c    29\n", ca.toHexString());
+        assertEquals("0000 79 00 00 00                                     # length\n" +
+                "0004 96 de da 9f 15 2c 01 e1 93 0e 3f 49 14 4f d5 88 # signature start\n" +
+                "0014 90 03 38 f7 6a 37 e8 32 8d 59 88 39 7c 9c 30 0c\n" +
+                "0024 1c 6f 8f fd b5 66 fd d1 a6 56 41 ee 37 dc ef df\n" +
+                "0034 33 a1 95 3c 0e 6b 1d 7b 2f bd bd 44 fc 42 97 0b # signature end\n" +
+                "0044    02 00                                           # messageType\n" +
+                "0046    01 00                                           # protocol\n" +
+                "0048    0b 0a 09 08 07 06 05 00                         # timestampUS\n" +
+                "0050    3a c0 48 a1 8b 59 da 29                         # address\n" +
+                "0058    20 3b 6a 27 bc ce b6 a4 2d 62 a3 a8 d0 2a 6f 0d # publicKey\n" +
+                "0068    73 65 32 15 77 1d e2 43 a6 3a c0 48 a1 8b 59 da\n" +
+                "0078    29\n", ca.toHexString());
+
+        assertEquals("!im.xcl.platform.api.CreateAccount {\n" +
+                "  messageType: 2,\n" +
+                "  protocol: 1,\n" +
+                "  timestampUS: \"2014-10-22T18:22:32.901131\",\n" +
+                "  address: \"29da598ba148c03a\",\n" +
+                "  publicKey: !!binary O2onvM62pC1io6jQKm8Nc2UyFXcd4kOmOsBIoYtZ2ik=\n" +
+                "}\n", ca.toString());
 
         assertTrue(ca.verify(this::selfSigning));
 
@@ -49,24 +56,37 @@ public class CreateAccountTest {
                 .createAccount(ca);
 
         created.sign(secretKey, timeProvider);
-        assertEquals("0000 d9 00 00 00                                     # length\n" +
-                "0004 3f 3f 3f 3f                                     # format ????\n" +
-                "0008 fa 35 c1 c8 6f 2c 17 34 1f bf ec 36 e3 2b d5 e3 # signature start\n" +
-                "0018 b8 2d 98 ca 41 24 fb 8b 04 df 42 64 3b 15 0d c9\n" +
-                "0028 3c 11 aa b2 ac 02 0d 99 55 46 fc b7 6d a5 1f 4a\n" +
-                "0038 0f 9c 8d 5c 70 b0 db 3d 90 fe 7a 80 2d 7a 5c 0f # signature end\n" +
-                "0048    01 00                                           # protocol\n" +
-                "004a    03 00                                           # messageType\n" +
-                "004c    3a c0 48 a1 8b 59 da 29                         # address\n" +
-                "0054    0b 0a 09 08 07 06 05 00                         # timestampUS\n" +
-                "005c    7d 00 00 00 3f 3f 3f 3f 93 48 dc b7 65 4a b4 0c # createAccount\n" +
-                "006c    7f 8e b8 d7 32 a1 87 29 e1 d3 ce f8 37 d3 f4 c4\n" +
-                "007c    ea 61 95 45 47 7f a4 a7 3f 01 a3 33 72 08 3c 40\n" +
-                "008c    fa 91 b7 aa 79 67 5a 53 e6 65 72 7d a2 f6 e7 1f\n" +
-                "009c    0f 6f 26 e7 85 0d 6c 0c 01 00 02 00 3a c0 48 a1\n" +
-                "00ac    8b 59 da 29 0b 0a 09 08 07 06 05 00 20 3b 6a 27\n" +
-                "00bc    bc ce b6 a4 2d 62 a3 a8 d0 2a 6f 0d 73 65 32 15\n" +
-                "00cc    77 1d e2 43 a6 3a c0 48 a1 8b 59 da 29\n", created.toHexString());
+        assertEquals("0000 d1 00 00 00                                     # length\n" +
+                "0004 94 6d 54 66 b0 0d 6c a7 54 b9 52 49 a3 0f 3d a9 # signature start\n" +
+                "0014 fb f7 ad c7 ae 97 b4 0f cb f1 05 ee 5e 66 28 c3\n" +
+                "0024 49 d8 d0 ce 7d db d4 59 01 63 5e 75 a1 f4 9a 45\n" +
+                "0034 22 d2 a6 f7 85 c3 0f f8 cc a9 8e d7 2b e3 59 07 # signature end\n" +
+                "0044    03 00                                           # messageType\n" +
+                "0046    01 00                                           # protocol\n" +
+                "0048    0b 0a 09 08 07 06 05 00                         # timestampUS\n" +
+                "0050    3a c0 48 a1 8b 59 da 29                         # address\n" +
+                "0058    79 00 00 00 96 de da 9f 15 2c 01 e1 93 0e 3f 49 # createAccount\n" +
+                "0068    14 4f d5 88 90 03 38 f7 6a 37 e8 32 8d 59 88 39\n" +
+                "0078    7c 9c 30 0c 1c 6f 8f fd b5 66 fd d1 a6 56 41 ee\n" +
+                "0088    37 dc ef df 33 a1 95 3c 0e 6b 1d 7b 2f bd bd 44\n" +
+                "0098    fc 42 97 0b 02 00 01 00 0b 0a 09 08 07 06 05 00\n" +
+                "00a8    3a c0 48 a1 8b 59 da 29 20 3b 6a 27 bc ce b6 a4\n" +
+                "00b8    2d 62 a3 a8 d0 2a 6f 0d 73 65 32 15 77 1d e2 43\n" +
+                "00c8    a6 3a c0 48 a1 8b 59 da 29\n", created.toHexString());
+
+        assertEquals("!im.xcl.platform.api.OnAccountCreated {\n" +
+                "  messageType: 3,\n" +
+                "  protocol: 1,\n" +
+                "  timestampUS: \"2014-10-22T18:22:32.901131\",\n" +
+                "  address: \"29da598ba148c03a\",\n" +
+                "  createAccount: {\n" +
+                "    messageType: 2,\n" +
+                "    protocol: 1,\n" +
+                "    timestampUS: \"2014-10-22T18:22:32.901131\",\n" +
+                "    address: \"29da598ba148c03a\",\n" +
+                "    publicKey: !!binary O2onvM62pC1io6jQKm8Nc2UyFXcd4kOmOsBIoYtZ2ik=\n" +
+                "  }\n" +
+                "}\n", created.toString());
 
         assertTrue(created.verify(i -> publicKey));
 
