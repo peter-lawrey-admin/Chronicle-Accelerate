@@ -1,13 +1,11 @@
 package town.lost.examples.appreciation;
 
-import net.openhft.chronicle.bytes.BytesStore;
-
 public interface BalanceStore {
-    double getBalance(BytesStore bytesStore);
+    double getBalance(long account);
 
-    boolean subtractBalance(BytesStore bytesStore, double amount);
+    boolean subtractBalance(long account, double amount);
 
-    void addBalance(BytesStore bytesStore, double amount);
+    void addBalance(long account, double amount);
 
-    void setBalance(BytesStore bytesStore, double amount);
+    void setBalance(long account, double amount);
 }

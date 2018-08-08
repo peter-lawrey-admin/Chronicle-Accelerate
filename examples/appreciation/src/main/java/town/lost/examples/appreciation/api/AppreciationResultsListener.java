@@ -1,11 +1,10 @@
 package town.lost.examples.appreciation.api;
 
-import im.xcl.platform.api.TransactionListener;
-import net.openhft.chronicle.bytes.MethodId;
 
-public interface AppreciationResultsListener extends TransactionListener {
-    @MethodId(0x3000)
+import im.xcl.platform.dto.ApplicationError;
+
+public interface AppreciationResultsListener {
     void onBalance(OnBalance onBalance);
 
-    void onError(OnError onError);
+    void applicationError(ApplicationError applicationError);
 }

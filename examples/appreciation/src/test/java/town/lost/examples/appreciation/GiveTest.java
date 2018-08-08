@@ -1,8 +1,9 @@
 package town.lost.examples.appreciation;
 
-import im.xcl.platform.api.StartBatch;
+import im.xcl.platform.util.XCLUtil;
 import net.openhft.chronicle.bytes.Bytes;
 import net.openhft.chronicle.core.io.IORuntimeException;
+import net.openhft.chronicle.core.time.TimeProvider;
 import net.openhft.chronicle.salt.Ed25519;
 import net.openhft.chronicle.wire.TextMethodTester;
 import net.openhft.chronicle.wire.TextWire;
@@ -35,19 +36,7 @@ public class GiveTest {
         VanillaAppreciationTransactionListener blockchain = new VanillaAppreciationTransactionListener(tester, balanceStore);
         return new VanillaAppreciationGateway(tester,
                 blockchain,
-                balanceStore) {
-            @Override
-            public void startBatch(StartBatch startBatch) {
-                blockchain.startBatch(startBatch);
-                super.startBatch(startBatch);
-            }
-
-            @Override
-            public void endBatch() {
-                super.endBatch();
-                blockchain.endBatch();
-            }
-        };
+                balanceStore);
     }
 
     public static void main(String[] args) {
@@ -61,10 +50,18 @@ public class GiveTest {
 
         TextWire wire = new TextWire(Bytes.elasticHeapByteBuffer(128));
         AppreciationTester tester = wire.methodWriter(AppreciationTester.class);
-        tester.startBatch(new StartBatch(publicKey, 0));
-        tester.openingBalance(new OpeningBalance(publicKey, 100));
-        tester.give(new Give(publicKey2, 0.0));
-        tester.endBatch();
+        tester.openingBalance(new OpeningBalance(publicKey, 100)
+                .address(XCLUtil.toAddress(publicKey))
+                .account(publicKey)
+                .timestampUS(TimeProvider.get().currentTimeMicros()));
+        tester.openingBalance(new OpeningBalance(publicKey2, 30)
+                .address(XCLUtil.toAddress(publicKey))
+                .account(publicKey2)
+                .timestampUS(TimeProvider.get().currentTimeMicros()));
+        tester.give(new Give()
+                .address(XCLUtil.toAddress(publicKey))
+                .timestampUS(TimeProvider.get().currentTimeMicros())
+                .init(XCLUtil.toAddress(publicKey2), 20.0));
 
         System.out.println(wire);
     }

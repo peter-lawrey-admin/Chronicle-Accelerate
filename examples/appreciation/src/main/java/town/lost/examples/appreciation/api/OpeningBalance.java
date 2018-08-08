@@ -1,31 +1,33 @@
 package town.lost.examples.appreciation.api;
 
+import im.xcl.platform.dto.VanillaSignedMessage;
 import net.openhft.chronicle.bytes.BytesStore;
-import net.openhft.chronicle.wire.AbstractBytesMarshallable;
 
-public class OpeningBalance extends AbstractBytesMarshallable {
-    private BytesStore publicKey;
+public class OpeningBalance extends VanillaSignedMessage<OpeningBalance> {
+    private BytesStore account;
     private double amount;
 
     public OpeningBalance() {
+        super(2, 5);
     }
 
-    public OpeningBalance(BytesStore publicKey, double amount) {
-        init(publicKey, amount);
+    public OpeningBalance(BytesStore account, double amount) {
+        super(2, 5);
+        init(account, amount);
     }
 
-    public OpeningBalance init(BytesStore publicKey, double amount) {
-        this.publicKey = publicKey;
+    public OpeningBalance init(BytesStore account, double amount) {
+        this.account = account;
         this.amount = amount;
         return this;
     }
 
-    public BytesStore publicKey() {
-        return publicKey;
+    public BytesStore account() {
+        return account;
     }
 
-    public OpeningBalance publicKey(BytesStore publicKey) {
-        this.publicKey = publicKey;
+    public OpeningBalance account(BytesStore account) {
+        this.account = account;
         return this;
     }
 

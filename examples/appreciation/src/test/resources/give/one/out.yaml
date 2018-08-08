@@ -1,13 +1,15 @@
----
-to: !!binary RWUHCYzTzADL+4kJ9r90rWHBo6J/Wng5FmlXFjv8bd8=
+to: "3be2ef2f0dc4f5c6"
 onBalance: {
-  publicKey: !!binary RWUHCYzTzADL+4kJ9r90rWHBo6J/Wng5FmlXFjv8bd8=,
+  timestampUS: "1970-01-01T00:00:00",
+  address: "0",
+  account: "3be2ef2f0dc4f5c6",
   amount: 80.0
 }
-to: !!binary Sq1s3liIh6LkceZYP+qh6MlMRRqCNJ5Dvl9oyAiZHe8=
+to: "15df942555c080f8"
 onBalance: {
-  publicKey: !!binary Sq1s3liIh6LkceZYP+qh6MlMRRqCNJ5Dvl9oyAiZHe8=,
-  amount: 30.0
+  timestampUS: "1970-01-01T00:00:00",
+  address: "0",
+  account: "15df942555c080f8",
+  amount: 50.0
 }
----
 ---

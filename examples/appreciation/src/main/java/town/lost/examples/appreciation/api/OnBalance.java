@@ -1,31 +1,30 @@
 package town.lost.examples.appreciation.api;
 
-import net.openhft.chronicle.bytes.BytesStore;
-import net.openhft.chronicle.wire.AbstractBytesMarshallable;
+import im.xcl.platform.dto.VanillaSignedMessage;
+import net.openhft.chronicle.wire.HexadecimalLongConverter;
+import net.openhft.chronicle.wire.LongConversion;
 
-public class OnBalance extends AbstractBytesMarshallable {
-    private BytesStore publicKey;
+public class OnBalance extends VanillaSignedMessage<OnBalance> {
+    @LongConversion(HexadecimalLongConverter.class)
+    private long account;
     private double amount;
 
     public OnBalance() {
+        super(2, 2);
     }
 
-    public OnBalance(BytesStore publicKey, double amount) {
-        init(publicKey, amount);
-    }
-
-    public OnBalance init(BytesStore publicKey, double amount) {
-        this.publicKey = publicKey;
+    public OnBalance init(long account, double amount) {
+        this.account = account;
         this.amount = amount;
         return this;
     }
 
-    public BytesStore publicKey() {
-        return publicKey;
+    public long account() {
+        return account;
     }
 
-    public OnBalance publicKey(BytesStore publicKey) {
-        this.publicKey = publicKey;
+    public OnBalance account(long account) {
+        this.account = account;
         return this;
     }
 

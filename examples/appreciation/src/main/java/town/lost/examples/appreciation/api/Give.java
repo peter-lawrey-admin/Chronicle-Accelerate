@@ -1,30 +1,30 @@
 package town.lost.examples.appreciation.api;
 
-import net.openhft.chronicle.bytes.BytesStore;
-import net.openhft.chronicle.wire.AbstractBytesMarshallable;
+import im.xcl.platform.dto.SelfSignedMessage;
+import net.openhft.chronicle.wire.HexadecimalLongConverter;
+import net.openhft.chronicle.wire.LongConversion;
 
-public class Give extends AbstractBytesMarshallable {
-    BytesStore publicKey;
+public class Give extends SelfSignedMessage<Give> {
+    @LongConversion(HexadecimalLongConverter.class)
+    long receiverAddress;
     double amount;
 
     public Give() {
+        super(2, 1);
     }
 
-    public Give(BytesStore publicKey, double amount) {
-        init(publicKey, amount);
-    }
-
-    public void init(BytesStore publicKey, double amount) {
-        this.publicKey = publicKey;
+    public Give init(long receiverAddress, double amount) {
+        this.receiverAddress = receiverAddress;
         this.amount = amount;
+        return this;
     }
 
-    public BytesStore publicKey() {
-        return publicKey;
+    public long receiverAddress() {
+        return receiverAddress;
     }
 
-    public Give publicKey(BytesStore publicKey) {
-        this.publicKey = publicKey;
+    public Give receiverAddress(long receiverAddress) {
+        this.receiverAddress = receiverAddress;
         return this;
     }
 

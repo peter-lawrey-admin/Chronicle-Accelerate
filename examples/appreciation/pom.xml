@@ -29,7 +29,7 @@
         </dependency>
         <dependency>
             <groupId>im.xcl</groupId>
-            <artifactId>platform</artifactId>
+            <artifactId>platform2</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
