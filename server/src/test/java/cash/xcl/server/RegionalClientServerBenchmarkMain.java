@@ -88,7 +88,7 @@ public class RegionalClientServerBenchmarkMain {
 
                 CurrentBalanceQuery cbq = new CurrentBalanceQuery(0, 0, 1000);
                 gateway.currentBalanceQuery(cbq);
-                }
+            }
         }
     }
 
@@ -111,19 +111,32 @@ public class RegionalClientServerBenchmarkMain {
         RegionalClientServerBenchmarkMain benchmarkMain = null;
         try {
             int iterations = 3;
-            int transfers = INTERNAL ? 1_000_000 : 20_000;
+            int transfers = INTERNAL ? 1_000_000 : 50_000;
             int total = iterations * transfers;
             benchmarkMain = new RegionalClientServerBenchmarkMain(1000, 10, 10, 8);
-            String oneThread = benchmarkMain.benchmark(iterations, 1, transfers);
-            String twoThreads = benchmarkMain.benchmark(iterations, 2, transfers);
-            String fourThreads = benchmarkMain.benchmark(iterations, 4, transfers);
-            String eightThreads = benchmarkMain.benchmark(iterations, 8, transfers);
+
+            String oneThread = null;
+            String twoThreads = null;
+            String fourThreads = null;
+            String eightThreads = null;
+            if (INTERNAL)
+                oneThread = benchmarkMain.benchmark(iterations, 1, transfers);
+            if (false)
+                twoThreads = benchmarkMain.benchmark(iterations, 2, transfers);
+            if (false)
+                fourThreads = benchmarkMain.benchmark(iterations, 4, transfers);
+            if (!INTERNAL)
+                eightThreads = benchmarkMain.benchmark(iterations, 8, transfers);
             System.out.println("Total number of messages per benchmark = " + total);
             System.out.println("Including signing and verifying = " + !INTERNAL);
-            System.out.println("benchmark - oneThread = " + oneThread + " messages per second");
-            System.out.println("benchmark - twoThreads = " + twoThreads + " messages per second");
-            System.out.println("benchmark - fourThreads = " + fourThreads + " messages per second");
-            System.out.println("benchmark - eightThreads = " + eightThreads + " messages per second");
+            if (oneThread != null)
+                System.out.println("benchmark - oneThread = " + oneThread + " messages per second");
+            if (twoThreads != null)
+                System.out.println("benchmark - twoThreads = " + twoThreads + " messages per second");
+            if (fourThreads != null)
+                System.out.println("benchmark - fourThreads = " + fourThreads + " messages per second");
+            if (eightThreads != null)
+                System.out.println("benchmark - eightThreads = " + eightThreads + " messages per second");
 
             TransactionBlockEvent.printNumberOfObjects();
 
