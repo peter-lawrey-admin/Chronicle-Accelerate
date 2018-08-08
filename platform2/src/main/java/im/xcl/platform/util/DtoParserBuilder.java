@@ -1,4 +1,4 @@
-package im.xcl.platform.api;
+package im.xcl.platform.util;
 
 import cash.xcl.util.XCLIntObjMap;
 import net.openhft.chronicle.bytes.MethodId;

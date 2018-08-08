@@ -1,6 +1,7 @@
-package im.xcl.platform.api;
+package im.xcl.platform.util;
 
 import cash.xcl.util.XCLIntObjMap;
+import im.xcl.platform.dto.VanillaSignedMessage;
 import net.openhft.chronicle.bytes.Bytes;
 
 public class VanillaDtoParser<T> implements DtoParser<T> {

@@ -1,5 +1,6 @@
-package im.xcl.platform.api;
+package im.xcl.platform.util;
 
+import im.xcl.platform.dto.VanillaSignedMessage;
 import net.openhft.chronicle.bytes.Bytes;
 import org.jetbrains.annotations.NotNull;
 

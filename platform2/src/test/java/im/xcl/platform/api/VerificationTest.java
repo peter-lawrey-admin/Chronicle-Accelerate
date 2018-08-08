@@ -1,5 +1,7 @@
 package im.xcl.platform.api;
 
+import im.xcl.platform.dto.DtoAlias;
+import im.xcl.platform.dto.Verification;
 import net.openhft.chronicle.bytes.Bytes;
 import net.openhft.chronicle.core.time.SetTimeProvider;
 import net.openhft.chronicle.salt.Ed25519;
@@ -10,6 +12,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 public class VerificationTest {
+    static {
+        DtoAlias.addAliases();
+    }
 
     @Test
     public void publicKey() {
@@ -42,8 +47,8 @@ public class VerificationTest {
                 "0014 4c 4a 49 dd 7b 92 ab 84 db 6a b8 3a ee 94 6d 40\n" +
                 "0024 6e e8 44 1f 09 5c 80 c5 4d 25 2a 9a 63 7c 45 87\n" +
                 "0034 2b 9a 56 44 78 1b de 58 f5 84 4d 03 ff 8f 0f 09 # signature end\n" +
-                "0044    16 00                                           # messageType\n" +
-                "0046    01 00                                           # protocol\n" +
+                "0044 16 00                                           # messageType\n" +
+                "0046 01 00                                           # protocol\n" +
                 "0048    0b 0a 09 08 07 06 05 00                         # timestampUS\n" +
                 "0050    e6 df 06 5d 68 3b d4 fc                         # address\n" +
                 "0058    20 ce cc 15 07 dc 1d dd 72 95 95 1c 29 08 88 f0 # publicKey\n" +
@@ -52,9 +57,7 @@ public class VerificationTest {
                 "0088    0d 73 65 32 15 77 1d e2 43 a6 3a c0 48 a1 8b 59\n" +
                 "0098    da 29\n", v.toHexString());
 
-        assertEquals("!im.xcl.platform.api.Verification {\n" +
-                "  messageType: 22,\n" +
-                "  protocol: 1,\n" +
+        assertEquals("!Verification {\n" +
                 "  timestampUS: \"2014-10-22T18:22:32.901131\",\n" +
                 "  address: fcd43b685d06dfe6,\n" +
                 "  publicKey: !!binary zswVB9wd3XKVlRwpCIjwla25BE0bc9aW5t8GXWg71Pw=,\n" +

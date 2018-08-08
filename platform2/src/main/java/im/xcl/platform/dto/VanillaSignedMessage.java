@@ -1,5 +1,6 @@
-package im.xcl.platform.api;
+package im.xcl.platform.dto;
 
+import im.xcl.platform.util.UniqueMicroTimeProvider;
 import net.openhft.chronicle.bytes.*;
 import net.openhft.chronicle.core.Jvm;
 import net.openhft.chronicle.core.io.IORuntimeException;
@@ -15,13 +16,13 @@ import java.nio.ByteBuffer;
 import java.util.function.LongFunction;
 
 public class VanillaSignedMessage<T extends VanillaSignedMessage<T>> extends AbstractBytesMarshallable implements SignedMessage {
-    public static final Field ADDRESS = Jvm.getField(ByteBuffer.allocateDirect(0).getClass(), "address");
-    public static final Field CAPACITY = Jvm.getField(ByteBuffer.allocateDirect(0).getClass(), "capacity");
-    private static final int LENGTH = 0;
-    private static final int SIGNATURE = LENGTH + Integer.BYTES;
-    static final int MESSAGE_TYPE = SIGNATURE + Short.BYTES;
-    private static final int PROTOCOL = MESSAGE_TYPE + Short.BYTES;
-    private static final int MESSAGE_START = PROTOCOL + Long.BYTES;
+    public static final int LENGTH = 0;
+    public static final int SIGNATURE = LENGTH + Integer.BYTES;
+    public static final int MESSAGE_TYPE = SIGNATURE + Short.BYTES;
+    public static final int PROTOCOL = MESSAGE_TYPE + Short.BYTES;
+    public static final int MESSAGE_START = PROTOCOL + Long.BYTES;
+    private static final Field BB_ADDRESS = Jvm.getField(ByteBuffer.allocateDirect(0).getClass(), "address");
+    private static final Field BB_CAPACITY = Jvm.getField(ByteBuffer.allocateDirect(0).getClass(), "capacity");
     // for writing to a new set of bytes
     private transient Bytes tempBytes = Bytes.allocateElasticDirect(4L << 10);
     // for reading an existing Bytes
@@ -30,8 +31,7 @@ public class VanillaSignedMessage<T extends VanillaSignedMessage<T>> extends Abs
 
     private transient boolean signed = false;
     private transient ByteBuffer byteBuffer;
-
-    private short messageType, protocol;
+    private transient short messageType, protocol;
     @LongConversion(MicroTimestampLongConverter.class)
     private long timestampUS;
     @LongConversion(HexadecimalLongConverter.class)
@@ -49,6 +49,8 @@ public class VanillaSignedMessage<T extends VanillaSignedMessage<T>> extends Abs
         readPointer.set(bytes.addressForRead(bytes.readPosition()), bytes.readRemaining());
         this.bytes.readPosition(MESSAGE_START);
         this.bytes.readLimit(bytes.readRemaining());
+        messageType = readPointer.readShort(MESSAGE_TYPE);
+        protocol = readPointer.readShort(PROTOCOL);
         super.readMarshallable(this.bytes);
         signed = true;
     }
@@ -134,6 +136,8 @@ public class VanillaSignedMessage<T extends VanillaSignedMessage<T>> extends Abs
         tempBytes.writeInt(0);
         long signatureStart = tempBytes.writePosition();
         tempBytes.writeSkip(Ed25519.SIGNATURE_LENGTH);
+        tempBytes.writeUnsignedShort(messageType);
+        tempBytes.writeUnsignedShort(protocol);
         writeMarshallable0(tempBytes);
         long length = tempBytes.readRemaining();
         tempBytes.writeUnsignedInt(LENGTH, length);
@@ -151,6 +155,8 @@ public class VanillaSignedMessage<T extends VanillaSignedMessage<T>> extends Abs
         dump.comment("length").writeUnsignedInt(bytes.readUnsignedInt(LENGTH));
         dump.comment("signature start").write(bytes, (long) SIGNATURE, Ed25519.SIGNATURE_LENGTH);
         dump.comment("signature end");
+        dump.comment("messageType").writeShort(messageType);
+        dump.comment("protocol").writeShort(protocol);
         writeMarshallable0(dump);
         String text = dump.toHexString();
         dump.release();
@@ -203,8 +209,8 @@ public class VanillaSignedMessage<T extends VanillaSignedMessage<T>> extends Abs
         if (byteBuffer == null)
             byteBuffer = ByteBuffer.allocateDirect(0);
         try {
-            ADDRESS.setLong(byteBuffer, readPointer.addressForRead(0));
-            CAPACITY.setLong(byteBuffer, readPointer.readRemaining());
+            BB_ADDRESS.setLong(byteBuffer, readPointer.addressForRead(0));
+            BB_CAPACITY.setLong(byteBuffer, readPointer.readRemaining());
             return byteBuffer;
         } catch (IllegalAccessException e) {
             throw new AssertionError(e);

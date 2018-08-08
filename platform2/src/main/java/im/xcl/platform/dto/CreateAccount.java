@@ -1,4 +1,4 @@
-package im.xcl.platform.api;
+package im.xcl.platform.dto;
 
 public class CreateAccount extends SelfSignedMessage<CreateAccount> {
 
