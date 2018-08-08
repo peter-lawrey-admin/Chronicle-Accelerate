@@ -1,13 +1,13 @@
-package town.lost.examples.verifyip;
+package im.xcl.platform.verification;
 
-import im.xcl.platform.api.StartBatch;
+import im.xcl.platform.dto.Verification;
 import net.openhft.chronicle.bytes.Bytes;
 import net.openhft.chronicle.core.io.IORuntimeException;
+import net.openhft.chronicle.core.time.TimeProvider;
 import net.openhft.chronicle.salt.Ed25519;
 import net.openhft.chronicle.wire.TextMethodTester;
 import net.openhft.chronicle.wire.TextWire;
 import org.junit.Test;
-import town.lost.examples.verifyip.api.Verify;
 
 import java.io.IOException;
 
@@ -44,16 +44,20 @@ public class VerifyIPTest {
 
         TextWire wire = new TextWire(Bytes.elasticHeapByteBuffer(128));
         VerifyIPTester tester = wire.methodWriter(VerifyIPTester.class);
-        tester.startBatch(new StartBatch(publicKey, 0));
-        tester.verify(new Verify());
         tester.onConnection();
-        tester.endBatch();
+        Verification verification = new Verification(1, 4)
+                .keyVerified(publicKey)
+                .address(publicKey.readLong(0))
+                .timestampUS(TimeProvider.get().currentTimeMicros())
+                .publicKey(publicKey)
+                .keyVerified(publicKey2);
+        tester.verification(verification);
 
         System.out.println(wire);
     }
 
     @Test
     public void testVerifyOne() {
-        test("verify/one");
+        test("verification/one");
     }
 }
