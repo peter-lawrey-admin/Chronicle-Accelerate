@@ -210,7 +210,8 @@ public class VanillaSignedMessage<T extends VanillaSignedMessage<T>> extends Abs
             byteBuffer = ByteBuffer.allocateDirect(0);
         try {
             BB_ADDRESS.setLong(byteBuffer, readPointer.addressForRead(0));
-            BB_CAPACITY.setLong(byteBuffer, readPointer.readRemaining());
+            BB_CAPACITY.setInt(byteBuffer, Math.toIntExact(readPointer.readRemaining()));
+            byteBuffer.clear(); // position = 0, limit = capacity.
             return byteBuffer;
         } catch (IllegalAccessException e) {
             throw new AssertionError(e);

@@ -20,6 +20,7 @@ import net.openhft.chronicle.core.io.IORuntimeException;
 import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 
 public class RPCServer<T> implements MessageRouter<T>, PublicKeyRegistry, Closeable {
     private final XCLLongObjMap<TCPConnection> connections = XCLLongObjMap.withExpectedSize(TCPConnection.class, 128);
@@ -34,14 +35,14 @@ public class RPCServer<T> implements MessageRouter<T>, PublicKeyRegistry, Closea
     private final DtoParserBuilder<T> dtoParserBuilder;
     private final T serverComponent;
 
-    public RPCServer(String name, int port, long address, BytesStore publicKey, BytesStore secretKey, DtoParserBuilder<T> dtoParserBuilder, T serverComponent) throws IOException {
+    public RPCServer(String name, int port, long address, BytesStore publicKey, BytesStore secretKey, DtoParserBuilder<T> dtoParserBuilder, Function<MessageRouter<T>, T> serverComponentBuilder) throws IOException {
         this.port = port;
         this.address = address;
         this.publicKey = publicKey;
         this.secretKey = secretKey;
         this.dtoParserBuilder = dtoParserBuilder;
-        this.serverComponent = serverComponent;
         tcpServer = new VanillaTCPServer(name, port, new XCLConnectionListener(dtoParserBuilder.get()));
+        this.serverComponent = serverComponentBuilder.apply(this);
     }
 
     public boolean internal() {

@@ -5,10 +5,12 @@ import net.openhft.chronicle.bytes.MethodId;
 import net.openhft.chronicle.core.Maths;
 
 import java.lang.reflect.Method;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.function.Supplier;
 
 public class DtoParserBuilder<T> implements Supplier<DtoParser<T>> {
-
+    private final Map<Class, Integer> classToProtocolMessageType = new LinkedHashMap<>();
     private final XCLIntObjMap<DtoParselet> parseletMap = XCLIntObjMap.withExpectedSize(DtoParselet.class, 128);
 
     public DtoParserBuilder<T> addProtocol(int protocol, Class<? super T> pClass) {
@@ -19,6 +21,7 @@ public class DtoParserBuilder<T> implements Supplier<DtoParser<T>> {
                 try {
                     parseletMap.put(key,
                             new DtoParselet(method, protocol, Maths.toUInt16(mid.value())));
+                    classToProtocolMessageType.put(method.getParameterTypes()[0], key);
                 } catch (Exception e) {
                     throw new IllegalArgumentException(e);
                 }
@@ -34,4 +37,15 @@ public class DtoParserBuilder<T> implements Supplier<DtoParser<T>> {
         return new VanillaDtoParser<T>(parseletMap2);
     }
 
+    public <T> T create(Class<T> tClass) {
+        Integer key = classToProtocolMessageType.get(tClass);
+        if (key == null)
+            throw new IllegalArgumentException(tClass + " not defined");
+        try {
+            return tClass.getConstructor(new Class[]{int.class, int.class})
+                    .newInstance(key >>> 16, key & 0xFFFF);
+        } catch (Exception e) {
+            throw new AssertionError(e);
+        }
+    }
 }
