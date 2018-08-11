@@ -17,10 +17,14 @@ import java.util.function.LongFunction;
 
 public class VanillaSignedMessage<T extends VanillaSignedMessage<T>> extends AbstractBytesMarshallable implements SignedMessage {
     public static final int LENGTH = 0;
-    public static final int SIGNATURE = LENGTH + Integer.BYTES;
-    public static final int MESSAGE_TYPE = SIGNATURE + Short.BYTES;
-    public static final int PROTOCOL = MESSAGE_TYPE + Short.BYTES;
-    public static final int MESSAGE_START = PROTOCOL + Long.BYTES;
+    public static final int LENGTH_END = LENGTH + Integer.BYTES;
+    public static final int SIGNATURE = LENGTH_END;
+    public static final int SIGNATURE_END = SIGNATURE + Ed25519.SIGNATURE_LENGTH;
+    public static final int MESSAGE_TYPE = SIGNATURE_END;
+    public static final int MESSAGE_TYPE_END = MESSAGE_TYPE + Short.BYTES;
+    public static final int PROTOCOL = MESSAGE_TYPE_END;
+    public static final int PROTOCOL_END = PROTOCOL + Short.BYTES;
+    public static final int MESSAGE_START = PROTOCOL_END;
     private static final Field BB_ADDRESS = Jvm.getField(ByteBuffer.allocateDirect(0).getClass(), "address");
     private static final Field BB_CAPACITY = Jvm.getField(ByteBuffer.allocateDirect(0).getClass(), "capacity");
     // for writing to a new set of bytes
@@ -46,11 +50,13 @@ public class VanillaSignedMessage<T extends VanillaSignedMessage<T>> extends Abs
 
     @Override
     public void readMarshallable(BytesIn bytes) throws IORuntimeException {
-        readPointer.set(bytes.addressForRead(bytes.readPosition()), bytes.readRemaining());
-        this.bytes.readPosition(MESSAGE_START);
-        this.bytes.readLimit(bytes.readRemaining());
+        long capacity = bytes.readRemaining();
+        readPointer.set(bytes.addressForRead(bytes.readPosition()), capacity);
         messageType = readPointer.readShort(MESSAGE_TYPE);
         protocol = readPointer.readShort(PROTOCOL);
+
+        this.bytes.clear();
+        this.bytes.readPositionRemaining(MESSAGE_START, capacity - MESSAGE_START);
         super.readMarshallable(this.bytes);
         signed = true;
     }

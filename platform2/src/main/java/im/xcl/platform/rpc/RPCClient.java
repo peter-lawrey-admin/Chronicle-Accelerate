@@ -106,6 +106,7 @@ public class RPCClient<UP, DOWN> implements Closeable, TCPConnection {
 
         @Override
         public void onMessage(TCPConnection client, Bytes bytes) throws IOException {
+            bytes.readSkip(-4);
             try {
                 parser.parseOne(bytes, listener);
 

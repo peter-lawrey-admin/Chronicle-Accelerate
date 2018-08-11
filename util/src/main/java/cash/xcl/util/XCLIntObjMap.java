@@ -49,4 +49,6 @@ public abstract class XCLIntObjMap<V> extends AbstractMarshallable {
     public void writeMarshallable(@NotNull WireOut wire) {
         forEach((k, v) -> wire.writeEventId(k).object(vClass, v));
     }
+
+    public abstract String toString();
 }

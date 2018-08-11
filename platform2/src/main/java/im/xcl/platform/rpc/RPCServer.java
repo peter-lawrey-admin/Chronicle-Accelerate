@@ -8,6 +8,7 @@ import cash.xcl.util.PublicKeyRegistry;
 import cash.xcl.util.VanillaPublicKeyRegistry;
 import cash.xcl.util.XCLLongObjMap;
 import im.xcl.platform.api.MessageRouter;
+import im.xcl.platform.api.SystemMessageListener;
 import im.xcl.platform.dto.VanillaSignedMessage;
 import im.xcl.platform.util.DtoParser;
 import im.xcl.platform.util.DtoParserBuilder;
@@ -16,13 +17,18 @@ import net.openhft.chronicle.bytes.BytesStore;
 import net.openhft.chronicle.core.Jvm;
 import net.openhft.chronicle.core.io.Closeable;
 import net.openhft.chronicle.core.io.IORuntimeException;
+import net.openhft.chronicle.wire.AbstractMethodWriterInvocationHandler;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
 public class RPCServer<T> implements MessageRouter<T>, PublicKeyRegistry, Closeable {
+    static final ThreadLocal<TCPConnection> DEFAULT_CONNECTION_TL = new ThreadLocal<>();
     private final XCLLongObjMap<TCPConnection> connections = XCLLongObjMap.withExpectedSize(TCPConnection.class, 128);
     private final XCLLongObjMap<TCPConnection> remoteMap = XCLLongObjMap.withExpectedSize(TCPConnection.class, 128);
     private final Map<Long, T> allMessagesMap = new ConcurrentHashMap<>();
@@ -32,14 +38,16 @@ public class RPCServer<T> implements MessageRouter<T>, PublicKeyRegistry, Closea
     private final long address;
     private final BytesStore publicKey;
     private final BytesStore secretKey;
+    private final Class<T> tClass;
     private final DtoParserBuilder<T> dtoParserBuilder;
     private final T serverComponent;
 
-    public RPCServer(String name, int port, long address, BytesStore publicKey, BytesStore secretKey, DtoParserBuilder<T> dtoParserBuilder, Function<MessageRouter<T>, T> serverComponentBuilder) throws IOException {
+    public RPCServer(String name, int port, long address, BytesStore publicKey, BytesStore secretKey, Class<T> tClass, DtoParserBuilder<T> dtoParserBuilder, Function<MessageRouter<T>, T> serverComponentBuilder) throws IOException {
         this.port = port;
         this.address = address;
         this.publicKey = publicKey;
         this.secretKey = secretKey;
+        this.tClass = tClass;
         this.dtoParserBuilder = dtoParserBuilder;
         tcpServer = new VanillaTCPServer(name, port, new XCLConnectionListener(dtoParserBuilder.get()));
         this.serverComponent = serverComponentBuilder.apply(this);
@@ -68,8 +76,12 @@ public class RPCServer<T> implements MessageRouter<T>, PublicKeyRegistry, Closea
 
     @Override
     public T to(long addressOrRegion) {
-//        return allMessagesMap.computeIfAbsent(addressOrRegion, OneWritingAllMessages::new);
-        throw new UnsupportedOperationException();
+        InvocationHandler handler = new ServerInvocationHandler(addressOrRegion);
+        //noinspection unchecked
+        T proxy = (T) Proxy.newProxyInstance(tClass.getClassLoader(),
+                new Class[]{tClass, SystemMessageListener.class},
+                handler);
+        return proxy;
     }
 
     private long address() {
@@ -103,12 +115,16 @@ public class RPCServer<T> implements MessageRouter<T>, PublicKeyRegistry, Closea
 
     public void write(long toAddress, VanillaSignedMessage message) {
         TCPConnection tcpConnection;
-        synchronized (connections) {
-            tcpConnection = connections.get(toAddress);
-        }
-        if (tcpConnection == null) {
-            synchronized (remoteMap) {
-                tcpConnection = remoteMap.get(toAddress);
+        if (toAddress == 0) {
+            tcpConnection = DEFAULT_CONNECTION_TL.get();
+        } else {
+            synchronized (connections) {
+                tcpConnection = connections.get(toAddress);
+            }
+            if (tcpConnection == null) {
+                synchronized (remoteMap) {
+                    tcpConnection = remoteMap.get(toAddress);
+                }
             }
         }
 
@@ -150,6 +166,7 @@ public class RPCServer<T> implements MessageRouter<T>, PublicKeyRegistry, Closea
 
         @Override
         public void onMessage(TCPServer server, TCPConnection channel, Bytes bytes) throws IOException {
+            DEFAULT_CONNECTION_TL.set(channel);
             bytes.readSkip(-4);
             try {
 
@@ -160,6 +177,21 @@ public class RPCServer<T> implements MessageRouter<T>, PublicKeyRegistry, Closea
                     throw (IOException) iore.getCause();
                 throw iore;
             }
+        }
+    }
+
+    private class ServerInvocationHandler extends AbstractMethodWriterInvocationHandler {
+        long addressOrRegion;
+
+        public ServerInvocationHandler(long addressOrRegion) {
+            this.addressOrRegion = addressOrRegion;
+        }
+
+        @Override
+        protected void handleInvoke(Method method, Object[] args) {
+            assert args.length == 1;
+            VanillaSignedMessage vsm = (VanillaSignedMessage) args[0];
+            write(addressOrRegion, vsm);
         }
     }
 }

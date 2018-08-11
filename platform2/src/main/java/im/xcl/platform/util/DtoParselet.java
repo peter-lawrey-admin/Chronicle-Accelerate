@@ -39,12 +39,21 @@ class DtoParselet<T> {
     }
 
     public void parse(Bytes bytes, T listener) {
-        bytes.readSkip(-Integer.BYTES); // rewind the LENGTH.
         vsm.readMarshallable(bytes);
         try {
             method.invoke(listener, vsm);
         } catch (Exception e) {
             throw new IllegalStateException(e);
         }
+    }
+
+    @Override
+    public String toString() {
+        return "DtoParselet{" +
+                "method=" + method +
+                ", protocol=" + protocol +
+                ", midValue=" + midValue +
+                ", vsm=" + vsm +
+                '}';
     }
 }

@@ -63,4 +63,17 @@ public class SmallIntObjMap<V> extends XCLIntObjMap<V> {
             longObjConsumer.accept(keys[i], values[i]);
         }
     }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("{ ");
+        for (int i = 0; i < size; i++) {
+            if (i > 0)
+                sb.append(", ");
+            sb.append(keys[i]).append("=").append(values[i]);
+        }
+        sb.append("}");
+        return sb.toString();
+    }
 }

@@ -17,7 +17,7 @@ public class DtoParserBuilder<T> implements Supplier<DtoParser<T>> {
         for (Method method : pClass.getDeclaredMethods()) {
             MethodId mid = method.getAnnotation(MethodId.class);
             if (mid != null) {
-                int key = protocol << 16 + (mid.value() & 0xFFFF);
+                int key = (int) ((protocol << 16) + (mid.value() & 0xFFFF));
                 try {
                     parseletMap.put(key,
                             new DtoParselet(method, protocol, Maths.toUInt16(mid.value())));
